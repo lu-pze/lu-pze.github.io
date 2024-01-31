@@ -5,7 +5,7 @@ body{
 .page{
   display:grid;
   grid-template-columns: 0px 1fr 380px;
-  grid-template-rows: 0px 1fr 150px 130px;
+  grid-template-rows: 0px 1fr 110px 40px;
 }
 .header{
   grid-column: 2 / span 3;
@@ -145,29 +145,24 @@ body{
   font-weight: 300;
   font-size: 15px;
   margin: 0;
-  padding: 4px 0 4px 0;
+  padding: 10px 0 10px 0;
   color: #e7e6e6;
 }
-
 .footer{
   font-family: "Roboto";
 }
-
 .footer-info{
-  padding: 20px 0 8px 0;
+  padding: 0px 0px 0px 0px;
 }
-
 .footer-link{
   text-align: center;
 }
-
 .footer-link a{
   font-family: Calibri;
   font-size: 15px;
-  padding: 0 20px 0 20px;
+  padding: 0 20px 0 0px;
   color: #e7e6e6;
 }
-
 .footer-link a:hover{
   font-family: Calibri;
   font-size: 15px;
