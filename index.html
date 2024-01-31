@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>LU-PZE: Lund University Pole-Zero Explorer</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans,wght@1,300,400,500,600,700,800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@200;300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+<!--
+// Mathlive changelog:  https://cortexjs.io/mathlive/changelog/
+// OK:
+    <script src="https://unpkg.com/mathlive@0.89.4/dist/mathlive.min.js"></script>
+// Broken mathfield view.   becomes \frac{1}{1+p} instead of nice formatted formula:
+    <script src="https://unpkg.com/mathlive@0.90.0/dist/mathlive.min.js"></script>
+    <script src="https://unpkg.com/mathlive@0.91.0/dist/mathlive.min.js"></script>
+    <script src="https://unpkg.com/mathlive@0.92.0/dist/mathlive.min.js"></script>
+    <script src="https://unpkg.com/mathlive@0.93.0/dist/mathlive.min.js"></script>
+    <script src="https://unpkg.com/mathlive@0.94.0/dist/mathlive.min.js"></script>
+// Broken mathfield view. No formula shown at all:
+    <script src="https://unpkg.com/mathlive@0.95.0/dist/mathlive.min.js"></script>
+    <script src="https://unpkg.com/mathlive@0.96.0/dist/mathlive.min.js"></script>
+    <script src="https://unpkg.com/mathlive@0.97.0/dist/mathlive.min.js"></script>
+// Broken mathfield view.   becomes \frac{1}{1+p} instead of nice formatted formula:
+// Broken mathfield view. No formula shown at all:
+    <script src="https://unpkg.com/mathlive@0.98.0/dist/mathlive.min.js"></script>
+    <script src="https://unpkg.com/mathlive@0.98.5/dist/mathlive.min.js"></script>
+// So... OK:
+    <script src="https://unpkg.com/mathlive@0.89.4/dist/mathlive.min.js"></script>
+//Access to fetch at 'file:///Users/pex/phd/git/pexperiment/js/mathlive.min.js' from origin 'null' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, isolated-app, chrome-extension, chrome, https, chrome-untrusted.
+    <script type="text/javascript" src="js/mathlive.min.js"></script>
+-->
+    <script type="text/javascript" src="js/mathlive.min.js"></script>
+    <script type="text/javascript" src="js/p5.js"></script>
+    <script type="text/javascript" src="js/math.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+  </head>
+  <body>
+    <div class="page">
+      <div class="toolbox">
+        <div class="math-preferences">
+          <span style="font-weight:500;color:#777777">Math preferences:</span>
+          <div class="expression-wrapper">
+            <span>x-axis from:</span>
+            <div class="range-wrapper">
+              <input type="text" value="1">
+              <span style="margin: 0 6px 0 6px">to </span>
+              <input type="text" value="2">
+            </div>
+          </div>
+          <div class="expression-wrapper">
+            <span>y-axis from:</span>
+            <div class="range-wrapper">
+              <input type="text" value="1">
+              <span style="margin: 0 6px 0 6px">to </span>
+              <input type="text" value="2">
+            </div>
+          </div>
+          <div class="expression-wrapper">
+            <span>Automatic range:</span>
+            <input type="checkbox" name="" value="" style="width:15px;height:15px;" checked="checked">
+          </div>
+          <div class="expression-wrapper" style="margin-bottom:15px">
+            <span>Phase correction:</span>
+            <input type="checkbox" name="" value="" style="width:15px;height:15px;">
+          </div>
+        </div>
+        <div class="graphic-preferences">
+          <span style="font-weight:500;color:#777777">Graphic preferences:</span>
+          <div class="expression-wrapper">
+            <span>Lines stroke weight:</span>
+            <input type="range" id="stroke-range" name="" value="2" step="0.1" min="1" max="5" onchange="changeStrokeWeight()">
+          </div>
+          <div class="expression-wrapper">
+            <span>Dark/Bright mode</span>
+            <input type="checkbox" id="color-mode-checkbox" value="" style="width:15px;height:15px;" onclick="changeColorMode()">
+          </div>
+        </div>
+      </div>
+
+      <div class="help">
+<center><h2>LU-PZE: Lund University Pole-Zero Explorer</h2></center>
+<center>- <i>an Automatic Control theory playground</i></center><br>
+<hr>
+<center>This webapp is a tool for understanding transfer functions<br>
+commonly found in automatic control theory.<br>
+</center>
+<hr>
+In this app, you see four different transfer functions, each with its own color.<br>
+They are visualized as:<br>
+* Upper left plot is the <b>Bode magnitude plot</b> |G(s)|,<br>for a range of angular frequencies.<br>
+* Lower left plot is the <b>Bode phase plot</b> arg(G(s)),<br>for the same range of angular frequencies.<br>
+* Upper middle plot is the <b>Step input response</b> graph.<br>If you want to see the impulse response,<br>
+use the "Unit step" selector in the upper right corner.<br>
+* Lower middle plot is the <b>Nyquist diagram</b>.<br>
+* The right <b>Poles & zeros</b> graphs is the location of the<br>
+poles and zeros in the s-plane.<br>
+<hr>
+The sliders and values are yours to play with.<br>
+Any value can be changed.<br>
+Click and drag anything.<br>
+...and figure out how they are all connected.<br>
+<hr>
+<center>Suggestions?<br><br>
+Pex Tufvesson<br>
+Department of Automatic Control.<br>
+Lund University, Lund, Sweden.<br>
+pex.tufvesson@control.lth.se</center><br>
+<br><br>
+      </div>
+
+      <div class="download_script_box" id="download_script_box">
+      </div>
+
+      <div class="footer">
+        <div class="footer-info">
+          <h1>Pexperiment - automatic control theory playground. Suggestions -> pex.tufvesson@control.lth.se</h1>
+       </div>
+      </div>
+      <div class="math-bar">
+        <div class="option-bar">
+          <button type="button" class="add-graph" style="background:none;border:none;margin-left:5px;margin-top:5px"><i class="material-icons" style="font-size: 38px;color: #fff">add</i></button>
+          <button type="button" class="option-button" style="float:right;margin-right:10px;background:none;border:none;margin-top:9px"><i class="material-icons" style="font-size: 30px;color: #fff">tune</i></button>
+          <button type="button" class="option-button" style="float:right;margin-right:0px;background:none;border:none;margin-top:11px" onclick="capture_screen()"><i class="material-icons" style="font-size: 27px;color: #fff">photo_camera</i></button>
+          <button type="button" class="option-button" style="float:right;margin-right:0px;background:none;border:none;margin-top:9px" onclick="location.reload()"><i class="material-icons" style="font-size: 30px;color: #fff">restart_alt</i></button>
+          <button type="button" class="option-button" style="float:right;margin-right:0px;background:none;border:none;margin-top:11px" onclick="helpToogle()"><i class="material-icons" style="font-size: 27px;color: #fff">help</i></button>
+        </div>
+        <div class="equations">
+          <div class="input-equation" style="margin-bottom:0px;padding:10px 0 6px;">
+            <div class="sub-input-equation" style="display:flex;flex-direction:row;height:50px">
+              <span class="input-span" style="margin-left:10px;margin-top:12px;margin-right:16px">input:</span>
+              <math-field class="formula" style="font-size: 20px" id="input-formula">\frac{1}{s}</math-field>
+              <select id="input-choices" style="height:30px;margin-top:9px;margin-left:8px" onchange="updateInputFormulaFromList()">
+                <option value="Unit step">Unit Step</option>
+                <option value="Impulse">Dirac Impulse</option>
+              </select>
+            </div>
+          </div>
+          <div class="equation-wrapper">
+          </div>
+        </div>
+      </div>
+      <div class="graph-space">
+        <div id="sketch_holder"></div>
+      </div>
+      <div class="graph-information">
+        <div class="graph-information-tabs">
+          </label>
+        </div>
+        <div class="functions-informations">
+          <div class="bode-information">
+            <div class="sub-information">
+              <span class="text">Phase margin:</span>
+              <span class="value">NaN</span>
+              <span class="text">&nbsp; Gain crossover frequency: </span>
+              <span class="value">NaN</span>
+              <span class="text">&nbsp; Gain margin:</span>
+              <span class="value">NaN</span>
+              <span class="text">&nbsp; Phase crossover frequency: </span>
+              <span class="value">NaN</span>
+              <span class="text">&nbsp; Settling time(5%):</span>
+              <span class="value">NaN</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
