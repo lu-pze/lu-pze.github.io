@@ -11,3 +11,5 @@ Based on Bowde: https://github.com/nnnawi/BOWDE
 
 A screenshot, which is probably obsolete already:
 ![](screenshot.png)
+
+...so please run the live version yourself: https://lu-pze.github.io
