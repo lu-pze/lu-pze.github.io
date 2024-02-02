@@ -1356,8 +1356,6 @@ function draw_bode_responses(type){
               var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
               var linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
               let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-              console.log("screen_x=" + screen_x);
-              console.log("screen_y=" + screen_y);
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
               draw_X(screen_x,screen_y);
@@ -1373,8 +1371,6 @@ function draw_bode_responses(type){
               var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
               var linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
               let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-              console.log("screen_x=" + screen_x);
-              console.log("screen_y=" + screen_y);
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
               draw_X(screen_x,screen_y);
@@ -1386,8 +1382,6 @@ function draw_bode_responses(type){
               var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
               var linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
               let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-              console.log("screen_x=" + screen_x);
-              console.log("screen_y=" + screen_y);
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
               draw_X(screen_x,screen_y);
@@ -1405,8 +1399,6 @@ function draw_bode_responses(type){
                 var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
                 var linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
                 let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-                console.log("screen_x=" + screen_x);
-                console.log("screen_y=" + screen_y);
                 stroke(bode_graphs[i].bode_hue,240,360);
                 strokeWeight(3);
                 draw_X(screen_x,screen_y);
@@ -1422,8 +1414,6 @@ function draw_bode_responses(type){
                 var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
                 var linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
                 let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-                console.log("screen_x=" + screen_x);
-                console.log("screen_y=" + screen_y);
                 stroke(bode_graphs[i].bode_hue,240,360);
                 strokeWeight(3);
                 draw_X(screen_x,screen_y);
@@ -1434,8 +1424,6 @@ function draw_bode_responses(type){
                 var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
                 var linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
                 let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-                console.log("screen_x=" + screen_x);
-                console.log("screen_y=" + screen_y);
                 stroke(bode_graphs[i].bode_hue,240,360);
                 strokeWeight(3);
                 draw_X(screen_x,screen_y);
