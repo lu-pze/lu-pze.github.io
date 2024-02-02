@@ -3194,6 +3194,48 @@ function fivePercentTimeResponse(input_array){
 }
 
 
+
+/* Get the documentElement (<html>) to display the page in fullscreen */
+var elem = document.documentElement;
+let is_fullscreen = false;
+
+function toggle_fullscreen(){
+  if (is_fullscreen == false){
+    openFullscreen();
+  } else {
+    closeFullscreen();
+  }
+}
+
+/* View in fullscreen */
+function openFullscreen() {
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+    is_fullscreen = true;
+  } else if (elem.webkitRequestFullscreen) { /* Safari */
+    elem.webkitRequestFullscreen();
+    is_fullscreen = true;
+  } else if (elem.msRequestFullscreen) { /* IE11 */
+    elem.msRequestFullscreen();
+    is_fullscreen = true;
+  }
+}
+
+/* Close fullscreen */
+function closeFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+    is_fullscreen = false;
+  } else if (document.webkitExitFullscreen) { /* Safari */
+    document.webkitExitFullscreen();
+    is_fullscreen = false;
+  } else if (document.msExitFullscreen) { /* IE11 */
+    document.msExitFullscreen();
+    is_fullscreen = false;
+  }
+}
+
+
 function ready(){
   var add_button = document.getElementsByClassName("add-graph")[0];
   add_button.addEventListener('click',addNewGraph);
