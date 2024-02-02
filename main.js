@@ -1414,15 +1414,46 @@ function draw_bode_responses(type){
           // Draw w:
           try{ // The graph may be deleted, so this might fail:
             var w = range_slider_variables[variable_position["w"]];
-            if (w >= 0){
-              var frequency = w;
-              // Need to map frequency to pixel:
-              var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
-              // Now we know the x position. Let's find out the y position:
-              let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
-              stroke(bode_graphs[i].bode_hue,240,360);
-              strokeWeight(3);
-              draw_X(screen_x,screen_y);
+            var z = range_slider_variables[variable_position["z"]];
+            if (z <= 1){
+              // One single frequency, so only one X in the graph:
+              if (w >= 0){
+                var frequency = w;
+                // Need to map frequency to pixel:
+                var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+                // Now we know the x position. Let's find out the y position:
+                let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+                stroke(bode_graphs[i].bode_hue,240,360);
+                strokeWeight(3);
+                draw_X(screen_x,screen_y);
+              }
+            } else {
+              //If sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
+              // We should draw 2 X in this graph:
+              var bode_3_real_1 = z*w + w * sqrt(z*z-1);
+              var bode_3_real_2 = z*w - w * sqrt(z*z-1);
+              w = bode_3_real_1;
+              if (w >= 0){
+                var frequency = w;
+                // Need to map frequency to pixel:
+                var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+                // Now we know the x position. Let's find out the y position:
+                let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+                stroke(bode_graphs[i].bode_hue,240,360);
+                strokeWeight(3);
+                draw_X(screen_x,screen_y);
+              }
+              w = bode_3_real_2;
+              if (w >= 0){
+                var frequency = w;
+                // Need to map frequency to pixel:
+                var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+                // Now we know the x position. Let's find out the y position:
+                let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+                stroke(bode_graphs[i].bode_hue,240,360);
+                strokeWeight(3);
+                draw_X(screen_x,screen_y);
+              }
             }
           } catch {}
         }
