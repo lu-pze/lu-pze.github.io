@@ -1974,7 +1974,7 @@ function mouseDragged(){
       if(((mouseX-pole_zero_graph_x[i]) > 0) && ((mouseX-pole_zero_graph_x[i]) < pole_zero_width)){
         if(((mouseY-pole_zero_graph_y[i]) > 0) && ((mouseY-pole_zero_graph_y[i]) < pole_zero_height)){
           if(bode_graphs[i].bode_displaybool){
-            var real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 2;
+            var real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 3;
             var imaginary=2 - (mouseY-pole_zero_graph_y[i])/pole_zero_height * 4;
 
             const EPS = 0.06666667;
@@ -2940,7 +2940,7 @@ class bode_graph{
   draw_pole_zero(draw_axis){
     for(x=1; x<=3; x++){
       stroke(line_color);
-      if (x==2){
+      if (x==3){
         strokeWeight(3);
       } else {
         strokeWeight(1);
@@ -2981,7 +2981,7 @@ class bode_graph{
       textAlign(CENTER);
       fill(text_color);
       for(x=0; x<=4; x++){
-        text((x-2).toFixed(1),x*graph_pole_zero_width/4,pole_zero_height+20);
+        text((x-3).toFixed(1),x*graph_pole_zero_width/4,pole_zero_height+20);
       }
       text("Real axis [1/s]",graph_pole_zero_width/2,pole_zero_height+35);
       pop();
@@ -2992,15 +2992,15 @@ class bode_graph{
     if (this.bode_id == 1){
       //pole_x = range_slider_variables[0];
       var T_1inv = 1/range_slider_variables[variable_position["T_1"]];
-      if (T_1inv > 2.2) T_1inv=2.2;
+      if (T_1inv > 3.2) T_1inv=3.2;
       this.plot_pole(-T_1inv,0); // Should be T_1
     } else if (this.bode_id == 2){
       //pole_x = range_slider_variables[0];
       var T_2inv = 1/range_slider_variables[variable_position["T_2"]];
-      if (T_2inv > 2.2) T_2inv=2.2;
+      if (T_2inv > 3.2) T_2inv=3.2;
       this.plot_pole(-T_2inv,0); // Should be T_2
       var T_3inv = 1/range_slider_variables[variable_position["T_3"]];
-      if (T_3inv > 2.2) T_3inv=2.2;
+      if (T_3inv > 3.2) T_3inv=3.2;
       this.plot_pole(-T_3inv,0); // Should be T_3
     } else if (this.bode_id == 3){
       // Calculate bode_3_real and imaginary from z and w:
@@ -3013,7 +3013,7 @@ class bode_graph{
         bode_3_imaginary = w * sqrt(1-z*z);
         var tmp_x = bode_3_real;
         var tmp_y = bode_3_imaginary;
-        if (tmp_x < -2.2) tmp_x=-2.2;
+        if (tmp_x < -3.2) tmp_x=-3.2;
         if (tmp_y < -2.2) tmp_y=-2.2;
         if (tmp_y > 2.2) tmp_y=2.2;
         this.plot_pole(tmp_x,tmp_y); // complex
@@ -3025,12 +3025,12 @@ class bode_graph{
         bode_3_imaginary = 0;
 
         var tmp_x = bode_3_real_1;
-        if (tmp_x < -2.2) tmp_x=-2.2;
-        if (tmp_x > 2.2) tmp_x=2.2;
+        if (tmp_x < -3.2) tmp_x=-3.2;
+        if (tmp_x > 1.2) tmp_x=1.2;
         this.plot_pole(tmp_x,0); // complex
         tmp_x = bode_3_real_2;
-        if (tmp_x < -2.2) tmp_x=-2.2;
-        if (tmp_x > 2.2) tmp_x=2.2;
+        if (tmp_x < -3.2) tmp_x=-3.2;
+        if (tmp_x > 1.2) tmp_x=1.2;
         this.plot_pole(tmp_x,0); // complex
       }
 
@@ -3054,7 +3054,7 @@ class bode_graph{
   }
 
   plot_pole(pole_x,pole_y){
-    var screen_x = pole_zero_width/2 + pole_x * pole_zero_width/4;
+    var screen_x = pole_zero_width/2 + (pole_x+1) * pole_zero_width/4;
     var screen_y = pole_zero_height/2 + pole_y * pole_zero_height/4;
     line(screen_x-6,screen_y-6,screen_x+6,screen_y+6);
     line(screen_x+6,screen_y-6,screen_x-6,screen_y+6);
