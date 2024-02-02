@@ -1323,12 +1323,9 @@ function draw_bode_responses(type){
     for(y = 0; y <= phase_case_number; y++){
       stroke(line_color);
       strokeWeight(1);
-
       var pas = graph_bode_phase_height*y/phase_case_number;
       var value = phase_upper_bound - 45*y;
-
       line(0,pas,graph_bode_phase_width,pas);
-
       noStroke();
       fill(text_color);
       text(value,-7,pas+5);
@@ -1339,9 +1336,131 @@ function draw_bode_responses(type){
         bode_graphs[i].draw_phase();
       }
     }
-  }
 
-  else if(type == "gain"){
+
+
+
+
+
+    // Draw X for T_1, T_2, T_3 and w:
+    let rad_phase_lower_bound = phase_lower_bound*PI/180;
+    let rad_phase_upper_bound = phase_upper_bound*PI/180;
+    for (var i=0; i<bode_graphs.length; i++){
+      if(bode_graphs[i].bode_displaybool){
+        if (bode_graphs[i].bode_id == 1){
+          // Draw T_1:
+          try{ // The graph may be deleted, so this might fail:
+            var T_1 = range_slider_variables[variable_position["T_1"]];
+            if (T_1 >= 0){
+              var frequency = 1 / T_1;
+              var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              var linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+              let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
+              console.log("screen_x=" + screen_x);
+              console.log("screen_y=" + screen_y);
+              stroke(bode_graphs[i].bode_hue,240,360);
+              strokeWeight(3);
+              draw_X(screen_x,screen_y);
+            }
+          } catch {}
+        } else if (bode_graphs[i].bode_id == 2){
+          // Draw T_2 and T_3:
+          try{ // The graph may be deleted, so this might fail:
+            var T_2 = range_slider_variables[variable_position["T_2"]];
+            if (T_2 >= 0){
+              // Now we know the x position. Let's find out the y position:
+              var frequency = 1 / T_2;
+              var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              var linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+              let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
+              console.log("screen_x=" + screen_x);
+              console.log("screen_y=" + screen_y);
+              stroke(bode_graphs[i].bode_hue,240,360);
+              strokeWeight(3);
+              draw_X(screen_x,screen_y);
+            }
+            var T_3 = range_slider_variables[variable_position["T_3"]];
+            if (T_3 >= 0){
+              // Now we know the x position. Let's find out the y position:
+              var frequency = 1 / T_3;
+              var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              var linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+              let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
+              console.log("screen_x=" + screen_x);
+              console.log("screen_y=" + screen_y);
+              stroke(bode_graphs[i].bode_hue,240,360);
+              strokeWeight(3);
+              draw_X(screen_x,screen_y);
+            }
+          } catch {}
+        } else if (bode_graphs[i].bode_id == 3){
+          // Draw w:
+          try{ // The graph may be deleted, so this might fail:
+            var w = range_slider_variables[variable_position["w"]];
+            var z = range_slider_variables[variable_position["z"]];
+            if (z <= 1){
+              // One single frequency, so only one X in the graph:
+              if (w >= 0){
+                var frequency = w;
+                var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+                var linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+                let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
+                console.log("screen_x=" + screen_x);
+                console.log("screen_y=" + screen_y);
+                stroke(bode_graphs[i].bode_hue,240,360);
+                strokeWeight(3);
+                draw_X(screen_x,screen_y);
+              }
+            } else {
+              //If sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
+              // We should draw 2 X in this graph:
+              var bode_3_real_1 = z*w + w * sqrt(z*z-1);
+              var bode_3_real_2 = z*w - w * sqrt(z*z-1);
+              w = bode_3_real_1;
+              if (w >= 0){
+                var frequency = w;
+                var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+                var linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+                let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
+                console.log("screen_x=" + screen_x);
+                console.log("screen_y=" + screen_y);
+                stroke(bode_graphs[i].bode_hue,240,360);
+                strokeWeight(3);
+                draw_X(screen_x,screen_y);
+              }
+              w = bode_3_real_2;
+              if (w >= 0){
+                var frequency = w;
+                var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+                var linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+                let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
+                console.log("screen_x=" + screen_x);
+                console.log("screen_y=" + screen_y);
+                stroke(bode_graphs[i].bode_hue,240,360);
+                strokeWeight(3);
+                draw_X(screen_x,screen_y);
+              }
+            }
+          } catch {}
+        }
+      }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  } else if(type == "gain"){
     textAlign(CENTER);
     noStroke();
     fill(text_color);
