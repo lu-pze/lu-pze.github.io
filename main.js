@@ -2304,12 +2304,26 @@ function mouseMoved(){
         // 0.0   equals hovering over frequency 10^min_10power (= -2);
         // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
         var exponent = perc_x*x_case_gain + min_10power;
-//        console.log("# inside bode_mag graph, x="+perc_x+", y="+perc_y+", exp="+exponent);
+//        console.log("# inside bode_phase graph, x="+perc_x+", y="+perc_y+", exp="+exponent);
         var frequency = pow(10,exponent);
-//        console.log("# inside bode_mag graph, x="+perc_x+", y="+perc_y+", freq="+frequency);
+//        console.log("# inside bode_phase graph, x="+perc_x+", y="+perc_y+", freq="+frequency);
+
+        let rad_phase_lower_bound = phase_lower_bound*PI/180;
+        let rad_phase_upper_bound = phase_upper_bound*PI/180;
+        var queue = [];
+        var yes_close_enough = false;
         for(i=0; i<bode_graphs.length; i++){
           if(bode_graphs[i].bode_displaybool){
+//            bode_graphs[i].draw_nyquist_value(frequency);
             bode_graphs[i].draw_nyquist_value(perc_x);
+            var current_graph = bode_graphs[i];
+            var linked_y = current_graph.bode_phase_array[linked_x];
+            let screen_y = 110 + map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
+            var distance = abs(mouseY - graph_bode_phase_y - screen_y);
+            if(distance < 70){
+              yes_close_enough = true;
+              queue.push([distance,i,screen_y,linked_y]);
+            }
           }
         }
         push();
@@ -2319,15 +2333,49 @@ function mouseMoved(){
         line(mouseX,graph_bode_phase_y+110,mouseX,graph_bode_phase_y + 110 + graph_bode_phase_height);
         pop();
 
+
+        // Find the closest point from the graphs:
+        var output;
+        var distance = 10000;
+        for(h = 0;h < queue.length;h++){
+          if(queue[h][0] < distance){
+            distance = queue[h][0];
+            output = queue[h];
+          }
+        }
+
         // Find the phase where the mouse is.
         //console.log("perc_y="+perc_y);
         // perc_y=0  -> phase = highest phase
         // perc_y=1.0  -> phase = lowest phase
-        var phase = phase_upper_bound - 45*phase_case_number*perc_y;
         //console.log("phase="+phase);
 
-        yes_close_enough = true;
         if(yes_close_enough){
+          noStroke();
+          push();
+          fill(bode_graphs[output[1]].bode_hue,360,360);
+          ellipse(mouseX,output[2] + graph_bode_phase_y,12,12);
+          noStroke();
+          translate(mouseX,mouseY);
+          fill(box_background_color,200);
+          stroke(150);
+          rect(0,0,200,90);
+          noStroke();
+          fill(bode_graphs[output[1]].bode_hue,360,360);
+          ellipse(18,18,20,20);
+          noStroke();
+          fill(text_color);
+          textSize(18);
+//          text("Graph " + linked_bode_graph.bode_id,35,24);
+          text(bode_graphs[bode_graphs[output[1]].bode_id-1].graph_name,35,24);
+          textSize(15);
+//          text("time=" + linked_x.toFixed(3) + "s",13,53);
+//          text("output=" + output[2].toFixed(3),13,77);
+          text("freq=" + frequency.toFixed(3) + "rad/s",13,53);
+          var phase = output[3] * 180/PI;
+          text("phase=" + phase.toFixed(1) + "°",13,77);
+          pop();
+        } else {
           noStroke();
           push();
           translate(mouseX,mouseY);
@@ -2337,6 +2385,7 @@ function mouseMoved(){
           noStroke();
           fill(text_color);
           textSize(15);
+          var phase = phase_upper_bound - 45*phase_case_number*perc_y;
           text("freq=" + frequency.toFixed(3) + "rad/s",13,33);
           text("phase=" + phase.toFixed(0) + "°",13,53);
           pop();
