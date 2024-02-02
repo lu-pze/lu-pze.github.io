@@ -714,28 +714,54 @@ function get_matlab_script(id){
 
   var html=`% Clear previous variables and plots:
 clear all; format compact; close all
+linewidth = 2.0;
+fontsize = 18;
 % Define poles and zeroes:
 ${matlab_string}
+
 % Create transfer function:
 transfer_function = tf(num,den)
 
 % Plot poles and zeroes:
 figure(1)
 pzmap(transfer_function)
+lines = findobj(gcf,'Type','Line');
+for i = 1:numel(lines)
+   lines(i).LineWidth = linewidth;
+   lines(i).MarkerSize = 20;
+end
+set(findall(gcf,'-property','FontSize'),'FontSize',fontsize);
+a = axis    % Get current axis
+axis(a*1.2) % Zoom out a little
 
 % Plot Bode diagram:
 figure(2)
 x = bodeoptions;
 x.XLim = [0.01 1000]
 bode(transfer_function,x)
+lines = findobj(gcf,'Type','Line');
+for i = 1:numel(lines)
+   lines(i).LineWidth = linewidth;
+end
+set(findall(gcf,'-property','FontSize'),'FontSize',fontsize)
 
 % Step response for the system
 figure(3)
-step(transfer_function, 1)
+step(transfer_function, 10)
+lines = findobj(gcf,'Type','Line');
+for i = 1:numel(lines)
+   lines(i).LineWidth = linewidth;
+end
+set(findall(gcf,'-property','FontSize'),'FontSize',fontsize)
 
 % Nyquist plot for the system
 figure(4)
 h = nyquistplot(transfer_function)
+lines = findobj(gcf,'Type','Line');
+for i = 1:numel(lines)
+   lines(i).LineWidth = linewidth;
+end
+set(findall(gcf,'-property','FontSize'),'FontSize',fontsize)
 
 
 `.replace(/(?:\r\n|\r|\n)/g, "<br>");
