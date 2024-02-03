@@ -2289,22 +2289,26 @@ function mouseMoved(){
     // Check if we're hovering any of the pole-zero graphs:
     for(i=0; i<bode_graphs.length; i++){
       if(bode_graphs[i].bode_displaybool){
-        if(((mouseX-pole_zero_graph_x[i]) > 0) && ((mouseX-pole_zero_graph_x[i]) < pole_zero_width)){
-          if(((mouseY-pole_zero_graph_y[i]) > 0) && ((mouseY-pole_zero_graph_y[i]) < pole_zero_height)){
-            var real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 2;
-            var imaginary=2 - (mouseY-pole_zero_graph_y[i])/pole_zero_height * 4;
-            noStroke();
-            push();
-            translate(mouseX,mouseY);
-            fill(box_background_color,200);
-            stroke(150);
-            rect(0,0,80,40);
-            noStroke();
-            fill(text_color);
-            textSize(15);
-            text("Re=" + real.toFixed(2),13,15);
-            text("Im=" + imaginary.toFixed(2),13,35);
-            pop();
+        if ((bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula)||
+            (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)||
+            (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)){
+          if(((mouseX-pole_zero_graph_x[i]) > 0) && ((mouseX-pole_zero_graph_x[i]) < pole_zero_width)){
+            if(((mouseY-pole_zero_graph_y[i]) > 0) && ((mouseY-pole_zero_graph_y[i]) < pole_zero_height)){
+              var real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 2;
+              var imaginary=2 - (mouseY-pole_zero_graph_y[i])/pole_zero_height * 4;
+              noStroke();
+              push();
+              translate(mouseX,mouseY);
+              fill(box_background_color,200);
+              stroke(150);
+              rect(0,0,80,40);
+              noStroke();
+              fill(text_color);
+              textSize(15);
+              text("Re=" + real.toFixed(2),13,15);
+              text("Im=" + imaginary.toFixed(2),13,35);
+              pop();
+            }
           }
         }
       }
@@ -2324,7 +2328,7 @@ function mouseMoved(){
             var distance = abs(mouseY - graph_step_response_y - screen_y);
             if(distance < 70){
               yes_close_enough = true;
-              queue.push([distance,h,linked_y]);
+              queue.push([distance,h,linked_y,current_graph.graph_name]);
             }
           }
         }
@@ -2360,7 +2364,7 @@ function mouseMoved(){
           fill(text_color);
           textSize(18);
 //          text("Graph " + linked_bode_graph.bode_id,35,24);
-          text(bode_graphs[linked_bode_graph.bode_id-1].graph_name,35,24);
+          text(output[3],35,24);
           textSize(15);
           text("time=" + linked_x.toFixed(3) + "s",13,53);
           text("output=" + output[2].toFixed(3),13,77);
@@ -2398,7 +2402,7 @@ function mouseMoved(){
             var distance = abs(mouseY - graph_step_response_y - screen_y);
             if(distance < 70){
               yes_close_enough = true;
-              queue.push([distance,i,screen_y,linked_y]);
+              queue.push([distance,i,screen_y,linked_y,current_graph.graph_name]);
             }
           }
         }
@@ -2449,7 +2453,7 @@ function mouseMoved(){
           fill(text_color);
           textSize(18);
 //          text("Graph " + linked_bode_graph.bode_id,35,24);
-          text(bode_graphs[bode_graphs[output[1]].bode_id-1].graph_name,35,24);
+          text(output[4],35,24);
           textSize(15);
 //          text("time=" + linked_x.toFixed(3) + "s",13,53);
 //          text("output=" + output[2].toFixed(3),13,77);
@@ -2505,7 +2509,7 @@ function mouseMoved(){
             var distance = abs(mouseY - graph_bode_phase_y - screen_y);
             if(distance < 70){
               yes_close_enough = true;
-              queue.push([distance,i,screen_y,linked_y]);
+              queue.push([distance,i,screen_y,linked_y,current_graph.graph_name]);
             }
           }
         }
@@ -2550,7 +2554,7 @@ function mouseMoved(){
           fill(text_color);
           textSize(18);
 //          text("Graph " + linked_bode_graph.bode_id,35,24);
-          text(bode_graphs[bode_graphs[output[1]].bode_id-1].graph_name,35,24);
+          text(output[4],35,24);
           textSize(15);
 //          text("time=" + linked_x.toFixed(3) + "s",13,53);
 //          text("output=" + output[2].toFixed(3),13,77);
