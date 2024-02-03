@@ -1882,6 +1882,8 @@ var bode_3_real = -1.0;
 var bode_3_imaginary = 0.5;
 
 let clicked_on_time_response_graph_no=-1;
+let clicked_on_bode_mag_graph_no=-1;
+let clicked_on_bode_phase_graph_no=-1;
 
 let initial_mouseX = 0;
 let initial_mouseY = 0;
@@ -1895,6 +1897,7 @@ function mousePressed(){
     // The code text is active. Just disable mouse clicks to prevent poles & zeros from moving:
     clicked_on_time_response_graph_no = -1;
     clicked_on_bode_mag_graph_no = -1;
+    clicked_on_bode_phase_graph_no = -1;
     return;
   }
 
@@ -1903,6 +1906,7 @@ function mousePressed(){
   var yes_close_enough = false;
   clicked_on_time_response_graph_no = -1;
   clicked_on_bode_mag_graph_no = -1;
+  clicked_on_bode_phase_graph_no = -1;
   if(((mouseX-graph_step_response_x) > 65 && (mouseX-graph_step_response_x) < graph_step_response_width + 65)&&
     ((mouseY-graph_step_response_y) > 45 && (mouseY-graph_step_response_y) < graph_step_response_height + 45)){
     var linked_x = ceil((mouseX - graph_step_response_x - 65)/precision);
@@ -1976,6 +1980,48 @@ function mousePressed(){
       initial_mouseX = mouseX;
       initial_mouseY = mouseY;
     }
+  } else if(((mouseX-graph_bode_phase_x) > 68) && ((mouseX-graph_bode_phase_x) < graph_bode_phase_width + 68) && 
+    ((mouseY-graph_bode_phase_y-110) > 0) && ((mouseY-graph_bode_phase_y-110) < graph_bode_phase_height)){
+    // Check if we've clicked the bode phase plot:
+    var linked_x = mouseX - graph_bode_phase_x - 68;
+    var linked_y = mouseY - graph_bode_phase_y - 110;
+//        console.log("# inside bode_phase graph, x="+linked_x+", y="+linked_y);
+    var perc_x = linked_x / graph_bode_phase_width;
+    var perc_y = linked_y / graph_bode_phase_height;
+    // 0.0   equals hovering over frequency 10^min_10power (= -2);
+    // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
+    var exponent = perc_x*x_case_gain + min_10power;
+    var frequency = pow(10,exponent);
+    let rad_phase_lower_bound = phase_lower_bound*PI/180;
+    let rad_phase_upper_bound = phase_upper_bound*PI/180;
+    var queue = [];
+    var yes_close_enough = false;
+    for(i=0; i<bode_graphs.length; i++){
+      if(bode_graphs[i].bode_displaybool){
+        var current_graph = bode_graphs[i];
+        var linked_y = current_graph.bode_phase_array[linked_x];
+        let screen_y = 110 + map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
+        var distance = abs(mouseY - graph_bode_phase_y - screen_y);
+        if(distance < 70){
+          yes_close_enough = true;
+          queue.push([distance,i,screen_y,linked_y]);
+        }
+      }
+    }
+    // Find the closest point from the graphs:
+    var output;
+    var distance = 10000;
+    for(h = 0;h < queue.length;h++){
+      if(queue[h][0] < distance){
+        distance = queue[h][0];
+        output = queue[h];
+      }
+    }
+    if(yes_close_enough){
+      clicked_on_bode_phase_graph_no=output[1];
+      initial_mouseX = mouseX;
+      initial_mouseY = mouseY;
+    }
   }
 
   // When we know what was clicked on, we can run mouseDragged directly:
@@ -1985,6 +2031,7 @@ function mousePressed(){
 function mouseReleased(){
   clicked_on_time_response_graph_no = -1;
   clicked_on_bode_mag_graph_no = -1;
+  clicked_on_bode_phase_graph_no = -1;
 }
 
 function mouseDragged(){
@@ -2128,7 +2175,48 @@ function mouseDragged(){
       document.getElementById("RANGE_"+variable_position["z"]).value = z.toFixed(2);
       redraw_canvas_gain(bode_graphs[i].bode_id);
     }
+    initial_mouseX = mouseX;
+    initial_mouseY = mouseY;
 
+  } else if (clicked_on_bode_phase_graph_no != -1){
+    let i=clicked_on_bode_phase_graph_no;
+    // Dragging one of the graphs in the bode phase plot:
+    let mouseDiffX = (mouseX - initial_mouseX) / graph_step_response_width;
+    let mouseDiffY = (mouseY - initial_mouseY) / graph_step_response_height;
+    if (clicked_on_bode_phase_graph_no == 0){
+      let T_1 = range_slider_variables[variable_position["T_1"]];
+      T_1 = T_1 * (1.0 - mouseDiffX*10.0);
+      if (T_1 < 0) T_1=0;
+      range_slider_variables[variable_position["T_1"]] = T_1;
+      // Update range slider value:
+      document.getElementById("variable_"+variable_position["T_1"]).value = T_1.toFixed(2);
+      // Update range slider:
+      document.getElementById("RANGE_"+variable_position["T_1"]).value = T_1.toFixed(2);
+      redraw_canvas_gain(bode_graphs[i].bode_id);
+
+    } else if (clicked_on_bode_phase_graph_no == 1){
+      let T_2 = range_slider_variables[variable_position["T_2"]];
+      T_2 = T_2 * (1.0 - mouseDiffX*10.0);
+      if (T_2 < 0) T_2=0;
+      range_slider_variables[variable_position["T_2"]] = T_2;
+      // Update range slider value:
+      document.getElementById("variable_"+variable_position["T_2"]).value = T_2.toFixed(2);
+      // Update range slider:
+      document.getElementById("RANGE_"+variable_position["T_2"]).value = T_2.toFixed(2);
+      redraw_canvas_gain(bode_graphs[i].bode_id);
+    } else if (clicked_on_bode_phase_graph_no == 2){
+      let w = range_slider_variables[variable_position["w"]];
+      let T=1/w;
+      T = T * (1.0 - mouseDiffX*10.0);
+      if (T < 0.01) T=0.01;
+      w = 1/T;
+      range_slider_variables[variable_position["w"]] = w;
+      // Update range slider value:
+      document.getElementById("variable_"+variable_position["w"]).value = w.toFixed(2);
+      // Update range slider:
+      document.getElementById("RANGE_"+variable_position["w"]).value = w.toFixed(2);
+      redraw_canvas_gain(bode_graphs[i].bode_id);
+    }
     initial_mouseX = mouseX;
     initial_mouseY = mouseY;
 
