@@ -2056,7 +2056,7 @@ function mouseDragged(){
     let mouseDiffX = (mouseX - initial_mouseX) / graph_step_response_width;
     let mouseDiffY = (mouseY - initial_mouseY) / graph_step_response_height;
     let y_range = max_y_timerep - min_y_timerep;
-    if (clicked_on_time_response_graph_no == 0){
+    if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_ONE_REAL_POLE.formula){
       let T_1 = range_slider_variables[variable_position["T_1"]];
       T_1 = T_1 + mouseDiffX * 10.0;
       if (T_1 < 0) T_1=0;
@@ -2075,7 +2075,7 @@ function mouseDragged(){
       document.getElementById("RANGE_"+variable_position["k_1"]).value = k_1.toFixed(2);
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
-    } else if (clicked_on_time_response_graph_no == 1){
+    } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
       let T_2 = range_slider_variables[variable_position["T_2"]];
       T_2 = T_2 + mouseDiffX * 10.0;
       if (T_2 < 0) T_2=0;
@@ -2093,7 +2093,8 @@ function mouseDragged(){
       // Update range slider:
       document.getElementById("RANGE_"+variable_position["k_2"]).value = k_2.toFixed(2);
       redraw_canvas_gain(bode_graphs[i].bode_id);
-    } else if (clicked_on_time_response_graph_no == 2){
+
+    } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
       let w = range_slider_variables[variable_position["w"]];
       let T=1/w;
       T = T + mouseDiffX * 10.0;
@@ -2124,7 +2125,8 @@ function mouseDragged(){
     // Dragging one of the graphs in the bode magnitude plot:
     let mouseDiffX = (mouseX - initial_mouseX) / graph_step_response_width;
     let mouseDiffY = (mouseY - initial_mouseY) / graph_step_response_height;
-    if (clicked_on_bode_mag_graph_no == 0){
+
+    if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_ONE_REAL_POLE.formula){
       let T_1 = range_slider_variables[variable_position["T_1"]];
       T_1 = T_1 * (1.0 - mouseDiffX*10.0);
       if (T_1 < 0) T_1=0;
@@ -2143,7 +2145,7 @@ function mouseDragged(){
       document.getElementById("RANGE_"+variable_position["k_1"]).value = k_1.toFixed(2);
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
-    } else if (clicked_on_bode_mag_graph_no == 1){
+    } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
       let T_2 = range_slider_variables[variable_position["T_2"]];
       T_2 = T_2 * (1.0 - mouseDiffX*10.0);
       if (T_2 < 0) T_2=0;
@@ -2161,7 +2163,8 @@ function mouseDragged(){
       // Update range slider:
       document.getElementById("RANGE_"+variable_position["k_2"]).value = k_2.toFixed(2);
       redraw_canvas_gain(bode_graphs[i].bode_id);
-    } else if (clicked_on_bode_mag_graph_no == 2){
+
+    } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
       let w = range_slider_variables[variable_position["w"]];
       let T=1/w;
       T = T * (1.0 - mouseDiffX*10.0);
@@ -2192,7 +2195,8 @@ function mouseDragged(){
     // Dragging one of the graphs in the bode phase plot:
     let mouseDiffX = (mouseX - initial_mouseX) / graph_step_response_width;
     let mouseDiffY = (mouseY - initial_mouseY) / graph_step_response_height;
-    if (clicked_on_bode_phase_graph_no == 0){
+
+    if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_ONE_REAL_POLE.formula){
       let T_1 = range_slider_variables[variable_position["T_1"]];
       T_1 = T_1 * (1.0 - mouseDiffX*10.0);
       if (T_1 < 0) T_1=0;
@@ -2203,7 +2207,7 @@ function mouseDragged(){
       document.getElementById("RANGE_"+variable_position["T_1"]).value = T_1.toFixed(2);
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
-    } else if (clicked_on_bode_phase_graph_no == 1){
+    } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
       let T_2 = range_slider_variables[variable_position["T_2"]];
       T_2 = T_2 * (1.0 - mouseDiffX*10.0);
       if (T_2 < 0) T_2=0;
@@ -2213,7 +2217,8 @@ function mouseDragged(){
       // Update range slider:
       document.getElementById("RANGE_"+variable_position["T_2"]).value = T_2.toFixed(2);
       redraw_canvas_gain(bode_graphs[i].bode_id);
-    } else if (clicked_on_bode_phase_graph_no == 2){
+
+    } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
       let w = range_slider_variables[variable_position["w"]];
       let T=1/w;
       T = T * (1.0 - mouseDiffX*10.0);
@@ -2239,7 +2244,7 @@ function mouseDragged(){
             var imaginary=2 - (mouseY-pole_zero_graph_y[i])/pole_zero_height * 4;
 
             const EPS = 0.06666667;
-            if (bode_graphs[i].bode_id == 1){
+            if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
               // Change T_1
               if (real > EPS) real=EPS;
 
@@ -2249,7 +2254,8 @@ function mouseDragged(){
               // Update range slider:
               document.getElementById("RANGE_"+variable_position["T_1"]).value = -(1/real).toFixed(2);
               redraw_canvas_gain(bode_graphs[i].bode_id);
-            } else if (bode_graphs[i].bode_id == 2){
+
+            } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
               // Change T_2 or T_3
               if (real > EPS) real=EPS;
               // ToDo. Let's select the one that is closest to our initial click.
@@ -2259,7 +2265,8 @@ function mouseDragged(){
               // Update range slider:
               document.getElementById("RANGE_"+variable_position["T_2"]).value = -(1/real).toFixed(2);
               redraw_canvas_gain(bode_graphs[i].bode_id);
-            } else if (bode_graphs[i].bode_id == 3){
+
+            } else if (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
               // Change complex poles:
               if (real > 0) real=0;
               if (imaginary < 0) imaginary=-imaginary;
