@@ -30,22 +30,10 @@ if (document.readyState == 'loading') {
   ready();
 }
 
-
-const GRAPH_1_NAME="One real pole";
-const GRAPH_1_MF="\\frac{k_1}{T_1s+1}";
-const GRAPH_1_FORMULA="k_1/(T_1*s+1)";
-
-const GRAPH_2_NAME="Two real poles";
-const GRAPH_2_MF="\\frac{k_2}{(T_2s+1)(T_3s+1)}";
-const GRAPH_2_FORMULA="k_2/(T_2s+1)*1/(T_3s+1)";
-
-const GRAPH_3_NAME="Two complex poles";
-const GRAPH_3_MF="\\frac{k_3w^2}{s^2+2zws+w^2}";
-const GRAPH_3_FORMULA="k_3*w^2/(s^2+2*z*w*s+w^2)";
-
-const GRAPH_4_NAME="Time delay";
-const GRAPH_4_MF="\\frac{3}{s+1}e^{-Ls}";
-const GRAPH_4_FORMULA="3/(s+1)*e^(-L*s)";
+const GRAPH_ONE_REAL_POLE = {name:"One real pole", mf:"\\frac{k_1}{T_1s+1}", formula:"k_1/(T_1*s+1)"};
+const GRAPH_TWO_REAL_POLES = {name:"Two real poles", mf:"\\frac{k_2}{(T_2s+1)(T_3s+1)}", formula:"k_2/(T_2s+1)*1/(T_3s+1)"};
+const GRAPH_TWO_COMPLEX_POLES = {name:"Two complex poles", mf:"\\frac{k_3w^2}{s^2+2zws+w^2}", formula:"k_3*w^2/(s^2+2*z*w*s+w^2)"};
+const GRAPH_TIME_DELAY = {name:"Time delay", mf:"\\frac{3}{s+1}e^{-Ls}", formula:"3/(s+1)*e^(-L*s)"};
 
 // Bad, because the Nyquist diagram gets very wide:
 //  addNewGraph(null, mathfield_string="\\frac{4}{s^2+1}", equation_string="4/(s^2+1)","Oscillator");
@@ -333,7 +321,11 @@ function removeSlider(event){
 
 
 //function addNewGraph(event, mathfield_string="\\frac{1}{s+1}", equation_string="1/(s+1)", graph_name=""){
-function addNewGraph(event, mathfield_string="\\frac{0.9s+1}{(s+1)^2}\\frac{v^2}{s^2+2qvs+v^2}", equation_string="(0.9s+1)/((s+1)^2)*(v^2)/(s^2+2*q*v*s+v^2)", graph_name=""){
+function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\frac{v^2}{s^2+2qvs+v^2}", formula:"(0.9s+1)/((s+1)^2)*(v^2)/(s^2+2*q*v*s+v^2)"}){
+  let graph_name = graph_to_add.name;
+  let mathfield_string = graph_to_add.mf;
+  let equation_string = graph_to_add.formula;
+
   var new_equation_wrapper = document.createElement('div');
   new_equation_wrapper.classList.add('equation-wrapper');
   id_bank += 1;
@@ -1169,10 +1161,10 @@ function setup(){
   }
 
   id_bank = 0;
-  addNewGraph(null, mathfield_string=GRAPH_1_MF, equation_string=GRAPH_1_FORMULA, GRAPH_1_NAME);
-  addNewGraph(null, mathfield_string=GRAPH_2_MF, equation_string=GRAPH_2_FORMULA, GRAPH_2_NAME);
-  addNewGraph(null, mathfield_string=GRAPH_3_MF, equation_string=GRAPH_3_FORMULA, GRAPH_3_NAME);
-  addNewGraph(null, mathfield_string=GRAPH_4_MF, equation_string=GRAPH_4_FORMULA, GRAPH_4_NAME);
+  addNewGraph(null, GRAPH_ONE_REAL_POLE);
+  addNewGraph(null, GRAPH_TWO_REAL_POLES);
+  addNewGraph(null, GRAPH_TWO_COMPLEX_POLES);
+  addNewGraph(null, GRAPH_TIME_DELAY);
   noLoop();
 }
 
