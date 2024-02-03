@@ -320,7 +320,6 @@ function removeSlider(event){
 }
 
 
-//function addNewGraph(event, mathfield_string="\\frac{1}{s+1}", equation_string="1/(s+1)", graph_name=""){
 function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\frac{v^2}{s^2+2qvs+v^2}", formula:"(0.9s+1)/((s+1)^2)*(v^2)/(s^2+2*q*v*s+v^2)"}){
   let graph_name = graph_to_add.name;
   let mathfield_string = graph_to_add.mf;
@@ -336,15 +335,26 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   <div class="equation">
     <input type="checkbox" class="show-graph" style="background: hsl(${linked_color},100%,50%)">
     <math-field `
-  if (id_bank <= 4){
+  // These are the GRAPHS that should be not changeable. "read only":
+  if ((equation_string == GRAPH_ONE_REAL_POLE.formula) ||
+      (equation_string == GRAPH_TWO_REAL_POLES.formula) ||
+      (equation_string == GRAPH_TWO_COMPLEX_POLES.formula) ||
+      (equation_string == GRAPH_TIME_DELAY.formula)){
     s += "read-only ";
   }
   s += `class="formula" id="${id_bank}" style="`
-  if (id_bank <= 4){ // Make sure that hover doesn't make read-only graphs yellow:
+  // These are the GRAPHS that should be not changeable. "read only":
+  if ((equation_string == GRAPH_ONE_REAL_POLE.formula) ||
+      (equation_string == GRAPH_TWO_REAL_POLES.formula) ||
+      (equation_string == GRAPH_TWO_COMPLEX_POLES.formula) ||
+      (equation_string == GRAPH_TIME_DELAY.formula)){ // Make sure that hover doesn't make read-only graphs yellow:
     s += "background:#fff;";
   }
   s += `font-size: 20px;">${mathfield_string}</math-field>`;
-  if (id_bank <= 3){
+  // These are the GRAPHS that should have download code buttons:
+  if ((equation_string == GRAPH_ONE_REAL_POLE.formula) ||
+      (equation_string == GRAPH_TWO_REAL_POLES.formula) ||
+      (equation_string == GRAPH_TWO_COMPLEX_POLES.formula)){
     s += `<button type="button" class="download-script" id="${id_bank}" onclick="download_script(${id_bank})"><i class="material-icons" style="font-size:28px;color:#b0b0b0">ios_share</i></button>`;
   }
   s += `<button type="button" class="delete-graph"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>
@@ -397,13 +407,9 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
     }
   }
 
-
-
   addNewInformationTab(id_bank, graph_name);
 //  bode_graphs[bode_graphs.length-1].get_complex_p5();
   updateFormulaAndDraw(document.getElementById(id_bank.toString()));
-
-
 
   redraw_canvas_gain(id_bank);
   //redraw();
@@ -575,18 +581,17 @@ function update_programming_language(id){
 }
 
 function get_python_script(id){
-  //console.log("Generating Python code for Graph #" + id);
   let python_string = "";
-  if (id==1){
+  if (bode_graphs[id-1].bode_formula == GRAPH_ONE_REAL_POLE.formula){
     let k_1 = range_slider_variables[variable_position["k_1"]];
     let T_1 = range_slider_variables[variable_position["T_1"]];
     python_string = "k_1 = " + k_1 + "\nT_1 = " + T_1 + "\n" + "num = [k_1]\nden = [T_1, 1]";
-  } else if (id==2){
+  } else if (bode_graphs[id-1].bode_formula == GRAPH_TWO_REAL_POLES.formula){
     let k_2 = range_slider_variables[variable_position["k_2"]];
     let T_2 = range_slider_variables[variable_position["T_2"]];
     let T_3 = range_slider_variables[variable_position["T_3"]];
     python_string = "k_2 = " + k_2 + "\nT_2 = " + T_2 + "\n" + "T_3 = " + T_3 + "\n" + "num = [k_2]\nden = [T_2*T_3, T_2+T_3, 1]";
-  } else if (id==3){
+  } else if (bode_graphs[id-1].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
     let k_3 = range_slider_variables[variable_position["k_3"]];
     let w = range_slider_variables[variable_position["w"]];
     let z = range_slider_variables[variable_position["z"]];
@@ -665,7 +670,27 @@ plt.show(block=False)
   return html;
 }
 
+
 function get_julia_script(id){
+  let julia_string = "";
+  if (bode_graphs[id-1].bode_formula == GRAPH_ONE_REAL_POLE.formula){
+    let k_1 = range_slider_variables[variable_position["k_1"]];
+    let T_1 = range_slider_variables[variable_position["T_1"]];
+    julia_string = "k_1 = " + k_1 + "\nT_1 = " + T_1 + "\n" + "num = [k_1]\nden = [T_1, 1]";
+  } else if (bode_graphs[id-1].bode_formula == GRAPH_TWO_REAL_POLES.formula){
+    let k_2 = range_slider_variables[variable_position["k_2"]];
+    let T_2 = range_slider_variables[variable_position["T_2"]];
+    let T_3 = range_slider_variables[variable_position["T_3"]];
+    julia_string = "k_2 = " + k_2 + "\nT_2 = " + T_2 + "\n" + "T_3 = " + T_3 + "\n" + "num = [k_2]\nden = [T_2*T_3, T_2+T_3, 1]";
+  } else if (bode_graphs[id-1].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
+    let k_3 = range_slider_variables[variable_position["k_3"]];
+    let w = range_slider_variables[variable_position["w"]];
+    let z = range_slider_variables[variable_position["z"]];
+    julia_string = "k_3 = " + k_3 + "\nw = " + w + "\n" + "z = " + z + "\n" + "num = [k_3*w*w]\nden = [1, 2*z*w, w*w]";
+  } else {
+    return "";
+  }
+
   var html=`* Julia version for ${id}:
 # Make sure you have the required Julia packages installed. You can install them using:
 # import Pkg
@@ -677,6 +702,7 @@ using Plots
 plotly()  # or use another plot backend
 plotlyjs()  # For Jupyter notebooks
 # Define poles and zeroes
+${julia_string}
 poles = [-65.0 - 25.5im, -65.0 + 25.5im]
 zeroes = []
 # Create transfer function
@@ -708,18 +734,17 @@ plot(time_discrete, response_discrete, title="Discrete-Time Step Response", xlab
 
 
 function get_matlab_script(id){
-//  var html=`* Matlab for plotting ${id}:
   let matlab_string = "";
-  if (id==1){
+  if (bode_graphs[id-1].bode_formula == GRAPH_ONE_REAL_POLE.formula){
     let k_1 = range_slider_variables[variable_position["k_1"]];
     let T_1 = range_slider_variables[variable_position["T_1"]];
     matlab_string = "k_1 = " + k_1 + ";\nT_1 = " + T_1 + ";\nnum = [k_1];\nden = [T_1, 1];";
-  } else if (id==2){
+  } else if (bode_graphs[id-1].bode_formula == GRAPH_TWO_REAL_POLES.formula){
     let k_2 = range_slider_variables[variable_position["k_2"]];
     let T_2 = range_slider_variables[variable_position["T_2"]];
     let T_3 = range_slider_variables[variable_position["T_3"]];
     matlab_string = "k_2 = " + k_2 + ";\nT_2 = " + T_2 + ";\nT_3 = " + T_3 + ";\nnum = [k_2];\nden = [T_2*T_3, T_2+T_3, 1];";
-  } else if (id==3){
+  } else if (bode_graphs[id-1].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
     let k_3 = range_slider_variables[variable_position["k_3"]];
     let w = range_slider_variables[variable_position["w"]];
     let z = range_slider_variables[variable_position["z"]];
