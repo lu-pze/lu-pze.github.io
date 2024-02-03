@@ -2,6 +2,9 @@
 // LU-PZE: Lund University Pole-Zero Explorer
 // - an Automatic Control theory playground
 //
+// Tryout a live version at https://lu-pze.github.io
+// Source code at https://github.com/lu-pze/lu-pze.github.io
+//
 // MIT License
 // 
 // Copyright (c) 2024 lu-pze
@@ -110,7 +113,7 @@ var current_info_tab_id = 1;
 var current_tab = 0;
 
 function getGraphById(input_id){
-  for(i = 0;i < bode_graphs.length;i++){
+  for(i=0; i<bode_graphs.length; i++){
     var current_graph = bode_graphs[i];
     if(current_graph.bode_id == input_id){
       return current_graph;
@@ -147,7 +150,6 @@ function createSliderButton(equation_id,letter_id){
   slider_button.id = "BTNS_" + equation_id.toString() + "_" + letter_id.toString();
   slider_button.setAttribute("style","margin: 0 0 5px 10px");
   slider_button.addEventListener('click',createRangeSlider);
-
   var button_wrapper = document.getElementById(equation_id).parentElement.parentElement.getElementsByClassName("slider-buttons")[0];
   button_wrapper.append(slider_button);
 }
@@ -221,11 +223,8 @@ function createRangeSlider(event){
 //  var delete_button = slider.getElementsByClassName("delete-graph")[0];
 //  delete_button.addEventListener('click',removeSlider);
 
-  // Printing variable names using text only:
-//  slider.getElementsByTagName("span")[0].innerHTML = range_slider_alphabet[button_id] + " =";
   // Printing variable names using mathlive:
   slider.getElementsByTagName("span")[0].innerHTML = "<math-field read-only style='vertical-align:bottom;display:inline-block'>" + range_slider_alphabet[button_id] + " =</math-field>";
-  //slider.getElementsByTagName("span")[0].innerHTML = "<math-field read-only>" + range_slider_alphabet[button_id] + " =</math-field>";
 
   var linked_letter = range_slider_alphabet[button_id];
   var range_slider = slider.getElementsByClassName("range-slider")[0];
@@ -258,19 +257,11 @@ function createRangeSlider(event){
   }
   range_slider_variables[button_id] = range_value; // Initial value of variable
 
-//  try{
-//    // If adding two variables at the same time, this function will fail:
-//    redraw_canvas_gain("all");
-//    // ...but it will succeed when adding the second variable.
-//  } catch {}
-
   var slider_bounds = slider.getElementsByClassName("slider-bound");
-
   var slider_min = slider_bounds[0];
   slider_min.oninput = function(){
     range_slider.min = +slider_min.value;
   }
-
   var slider_max = slider_bounds[1];
   slider_max.oninput = function(){
     range_slider.max = +slider_max.value;
@@ -290,9 +281,6 @@ function createRangeSlider(event){
     redraw_canvas_gain("all");
   }
 
-//  console.log("button=");
-//  console.log(typeof(button));
-//  console.log(button);
   var equations_div = document.getElementsByClassName("equations")[0];
   equations_div.append(slider);
   try{
@@ -402,18 +390,14 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
           createRangeSlider(event);
         }
       }
-
-
     }
   }
-
   addNewInformationTab(id_bank, graph_name);
 //  bode_graphs[bode_graphs.length-1].get_complex_p5();
   updateFormulaAndDraw(document.getElementById(id_bank.toString()));
-
   redraw_canvas_gain(id_bank);
-  //redraw();
 }
+
 
 function addNewInformationTab(input_id, graph_name){
   var tabs_wrapper = document.getElementsByClassName("graph-information-tabs")[0];
@@ -456,9 +440,11 @@ function removeGraph(event){
   var linked_equation = clicked_button.parentElement.parentElement;
   var linked_id = linked_equation.getElementsByClassName("formula")[0].id;
   removeInformationTab(+linked_id);
+  let equation_to_remove = "";
   for(i = 0; i<bode_graphs.length;i++){
     var current_graph = bode_graphs[i];
     if(current_graph.bode_id == parseInt(linked_id)){
+      equation_to_remove = current_graph.bode_formula;
       bode_graphs.splice(bode_graphs.indexOf(current_graph),1);
       redraw();
     }
@@ -467,13 +453,13 @@ function removeGraph(event){
 
   //Now also remove any variables that belongs to this equation:
   let variables_to_delete = [];
-  if (linked_id == 1){
+  if (equation_to_remove == GRAPH_ONE_REAL_POLE.formula){
     variables_to_delete = ["k_1","T_1"];
-  } else if (linked_id == 2){
+  } else if (equation_to_remove == GRAPH_TWO_REAL_POLES.formula){
     variables_to_delete = ["k_2","T_2","T_3"];
-  } else if (linked_id == 3){
+  } else if (equation_to_remove == GRAPH_TWO_COMPLEX_POLES.formula){
     variables_to_delete = ["k_3","w","z"];
-  } else if (linked_id == 4){
+  } else if (equation_to_remove == GRAPH_TIME_DELAY.formula){
     variables_to_delete = ["L"];
   }
   for (let i = 0; i<variables_to_delete.length; i++){
@@ -581,17 +567,23 @@ function update_programming_language(id){
 }
 
 function get_python_script(id){
+  let current_graph;
+  for(i = 0; i<bode_graphs.length;i++){
+    if(bode_graphs[i].bode_id == id){
+      current_graph = bode_graphs[i];
+    }
+  }
   let python_string = "";
-  if (bode_graphs[id-1].bode_formula == GRAPH_ONE_REAL_POLE.formula){
+  if (current_graph.bode_formula == GRAPH_ONE_REAL_POLE.formula){
     let k_1 = range_slider_variables[variable_position["k_1"]];
     let T_1 = range_slider_variables[variable_position["T_1"]];
     python_string = "k_1 = " + k_1 + "\nT_1 = " + T_1 + "\n" + "num = [k_1]\nden = [T_1, 1]";
-  } else if (bode_graphs[id-1].bode_formula == GRAPH_TWO_REAL_POLES.formula){
+  } else if (current_graph.bode_formula == GRAPH_TWO_REAL_POLES.formula){
     let k_2 = range_slider_variables[variable_position["k_2"]];
     let T_2 = range_slider_variables[variable_position["T_2"]];
     let T_3 = range_slider_variables[variable_position["T_3"]];
     python_string = "k_2 = " + k_2 + "\nT_2 = " + T_2 + "\n" + "T_3 = " + T_3 + "\n" + "num = [k_2]\nden = [T_2*T_3, T_2+T_3, 1]";
-  } else if (bode_graphs[id-1].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
+  } else if (current_graph.bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
     let k_3 = range_slider_variables[variable_position["k_3"]];
     let w = range_slider_variables[variable_position["w"]];
     let z = range_slider_variables[variable_position["z"]];
@@ -672,17 +664,23 @@ plt.show(block=False)
 
 
 function get_julia_script(id){
+  let current_graph;
+  for(i = 0; i<bode_graphs.length;i++){
+    if(bode_graphs[i].bode_id == id){
+      current_graph = bode_graphs[i];
+    }
+  }
   let julia_string = "";
-  if (bode_graphs[id-1].bode_formula == GRAPH_ONE_REAL_POLE.formula){
+  if (current_graph.bode_formula == GRAPH_ONE_REAL_POLE.formula){
     let k_1 = range_slider_variables[variable_position["k_1"]];
     let T_1 = range_slider_variables[variable_position["T_1"]];
     julia_string = "k_1 = " + k_1 + "\nT_1 = " + T_1 + "\n" + "num = [k_1]\nden = [T_1, 1]";
-  } else if (bode_graphs[id-1].bode_formula == GRAPH_TWO_REAL_POLES.formula){
+  } else if (current_graph.bode_formula == GRAPH_TWO_REAL_POLES.formula){
     let k_2 = range_slider_variables[variable_position["k_2"]];
     let T_2 = range_slider_variables[variable_position["T_2"]];
     let T_3 = range_slider_variables[variable_position["T_3"]];
     julia_string = "k_2 = " + k_2 + "\nT_2 = " + T_2 + "\n" + "T_3 = " + T_3 + "\n" + "num = [k_2]\nden = [T_2*T_3, T_2+T_3, 1]";
-  } else if (bode_graphs[id-1].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
+  } else if (current_graph.bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
     let k_3 = range_slider_variables[variable_position["k_3"]];
     let w = range_slider_variables[variable_position["w"]];
     let z = range_slider_variables[variable_position["z"]];
@@ -734,17 +732,23 @@ plot(time_discrete, response_discrete, title="Discrete-Time Step Response", xlab
 
 
 function get_matlab_script(id){
+  let current_graph;
+  for(i = 0; i<bode_graphs.length;i++){
+    if(bode_graphs[i].bode_id == id){
+      current_graph = bode_graphs[i];
+    }
+  }
   let matlab_string = "";
-  if (bode_graphs[id-1].bode_formula == GRAPH_ONE_REAL_POLE.formula){
+  if (current_graph.bode_formula == GRAPH_ONE_REAL_POLE.formula){
     let k_1 = range_slider_variables[variable_position["k_1"]];
     let T_1 = range_slider_variables[variable_position["T_1"]];
     matlab_string = "k_1 = " + k_1 + ";\nT_1 = " + T_1 + ";\nnum = [k_1];\nden = [T_1, 1];";
-  } else if (bode_graphs[id-1].bode_formula == GRAPH_TWO_REAL_POLES.formula){
+  } else if (current_graph.bode_formula == GRAPH_TWO_REAL_POLES.formula){
     let k_2 = range_slider_variables[variable_position["k_2"]];
     let T_2 = range_slider_variables[variable_position["T_2"]];
     let T_3 = range_slider_variables[variable_position["T_3"]];
     matlab_string = "k_2 = " + k_2 + ";\nT_2 = " + T_2 + ";\nT_3 = " + T_3 + ";\nnum = [k_2];\nden = [T_2*T_3, T_2+T_3, 1];";
-  } else if (bode_graphs[id-1].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
+  } else if (current_graph.bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
     let k_3 = range_slider_variables[variable_position["k_3"]];
     let w = range_slider_variables[variable_position["w"]];
     let z = range_slider_variables[variable_position["z"]];
@@ -859,9 +863,7 @@ function changeColorMode(event){
 }
 
 function updateToolbox(){
-
     var math_preferences = document.getElementsByClassName("math-preferences")[0];
-
     math_preferences.innerHTML =
     `
     <span style="font-weight:500;color:#777777;visibility:hidden">Bode plot preferences:</span>
@@ -1102,7 +1104,7 @@ function updateGraphInformation(){
   var gain = sub_information[0].getElementsByClassName("value")[2];
   var phase_cross = sub_information[0].getElementsByClassName("value")[3];
   var settling_time = sub_information[0].getElementsByClassName("value")[4];
-  for(h = 0; h < inputs.length; h++){
+  for(h=0; h<inputs.length; h++){
     if(inputs[h].checked){
       var input_id = +inputs[h].id.split("_")[1];
       var current_graph;
@@ -1170,6 +1172,7 @@ function setGraphDimensions(){
   graph_pole_zero_y = 10;
 }
 
+
 function setup(){
   setGraphDimensions();
   var canvas = createCanvas(canvas_width,canvas_height);
@@ -1186,12 +1189,14 @@ function setup(){
   }
 
   id_bank = 0;
+  // Add the initial startup graphs:
   addNewGraph(null, GRAPH_ONE_REAL_POLE);
   addNewGraph(null, GRAPH_TWO_REAL_POLES);
   addNewGraph(null, GRAPH_TWO_COMPLEX_POLES);
   addNewGraph(null, GRAPH_TIME_DELAY);
   noLoop();
 }
+
 
 function draw(){
   background(background_color);
@@ -1224,7 +1229,6 @@ function draw(){
   translate(graph_pole_zero_x,graph_pole_zero_y);
   draw_pole_zeros();
   pop();
-
 }
 
 //Toolbox
@@ -1329,7 +1333,7 @@ function draw_bode_responses(type){
     textAlign(RIGHT);
     textSize(15);
 
-    for(y = 0; y <= phase_case_number; y++){
+    for(y=0; y<=phase_case_number; y++){
       stroke(line_color);
       strokeWeight(1);
       var pas = graph_bode_phase_height*y/phase_case_number;
@@ -1340,23 +1344,18 @@ function draw_bode_responses(type){
       text(value,-7,pas+5);
     }
 
-    for(i = 0;i < bode_graphs.length;i++){
+    for(i=0; i<bode_graphs.length; i++){
       if(bode_graphs[i].bode_displaybool){
         bode_graphs[i].draw_phase();
       }
     }
-
-
-
-
-
 
     // Draw X for T_1, T_2, T_3 and w:
     let rad_phase_lower_bound = phase_lower_bound*PI/180;
     let rad_phase_upper_bound = phase_upper_bound*PI/180;
     for (var i=0; i<bode_graphs.length; i++){
       if(bode_graphs[i].bode_displaybool){
-        if (bode_graphs[i].bode_id == 1){
+        if(bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
           // Draw T_1:
           try{ // The graph may be deleted, so this might fail:
             var T_1 = range_slider_variables[variable_position["T_1"]];
@@ -1370,7 +1369,7 @@ function draw_bode_responses(type){
               draw_X(screen_x,screen_y);
             }
           } catch {}
-        } else if (bode_graphs[i].bode_id == 2){
+        } else if(bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
           // Draw T_2 and T_3:
           try{ // The graph may be deleted, so this might fail:
             var T_2 = range_slider_variables[variable_position["T_2"]];
@@ -1396,7 +1395,7 @@ function draw_bode_responses(type){
               draw_X(screen_x,screen_y);
             }
           } catch {}
-        } else if (bode_graphs[i].bode_id == 3){
+        } else if(bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
           // Draw w:
           try{ // The graph may be deleted, so this might fail:
             var w = range_slider_variables[variable_position["w"]];
@@ -1444,19 +1443,6 @@ function draw_bode_responses(type){
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   } else if(type == "gain"){
     textAlign(CENTER);
     noStroke();
@@ -1500,7 +1486,7 @@ function draw_bode_responses(type){
     // Draw X for T_1, T_2, T_3 and w:
     for (var i=0; i<bode_graphs.length; i++){
       if(bode_graphs[i].bode_displaybool){
-        if (bode_graphs[i].bode_id == 1){
+        if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
           // Draw T_1:
           try{ // The graph may be deleted, so this might fail:
             var T_1 = range_slider_variables[variable_position["T_1"]];
@@ -1515,11 +1501,9 @@ function draw_bode_responses(type){
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
               draw_X(screen_x,screen_y);
-  //            strokeWeight(1);
-  //            line(screen_x,0,screen_x,graph_bode_mag_height);
             }
           } catch {}
-        } else if (bode_graphs[i].bode_id == 2){
+        } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
           // Draw T_2 and T_3:
           try{ // The graph may be deleted, so this might fail:
             var T_2 = range_slider_variables[variable_position["T_2"]];
@@ -1534,8 +1518,6 @@ function draw_bode_responses(type){
               strokeWeight(3);
               draw_X(screen_x,screen_y);
               stroke(bode_graphs[i].bode_hue,240,360);
-  //            strokeWeight(1);
-  //            line(screen_x,0,screen_x,graph_bode_mag_height);
             }
             var T_3 = range_slider_variables[variable_position["T_3"]];
             if (T_3 >= 0){
@@ -1548,11 +1530,9 @@ function draw_bode_responses(type){
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
               draw_X(screen_x,screen_y);
-  //            strokeWeight(1);
-  //            line(screen_x,0,screen_x,graph_bode_mag_height);
             }
           } catch {}
-        } else if (bode_graphs[i].bode_id == 3){
+        } else if (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
           // Draw w:
           try{ // The graph may be deleted, so this might fail:
             var w = range_slider_variables[variable_position["w"]];
@@ -1649,25 +1629,25 @@ function draw_time_responses(){
   // Draw "final value":
   for (var i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_displaybool){
-      if (bode_graphs[i].bode_id == 1){
+      if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
         var k_1 = range_slider_variables[variable_position["k_1"]];
         var screen_y = map(k_1,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
         stroke(bode_graphs[i].bode_hue,240,360);
         strokeWeight(0.5);
         line(0,screen_y,graph_step_response_width,screen_y);
-      } else if (bode_graphs[i].bode_id == 2){
+      } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
         var k_2 = range_slider_variables[variable_position["k_2"]];
         var screen_y = map(k_2,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
         stroke(bode_graphs[i].bode_hue,240,360);
         strokeWeight(0.5);
         line(0,screen_y,graph_step_response_width,screen_y);
-      } else if (bode_graphs[i].bode_id == 3){
+      } else if (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
         var k_3 = range_slider_variables[variable_position["k_3"]];
         var screen_y = map(k_3,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
         stroke(bode_graphs[i].bode_hue,240,360);
         strokeWeight(0.5);
         line(0,screen_y,graph_step_response_width,screen_y);
-      } else if (bode_graphs[i].bode_id == 4){
+      } else if (bode_graphs[i].bode_formula == GRAPH_TIME_DELAY.formula){
         var k_4 = 3;
         var screen_y = map(k_4,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
         stroke(bode_graphs[i].bode_hue,240,360);
@@ -1678,12 +1658,9 @@ function draw_time_responses(){
   }
 
 
-
-
-
   for (var i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_displaybool){
-      if (bode_graphs[i].bode_id == 1){
+      if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
         // Draw T_1:
         try{ // The graph may be deleted, so this might fail:
           var T_1 = range_slider_variables[variable_position["T_1"]];
@@ -1696,11 +1673,9 @@ function draw_time_responses(){
             stroke(bode_graphs[i].bode_hue,240,360);
             strokeWeight(3);
             draw_X(screen_x,screen_y);
-        //    strokeWeight(1);
-        //    line(screen_x,0,screen_x,graph_step_response_height);
           }
         } catch {}
-      } else if (bode_graphs[i].bode_id == 2){
+      } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
         // Draw T_2:
         try{ // The graph may be deleted, so this might fail:
           var T_2 = range_slider_variables[variable_position["T_2"]];
@@ -1757,7 +1732,6 @@ function draw_nyquist_responses(){
         if(current_graph.bode_min_nyquist_x < min_nyquist_x){
           min_nyquist_x = current_graph.bode_min_nyquist_x;
         }
-
         if(current_graph.bode_max_nyquist_y > max_nyquist_y){
           max_nyquist_y = current_graph.bode_max_nyquist_y;
         }
@@ -1785,8 +1759,6 @@ function draw_nyquist_responses(){
       max_nyquist_y = center_y + mag_y/2 / correction_factor;
       min_nyquist_y = center_y - mag_y/2 / correction_factor;
     }
-
-
   }
 
   textAlign(CENTER);
@@ -1796,7 +1768,7 @@ function draw_nyquist_responses(){
   text("Nyquist diagram",graph_nyquist_width/2,-5);
   text("Real axis",graph_nyquist_width/2,graph_nyquist_height+45);
 
-//  text("im",-60,graph_nyquist_height/2 + 4);
+  // text("im",-60,graph_nyquist_height/2 + 4);
   push();
   translate(-55,graph_nyquist_height/2 + 4);
   rotate(-PI/2);
@@ -1830,29 +1802,29 @@ function draw_nyquist_responses(){
   }
 }
 
-var pole_zero_graph_x = []
-var pole_zero_graph_y = []
+var pole_zero_graph_x = [];
+var pole_zero_graph_y = [];
 
 function draw_pole_zeros(){
   pole_zero_width = graph_pole_zero_width;
   pole_zero_height = pole_zero_width;
-//  strokeWeight(2);
-//  var blob_color = color('hsb(30, 30%, 15%)');
-//  fill(blob_color,360,360);
-//  ellipse(graph_pole_zero_width/2, graph_pole_zero_height/2, graph_pole_zero_width, graph_pole_zero_height);
-  // Only draw pole zeros for startup graphs:
+  // Draw pole zeros for these graphs:
   for(i=0; i<bode_graphs.length; i++){
-    if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_id<=3)){
-      pole_zero_graph_x[i] = graph_pole_zero_x;
-      pole_zero_graph_y[i] = 30 + (pole_zero_height + 10) * i;
-      push();
-      translate(0,pole_zero_graph_y[i]);
-      var draw_axis = false;
-      if (i == bode_graphs.length-2){
-        draw_axis=true;
+    if(bode_graphs[i].bode_displaybool){
+      if((bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula)||
+         (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)||
+         (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)){
+        pole_zero_graph_x[i] = graph_pole_zero_x;
+        pole_zero_graph_y[i] = 30 + (pole_zero_height + 10) * i;
+        push();
+        translate(0,pole_zero_graph_y[i]);
+        var draw_axis = false;
+        if (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
+          draw_axis=true;
+        }
+        bode_graphs[i].draw_pole_zero(draw_axis);
+        pop();
       }
-      bode_graphs[i].draw_pole_zero(draw_axis);
-      pop();
     }
   }
   push();
@@ -2880,7 +2852,7 @@ class bode_graph{
     // k_2/(T_2s+1)*1/(T_3s+1)
     // k_3*w^2/(s^2+2*z*w*s+w^2)
     // 3/(s+1)*e^(-L*s)
-    if (this.bode_formula == "k_1/(T_1*s+1)"){
+    if (this.bode_formula == GRAPH_ONE_REAL_POLE.formula){ //  "k_1/(T_1*s+1)"
       let k_1 = range_slider_variables[variable_position["k_1"]];
       let T_1 = range_slider_variables[variable_position["T_1"]];
       if (input_formula=="1/s"){       // Unit Step response
@@ -2923,7 +2895,7 @@ class bode_graph{
           }
         }
       }
-    } else if (this.bode_formula == "k_2/(T_2s+1)*1/(T_3s+1)"){
+    } else if (this.bode_formula == GRAPH_TWO_REAL_POLES.formula){ // "k_2/(T_2s+1)*1/(T_3s+1)"
       let k_2 = range_slider_variables[variable_position["k_2"]];
       let T_2 = range_slider_variables[variable_position["T_2"]];
       let T_3 = range_slider_variables[variable_position["T_3"]];
@@ -2974,7 +2946,7 @@ class bode_graph{
           }
         }
       }
-    } else if (this.bode_formula == "k_3*w^2/(s^2+2*z*w*s+w^2)"){
+    } else if (this.bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){ // "k_3*w^2/(s^2+2*z*w*s+w^2)"
       let k_3 = range_slider_variables[variable_position["k_3"]];
       let z = range_slider_variables[variable_position["z"]];
       let w = range_slider_variables[variable_position["w"]];
@@ -3045,8 +3017,6 @@ class bode_graph{
 */
       }
     }
-
-
 
 
     if (have_a_solution == false){
@@ -3173,14 +3143,14 @@ class bode_graph{
 
     // Draw a red X for T_1 in the Nyquist diagram:
     if(this.bode_displaybool){
-      if(this.bode_id==1){
+      if(this.bode_formula == GRAPH_ONE_REAL_POLE.formula){
         // Draw a red X for T_1 in the Nyquist diagram:
         var T_1 = range_slider_variables[variable_position["T_1"]];
         if (T_1 != 0){
           var frequency = 1 / T_1;
           bode_graphs[i].draw_nyquist_X(frequency);
         }
-      } else if(this.bode_id==2){
+      } else if(this.bode_formula == GRAPH_TWO_REAL_POLES.formula){
         // Draw a X for T_2 in the Nyquist diagram:
         var T_2 = range_slider_variables[variable_position["T_2"]];
         if (T_2 != 0){
@@ -3193,7 +3163,7 @@ class bode_graph{
           var frequency = 1 / T_3;
           bode_graphs[i].draw_nyquist_X(frequency);
         }
-      } else if(this.bode_id==3){
+      } else if(this.bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
         // Draw a X for w in the Nyquist diagram:
         var w = range_slider_variables[variable_position["w"]];
         if (w != 0){
@@ -3306,12 +3276,12 @@ class bode_graph{
 
 
     var pole_x = -1.0;
-    if (this.bode_id == 1){
+    if (this.bode_formula == GRAPH_ONE_REAL_POLE.formula){
       //pole_x = range_slider_variables[0];
       var T_1inv = 1/range_slider_variables[variable_position["T_1"]];
       if (T_1inv > 3.2) T_1inv=3.2;
       this.plot_pole(-T_1inv,0); // Should be T_1
-    } else if (this.bode_id == 2){
+    } else if (this.bode_formula == GRAPH_TWO_REAL_POLES.formula){
       //pole_x = range_slider_variables[0];
       var T_2inv = 1/range_slider_variables[variable_position["T_2"]];
       if (T_2inv > 3.2) T_2inv=3.2;
@@ -3319,7 +3289,7 @@ class bode_graph{
       var T_3inv = 1/range_slider_variables[variable_position["T_3"]];
       if (T_3inv > 3.2) T_3inv=3.2;
       this.plot_pole(-T_3inv,0); // Should be T_3
-    } else if (this.bode_id == 3){
+    } else if (this.bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
       // Calculate bode_3_real and imaginary from z and w:
       // s = −ζω_n ± jω_n * sqrt(1−ζ^2)
       var z = range_slider_variables[variable_position["z"]];
@@ -3351,15 +3321,11 @@ class bode_graph{
         this.plot_pole(tmp_x,0); // complex
       }
 
-
 // Skipping graph 4 "Time delay", since nothing is movable:
-//    } else if (this.bode_id == 4){
+//    } else if (this.bode_formula == GRAPH_TIME_DELAY.formula){
 //      //pole_x = range_slider_variables[0];
 //      this.plot_pole(-1.0,0);
     }
-
-
-
 
     noStroke();
     textSize(15);
@@ -3367,7 +3333,6 @@ class bode_graph{
     var grey_color = color('hsb(0, 0%, 50%)');
     fill(grey_color,360,360);
     text(bode_graphs[i].graph_name,graph_pole_zero_width/2,pole_zero_height-7);
-
   }
 
   plot_pole(pole_x,pole_y){
@@ -3376,7 +3341,6 @@ class bode_graph{
     line(screen_x-6,screen_y-6,screen_x+6,screen_y+6);
     line(screen_x+6,screen_y-6,screen_x-6,screen_y+6);
   }
-
 }
 
 
@@ -3510,7 +3474,6 @@ function fivePercentTimeResponse(input_array){
     return values[values.length-1];
   }
 }
-
 
 
 /* Get the documentElement (<html>) to display the page in fullscreen */
