@@ -31,6 +31,30 @@ if (document.readyState == 'loading') {
 }
 
 
+const GRAPH_1_NAME="One real pole";
+const GRAPH_1_MF="\\frac{k_1}{T_1s+1}";
+const GRAPH_1_FORMULA="k_1/(T_1*s+1)";
+
+const GRAPH_2_NAME="Two real poles";
+const GRAPH_2_MF="\\frac{k_2}{(T_2s+1)(T_3s+1)}";
+const GRAPH_2_FORMULA="k_2/(T_2s+1)*1/(T_3s+1)";
+
+const GRAPH_3_NAME="Two complex poles";
+const GRAPH_3_MF="\\frac{k_3w^2}{s^2+2zws+w^2}";
+const GRAPH_3_FORMULA="k_3*w^2/(s^2+2*z*w*s+w^2)";
+
+const GRAPH_4_NAME="Time delay";
+const GRAPH_4_MF="\\frac{3}{s+1}e^{-Ls}";
+const GRAPH_4_FORMULA="3/(s+1)*e^(-L*s)";
+
+// Bad, because the Nyquist diagram gets very wide:
+//  addNewGraph(null, mathfield_string="\\frac{4}{s^2+1}", equation_string="4/(s^2+1)","Oscillator");
+//  addNewGraph(null, mathfield_string="\\frac{4(s+1)}{s^2+s+1}", equation_string="4(s+1)/(s^2+s+1)","2poles+1zero");
+//  addNewGraph(null, mathfield_string="\\frac{5(s+1)*6}{s^2+2s+6}", equation_string="5(s+1)*6/(s^2+2s+6)","Complex");
+// Some day, make a pole-zero plot that can handle this case:
+//  addNewGraph(null, mathfield_string="\\frac{0.9s+1}{(s+1)^2}\\frac{w^2}{s^2+2zws+w^2}", equation_string="(0.9s+1)/((s+1)^4)","4 poles + 1 zero");
+
+
 var graph_width = 1200;
 
 var min_10power = -2;
@@ -1144,43 +1168,11 @@ function setup(){
     variable_position[range_slider_alphabet[i]] = i;
   }
 
-//var id_bank = 1;
-//var current_info_tab_id = 1;
-//var current_tab = 0;
-
-//  var first_bode = new bode_graph(1,'1/(s+1)');
-//  bode_graphs.push(first_bode);
-//  bode_graphs[0].get_complex_p5();
-//  bode_graphs[0].get_timevalues_p5();
-
   id_bank = 0;
-// One pole:
-  addNewGraph(null, mathfield_string="\\frac{k_1}{T_1s+1}", equation_string="k_1/(T_1*s+1)","One real pole");
-
-// Two poles:
-//  addNewGraph(null, mathfield_string="\\frac{2}{s+1}*\\frac{1}{0.1*k_3s+1}", equation_string="2/(s+1)*1/(0.1*k_3s+1)","LowPass 2nd");
-  addNewGraph(null, mathfield_string="\\frac{k_2}{(T_2s+1)(T_3s+1)}", equation_string="k_2/(T_2s+1)*1/(T_3s+1)","Two real poles");
-//  addNewGraph(null, mathfield_string="\\frac{2}{T_1*s+1}*\\frac{1}{T_2*s+1}", equation_string="2/(T_1*s+1)*1/(T_2*s+1)","2 real poles");
-
-// Complex poles:
-//  addNewGraph(null, mathfield_string="\\frac{3}{s^2+s+1}", equation_string="3/(s^2+s+1)","2nd");
-  addNewGraph(null, mathfield_string="\\frac{k_3w^2}{s^2+2zws+w^2}", equation_string="k_3*w^2/(s^2+2*z*w*s+w^2)","Two complex poles");
-
-// One pole, with time delay
-  addNewGraph(null, mathfield_string="\\frac{3}{s+1}e^{-Ls}", equation_string="3/(s+1)*e^(-L*s)","Time delay");
-
-
-// Bad, because the Nyquist diagram gets very wide:
-//  addNewGraph(null, mathfield_string="\\frac{4}{s^2+1}", equation_string="4/(s^2+1)","Oscillator");
-//  addNewGraph(null, mathfield_string="\\frac{4(s+1)}{s^2+s+1}", equation_string="4(s+1)/(s^2+s+1)","2poles+1zero");
-//  addNewGraph(null, mathfield_string="\\frac{5(s+1)*6}{s^2+2s+6}", equation_string="5(s+1)*6/(s^2+2s+6)","Complex");
-
-
-// Some day, make a pole-zero plot that can handle this case:
-//  addNewGraph(null, mathfield_string="\\frac{0.9s+1}{(s+1)^2}\\frac{w^2}{s^2+2zws+w^2}", equation_string="(0.9s+1)/((s+1)^4)","4 poles + 1 zero");
-
-
-
+  addNewGraph(null, mathfield_string=GRAPH_1_MF, equation_string=GRAPH_1_FORMULA, GRAPH_1_NAME);
+  addNewGraph(null, mathfield_string=GRAPH_2_MF, equation_string=GRAPH_2_FORMULA, GRAPH_2_NAME);
+  addNewGraph(null, mathfield_string=GRAPH_3_MF, equation_string=GRAPH_3_FORMULA, GRAPH_3_NAME);
+  addNewGraph(null, mathfield_string=GRAPH_4_MF, equation_string=GRAPH_4_FORMULA, GRAPH_4_NAME);
   noLoop();
 }
 
