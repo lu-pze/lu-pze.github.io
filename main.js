@@ -1771,6 +1771,23 @@ function draw_time_responses(){
             draw_X(screen_x,screen_y);
           }
         } catch {}
+
+      } else if (bode_graphs[i].bode_formula == GRAPH_TIME_DELAY.formula){
+        // Draw time delay L:
+        try{ // The graph may be deleted, so this might fail:
+          var L = range_slider_variables[variable_position["L"]];
+          if (L >= 0){
+            // Now we know the x position. Let's find out the y position:
+            let T_1 = 1;
+            var linked_x = round((T_1+L) / 10.0 * graph_step_response_width/precision);
+            var linked_y = bode_graphs[i].bode_timerep_array[linked_x];
+            var screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
+            var screen_x = graph_step_response_width / 10 * (T_1 + L);
+            stroke(bode_graphs[i].bode_hue,240,360);
+            strokeWeight(3);
+            draw_X(screen_x,screen_y);
+          }
+        } catch {}
       }
     }
   }
@@ -2154,6 +2171,16 @@ function mouseDragged(){
       document.getElementById("variable_"+variable_position["z"]).value = z.toFixed(2);
       // Update range slider:
       document.getElementById("RANGE_"+variable_position["z"]).value = z.toFixed(2);
+      redraw_canvas_gain(bode_graphs[i].bode_id);
+    } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_TIME_DELAY.formula){
+      let L = range_slider_variables[variable_position["L"]];
+      L = L + mouseDiffX * 10.0;
+      if (L < 0) L=0;
+      range_slider_variables[variable_position["L"]] = L;
+      // Update range slider value:
+      document.getElementById("variable_"+variable_position["L"]).value = L.toFixed(2);
+      // Update range slider:
+      document.getElementById("RANGE_"+variable_position["L"]).value = L.toFixed(2);
       redraw_canvas_gain(bode_graphs[i].bode_id);
     }
 
