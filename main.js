@@ -208,6 +208,10 @@ function createRangeSlider(event){
     range_value=2.0;
     range_min=0.0;
     range_max=10.0;
+  } else if (variable_name == "T_4"){
+    range_value=1.0;
+    range_min=0.0;
+    range_max=10.0;
   } else if (variable_name == "q"){
     range_min=0.01;
     range_max=1.0;
@@ -1469,6 +1473,20 @@ function draw_bode_responses(type){
               }
             }
           } catch {}
+        } else if(bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula){
+          // Draw T_4:
+          try{ // The graph may be deleted, so this might fail:
+            var T_4 = range_slider_variables[variable_position["T_4"]];
+            if (T_4 >= 0){
+              var frequency = 1 / T_4;
+              var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              var linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+              let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
+              stroke(bode_graphs[i].bode_hue,240,360);
+              strokeWeight(3);
+              draw_X(screen_x,screen_y);
+            }
+          } catch {}
         }
       }
     }
@@ -1607,6 +1625,23 @@ function draw_bode_responses(type){
                 strokeWeight(3);
                 draw_X(screen_x,screen_y);
               }
+            }
+          } catch {}
+        } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula){
+          // Draw T_4:
+          try{ // The graph may be deleted, so this might fail:
+            var T_4 = range_slider_variables[variable_position["T_4"]];
+            if (T_4 >= 0){
+              var frequency = 1 / T_4;
+              // Need to map frequency to pixel:
+  //            console.log("frequency="+frequency);
+              var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+  //            console.log("screen_x="+screen_x);
+              // Now we know the x position. Let's find out the y position:
+              let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+              stroke(bode_graphs[i].bode_hue,240,360);
+              strokeWeight(3);
+              draw_X(screen_x,screen_y);
             }
           } catch {}
         }
@@ -1844,7 +1879,8 @@ function draw_pole_zeros(){
     if(bode_graphs[i].bode_displaybool){
       if((bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula)||
          (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)||
-         (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)){
+         (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)||
+         (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula)){
         pole_zero_graph_x[i] = graph_pole_zero_x;
         pole_zero_graph_y[i] = 30 + (pole_zero_height + 10) * i;
         push();
@@ -2189,7 +2225,19 @@ function mouseDragged(){
       // Update range slider:
       document.getElementById("RANGE_"+variable_position["z"]).value = z.toFixed(2);
       redraw_canvas_gain(bode_graphs[i].bode_id);
+
+    } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_ONE_ZERO.formula){
+      let T_4 = range_slider_variables[variable_position["T_4"]];
+      T_4 = T_4 * (1.0 - mouseDiffX*10.0);
+      if (T_4 < 0) T_4=0;
+      range_slider_variables[variable_position["T_4"]] = T_4;
+      // Update range slider value:
+      document.getElementById("variable_"+variable_position["T_4"]).value = T_4.toFixed(2);
+      // Update range slider:
+      document.getElementById("RANGE_"+variable_position["T_4"]).value = T_4.toFixed(2);
+      redraw_canvas_gain(bode_graphs[i].bode_id);
     }
+
     initial_mouseX = mouseX;
     initial_mouseY = mouseY;
 
@@ -2233,7 +2281,19 @@ function mouseDragged(){
       // Update range slider:
       document.getElementById("RANGE_"+variable_position["w"]).value = w.toFixed(2);
       redraw_canvas_gain(bode_graphs[i].bode_id);
+
+    } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_ONE_ZERO.formula){
+      let T_4 = range_slider_variables[variable_position["T_4"]];
+      T_4 = T_4 * (1.0 - mouseDiffX*10.0);
+      if (T_4 < 0) T_4=0;
+      range_slider_variables[variable_position["T_4"]] = T_4;
+      // Update range slider value:
+      document.getElementById("variable_"+variable_position["T_4"]).value = T_4.toFixed(2);
+      // Update range slider:
+      document.getElementById("RANGE_"+variable_position["T_4"]).value = T_4.toFixed(2);
+      redraw_canvas_gain(bode_graphs[i].bode_id);
     }
+
     initial_mouseX = mouseX;
     initial_mouseY = mouseY;
 
@@ -2302,9 +2362,18 @@ function mouseDragged(){
               document.getElementById("RANGE_"+variable_position["z"]).value = z.toFixed(2);
 
               redraw_canvas_gain(bode_graphs[i].bode_id);
+
+            } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula){
+              // Change T_4
+              if (real > EPS) real=EPS;
+              range_slider_variables[variable_position["T_4"]] = -1/real;
+              // Update range slider value:
+              document.getElementById("variable_"+variable_position["T_4"]).value = -(1/real).toFixed(2);
+              // Update range slider:
+              document.getElementById("RANGE_"+variable_position["T_4"]).value = -(1/real).toFixed(2);
+              redraw_canvas_gain(bode_graphs[i].bode_id);
             }
           }
-
         }
       }
     }
@@ -3355,11 +3424,15 @@ class bode_graph{
         if (tmp_x > 1.2) tmp_x=1.2;
         this.plot_pole(tmp_x,0); // complex
       }
-
 // Skipping graph 4 "Time delay", since nothing is movable:
 //    } else if (this.bode_formula == GRAPH_TIME_DELAY.formula){
 //      //pole_x = range_slider_variables[0];
 //      this.plot_pole(-1.0,0);
+    } else if (this.bode_formula == GRAPH_ONE_ZERO.formula){
+      //pole_x = range_slider_variables[0];
+      var T_4inv = 1/range_slider_variables[variable_position["T_4"]];
+      if (T_4inv > 3.2) T_4inv=3.2;
+      this.plot_zero(-T_4inv,0); // Should be T_4
     }
 
     noStroke();
@@ -3375,6 +3448,12 @@ class bode_graph{
     var screen_y = pole_zero_height/2 + pole_y * pole_zero_height/4;
     line(screen_x-6,screen_y-6,screen_x+6,screen_y+6);
     line(screen_x+6,screen_y-6,screen_x-6,screen_y+6);
+  }
+
+  plot_zero(pole_x,pole_y){
+    var screen_x = pole_zero_width/2 + (pole_x+1) * pole_zero_width/4;
+    var screen_y = pole_zero_height/2 + pole_y * pole_zero_height/4;
+    ellipse(screen_x,screen_y,15,15);
   }
 }
 
