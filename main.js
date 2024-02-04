@@ -33,10 +33,24 @@ if (document.readyState == 'loading') {
   ready();
 }
 
+
 const GRAPH_ONE_REAL_POLE = {name:"One real pole", mf:"\\frac{k_1}{T_1s+1}", formula:"k_1/(T_1*s+1)"};
 const GRAPH_TWO_REAL_POLES = {name:"Two real poles", mf:"\\frac{k_2}{(T_2s+1)(T_3s+1)}", formula:"k_2/(T_2s+1)*1/(T_3s+1)"};
 const GRAPH_TWO_COMPLEX_POLES = {name:"Two complex poles", mf:"\\frac{k_3w^2}{s^2+2zws+w^2}", formula:"k_3*w^2/(s^2+2*z*w*s+w^2)"};
 const GRAPH_TIME_DELAY = {name:"Time delay", mf:"\\frac{3}{s+1}e^{-Ls}", formula:"3/(s+1)*e^(-L*s)"};
+const GRAPH_ONE_ZERO = {name:"One zero", mf:"T_4s+0.5", formula:"T_4*s+0.5"};
+const GRAPH_FOUR_POLES = {name:"Four poles", mf:"\\frac{1}{(T_5s+1)^4}", formula:"1/((T_5s+1)^4)"};
+
+const GRAPH_ORDER = [
+  GRAPH_ONE_REAL_POLE,
+  GRAPH_TWO_REAL_POLES,
+  GRAPH_TWO_COMPLEX_POLES,
+  GRAPH_TIME_DELAY,
+  GRAPH_ONE_ZERO,
+  GRAPH_FOUR_POLES
+];
+const NOF_GRAPHS_AT_STARTUP = 4;
+let next_graph_no_to_add = 0;
 
 // Bad, because the Nyquist diagram gets very wide:
 //  addNewGraph(null, mathfield_string="\\frac{4}{s^2+1}", equation_string="4/(s^2+1)","Oscillator");
@@ -312,6 +326,22 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   let graph_name = graph_to_add.name;
   let mathfield_string = graph_to_add.mf;
   let equation_string = graph_to_add.formula;
+
+  if (graph_to_add.name == ""){
+    // User clicked "add" button.
+    if (next_graph_no_to_add < GRAPH_ORDER.length){
+      // Yes, there are still default graphs left to add:
+      graph_to_add = GRAPH_ORDER[next_graph_no_to_add];
+      graph_name = graph_to_add.name;
+      mathfield_string = graph_to_add.mf;
+      equation_string = graph_to_add.formula;
+    } else {
+      graph_name = "Graph " + (next_graph_no_to_add+1);
+      mathfield_string = "\\frac{1}{(s+1)^2}";
+      equation_string = "1/((s+1)^2)";
+    }
+  }
+  next_graph_no_to_add += 1;
 
   var new_equation_wrapper = document.createElement('div');
   new_equation_wrapper.classList.add('equation-wrapper');
@@ -1190,10 +1220,11 @@ function setup(){
 
   id_bank = 0;
   // Add the initial startup graphs:
-  addNewGraph(null, GRAPH_ONE_REAL_POLE);
-  addNewGraph(null, GRAPH_TWO_REAL_POLES);
-  addNewGraph(null, GRAPH_TWO_COMPLEX_POLES);
-  addNewGraph(null, GRAPH_TIME_DELAY);
+  for (let graph_no=0; graph_no<NOF_GRAPHS_AT_STARTUP; graph_no++){
+    let graph_to_add = GRAPH_ORDER[graph_no];
+    addNewGraph(null, graph_to_add);
+  }
+  next_graph_no_to_add = NOF_GRAPHS_AT_STARTUP;
   noLoop();
 }
 
@@ -3349,8 +3380,8 @@ class bode_graph{
 
 
 const NOF_CONSTANT_VARIABLES = 1; // We have 'e'. Shall not make a slider for that one.
-var range_slider_variables = [2.718281828459045,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001];
-var range_slider_alphabet = ['e','a','b','c','d','f','g','h','i','j','l','m','n','o','p','q','r','t','u','v','w','x','y','z','k_1','k_2','k_3','k_4','k_5','L','T_1','T_2','T_3'];
+var range_slider_variables = [2.718281828459045,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001];
+var range_slider_alphabet = ['e','a','b','c','d','f','g','h','i','j','l','m','n','o','p','q','r','t','u','v','w','x','y','z','k_1','k_2','k_3','k_4','k_5','L','T_1','T_2','T_3','T_4','T_5'];
 // To go from "T_1" to the index in range_slider_variables:
 var variable_position = {};
 
