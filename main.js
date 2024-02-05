@@ -2846,6 +2846,50 @@ function mouseMoved(){
           var phase = output[3] * 180/PI;
           text("phase=" + phase.toFixed(1) + "°",13,77);
           pop();
+
+          // Paint an arc in the nyquist diagram over the unit circle:
+          let angle = phase;
+          push();
+          let screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+          let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+          let screen_xw = map(2,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+          let screen_yw = map(-2,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+          stroke(angle_color);
+          strokeWeight(2);
+          noFill();
+          arc(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
+          pop();
+
+          // Now paint a horizontal line on the Bode phase plot, at the right height:
+          var linked_y = phase;
+          if ((angle >= phase_lower_bound) && (angle <= phase_upper_bound)){
+            screen_y = map(linked_y,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
+            push();
+            stroke(angle_color);
+            strokeWeight(2);
+            line(graph_bode_phase_x + 68,graph_bode_phase_y + screen_y + 110,graph_bode_phase_x + 68 + graph_bode_phase_width,graph_bode_phase_y + screen_y + 110);
+            pop();
+          }
+
+          // And paint a white line from origo to the hovered color:
+          let hovered_graph_no = output[1];
+//          console.log("hovered_graph_no="+hovered_graph_no);
+
+
+          let point = bode_graphs[hovered_graph_no].get_nyquist_value(perc_x);
+          screen_x = point[0];
+          screen_y = point[1];
+          screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+          screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+          console.log("screen_y="+screen_y);
+          console.log("screen_x="+screen_x);
+          push();
+          stroke(text_color);
+          strokeWeight(2);
+          translate(65+graph_nyquist_x,45+graph_nyquist_y);
+          line(screen_x0,screen_y0,screen_x,screen_y);
+          pop();
+
         } else {
           noStroke();
           push();
@@ -2860,6 +2904,30 @@ function mouseMoved(){
           text("freq=" + frequency.toFixed(3) + "rad/s",13,33);
           text("phase=" + phase.toFixed(0) + "°",13,53);
           pop();
+
+          // Paint an arc in the nyquist diagram over the unit circle:
+          let angle = phase;
+          push();
+          let screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+          let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+          let screen_xw = map(2,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+          let screen_yw = map(-2,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+          stroke(angle_color);
+          strokeWeight(2);
+          noFill();
+          arc(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
+          pop();
+
+          // Now paint a horizontal line on the Bode phase plot, at the right height:
+          var linked_y = phase;
+          if ((angle >= phase_lower_bound) && (angle <= phase_upper_bound)){
+            screen_y = map(linked_y,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
+            push();
+            stroke(angle_color);
+            strokeWeight(2);
+            line(graph_bode_phase_x + 68,graph_bode_phase_y + screen_y + 110,graph_bode_phase_x + 68 + graph_bode_phase_width,graph_bode_phase_y + screen_y + 110);
+            pop();
+          }
         }
       }
     }
@@ -3513,6 +3581,15 @@ class bode_graph{
     fill(this.bode_hue,360,360);
     ellipse(screen_x,screen_y,12,12);
     pop();
+  }
+
+  get_nyquist_value(percentage){
+    let new_complex_array = this.bode_complex_array;
+    var sample_no = floor(graph_bode_mag_width * percentage);
+    let current_complex = new_complex_array[sample_no];
+    let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+    let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+    return [screen_x, screen_y];
   }
 
   draw_pole_zero(draw_axis){
