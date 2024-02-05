@@ -34,10 +34,11 @@ if (document.readyState == 'loading') {
 }
 
 
-const GRAPH_ONE_REAL_POLE = {name:"One real pole", mf:"\\frac{k_1}{T_1s+1}", formula:"k_1/(T_1*s+1)"};
-const GRAPH_TWO_REAL_POLES = {name:"Two real poles", mf:"\\frac{k_2}{(T_2s+1)(T_3s+1)}", formula:"k_2/(T_2s+1)*1/(T_3s+1)"};
+const GRAPH_ONE_REAL_POLE = {name:"One real pole", mf:"\\frac{k_1}{1+T_1s}", formula:"k_1/(1+T_1*s)"};
+const GRAPH_TWO_REAL_POLES = {name:"Two real poles", mf:"\\frac{k_2}{(1+T_2s)(1+T_3s)}", formula:"k_2/(1+T_2s)*1/(1+T_3s)"};
 const GRAPH_TWO_COMPLEX_POLES = {name:"Two complex poles", mf:"\\frac{k_3w^2}{s^2+2zws+w^2}", formula:"k_3*w^2/(s^2+2*z*w*s+w^2)"};
-const GRAPH_TIME_DELAY = {name:"Time delay", mf:"\\frac{3}{s+1}e^{-Ls}", formula:"3/(s+1)*e^(-L*s)"};
+const GRAPH_TIME_DELAY = {name:"Time delay", mf:"\\frac{3}{1+s}e^{-Ls}", formula:"3/(1+s)*e^(-L*s)"};
+const GRAPH_ONE_ZERO_TWO_POLES = {name:"One zero two poles", mf:"\\frac{k_4(1+T_8)}{(1+T_6s)(1+T_7s)}", formula:"k_4(1+T_8)/(1+T_6s)*1/(1+T_7s)"};
 const GRAPH_ONE_ZERO = {name:"One zero", mf:"T_4s+0.5", formula:"T_4*s+0.5"};
 const GRAPH_FOUR_POLES = {name:"Four poles", mf:"\\frac{1}{(T_5s+1)^4}", formula:"1/((T_5s+1)^4)"};
 
@@ -46,6 +47,7 @@ const GRAPH_ORDER = [
   GRAPH_TWO_REAL_POLES,
   GRAPH_TWO_COMPLEX_POLES,
   GRAPH_TIME_DELAY,
+  GRAPH_ONE_ZERO_TWO_POLES,
   GRAPH_FOUR_POLES,
   GRAPH_ONE_ZERO
 ];
@@ -193,6 +195,10 @@ function createRangeSlider(event){
     range_min=-4.0;
     range_max=20.0;
     range_value=0.7;
+  } else if (variable_name == "k_4"){
+    range_min=-4.0;
+    range_max=20.0;
+    range_value=0.7;
   } else if (variable_name == "z"){
     range_min=0.0;
     range_max=1.2;
@@ -212,6 +218,22 @@ function createRangeSlider(event){
   } else if (variable_name == "T_4"){
     range_value=1.0;
     range_min=0.0;
+    range_max=10.0;
+  } else if (variable_name == "T_5"){
+    range_value=1.0;
+    range_min=0.0;
+    range_max=10.0;
+  } else if (variable_name == "T_6"){
+    range_value=1.0;
+    range_min=0.0;
+    range_max=10.0;
+  } else if (variable_name == "T_7"){
+    range_value=1.0;
+    range_min=0.0;
+    range_max=10.0;
+  } else if (variable_name == "T_8"){
+    range_value=1.0;
+    range_min=-10.0;
     range_max=10.0;
   } else if (variable_name == "q"){
     range_min=0.01;
@@ -3722,8 +3744,8 @@ class bode_graph{
 
 
 const NOF_CONSTANT_VARIABLES = 1; // We have 'e'. Shall not make a slider for that one.
-var range_slider_variables = [2.718281828459045,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001];
-var range_slider_alphabet = ['e','a','b','c','d','f','g','h','i','j','l','m','n','o','p','q','r','t','u','v','w','x','y','z','k_1','k_2','k_3','k_4','k_5','L','T_1','T_2','T_3','T_4','T_5'];
+var range_slider_variables = [2.718281828459045,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001];
+var range_slider_alphabet = ['e','a','b','c','d','f','g','h','i','j','l','m','n','o','p','q','r','t','u','v','w','x','y','z','k_1','k_2','k_3','k_4','k_5','k_6','L','T_1','T_2','T_3','T_4','T_5','T_6','T_7','T_8'];
 // To go from "T_1" to the index in range_slider_variables:
 var variable_position = {};
 
