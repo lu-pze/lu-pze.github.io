@@ -76,7 +76,7 @@ var phase_upper_bound = 0;
 var gain_upper_bound = 60;
 
 //                              red   yellow    green     blue  magenta       orange        green
-var color_table = [     270,    350,      32,     155,     200,-90+5*81,-90-360+6*81,-90-360+7*81,-90-360+8*81,-90-360+9*81,-90-360+10*81,-90-360+11*81,-90-360+12*81,-90-360+13*81,-90-360+14*81,-90-360+15*81];
+var color_table = [     270,    350,      32,     170,     202,-90+5*81,-90-360+6*81,-90-360+7*81,-90-360+8*81,-90-360+9*81,-90-360+10*81,-90-360+11*81,-90-360+12*81,-90-360+13*81,-90-360+14*81,-90-360+15*81];
 var screenshot_number = 0;
 
 var max_y_timerep = 100;
@@ -882,14 +882,26 @@ function changeColorMode(event){
   var graph_information_tabs = document.getElementsByClassName("graph-information-tabs")[0];
   var graph_information = document.getElementsByClassName("graph-information")[0];
   if(!checkbox_value){
+    // Set to dark mode:
     background_color = color('hsb(0, 0%, 4%)');
     line_color = color('hsb(0, 0%, 22%)'); // Grey graph lines
     text_color = color('hsb(0, 0%, 100%)');
     box_background_color = 120;  // The tooltip hover box
     graph_space.setAttribute("style","grid-column: 2;grid-row: 2;background:#292929;")
     graph_information_tabs.style.background="#202020";
+    graph_information.style.background="#484848";
+
+    const checkedRadio = document.querySelector('.graph-information-tabs input[type="radio"]:checked');
+    // Check if the element is found
+    if (checkedRadio) {
+      // Select the corresponding label using the adjacent sibling selector
+      const labelElement = checkedRadio.nextElementSibling;
+      // Set the CSS values as needed
+      labelElement.style.background="#484848";
+    }
   }
   else{
+    // Set to light mode:
     background_color = color('hsb(0, 0%, 100%)');
     line_color = color('hsb(0, 0%, 64%)');
     text_color = color('hsb(0, 0%, 5%)');
@@ -898,7 +910,16 @@ function changeColorMode(event){
 
 //    graph_information_tabs.setAttribute("style","background:#fff")
     graph_information_tabs.style.background="#fff";
-//    graph_information.style.background="#555";
+    graph_information.style.background="#ddd";
+
+    const checkedRadio = document.querySelector('.graph-information-tabs input[type="radio"]:checked');
+    // Check if the element is found
+    if (checkedRadio) {
+      // Select the corresponding label using the adjacent sibling selector
+      const labelElement = checkedRadio.nextElementSibling;
+      // Set the CSS values as needed
+      labelElement.style.background="#ddd";
+    }
   }
   redraw();
 }
@@ -3374,21 +3395,22 @@ class bode_graph{
     }
 
     for(y=0; y<=4; y++){
-      if ((y==0)||(y==4)){
-        stroke(this.bode_hue,360,360);
-      } else {
-        stroke(line_color);
-      }
       if (y==2){
         strokeWeight(3);
       } else {
         strokeWeight(1);
       }
+      if ((y==0)||(y==4)){
+        strokeWeight(line_stroke_weight / 2);
+        stroke(this.bode_hue,360,360);
+      } else {
+        stroke(line_color);
+      }
       line(0,y*pole_zero_height/4,pole_zero_width,y*pole_zero_height/4);
     }
 
     stroke(this.bode_hue,360,360);
-    strokeWeight(1);
+    strokeWeight(line_stroke_weight / 2);
     line(0,0,0,pole_zero_height);
     line(pole_zero_width,0,pole_zero_width,pole_zero_height);
 
