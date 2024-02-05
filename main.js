@@ -1885,22 +1885,19 @@ function draw_nyquist_responses(){
   max_nyquist_y = center_y + mag_y/2;
   min_nyquist_y = center_y - mag_y/2;
 
-
-  textAlign(CENTER);
-  noStroke();
-  fill(text_color);
-  textSize(15);
-  text("Nyquist diagram",graph_nyquist_width/2,-5);
-  text("Real axis",graph_nyquist_width/2,graph_nyquist_height+45);
-
-  // text("im",-60,graph_nyquist_height/2 + 4);
-  push();
-  translate(-55,graph_nyquist_height/2 + 4);
-  rotate(-PI/2);
-  text("Imaginary axis",0,0);
-  pop();
-
   draw_nyquist_lines();
+
+  // Draw a faint unit circle:
+  push();
+  let screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+  let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+  let screen_xw = map(2,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+  let screen_yw = map(-2,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+  stroke(line_color);
+  strokeWeight(1);
+  noFill();
+  ellipse(screen_x0,screen_y0,screen_xw - screen_x0,screen_yw - screen_y0);
+  pop();
 
   // Put a blob at -1,0
   push();
@@ -1918,6 +1915,20 @@ function draw_nyquist_responses(){
 //  text("back",screen_x-32,screen_y+4+7);
 //  text("->",screen_x-12,screen_y+4);
   text("-1",screen_x+7,screen_y+18);
+  pop();
+
+  textAlign(CENTER);
+  noStroke();
+  fill(text_color);
+  textSize(15);
+  text("Nyquist diagram",graph_nyquist_width/2,-5);
+  text("Real axis",graph_nyquist_width/2,graph_nyquist_height+45);
+
+  // text("im",-60,graph_nyquist_height/2 + 4);
+  push();
+  translate(-55,graph_nyquist_height/2 + 4);
+  rotate(-PI/2);
+  text("Imaginary axis",0,0);
   pop();
 
   for(i=0; i<bode_graphs.length; i++){
@@ -2648,6 +2659,52 @@ function mouseMoved(){
       }
     }
 
+    // Check if we're hovering the Nyquist diagram:
+    if((mouseX-graph_nyquist_x) > 65 && (mouseX-graph_nyquist_x) < graph_nyquist_width + 65){
+      if((mouseY-graph_nyquist_y-45) > 0 && (mouseY-graph_nyquist_y-45) < graph_nyquist_height){
+        let origo_x = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+        let origo_y = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+        push();
+        stroke(text_color);
+        strokeWeight(2);
+        let screen_x = graph_nyquist_x + origo_x + 65;
+        let screen_y = graph_nyquist_y + origo_y + 45;
+        line(screen_x,screen_y,mouseX,mouseY);
+        pop();
+
+//        // Let's calculate the angle we're at:
+//        // We need to map the mouseX and mouseY to real and imaginary axis:
+//        let perc_x = (mouseX - graph_nyquist_x - 65) / graph_nyquist_width;
+//        let perc_y = (mouseY - graph_nyquist_y - 45) / graph_nyquist_height;
+//        let axis_x = min_nyquist_x + (max_nyquist_x - min_nyquist_x) * perc_x;
+//        let axis_y = min_nyquist_y + (max_nyquist_y - min_nyquist_y) * perc_y;
+
+        let angle_rad = atan((screen_x-mouseX) / (screen_y-mouseY));
+        let angle=0;
+        if (mouseY > screen_y){
+          // The lower half plane: angles 0 at the right edge, 90 pointing downwards, and -180 to the left:
+          angle = -(90 - angle_rad * 180 / PI);
+        } else {
+          // The upper half plane: angles 360 at the right edge, 270 pointing upwards, and 180 to the left:
+          angle = -(270 - angle_rad * 180 / PI);
+        }
+
+        // Now paint a horizontal line on the Bode phase plot, at the right height:
+        var linked_y = angle;
+        if ((angle >= phase_lower_bound) && (angle <= phase_upper_bound)){
+          screen_y = map(linked_y,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
+          push();
+          stroke(text_color);
+          strokeWeight(2);
+          line(graph_bode_phase_x + 68,graph_bode_phase_y + screen_y + 110,graph_bode_phase_x + 68 + graph_bode_phase_width,graph_bode_phase_y + screen_y + 110);
+          pop();
+        }
+
+
+      }
+    }
+
+
     // Check if we're hovering the bode phase plot:
     if((mouseX-graph_bode_phase_x) > 68 && (mouseX-graph_bode_phase_x) < graph_bode_phase_width + 68){
       if((mouseY-graph_bode_phase_y-110) > 0 && (mouseY-graph_bode_phase_y-110) < graph_bode_phase_height){
@@ -3303,7 +3360,15 @@ class bode_graph{
       let current_complex = this.bode_complex_array[x];
       let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
       let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-      vertex(screen_x,screen_y);
+      if ((screen_x > 0) &&
+          (screen_x <= graph_nyquist_width) &&
+          (screen_y > 0) &&
+          (screen_y <= graph_nyquist_height)){
+        vertex(screen_x,screen_y);
+      } else {
+        endShape();
+        beginShape();
+      }
     }
     endShape();
 
