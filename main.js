@@ -1828,49 +1828,63 @@ function draw_time_responses(){
 }
 
 function draw_nyquist_responses(){
-  if(document.getElementById("automatic-range-nyq").checked){
-    min_nyquist_x = 10000;
-    max_nyquist_x = -10000;
-    min_nyquist_y = 10000;
-    max_nyquist_y = -10000;
+//  // Find out the aspect ratio of the graph:
+//  let nyquist_aspect_ratio = graph_nyquist_width / graph_nyquist_height;
+//  // Decide how many sqares there will be on each axis:
+//  let nyquist_y_squares = 10;
+//  let nyquist_x_squares = floor(nyquist_y_squares * nyquist_aspect_ratio);
+//  if (nyquist_aspect_ratio < 1.0){
+//    nyquist_x_squares = 10;
+//    nyquist_y_squares = floor(nyquist_x_squares / nyquist_aspect_ratio);
+//  }
+//  //console.log("nyquist_y_squares=" + nyquist_y_squares);
+//  //console.log("nyquist_x_squares=" + nyquist_x_squares);
 
-    for(i=0; i<bode_graphs.length; i++){
-      if(bode_graphs[i].bode_displaybool){
-        var current_graph = bode_graphs[i];
-        if(current_graph.bode_max_nyquist_x > max_nyquist_x){
-          max_nyquist_x = current_graph.bode_max_nyquist_x;
-        }
-        if(current_graph.bode_min_nyquist_x < min_nyquist_x){
-          min_nyquist_x = current_graph.bode_min_nyquist_x;
-        }
-        if(current_graph.bode_max_nyquist_y > max_nyquist_y){
-          max_nyquist_y = current_graph.bode_max_nyquist_y;
-        }
-        if(current_graph.bode_min_nyquist_y < min_nyquist_y){
-          min_nyquist_y = current_graph.bode_min_nyquist_y;
-        }
+  min_nyquist_x = -1;
+  max_nyquist_x = 1;
+  min_nyquist_y = -1;
+  max_nyquist_y = 0.2;
+
+  for(i=0; i<bode_graphs.length; i++){
+    if(bode_graphs[i].bode_displaybool){
+      var current_graph = bode_graphs[i];
+      if(current_graph.bode_max_nyquist_x > max_nyquist_x){
+        max_nyquist_x = current_graph.bode_max_nyquist_x;
+      }
+      if(current_graph.bode_min_nyquist_x < min_nyquist_x){
+        min_nyquist_x = current_graph.bode_min_nyquist_x;
+      }
+      if(current_graph.bode_max_nyquist_y > max_nyquist_y){
+        max_nyquist_y = current_graph.bode_max_nyquist_y;
+      }
+      if(current_graph.bode_min_nyquist_y < min_nyquist_y){
+        min_nyquist_y = current_graph.bode_min_nyquist_y;
       }
     }
-
-    // Correct max/mins so that the aspect ratio of the Nyquist diagram is 1.0:
-    var mag_x = max_nyquist_x - min_nyquist_x;
-    var mag_y = max_nyquist_y - min_nyquist_y;
-    var center_x = (max_nyquist_x + min_nyquist_x) / 2;
-    var center_y = (max_nyquist_y + min_nyquist_y) / 2;
-    var desired_aspect_ratio = graph_nyquist_height / graph_nyquist_width;
-    var current_aspect_ratio = mag_x / mag_y;
-    if (desired_aspect_ratio < current_aspect_ratio){
-      // The graph is currently "too wide"
-      var correction_factor = current_aspect_ratio / desired_aspect_ratio;
-      max_nyquist_x = center_x + mag_x / 3 * correction_factor;
-      min_nyquist_x = center_x - mag_x / 3 * correction_factor;
-    } else {
-      // The graph is currently "too thin"
-      var correction_factor = current_aspect_ratio / desired_aspect_ratio;
-      max_nyquist_y = center_y + mag_y/2 / correction_factor;
-      min_nyquist_y = center_y - mag_y/2 / correction_factor;
-    }
   }
+  if (max_nyquist_y > 5) max_nyquist_y = 5;
+  if (max_nyquist_x > 5) max_nyquist_x = 5;
+  if (min_nyquist_y < -5) min_nyquist_y = -5;
+  if (min_nyquist_x < -5) min_nyquist_x = -5;
+
+  // Correct max/mins so that the aspect ratio of the Nyquist diagram is 1.0:
+  var mag_x = max_nyquist_x - min_nyquist_x;
+  var mag_y = max_nyquist_y - min_nyquist_y;
+  var center_x = (max_nyquist_x + min_nyquist_x) / 2;
+  var center_y = (max_nyquist_y + min_nyquist_y) / 2;
+  var desired_aspect_ratio = graph_nyquist_width / graph_nyquist_height;
+
+  let desired_mag_x = mag_y * desired_aspect_ratio;
+  let desired_mag_y = mag_x / desired_aspect_ratio;
+
+  if (desired_mag_x > mag_x) mag_x = desired_mag_x;
+  if (desired_mag_y > mag_y) mag_y = desired_mag_y;
+
+  max_nyquist_x = center_x + mag_x/2;
+  min_nyquist_x = center_x - mag_x/2;
+  max_nyquist_y = center_y + mag_y/2;
+  min_nyquist_y = center_y - mag_y/2;
+
 
   textAlign(CENTER);
   noStroke();
@@ -1893,7 +1907,7 @@ function draw_nyquist_responses(){
   var x=-1;
   var y=0;
   let screen_x = map(x,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-  let screen_y = map(y,min_nyquist_y,max_nyquist_y,0,graph_nyquist_height);
+  let screen_y = map(y,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
   noStroke();
   var blob_color = color('hsb(0, 0%, 50%)');
   fill(blob_color,360,360);
@@ -2833,32 +2847,23 @@ function draw_timelines(){
 
 function draw_nyquist_lines(){
   var x_step = +(abs(max_nyquist_x - min_nyquist_x)/10).toPrecision(1);
-  var y_step = +(abs(max_nyquist_y - min_nyquist_y)/10).toPrecision(1) * 2;
+  var y_step = +(abs(max_nyquist_y - min_nyquist_y)/10).toPrecision(1);
 
-  max_nyquist_y = Math.max(abs(max_nyquist_y),abs(min_nyquist_y));
-
+//  max_nyquist_y = Math.max(abs(max_nyquist_y),abs(min_nyquist_y));
 //  var tmp = max_nyquist_y;
 //  max_nyquist_y = -min_nyquist_y;
 //  min_nyquist_y = -tmp;
 
-  if(document.getElementById("automatic-range-nyq").checked){
-    max_nyquist_y = +(value_magnet(max_nyquist_y,y_step) + y_step).toFixed(2);
-    min_nyquist_y = -max_nyquist_y;
-    min_nyquist_x = +(value_magnet(min_nyquist_x,x_step) - x_step).toFixed(2);
-    max_nyquist_x = +(value_magnet(max_nyquist_x,x_step) + x_step).toFixed(2);
-  } else {
-    max_nyquist_y = +(value_magnet(max_nyquist_y,y_step)).toFixed(2);
-    min_nyquist_y = -max_nyquist_y;
-    min_nyquist_x = +(value_magnet(min_nyquist_x,x_step)).toFixed(2);
-    max_nyquist_x = +(value_magnet(max_nyquist_x,x_step)).toFixed(2);
-  }
+  min_nyquist_y = +(value_magnet(min_nyquist_y,y_step) - y_step).toFixed(2);
+  max_nyquist_y = +(value_magnet(max_nyquist_y,y_step) + y_step).toFixed(2);
+  min_nyquist_x = +(value_magnet(min_nyquist_x,x_step) - x_step).toFixed(2);
+  max_nyquist_x = +(value_magnet(max_nyquist_x,x_step) + x_step).toFixed(2);
 
   var x_case_number = roundup_decimal(abs(max_nyquist_x - min_nyquist_x)/x_step);
   var y_case_number = roundup_decimal(abs(max_nyquist_y - min_nyquist_y)/y_step);
 
   var x_tile_length = graph_nyquist_width/x_case_number;
   var y_tile_length = graph_nyquist_height/y_case_number;
-
   textAlign(CENTER);
 
   for(x=0; x<=x_case_number; x++){
@@ -2887,7 +2892,7 @@ function draw_nyquist_lines(){
   stroke(line_color);
   strokeWeight(3);
   let screen_x = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-  let screen_y = map(0,min_nyquist_y,max_nyquist_y,0,graph_nyquist_height);
+  let screen_y = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
   line(screen_x,0,screen_x,graph_nyquist_height);
   line(0,screen_y,graph_nyquist_width,screen_y);
 }
@@ -3289,13 +3294,15 @@ class bode_graph{
 //    let new_complex_array = this.bode_complex_array.concat(reversed_conj_complex_array);
 
 //    let reversed_conj_complex_array = this.bode_complex_array.map(x => x.conjugate()).reverse();
-    let new_complex_array = this.bode_complex_array.map(x => x.conjugate()).reverse();
+//    let new_complex_array = this.bode_complex_array.map(x => x.conjugate()).reverse();
+//    let new_complex_array = this.bode_complex_array.map(x => x.conjugate()).reverse();
+    let new_complex_array = this.bode_complex_array;
 
     beginShape();
     for(let x=0;x < new_complex_array.length;x++){
-      let current_complex = new_complex_array[x];
+      let current_complex = this.bode_complex_array[x];
       let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-      let screen_y = map(current_complex.im,min_nyquist_y,max_nyquist_y,0,graph_nyquist_height);
+      let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
       vertex(screen_x,screen_y);
     }
     endShape();
@@ -3334,7 +3341,8 @@ class bode_graph{
   }
 
   draw_nyquist_X(frequency){
-    let new_complex_array = this.bode_complex_array.map(x => x.conjugate());
+    //let new_complex_array = this.bode_complex_array.map(x => x.conjugate());
+    let new_complex_array = this.bode_complex_array;
     // This is the values that we have calculated in new_complex_array[x]:
     //  for(let x=0; x<graph_bode_mag_width; x++){
     //    let log_pow = map(x,0,graph_bode_mag_width,min_10power,min_10power+x_case_gain);
@@ -3349,7 +3357,7 @@ class bode_graph{
 //    console.log("current_complex="+current_complex);
     try {
       let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-      let screen_y = map(current_complex.im,min_nyquist_y,max_nyquist_y,0,graph_nyquist_height);
+      let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
       push();
   //    translate(65+graph_nyquist_x,45+graph_nyquist_y);
       //console.log("screen_x="+screen_x);
@@ -3362,7 +3370,8 @@ class bode_graph{
   }
 
   draw_nyquist_value(percentage){
-    let new_complex_array = this.bode_complex_array.map(x => x.conjugate());
+//    let new_complex_array = this.bode_complex_array.map(x => x.conjugate());
+    let new_complex_array = this.bode_complex_array;
     // This is the values that we have calculated in new_complex_array[x]:
     //  for(let x=0; x<graph_bode_mag_width; x++){
     //    let log_pow = map(x,0,graph_bode_mag_width,min_10power,min_10power+x_case_gain);
@@ -3374,7 +3383,7 @@ class bode_graph{
 
     let current_complex = new_complex_array[sample_no];
     let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-    let screen_y = map(current_complex.im,min_nyquist_y,max_nyquist_y,0,graph_nyquist_height);
+    let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
     push();
     noStroke();
     translate(65+graph_nyquist_x,45+graph_nyquist_y);
