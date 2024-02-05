@@ -76,7 +76,7 @@ var phase_upper_bound = 0;
 var gain_upper_bound = 60;
 
 //                              red   yellow    green     blue  magenta       orange        green
-var color_table = [     270,    350,      48,     155,     200,-90+5*81,-90-360+6*81,-90-360+7*81,-90-360+8*81,-90-360+9*81,-90-360+10*81,-90-360+11*81,-90-360+12*81,-90-360+13*81,-90-360+14*81,-90-360+15*81];
+var color_table = [     270,    350,      32,     155,     200,-90+5*81,-90-360+6*81,-90-360+7*81,-90-360+8*81,-90-360+9*81,-90-360+10*81,-90-360+11*81,-90-360+12*81,-90-360+13*81,-90-360+14*81,-90-360+15*81];
 var screenshot_number = 0;
 
 var max_y_timerep = 100;
@@ -879,12 +879,15 @@ function changeStrokeWeight(event){
 function changeColorMode(event){
   var checkbox_value = document.getElementById("color-mode-checkbox").checked;
   var graph_space = document.getElementsByClassName("graph-space")[0];
+  var graph_information_tabs = document.getElementsByClassName("graph-information-tabs")[0];
+  var graph_information = document.getElementsByClassName("graph-information")[0];
   if(!checkbox_value){
     background_color = color('hsb(0, 0%, 4%)');
     line_color = color('hsb(0, 0%, 22%)'); // Grey graph lines
     text_color = color('hsb(0, 0%, 100%)');
     box_background_color = 120;  // The tooltip hover box
     graph_space.setAttribute("style","grid-column: 2;grid-row: 2;background:#292929;")
+    graph_information_tabs.style.background="#202020";
   }
   else{
     background_color = color('hsb(0, 0%, 100%)');
@@ -892,6 +895,10 @@ function changeColorMode(event){
     text_color = color('hsb(0, 0%, 5%)');
     box_background_color = 255;  // The tooltip hover box
     graph_space.setAttribute("style","grid-column: 2;grid-row: 2;background:#fff;")
+
+//    graph_information_tabs.setAttribute("style","background:#fff")
+    graph_information_tabs.style.background="#fff";
+//    graph_information.style.background="#555";
   }
   redraw();
 }
