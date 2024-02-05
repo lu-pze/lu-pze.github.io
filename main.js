@@ -2914,7 +2914,7 @@ function mouseMoved(){
           screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
           screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
           push();
-          stroke(text_color);
+          stroke(angle_color);
           strokeWeight(2);
           translate(65+graph_nyquist_x,45+graph_nyquist_y);
           line(screen_x0,screen_y0,screen_x,screen_y);
@@ -3704,6 +3704,17 @@ class bode_graph{
         if (tmp_y > 2.2) tmp_y=2.2;
         this.plot_pole(tmp_x,tmp_y); // complex
         this.plot_pole(tmp_x,-tmp_y); // complex
+        // Since these are complex, let's draw a line from origo as well:
+        stroke(line_color);
+        strokeWeight(1);
+        line(pole_zero_width/2 + (tmp_x+1) * pole_zero_width/4,
+             pole_zero_height/2 + tmp_y * pole_zero_height/4,
+             pole_zero_width/2 + (0+1) * pole_zero_width/4,
+             pole_zero_height/2 + 0 * pole_zero_height/4);
+        line(pole_zero_width/2 + (tmp_x+1) * pole_zero_width/4,
+             pole_zero_height/2 - tmp_y * pole_zero_height/4,
+             pole_zero_width/2 + (0+1) * pole_zero_width/4,
+             pole_zero_height/2 + 0 * pole_zero_height/4);
       } else {
         //If sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
         var bode_3_real_1 = -z*w + w * sqrt(z*z-1);
