@@ -90,6 +90,7 @@ var max_nyquist_y = 1;
 
 var line_stroke_weight = 2;
 var text_color;
+var angle_color;
 var line_color;
 var background_color;
 var box_background_color;
@@ -886,6 +887,7 @@ function changeColorMode(event){
     background_color = color('hsb(0, 0%, 4%)');
     line_color = color('hsb(0, 0%, 22%)'); // Grey graph lines
     text_color = color('hsb(0, 0%, 100%)');
+    angle_color = "#ff40ff";
     box_background_color = 120;  // The tooltip hover box
     graph_space.setAttribute("style","grid-column: 2;grid-row: 2;background:#292929;")
     graph_information_tabs.style.background="#202020";
@@ -905,6 +907,7 @@ function changeColorMode(event){
     background_color = color('hsb(0, 0%, 100%)');
     line_color = color('hsb(0, 0%, 64%)');
     text_color = color('hsb(0, 0%, 5%)');
+    angle_color = "#ff40ff";
     box_background_color = 255;  // The tooltip hover box
     graph_space.setAttribute("style","grid-column: 2;grid-row: 2;background:#fff;")
 
@@ -1244,6 +1247,7 @@ function setup(){
   box_background_color = 120;
   line_color = color('hsb(0, 0%, 22%)');  // Grey graph lines
   text_color = color('hsb(0, 0%, 100%)');
+  angle_color = "#ff40ff";
 
   // To go from "T_1" to the index in range_slider_variables:
   for (i=0; i<range_slider_alphabet.length; i++){
@@ -2586,12 +2590,6 @@ function mouseMoved(){
             }
           }
         }
-        push();
-        stroke(text_color);
-        strokeWeight(2);
-        line(mouseX,graph_bode_mag_y+30,mouseX,graph_bode_mag_y + 30 + graph_bode_mag_height);
-        line(mouseX,graph_bode_phase_y+110,mouseX,graph_bode_phase_y + 110 + graph_bode_phase_height);
-        pop();
 
         var magnitude_in_dB = gain_upper_bound - perc_y*120;//y_case_gain; //60 - perc_y
         //console.log("perc_y="+perc_y);
@@ -2600,6 +2598,7 @@ function mouseMoved(){
         // perc_y = 1.0 -> magnitude = 0.001
         // perc_y = 0.0 -> magnitude = 1000
 //        console.log("magnitude="+magnitude);
+
 
         // Find the closest point from the graphs:
         var output;
@@ -2611,9 +2610,10 @@ function mouseMoved(){
           }
         }
         push();
-        stroke(text_color);
+        stroke(angle_color);
         strokeWeight(2);
-        line(mouseX,graph_bode_mag_y+45,mouseX,graph_bode_mag_y + 30 + graph_bode_mag_height);
+        line(mouseX,graph_bode_mag_y+30,mouseX,graph_bode_mag_y + 30 + graph_bode_mag_height);
+        line(mouseX,graph_bode_phase_y+110,mouseX,graph_bode_phase_y + 110 + graph_bode_phase_height);
         pop();
 
         if(yes_close_enough){
@@ -2642,6 +2642,24 @@ function mouseMoved(){
           var magnitude = 1.0 * Math.pow(10.0, magnitude_in_dB / 20.0);
           text("magnitude=" + magnitude.toFixed(3),13,77);
           pop();
+
+          // Draw a magnitude circle in the Nyquist graph:
+          push();
+          let screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+          let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+          let screen_xw = map(2*magnitude,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+          let screen_yw = map(-2*magnitude,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+          stroke(text_color);
+          strokeWeight(2);
+          noFill();
+          ellipse(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0);
+          pop();
+          // Draw a horizontal line for the magnitude in the bode mag plot:
+          push();
+          stroke(text_color);
+          strokeWeight(2);
+          line(graph_bode_mag_x+65,output[2] + graph_bode_mag_y,graph_bode_mag_x + 65 + graph_bode_mag_width, output[2] + graph_bode_mag_y);
+          pop();
         } else {
           push();
           noStroke();
@@ -2654,6 +2672,25 @@ function mouseMoved(){
           textSize(15);
           text("freq=" + frequency.toFixed(3) + "rad/s",13,33);
           text("magnitude=" + magnitude.toFixed(3),13,53);
+          pop();
+
+          // Draw a magnitude circle in the Nyquist graph:
+          push();
+          let screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+          let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+          let screen_xw = map(2*magnitude,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+          let screen_yw = map(-2*magnitude,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+          stroke(text_color);
+          strokeWeight(2);
+          noFill();
+          ellipse(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0);
+          pop();
+
+          // Draw a horizontal line for the magnitude in the bode mag plot:
+          push();
+          stroke(text_color);
+          strokeWeight(2);
+          line(graph_bode_mag_x+65,mouseY,graph_bode_mag_x + 65 + graph_bode_mag_width, mouseY);
           pop();
         }
       }
@@ -2672,35 +2709,56 @@ function mouseMoved(){
         line(screen_x,screen_y,mouseX,mouseY);
         pop();
 
-//        // Let's calculate the angle we're at:
-//        // We need to map the mouseX and mouseY to real and imaginary axis:
-//        let perc_x = (mouseX - graph_nyquist_x - 65) / graph_nyquist_width;
-//        let perc_y = (mouseY - graph_nyquist_y - 45) / graph_nyquist_height;
-//        let axis_x = min_nyquist_x + (max_nyquist_x - min_nyquist_x) * perc_x;
-//        let axis_y = min_nyquist_y + (max_nyquist_y - min_nyquist_y) * perc_y;
+        // Let's calculate the angle we're at:
+        // We need to map the mouseX and mouseY to real and imaginary axis:
+        let perc_x = (mouseX - graph_nyquist_x - 65) / graph_nyquist_width;
+        let perc_y = (mouseY - graph_nyquist_y - 45) / graph_nyquist_height;
+        let axis_x = min_nyquist_x + (max_nyquist_x - min_nyquist_x) * perc_x;
+        let axis_y = max_nyquist_y + (min_nyquist_y - max_nyquist_y) * perc_y;
 
-        let angle_rad = atan((screen_x-mouseX) / (screen_y-mouseY));
+        let angle_rad = atan(axis_x / axis_y);
         let angle=0;
         if (mouseY > screen_y){
           // The lower half plane: angles 0 at the right edge, 90 pointing downwards, and -180 to the left:
-          angle = -(90 - angle_rad * 180 / PI);
+          angle = -(90 + angle_rad * 180 / PI);
         } else {
           // The upper half plane: angles 360 at the right edge, 270 pointing upwards, and 180 to the left:
-          angle = -(270 - angle_rad * 180 / PI);
+          angle = -(270 + angle_rad * 180 / PI);
         }
+
+        // Paint an arc in the nyquist diagram over the unit circle:
+        push();
+        let screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+        let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+        let screen_xw = map(2,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+        let screen_yw = map(-2,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+        stroke(angle_color);
+        strokeWeight(2);
+        noFill();
+        arc(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
+        pop();
 
         // Now paint a horizontal line on the Bode phase plot, at the right height:
         var linked_y = angle;
         if ((angle >= phase_lower_bound) && (angle <= phase_upper_bound)){
           screen_y = map(linked_y,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
           push();
-          stroke(text_color);
+          stroke(angle_color);
           strokeWeight(2);
           line(graph_bode_phase_x + 68,graph_bode_phase_y + screen_y + 110,graph_bode_phase_x + 68 + graph_bode_phase_width,graph_bode_phase_y + screen_y + 110);
           pop();
         }
 
-
+        // Get the magnitude of the line from origo to the mouse:
+        let magnitude = sqrt(axis_x * axis_x + axis_y * axis_y);
+        // Now paint a horizontal line on the Bode magnitude plot, at the right height:
+        var magnitude_in_dB = 20*log(magnitude)/log(10);
+        screen_y = map(magnitude_in_dB,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+        push();
+        stroke(text_color);
+        strokeWeight(2);
+        line(graph_bode_mag_x + 68,graph_bode_mag_y + screen_y + 30,graph_bode_mag_x + 68 + graph_bode_mag_width,graph_bode_mag_y + screen_y + 30);
+        pop();
       }
     }
 
