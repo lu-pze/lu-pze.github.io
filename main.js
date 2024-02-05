@@ -2881,8 +2881,6 @@ function mouseMoved(){
           screen_y = point[1];
           screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
           screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-          console.log("screen_y="+screen_y);
-          console.log("screen_x="+screen_x);
           push();
           stroke(text_color);
           strokeWeight(2);
