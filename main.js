@@ -198,7 +198,7 @@ function createRangeSlider(event){
   } else if (variable_name == "k_4"){
     range_min=-4.0;
     range_max=20.0;
-    range_value=0.7;
+    range_value=2.5;
   } else if (variable_name == "z"){
     range_min=0.0;
     range_max=1.2;
@@ -1773,6 +1773,12 @@ function draw_time_responses(){
         stroke(bode_graphs[i].bode_hue,240,360);
         strokeWeight(0.5);
         line(0,screen_y,graph_step_response_width,screen_y);
+      } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
+        var k_4 = range_slider_variables[variable_position["k_4"]];
+        var screen_y = map(k_4,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
+        stroke(bode_graphs[i].bode_hue,240,360);
+        strokeWeight(0.5);
+        line(0,screen_y,graph_step_response_width,screen_y);
       }
     }
   }
@@ -2280,6 +2286,25 @@ function mouseDragged(){
       document.getElementById("variable_"+variable_position["L"]).value = L.toFixed(2);
       // Update range slider:
       document.getElementById("RANGE_"+variable_position["L"]).value = L.toFixed(2);
+      redraw_canvas_gain(bode_graphs[i].bode_id);
+
+    } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
+      let T_8 = range_slider_variables[variable_position["T_8"]];
+      T_8 = T_8 + mouseDiffX * 10.0;
+      if (T_8 < 0) T_8=0;
+      range_slider_variables[variable_position["T_8"]] = T_8;
+      // Update range slider value:
+      document.getElementById("variable_"+variable_position["T_8"]).value = T_8.toFixed(2);
+      // Update range slider:
+      document.getElementById("RANGE_"+variable_position["T_8"]).value = T_8.toFixed(2);
+
+      let k_4 = range_slider_variables[variable_position["k_4"]];
+      k_4 = k_4 - mouseDiffY * y_range;
+      range_slider_variables[variable_position["k_4"]] = k_4;
+      // Update range slider value:
+      document.getElementById("variable_"+variable_position["k_4"]).value = k_4.toFixed(2);
+      // Update range slider:
+      document.getElementById("RANGE_"+variable_position["k_4"]).value = k_4.toFixed(2);
       redraw_canvas_gain(bode_graphs[i].bode_id);
     }
 
