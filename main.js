@@ -2893,13 +2893,6 @@ function mouseMoved(){
             }
           }
         }
-        push();
-        stroke(text_color);
-        strokeWeight(2);
-        line(mouseX,graph_bode_mag_y+30,mouseX,graph_bode_mag_y + 30 + graph_bode_mag_height);
-        line(mouseX,graph_bode_phase_y+110,mouseX,graph_bode_phase_y + 110 + graph_bode_phase_height);
-        pop();
-
 
         // Find the closest point from the graphs:
         var output;
@@ -2959,7 +2952,7 @@ function mouseMoved(){
           // Now paint a horizontal line on the Bode phase plot, at the right height:
           var linked_y = phase;
           if ((angle >= phase_lower_bound) && (angle <= phase_upper_bound)){
-            screen_y = map(linked_y,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
+            let screen_y = map(linked_y,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
             push();
             stroke(angle_color);
             strokeWeight(2);
@@ -2970,21 +2963,48 @@ function mouseMoved(){
           // And paint a white line from origo to the hovered color:
           let hovered_graph_no = output[1];
 //          console.log("hovered_graph_no="+hovered_graph_no);
-
-
           let point = bode_graphs[hovered_graph_no].get_nyquist_value(perc_x);
-          screen_x = point[0];
-          screen_y = point[1];
+          let screen_x1 = point[0];
+          let screen_y1 = point[1];
           screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
           screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
           push();
-          stroke(angle_color);
+          stroke(text_color);
           strokeWeight(2);
           translate(65+graph_nyquist_x,45+graph_nyquist_y);
-          line(screen_x0,screen_y0,screen_x,screen_y);
+          line(screen_x0,screen_y0,screen_x1,screen_y1);
           pop();
 
+          // And draw a vertical white line in the bode phase plot.
+          // And draw a vertical line ending up at the hovered graph:
+          push();
+          stroke(text_color);
+          strokeWeight(2);
+          line(mouseX,graph_bode_phase_y+110,mouseX,graph_bode_phase_y + 110 + graph_bode_phase_height);
+
+          var current_graph = bode_graphs[hovered_graph_no];
+          var linked_y = current_graph.bode_gain_array[linked_x];
+          let screen_y = 30 + map(linked_y,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+
+          push();
+          noStroke();
+          fill(bode_graphs[output[1]].bode_hue,360,360);
+          ellipse(mouseX,screen_y + graph_bode_mag_y,12,12);
+          pop();
+
+          line(mouseX,graph_bode_mag_y+screen_y,mouseX,graph_bode_mag_y + 30 + graph_bode_mag_height);
+          pop();
+
+
+
+
         } else {
+          push();
+          stroke(text_color);
+          strokeWeight(2);
+          line(mouseX,graph_bode_mag_y+30,mouseX,graph_bode_mag_y + 30 + graph_bode_mag_height);
+          line(mouseX,graph_bode_phase_y+110,mouseX,graph_bode_phase_y + 110 + graph_bode_phase_height);
+          pop();
           noStroke();
           push();
           translate(mouseX,mouseY);
