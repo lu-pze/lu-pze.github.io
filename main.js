@@ -3783,9 +3783,25 @@ class bode_graph{
         bode_3_imaginary = w * sqrt(1-z*z);
         var tmp_x = bode_3_real;
         var tmp_y = bode_3_imaginary;
-        if (tmp_x < -3.2) tmp_x=-3.2;
-        if (tmp_y < -2.2) tmp_y=-2.2;
-        if (tmp_y > 2.2) tmp_y=2.2;
+        if (tmp_x < -3.2){
+          // We need to scale down the y-axis just as much as we're scaling on x axis:
+          let scale = tmp_x / -3.2;
+          tmp_y = tmp_y / scale;
+          tmp_x=-3.2;
+        }
+        if (tmp_y < -2.2){
+          // We need to scale down the x-axis just as much as we're scaling on y axis:
+          let scale = tmp_y / -2.2;
+          tmp_x = tmp_x / scale;
+          tmp_y=-2.2;
+        }
+        if (tmp_y > 2.2){
+          // We need to scale down the x-axis just as much as we're scaling on y axis:
+          let scale = tmp_y / 2.2;
+          tmp_x = tmp_x / scale;
+          tmp_y=2.2;
+        }
+
         this.plot_pole(tmp_x,tmp_y); // complex
         this.plot_pole(tmp_x,-tmp_y); // complex
         // Since these are complex, let's draw a line from origo as well:
