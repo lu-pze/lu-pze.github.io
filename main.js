@@ -1971,6 +1971,24 @@ function draw_pole_zeros(){
   pole_zero_width = graph_pole_zero_width;
   pole_zero_height = pole_zero_width;
   // Draw pole zeros for these graphs:
+  let draw_position = 0;
+
+  // Find out the last pole zero graph:
+  for(i=0; i<bode_graphs.length; i++){
+    if(bode_graphs[i].bode_displaybool){
+      if((bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula)||
+         (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)||
+         (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)||
+         (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula)||
+         (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula)){
+        draw_position += 1;
+      }
+    }
+  }
+  let last_graph = draw_position;
+
+
+  draw_position = 0;
   for(i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_displaybool){
       if((bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula)||
@@ -1979,15 +1997,16 @@ function draw_pole_zeros(){
          (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula)||
          (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula)){
         pole_zero_graph_x[i] = graph_pole_zero_x;
-        pole_zero_graph_y[i] = 30 + (pole_zero_height + 10) * i;
+        pole_zero_graph_y[i] = 30 + (pole_zero_height + 10) * draw_position;
         push();
         translate(0,pole_zero_graph_y[i]);
         var draw_axis = false;
-        if (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
+        if (draw_position == last_graph-1){
           draw_axis=true;
         }
         bode_graphs[i].draw_pole_zero(draw_axis);
         pop();
+        draw_position += 1;
       }
     }
   }
