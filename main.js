@@ -2310,6 +2310,7 @@ function mouseDragged(){
 
     initial_mouseX = mouseX;
     initial_mouseY = mouseY;
+
   } else if (clicked_on_bode_mag_graph_no != -1){
     let i=clicked_on_bode_mag_graph_no;
     // Dragging one of the graphs in the bode magnitude plot:
@@ -2386,6 +2387,25 @@ function mouseDragged(){
       document.getElementById("variable_"+variable_position["T_4"]).value = T_4.toFixed(2);
       // Update range slider:
       document.getElementById("RANGE_"+variable_position["T_4"]).value = T_4.toFixed(2);
+      redraw_canvas_gain(bode_graphs[i].bode_id);
+
+    } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
+      let T_8 = range_slider_variables[variable_position["T_8"]];
+      T_8 = T_8 * (1.0 - mouseDiffX*10.0);
+      if (T_8 < 0) T_8=0;
+      range_slider_variables[variable_position["T_8"]] = T_8;
+      // Update range slider value:
+      document.getElementById("variable_"+variable_position["T_8"]).value = T_8.toFixed(2);
+      // Update range slider:
+      document.getElementById("RANGE_"+variable_position["T_8"]).value = T_8.toFixed(2);
+
+      let k_4 = range_slider_variables[variable_position["k_4"]];
+      k_4 = k_4 * (1.0 - mouseDiffY*12.0);
+      range_slider_variables[variable_position["k_4"]] = k_4;
+      // Update range slider value:
+      document.getElementById("variable_"+variable_position["k_4"]).value = k_4.toFixed(2);
+      // Update range slider:
+      document.getElementById("RANGE_"+variable_position["k_4"]).value = k_4.toFixed(2);
       redraw_canvas_gain(bode_graphs[i].bode_id);
     }
 
