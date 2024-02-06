@@ -190,9 +190,13 @@ body{
   width:73%;
   transition: all .4s ease-in;
 }
-.formula:hover {
-  background-color: #f8f890;
-  transition:0s;
+.formula:hover {background-color: #f8f890;transition:0s}
+
+.eq-info{
+  text-align: center;
+  font-family: "Roboto";
+  font-size: 15px;
+  color: #b0b0b0;
 }
 
 .show-graph{
@@ -202,15 +206,10 @@ body{
   margin-right:10px;
   margin-left:12px;
   width:40px;
-  height:40px;
+  height:36px;
 }
-.show-graph:hover {
-  opacity: 0.60;
-}
-
-.show-graph:checked{
-  opacity: 0.33;
-}
+.show-graph:hover {opacity:0.60}
+.show-graph:checked{opacity:0.33}
 
 .delete-graph{
   float:inline-end;
@@ -218,10 +217,7 @@ body{
   top:6px;
   transition: all .4s ease-in;
 }
-.delete-graph:hover {
-  background-color: #f8f890;
-  transition:0s;
-}
+.delete-graph:hover {background-color: #f8f890;transition:0s}
 
 .slider-bound{
   width:30px;
@@ -230,10 +226,7 @@ body{
   border:none;
   transition: all .4s ease-in;
 }
-.slider-bound:hover {
-  background-color: #f8f890;
-  transition:0s;
-}
+.slider-bound:hover {background-color: #f8f890;transition:0s}
 
 .slider-subwrapper{
   display:flex;
@@ -290,10 +283,7 @@ body{
   height:30px;
   transition: all .4s ease-in;
 }
-.value-wrapper:hover input{
-  background-color: #f8f890;
-  transition:0s;
-}
+.value-wrapper:hover input{background-color: #f8f890;transition:0s}
 
 .functions-informations{
   display:flex;

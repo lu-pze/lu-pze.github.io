@@ -378,7 +378,7 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   `
   <hr>
   <div class="equation">
-    <input type="checkbox" class="show-graph" style="background: hsl(${linked_color},100%,50%)">
+    <input type="checkbox" class="show-graph" style="background: hsl(${linked_color},100%,50%)" title="${graph_name}">
     <math-field `
   // These are the GRAPHS that should be not changeable. "read only":
   if ((equation_string == GRAPH_ONE_REAL_POLE.formula) ||
@@ -395,7 +395,7 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
       (equation_string == GRAPH_TIME_DELAY.formula)){ // Make sure that hover doesn't make read-only graphs yellow:
     s += "background:#fff;";
   }
-  s += `font-size: 20px;">${mathfield_string}</math-field>`;
+  s += `font-size: 20px;" title="${graph_name}">${mathfield_string}</math-field>`;
   // These are the GRAPHS that should have download code buttons:
   if ((equation_string == GRAPH_ONE_REAL_POLE.formula) ||
       (equation_string == GRAPH_TWO_REAL_POLES.formula) ||
