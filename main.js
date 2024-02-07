@@ -2054,6 +2054,7 @@ var bode_3_imaginary = 0.5;
 let clicked_on_time_response_graph_no=-1;
 let clicked_on_bode_mag_graph_no=-1;
 let clicked_on_bode_phase_graph_no=-1;
+let clicked_on_time_variable="";
 
 let initial_mouseX = 0;
 let initial_mouseY = 0;
@@ -2068,15 +2069,60 @@ function mousePressed(){
     clicked_on_time_response_graph_no = -1;
     clicked_on_bode_mag_graph_no = -1;
     clicked_on_bode_phase_graph_no = -1;
+    clicked_on_time_variable="";
     return;
   }
+
+  // Reset what we've clicked on:
+  clicked_on_time_response_graph_no = -1;
+  clicked_on_bode_mag_graph_no = -1;
+  clicked_on_bode_phase_graph_no = -1;
+  clicked_on_time_variable = "";
+
+  // Check if we've clicked any of the pole-zero graphs:
+  for(i=0; i<bode_graphs.length; i++){
+    if(bode_graphs[i].bode_displaybool){
+      if ((bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula)||
+          (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)||
+          (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)||
+          (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula)){
+        if(((mouseX-pole_zero_graph_x[i]) > 0) && ((mouseX-pole_zero_graph_x[i]) < pole_zero_width)){
+          if(((mouseY-pole_zero_graph_y[i]) > 0) && ((mouseY-pole_zero_graph_y[i]) < pole_zero_height)){
+            var real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 3;
+            var imaginary=2 - (mouseY-pole_zero_graph_y[i])/pole_zero_height * 4;
+            //
+            if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
+              // See if the user clicked on T_2 or T_3:
+              let T_2 = range_slider_variables[variable_position["T_2"]];
+              let T_3 = range_slider_variables[variable_position["T_3"]];
+              if (abs(-1/T_2 - real) < abs(-1/T_3 - real)){
+                clicked_on_time_variable = "T_2";
+              } else {
+                clicked_on_time_variable = "T_3";
+              }
+            } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
+              // See if the user clicked on T_8, T_6 or T_7: T_8 is the preferred one if overlapping.
+              let T_8 = range_slider_variables[variable_position["T_8"]];
+              let T_6 = range_slider_variables[variable_position["T_6"]];
+              let T_7 = range_slider_variables[variable_position["T_7"]];
+              if ((abs(-1/T_8 - real) <= abs(-1/T_6 - real)) && (abs(-1/T_8 - real) <= abs(-1/T_7 - real))){
+                clicked_on_time_variable = "T_8";
+              } else if ((abs(-1/T_6 - real) <= abs(-1/T_7 - real)) && (abs(-1/T_6 - real) <= abs(-1/T_8 - real))){
+                clicked_on_time_variable = "T_6";
+              } else {
+                clicked_on_time_variable = "T_7";
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
 
   // Check if we've clicked the step response graph:
   var queue = [];
   var yes_close_enough = false;
-  clicked_on_time_response_graph_no = -1;
-  clicked_on_bode_mag_graph_no = -1;
-  clicked_on_bode_phase_graph_no = -1;
   if(((mouseX-graph_step_response_x) > 65 && (mouseX-graph_step_response_x) < graph_step_response_width + 65)&&
     ((mouseY-graph_step_response_y) > 45 && (mouseY-graph_step_response_y) < graph_step_response_height + 45)){
     var linked_x = ceil((mouseX - graph_step_response_x - 65)/precision);
@@ -2202,6 +2248,7 @@ function mouseReleased(){
   clicked_on_time_response_graph_no = -1;
   clicked_on_bode_mag_graph_no = -1;
   clicked_on_bode_phase_graph_no = -1;
+  clicked_on_time_variable="";
 }
 
 function mouseDragged(){
@@ -2491,13 +2538,14 @@ function mouseDragged(){
 
             } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
               // Change T_2 or T_3
+              let variable_to_change = clicked_on_time_variable;
               if (real > EPS) real=EPS;
               // ToDo. Let's select the one that is closest to our initial click.
-              range_slider_variables[variable_position["T_2"]] = -1/real;
+              range_slider_variables[variable_position[variable_to_change]] = -1/real;
               // Update range slider value:
-              document.getElementById("variable_"+variable_position["T_2"]).value = -(1/real).toFixed(2);
+              document.getElementById("variable_"+variable_position[variable_to_change]).value = -(1/real).toFixed(2);
               // Update range slider:
-              document.getElementById("RANGE_"+variable_position["T_2"]).value = -(1/real).toFixed(2);
+              document.getElementById("RANGE_"+variable_position[variable_to_change]).value = -(1/real).toFixed(2);
               redraw_canvas_gain(bode_graphs[i].bode_id);
 
             } else if (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
@@ -2545,12 +2593,13 @@ function mouseDragged(){
               redraw_canvas_gain(bode_graphs[i].bode_id);
 
             } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
-              // Change T_8
-              range_slider_variables[variable_position["T_8"]] = -1/real;
+              // Change T_8, T_6 or T_7:
+              let variable_to_change = clicked_on_time_variable;
+              range_slider_variables[variable_position[variable_to_change]] = -1/real;
               // Update range slider value:
-              document.getElementById("variable_"+variable_position["T_8"]).value = -(1/real).toFixed(2);
+              document.getElementById("variable_"+variable_position[variable_to_change]).value = -(1/real).toFixed(2);
               // Update range slider:
-              document.getElementById("RANGE_"+variable_position["T_8"]).value = -(1/real).toFixed(2);
+              document.getElementById("RANGE_"+variable_position[variable_to_change]).value = -(1/real).toFixed(2);
               redraw_canvas_gain(bode_graphs[i].bode_id);
             }
           }
@@ -2571,7 +2620,8 @@ function mouseMoved(){
       if(bode_graphs[i].bode_displaybool){
         if ((bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula)||
             (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)||
-            (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)){
+            (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)||
+            (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula)){
           if(((mouseX-pole_zero_graph_x[i]) > 0) && ((mouseX-pole_zero_graph_x[i]) < pole_zero_width)){
             if(((mouseY-pole_zero_graph_y[i]) > 0) && ((mouseY-pole_zero_graph_y[i]) < pole_zero_height)){
               var real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 3;
