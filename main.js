@@ -1435,7 +1435,12 @@ function draw_bode_responses(type){
 
     for(i=0; i<bode_graphs.length; i++){
       if(bode_graphs[i].bode_displaybool){
-        bode_graphs[i].draw_phase();
+        let stop_on_overflow=false;
+        if (bode_graphs[i].bode_formula == GRAPH_TIME_DELAY.formula){
+          // A workaround to not plot the high frequency way-off phase in the bode phase plot of GRAPH_TIME_DELAY with L > 1:
+          stop_on_overflow=true;
+        }
+        bode_graphs[i].draw_phase(stop_on_overflow);
       }
     }
 
@@ -3859,7 +3864,7 @@ class bode_graph{
     endShape();
   }
 
-  draw_phase(){
+  draw_phase(stop_on_overflow=false){
     noFill();
     strokeWeight(line_stroke_weight);
     stroke(this.bode_hue,360,360);
@@ -3873,8 +3878,10 @@ class bode_graph{
       if(screen_y < graph_bode_phase_height && screen_y > 0){
         vertex(x,screen_y);
       } else {
-        // Stop drawing phase if it goes off graph. Removes garbage at end of time-delayed plot:
-        break;
+        if (stop_on_overflow == true){
+          // Stop drawing phase if it goes off graph. Removes garbage at end of GRAPH_TIME_DELAY:
+          break;
+        }
       }
     }
     endShape();
