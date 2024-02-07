@@ -3153,6 +3153,16 @@ function mouseMoved(){
           line(graph_bode_phase_x + 68,graph_bode_phase_y + screen_y + 110,graph_bode_phase_x + 68 + graph_bode_phase_width,graph_bode_phase_y + screen_y + 110);
           pop();
         }
+        // We might show positive angles in the bode phase plot, so draw a line at positive angles as well:
+        linked_y = angle + 360;
+        if ((linked_y >= phase_lower_bound) && (linked_y <= phase_upper_bound)){
+          screen_y = map(linked_y,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
+          push();
+          stroke(angle_color);
+          strokeWeight(2);
+          line(graph_bode_phase_x + 68,graph_bode_phase_y + screen_y + 110,graph_bode_phase_x + 68 + graph_bode_phase_width,graph_bode_phase_y + screen_y + 110);
+          pop();
+        }
 
         // Get the magnitude of the line from origo to the mouse:
         let magnitude = sqrt(axis_x * axis_x + axis_y * axis_y);
