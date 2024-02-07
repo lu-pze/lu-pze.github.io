@@ -1709,6 +1709,10 @@ function draw_X(screen_x,screen_y){
   line(screen_x+6,screen_y-6,screen_x-6,screen_y+6);
 }
 
+function draw_O(screen_x,screen_y){
+  ellipse(screen_x,screen_y,15,15);
+}
+
 function draw_time_responses(){
   if(document.getElementById("automatic-range-time").checked){
     min_y_timerep = 100000;
@@ -1848,6 +1852,54 @@ function draw_time_responses(){
             draw_X(screen_x,screen_y);
           }
         } catch {}
+
+      } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
+        // Draw T_6:
+        try{ // The graph may be deleted, so this might fail:
+          var T_6 = range_slider_variables[variable_position["T_6"]];
+          if (T_6 >= 0){
+            // Now we know the x position. Let's find out the y position:
+            var linked_x = round(T_6 / 10.0 * graph_step_response_width/precision);
+            var linked_y = bode_graphs[i].bode_timerep_array[linked_x];
+            var screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
+            var screen_x = graph_step_response_width / 10 * T_6;
+            stroke(bode_graphs[i].bode_hue,240,360);
+            strokeWeight(3);
+            draw_X(screen_x,screen_y);
+          }
+        } catch {}
+
+        // Draw T_7:
+        try{ // The graph may be deleted, so this might fail:
+          var T_7 = range_slider_variables[variable_position["T_7"]];
+          if (T_7 >= 0){
+            // Now we know the x position. Let's find out the y position:
+            var linked_x = round(T_7 / 10.0 * graph_step_response_width/precision);
+            var linked_y = bode_graphs[i].bode_timerep_array[linked_x];
+            var screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
+            var screen_x = graph_step_response_width / 10 * T_7;
+            stroke(bode_graphs[i].bode_hue,240,360);
+            strokeWeight(3);
+            draw_X(screen_x,screen_y);
+          }
+        } catch {}
+
+        // Draw T_8:
+        try{ // The graph may be deleted, so this might fail:
+          var T_8 = range_slider_variables[variable_position["T_8"]];
+          if (T_8 >= 0){
+            // Now we know the x position. Let's find out the y position:
+            var linked_x = round(T_8 / 10.0 * graph_step_response_width/precision);
+            var linked_y = bode_graphs[i].bode_timerep_array[linked_x];
+            var screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
+            var screen_x = graph_step_response_width / 10 * T_8;
+            stroke(bode_graphs[i].bode_hue,240,360);
+            strokeWeight(3);
+            noFill();
+            draw_O(screen_x,screen_y);
+          }
+        } catch {}
+
       }
     }
   }
@@ -2153,7 +2205,40 @@ function mousePressed(){
       clicked_on_time_response_graph_no = output[1];  // 0 - 3
       initial_mouseX = mouseX;
       initial_mouseY = mouseY;
+
+      if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
+        // If user clicked on TWO_REAL_POLES,
+        // we need to figure out if user wants to move T_2 or T_3:
+        var T_2 = range_slider_variables[variable_position["T_2"]];
+        var T_2_x = graph_step_response_width / 10 * T_2;
+        var T_3 = range_slider_variables[variable_position["T_3"]];
+        var T_3_x = graph_step_response_width / 10 * T_3;
+        if (abs(T_2_x - (mouseX - graph_step_response_x - 65)) < abs(T_3_x - (mouseX - graph_step_response_x - 65))){
+          clicked_on_time_variable = "T_2";
+        } else {
+          clicked_on_time_variable = "T_3";
+        }
+      } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
+        // If user clicked on ONE_ZERO_TWO_POLES,
+        // we need to figure out if user wants to move T_8, T_6 or T_7:
+        var T_8 = range_slider_variables[variable_position["T_8"]];
+        var T_8_x = graph_step_response_width / 10 * T_8;
+        var T_6 = range_slider_variables[variable_position["T_6"]];
+        var T_6_x = graph_step_response_width / 10 * T_6;
+        var T_7 = range_slider_variables[variable_position["T_7"]];
+        var T_7_x = graph_step_response_width / 10 * T_7;
+        let x = mouseX - graph_step_response_x - 65;
+        if ((abs(T_8_x - x) <= abs(T_6_x - x)) && (abs(T_8_x - x) <= abs(T_7_x - x))){
+          clicked_on_time_variable = "T_8";
+        } else if ((abs(T_6_x - x) <= abs(T_7_x - x)) && (abs(T_6_x - x) <= abs(T_8_x - x))){
+          clicked_on_time_variable = "T_6";
+        } else {
+          clicked_on_time_variable = "T_7";
+        }
+      }
     }
+
+
   } else if(((mouseX-graph_bode_mag_x) > 68 && (mouseX-graph_bode_mag_x) < graph_bode_mag_width + 68)&&
     ((mouseY-graph_bode_mag_y) > 30 && (mouseY-graph_bode_mag_y) < graph_bode_mag_height + 30)){
     // we clicked the bode magnitude plot. Let's find out which graph we clicked:
@@ -2196,6 +2281,9 @@ function mousePressed(){
       initial_mouseX = mouseX;
       initial_mouseY = mouseY;
     }
+
+
+
   } else if(((mouseX-graph_bode_phase_x) > 68) && ((mouseX-graph_bode_phase_x) < graph_bode_phase_width + 68) && 
     ((mouseY-graph_bode_phase_y-110) > 0) && ((mouseY-graph_bode_phase_y-110) < graph_bode_phase_height)){
     // Check if we've clicked the bode phase plot:
@@ -2284,14 +2372,15 @@ function mouseDragged(){
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
     } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
-      let T_2 = range_slider_variables[variable_position["T_2"]];
-      T_2 = T_2 + mouseDiffX * 10.0;
-      if (T_2 < 0) T_2=0;
-      range_slider_variables[variable_position["T_2"]] = T_2;
+      let variable_to_change = clicked_on_time_variable;
+      let T_x = range_slider_variables[variable_position[variable_to_change]];
+      T_x = T_x + mouseDiffX * 10.0;
+      if (T_x < 0) T_x=0;
+      range_slider_variables[variable_position[variable_to_change]] = T_x;
       // Update range slider value:
-      document.getElementById("variable_"+variable_position["T_2"]).value = T_2.toFixed(2);
+      document.getElementById("variable_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
       // Update range slider:
-      document.getElementById("RANGE_"+variable_position["T_2"]).value = T_2.toFixed(2);
+      document.getElementById("RANGE_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
 
       let k_2 = range_slider_variables[variable_position["k_2"]];
       k_2 = k_2 - mouseDiffY * y_range;
@@ -2336,14 +2425,15 @@ function mouseDragged(){
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
     } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
-      let T_8 = range_slider_variables[variable_position["T_8"]];
-      T_8 = T_8 + mouseDiffX * 10.0;
-      if (T_8 < 0) T_8=0;
-      range_slider_variables[variable_position["T_8"]] = T_8;
+      let variable_to_change = clicked_on_time_variable;
+      let T_x = range_slider_variables[variable_position[variable_to_change]];
+      T_x = T_x + mouseDiffX * 10.0;
+      if (T_x < 0) T_x=0;
+      range_slider_variables[variable_position[variable_to_change]] = T_x;
       // Update range slider value:
-      document.getElementById("variable_"+variable_position["T_8"]).value = T_8.toFixed(2);
+      document.getElementById("variable_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
       // Update range slider:
-      document.getElementById("RANGE_"+variable_position["T_8"]).value = T_8.toFixed(2);
+      document.getElementById("RANGE_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
 
       let k_4 = range_slider_variables[variable_position["k_4"]];
       k_4 = k_4 - mouseDiffY * y_range;
