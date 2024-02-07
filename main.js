@@ -1541,6 +1541,44 @@ function draw_bode_responses(type){
               draw_X(screen_x,screen_y);
             }
           } catch {}
+        } else if(bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
+          // Draw T_8, T_6 and T_7:
+          try{ // The graph may be deleted, so this might fail:
+            var T_6 = range_slider_variables[variable_position["T_6"]];
+            if (T_6 >= 0){
+              // Now we know the x position. Let's find out the y position:
+              var frequency = 1 / T_6;
+              var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              var linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+              let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
+              stroke(bode_graphs[i].bode_hue,240,360);
+              strokeWeight(3);
+              draw_X(screen_x,screen_y);
+            }
+            var T_7 = range_slider_variables[variable_position["T_7"]];
+            if (T_7 >= 0){
+              // Now we know the x position. Let's find out the y position:
+              var frequency = 1 / T_7;
+              var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              var linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+              let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
+              stroke(bode_graphs[i].bode_hue,240,360);
+              strokeWeight(3);
+              draw_X(screen_x,screen_y);
+            }
+            var T_8 = range_slider_variables[variable_position["T_8"]];
+            if (T_8 >= 0){
+              // Now we know the x position. Let's find out the y position:
+              var frequency = 1 / T_8;
+              var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              var linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+              let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
+              stroke(bode_graphs[i].bode_hue,240,360);
+              strokeWeight(3);
+              noFill();
+              draw_O(screen_x,screen_y);
+            }
+          } catch {}
         }
       }
     }
@@ -1696,6 +1734,48 @@ function draw_bode_responses(type){
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
               draw_X(screen_x,screen_y);
+            }
+          } catch {}
+        } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
+          // Draw T_8, T_6 and T_7:
+          try{ // The graph may be deleted, so this might fail:
+            var T_6 = range_slider_variables[variable_position["T_6"]];
+            if (T_6 >= 0){
+              // Now we know the x position. Let's find out the y position:
+              var frequency = 1 / T_6;
+              // Need to map frequency to pixel:
+              var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              // Now we know the x position. Let's find out the y position:
+              let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+              stroke(bode_graphs[i].bode_hue,240,360);
+              strokeWeight(3);
+              draw_X(screen_x,screen_y);
+              stroke(bode_graphs[i].bode_hue,240,360);
+            }
+            var T_7 = range_slider_variables[variable_position["T_7"]];
+            if (T_7 >= 0){
+              // Now we know the x position. Let's find out the y position:
+              var frequency = 1 / T_7;
+              // Need to map frequency to pixel:
+              var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              // Now we know the x position. Let's find out the y position:
+              let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+              stroke(bode_graphs[i].bode_hue,240,360);
+              strokeWeight(3);
+              draw_X(screen_x,screen_y);
+            }
+            var T_8 = range_slider_variables[variable_position["T_8"]];
+            if (T_8 >= 0){
+              // Now we know the x position. Let's find out the y position:
+              var frequency = 1 / T_8;
+              // Need to map frequency to pixel:
+              var screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              // Now we know the x position. Let's find out the y position:
+              let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+              stroke(bode_graphs[i].bode_hue,240,360);
+              strokeWeight(3);
+              noFill();
+              draw_O(screen_x,screen_y);
             }
           } catch {}
         }
@@ -2280,9 +2360,42 @@ function mousePressed(){
       clicked_on_bode_mag_graph_no=output[1];
       initial_mouseX = mouseX;
       initial_mouseY = mouseY;
+
+      if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
+        // If user clicked on TWO_REAL_POLES, let's find out if closest to T_2 or T_3:
+        var T_2 = range_slider_variables[variable_position["T_2"]];
+        var T_2_frequency = 1 / T_2;
+        var T_2_x = (log(T_2_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        var T_3 = range_slider_variables[variable_position["T_3"]];
+        var T_3_frequency = 1 / T_3;
+        var T_3_x = (log(T_3_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        let x = mouseX - 68 - graph_bode_mag_x;
+        if (abs(T_2_x - x) < abs(T_3_x - x)){
+          clicked_on_time_variable="T_2";
+        } else {
+          clicked_on_time_variable="T_3";
+        }
+      } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
+        // If user clicked on ONE_ZERO_TWO_POLES, let's find out if closest to T_8,T_6 or T_7:
+        var T_8 = range_slider_variables[variable_position["T_8"]];
+        var T_8_frequency = 1 / T_8;
+        var T_8_x = (log(T_8_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        var T_6 = range_slider_variables[variable_position["T_6"]];
+        var T_6_frequency = 1 / T_6;
+        var T_6_x = (log(T_6_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        var T_7 = range_slider_variables[variable_position["T_7"]];
+        var T_7_frequency = 1 / T_7;
+        var T_7_x = (log(T_7_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        let x = mouseX - 68 - graph_bode_mag_x;
+        if ((abs(T_8_x - x) <= abs(T_6_x - x)) && (abs(T_8_x - x) <= abs(T_7_x - x))){
+          clicked_on_time_variable="T_8";
+        } else if ((abs(T_6_x - x) <= abs(T_7_x - x)) && (abs(T_6_x - x) <= abs(T_8_x - x))){
+          clicked_on_time_variable="T_6";
+        } else {
+          clicked_on_time_variable="T_7";
+        }
+      }
     }
-
-
 
   } else if(((mouseX-graph_bode_phase_x) > 68) && ((mouseX-graph_bode_phase_x) < graph_bode_phase_width + 68) && 
     ((mouseY-graph_bode_phase_y-110) > 0) && ((mouseY-graph_bode_phase_y-110) < graph_bode_phase_height)){
@@ -2325,6 +2438,42 @@ function mousePressed(){
       clicked_on_bode_phase_graph_no=output[1];
       initial_mouseX = mouseX;
       initial_mouseY = mouseY;
+
+      if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
+        // If user clicked on TWO_REAL_POLES, let's find out if closest to T_2 or T_3:
+        var T_2 = range_slider_variables[variable_position["T_2"]];
+        var T_2_frequency = 1 / T_2;
+        var T_2_x = (log(T_2_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        var T_3 = range_slider_variables[variable_position["T_3"]];
+        var T_3_frequency = 1 / T_3;
+        var T_3_x = (log(T_3_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        let x = mouseX - 68 - graph_bode_phase_x;
+        if (abs(T_2_x - x) < abs(T_3_x - x)){
+          clicked_on_time_variable="T_2";
+        } else {
+          clicked_on_time_variable="T_3";
+        }
+      } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
+        // If user clicked on ONE_ZERO_TWO_POLES, let's find out if closest to T_8,T_6 or T_7:
+        var T_8 = range_slider_variables[variable_position["T_8"]];
+        var T_8_frequency = 1 / T_8;
+        var T_8_x = (log(T_8_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        var T_6 = range_slider_variables[variable_position["T_6"]];
+        var T_6_frequency = 1 / T_6;
+        var T_6_x = (log(T_6_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        var T_7 = range_slider_variables[variable_position["T_7"]];
+        var T_7_frequency = 1 / T_7;
+        var T_7_x = (log(T_7_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        let x = mouseX - 68 - graph_bode_phase_x;
+        if ((abs(T_8_x - x) <= abs(T_6_x - x)) && (abs(T_8_x - x) <= abs(T_7_x - x))){
+          clicked_on_time_variable="T_8";
+        } else if ((abs(T_6_x - x) <= abs(T_7_x - x)) && (abs(T_6_x - x) <= abs(T_8_x - x))){
+          clicked_on_time_variable="T_6";
+        } else {
+          clicked_on_time_variable="T_7";
+        }
+      }
+
     }
   }
 
@@ -2474,14 +2623,15 @@ function mouseDragged(){
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
     } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
-      let T_2 = range_slider_variables[variable_position["T_2"]];
-      T_2 = T_2 * (1.0 - mouseDiffX*10.0);
-      if (T_2 < 0) T_2=0;
-      range_slider_variables[variable_position["T_2"]] = T_2;
+      let variable_to_change = clicked_on_time_variable;
+      let T_x = range_slider_variables[variable_position[variable_to_change]];
+      T_x = T_x * (1.0 - mouseDiffX*10.0);
+      if (T_x < 0) T_x=0;
+      range_slider_variables[variable_position[variable_to_change]] = T_x;
       // Update range slider value:
-      document.getElementById("variable_"+variable_position["T_2"]).value = T_2.toFixed(2);
+      document.getElementById("variable_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
       // Update range slider:
-      document.getElementById("RANGE_"+variable_position["T_2"]).value = T_2.toFixed(2);
+      document.getElementById("RANGE_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
 
       let k_2 = range_slider_variables[variable_position["k_2"]];
       k_2 = k_2 * (1.0 - mouseDiffY*12.0);
@@ -2527,14 +2677,15 @@ function mouseDragged(){
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
     } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
-      let T_8 = range_slider_variables[variable_position["T_8"]];
-      T_8 = T_8 * (1.0 - mouseDiffX*10.0);
-      if (T_8 < 0) T_8=0;
-      range_slider_variables[variable_position["T_8"]] = T_8;
+      let variable_to_change = clicked_on_time_variable;
+      let T_x = range_slider_variables[variable_position[variable_to_change]];
+      T_x = T_x * (1.0 - mouseDiffX*10.0);
+      if (T_x < 0) T_x=0;
+      range_slider_variables[variable_position[variable_to_change]] = T_x;
       // Update range slider value:
-      document.getElementById("variable_"+variable_position["T_8"]).value = T_8.toFixed(2);
+      document.getElementById("variable_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
       // Update range slider:
-      document.getElementById("RANGE_"+variable_position["T_8"]).value = T_8.toFixed(2);
+      document.getElementById("RANGE_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
 
       let k_4 = range_slider_variables[variable_position["k_4"]];
       k_4 = k_4 * (1.0 - mouseDiffY*12.0);
@@ -2567,14 +2718,15 @@ function mouseDragged(){
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
     } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
-      let T_2 = range_slider_variables[variable_position["T_2"]];
-      T_2 = T_2 * (1.0 - mouseDiffX*10.0);
-      if (T_2 < 0) T_2=0;
-      range_slider_variables[variable_position["T_2"]] = T_2;
+      let variable_to_change = clicked_on_time_variable;
+      let T_x = range_slider_variables[variable_position[variable_to_change]];
+      T_x = T_x * (1.0 - mouseDiffX*10.0);
+      if (T_x < 0) T_x=0;
+      range_slider_variables[variable_position[variable_to_change]] = T_x;
       // Update range slider value:
-      document.getElementById("variable_"+variable_position["T_2"]).value = T_2.toFixed(2);
+      document.getElementById("variable_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
       // Update range slider:
-      document.getElementById("RANGE_"+variable_position["T_2"]).value = T_2.toFixed(2);
+      document.getElementById("RANGE_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
     } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
@@ -2599,6 +2751,18 @@ function mouseDragged(){
       document.getElementById("variable_"+variable_position["T_4"]).value = T_4.toFixed(2);
       // Update range slider:
       document.getElementById("RANGE_"+variable_position["T_4"]).value = T_4.toFixed(2);
+      redraw_canvas_gain(bode_graphs[i].bode_id);
+
+    } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
+      let variable_to_change = clicked_on_time_variable;
+      let T_x = range_slider_variables[variable_position[variable_to_change]];
+      T_x = T_x * (1.0 - mouseDiffX*10.0);
+      if (T_x < 0) T_x=0;
+      range_slider_variables[variable_position[variable_to_change]] = T_x;
+      // Update range slider value:
+      document.getElementById("variable_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
+      // Update range slider:
+      document.getElementById("RANGE_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
       redraw_canvas_gain(bode_graphs[i].bode_id);
     }
 
