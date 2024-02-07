@@ -2574,7 +2574,7 @@ function mouseMoved(){
             (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)){
           if(((mouseX-pole_zero_graph_x[i]) > 0) && ((mouseX-pole_zero_graph_x[i]) < pole_zero_width)){
             if(((mouseY-pole_zero_graph_y[i]) > 0) && ((mouseY-pole_zero_graph_y[i]) < pole_zero_height)){
-              var real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 2;
+              var real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 3;
               var imaginary=2 - (mouseY-pole_zero_graph_y[i])/pole_zero_height * 4;
               noStroke();
               push();
@@ -3029,7 +3029,12 @@ function mouseMoved(){
           stroke(angle_color);
           strokeWeight(2);
           noFill();
+
+          let screen_x2 = map(1.2*cos(angle/180*PI),min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+          let screen_y2 = map(1.2*sin(angle/180*PI),max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+
           arc(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
+          line(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,graph_nyquist_x + 65 + screen_x2, graph_nyquist_y + 45 + screen_y2);
           pop();
 
           // Now paint a horizontal line on the Bode phase plot, at the right height:
