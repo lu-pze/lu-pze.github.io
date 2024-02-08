@@ -3265,7 +3265,11 @@ function mouseMoved(){
           stroke(angle_color);
           strokeWeight(2);
           noFill();
-          arc(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
+          if (angle < 0){
+            arc(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
+          } else {
+            arc(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, -angle/180*PI, 0);
+          }
           pop();
 
           // Now paint a horizontal line on the Bode phase plot, at the right height:
@@ -3352,7 +3356,11 @@ function mouseMoved(){
           let screen_x2 = map(1.2*cos(angle/180*PI),min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
           let screen_y2 = map(1.2*sin(angle/180*PI),max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
 
-          arc(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
+          if (angle < 0){
+            arc(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
+          } else {
+            arc(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, -angle/180*PI, 0);
+          }
           line(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,graph_nyquist_x + 65 + screen_x2, graph_nyquist_y + 45 + screen_y2);
           pop();
 
@@ -3967,6 +3975,22 @@ class bode_graph{
           var frequency = w;
           bode_graphs[i].draw_nyquist_X(frequency);
         }
+      } else if(this.bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
+        var T_8 = range_slider_variables[variable_position["T_8"]];
+        if (T_8 != 0){
+          var frequency = 1 / T_8;
+          bode_graphs[i].draw_nyquist_O(frequency);
+        }
+        var T_6 = range_slider_variables[variable_position["T_6"]];
+        if (T_6 != 0){
+          var frequency = 1 / T_6;
+          bode_graphs[i].draw_nyquist_X(frequency);
+        }
+        var T_7 = range_slider_variables[variable_position["T_7"]];
+        if (T_7 != 0){
+          var frequency = 1 / T_7;
+          bode_graphs[i].draw_nyquist_X(frequency);
+        }
       }
     }
   }
@@ -3979,7 +4003,7 @@ class bode_graph{
     //    let log_pow = map(x,0,graph_bode_mag_width,min_10power,min_10power+x_case_gain);
     //    let freq = pow(10,log_pow);
     //    let bode_value = getComplexValues(freq);
-    var screen_x1 = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+    var screen_x1 = (log(abs(frequency))/log(10) + 2) * graph_bode_mag_width/5;
     //console.log("frequency="+frequency);
     //console.log("screen_x1="+screen_x1);
     var sample_no = round(screen_x1);
@@ -3996,6 +4020,23 @@ class bode_graph{
       stroke(bode_graphs[i].bode_hue,240,360);
       strokeWeight(3);
       draw_X(screen_x, screen_y);
+      pop();
+    } catch {};
+  }
+
+  draw_nyquist_O(frequency){
+    //let new_complex_array = this.bode_complex_array.map(x => x.conjugate());
+    let new_complex_array = this.bode_complex_array;
+    var screen_x1 = (log(abs(frequency))/log(10) + 2) * graph_bode_mag_width/5;
+    var sample_no = round(screen_x1);
+    let current_complex = new_complex_array[sample_no];
+    try {
+      let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+      let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+      push();
+      stroke(bode_graphs[i].bode_hue,240,360);
+      strokeWeight(3);
+      draw_O(screen_x, screen_y);
       pop();
     } catch {};
   }
