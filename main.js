@@ -4106,7 +4106,6 @@ class bode_graph{
 
     noFill();
     var blob_color = color('hsb(0, 0%, 20%)');
-    noFill();
     strokeWeight(line_stroke_weight);
     stroke(this.bode_hue,360,360);
 //    ellipse(pole_zero_width/2,pole_zero_height/2,12,12);
@@ -4168,9 +4167,6 @@ class bode_graph{
           tmp_x = tmp_x / scale;
           tmp_y=2.2;
         }
-
-        this.plot_pole(tmp_x,tmp_y); // complex
-        this.plot_pole(tmp_x,-tmp_y); // complex
         // Since these are complex, let's draw a line from origo as well:
         stroke(line_color);
         strokeWeight(1);
@@ -4182,6 +4178,12 @@ class bode_graph{
              pole_zero_height/2 - tmp_y * pole_zero_height/4,
              pole_zero_width/2 + (0+1) * pole_zero_width/4,
              pole_zero_height/2 + 0 * pole_zero_height/4);
+
+        noFill();
+        strokeWeight(line_stroke_weight);
+        stroke(this.bode_hue,360,360);
+        this.plot_pole(tmp_x,tmp_y); // complex
+        this.plot_pole(tmp_x,-tmp_y); // complex
       } else {
         //If sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
         var bode_3_real_1 = -z*w + w * sqrt(z*z-1);
