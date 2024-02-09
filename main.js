@@ -1466,7 +1466,7 @@ function draw_bode_responses(type){
             if (T_1 >= 0){
               let frequency = 1 / T_1;
               let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-              let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+              let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
               let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
@@ -1481,7 +1481,7 @@ function draw_bode_responses(type){
               // Now we know the x position. Let's find out the y position:
               let frequency = 1 / T_2;
               let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-              let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+              let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
               let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
@@ -1492,7 +1492,7 @@ function draw_bode_responses(type){
               // Now we know the x position. Let's find out the y position:
               let frequency = 1 / T_3;
               let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-              let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+              let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
               let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
@@ -1509,7 +1509,7 @@ function draw_bode_responses(type){
               if (w >= 0){
                 let frequency = w;
                 let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-                let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+                let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
                 let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
                 stroke(bode_graphs[i].bode_hue,240,360);
                 strokeWeight(3);
@@ -1524,7 +1524,7 @@ function draw_bode_responses(type){
               if (w >= 0){
                 let frequency = w;
                 let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-                let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+                let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
                 let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
                 stroke(bode_graphs[i].bode_hue,240,360);
                 strokeWeight(3);
@@ -1534,7 +1534,7 @@ function draw_bode_responses(type){
               if (w >= 0){
                 let frequency = w;
                 let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-                let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+                let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
                 let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
                 stroke(bode_graphs[i].bode_hue,240,360);
                 strokeWeight(3);
@@ -1549,7 +1549,7 @@ function draw_bode_responses(type){
             if (T_4 >= 0){
               let frequency = 1 / T_4;
               let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-              let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+              let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
               let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
@@ -1564,7 +1564,7 @@ function draw_bode_responses(type){
               // Now we know the x position. Let's find out the y position:
               let frequency = 1 / T_6;
               let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-              let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+              let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
               let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
@@ -1575,7 +1575,7 @@ function draw_bode_responses(type){
               // Now we know the x position. Let's find out the y position:
               let frequency = 1 / T_7;
               let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-              let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+              let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
               let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
@@ -1586,7 +1586,7 @@ function draw_bode_responses(type){
               // Now we know the x position. Let's find out the y position:
               let frequency = 1 / T_8;
               let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-              let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
+              let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
               let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
@@ -1651,7 +1651,7 @@ function draw_bode_responses(type){
               // Need to map frequency to pixel:
               let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
               // Now we know the x position. Let's find out the y position:
-              let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+              let screen_y = map(bode_graphs[i].bode_gain_array[Math.round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
               draw_X(screen_x,screen_y);
@@ -1667,7 +1667,7 @@ function draw_bode_responses(type){
               // Need to map frequency to pixel:
               let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
               // Now we know the x position. Let's find out the y position:
-              let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+              let screen_y = map(bode_graphs[i].bode_gain_array[Math.round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
               draw_X(screen_x,screen_y);
@@ -1680,7 +1680,7 @@ function draw_bode_responses(type){
               // Need to map frequency to pixel:
               let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
               // Now we know the x position. Let's find out the y position:
-              let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+              let screen_y = map(bode_graphs[i].bode_gain_array[Math.round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
               draw_X(screen_x,screen_y);
@@ -1698,7 +1698,7 @@ function draw_bode_responses(type){
                 // Need to map frequency to pixel:
                 let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
                 // Now we know the x position. Let's find out the y position:
-                let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+                let screen_y = map(bode_graphs[i].bode_gain_array[Math.round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
                 stroke(bode_graphs[i].bode_hue,240,360);
                 strokeWeight(3);
                 draw_X(screen_x,screen_y);
@@ -1714,7 +1714,7 @@ function draw_bode_responses(type){
                 // Need to map frequency to pixel:
                 let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
                 // Now we know the x position. Let's find out the y position:
-                let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+                let screen_y = map(bode_graphs[i].bode_gain_array[Math.round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
                 stroke(bode_graphs[i].bode_hue,240,360);
                 strokeWeight(3);
                 draw_X(screen_x,screen_y);
@@ -1725,7 +1725,7 @@ function draw_bode_responses(type){
                 // Need to map frequency to pixel:
                 let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
                 // Now we know the x position. Let's find out the y position:
-                let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+                let screen_y = map(bode_graphs[i].bode_gain_array[Math.round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
                 stroke(bode_graphs[i].bode_hue,240,360);
                 strokeWeight(3);
                 draw_X(screen_x,screen_y);
@@ -1743,7 +1743,7 @@ function draw_bode_responses(type){
               let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
   //            console.log("screen_x="+screen_x);
               // Now we know the x position. Let's find out the y position:
-              let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+              let screen_y = map(bode_graphs[i].bode_gain_array[Math.round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
               draw_X(screen_x,screen_y);
@@ -1759,7 +1759,7 @@ function draw_bode_responses(type){
               // Need to map frequency to pixel:
               let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
               // Now we know the x position. Let's find out the y position:
-              let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+              let screen_y = map(bode_graphs[i].bode_gain_array[Math.round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
               draw_X(screen_x,screen_y);
@@ -1772,7 +1772,7 @@ function draw_bode_responses(type){
               // Need to map frequency to pixel:
               let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
               // Now we know the x position. Let's find out the y position:
-              let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+              let screen_y = map(bode_graphs[i].bode_gain_array[Math.round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
               draw_X(screen_x,screen_y);
@@ -1784,7 +1784,7 @@ function draw_bode_responses(type){
               // Need to map frequency to pixel:
               let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
               // Now we know the x position. Let's find out the y position:
-              let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+              let screen_y = map(bode_graphs[i].bode_gain_array[Math.round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
               strokeWeight(3);
               noFill();
@@ -1825,7 +1825,7 @@ function draw_time_responses(){
   }
   // Make sure that "0" is kind of stable if we have 'almost zero':
   if (Math.abs(min_y_timerep) < 0.1){
-    min_y_timerep = round(min_y_timerep);
+    min_y_timerep = Math.round(min_y_timerep);
   }
 
   textAlign(CENTER);
@@ -1889,7 +1889,7 @@ function draw_time_responses(){
           let T_1 = range_slider_variables[variable_position["T_1"]];
           if (T_1 >= 0){
             // Now we know the x position. Let's find out the y position:
-            let linked_x = round(T_1 / 10.0 * graph_step_response_width/precision);
+            let linked_x = Math.round(T_1 / 10.0 * graph_step_response_width/precision);
             let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
             let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
             let screen_x = graph_step_response_width / 10 * T_1;
@@ -1904,7 +1904,7 @@ function draw_time_responses(){
           let T_2 = range_slider_variables[variable_position["T_2"]];
           if (T_2 >= 0){
             // Now we know the x position. Let's find out the y position:
-            let linked_x = round(T_2 / 10.0 * graph_step_response_width/precision);
+            let linked_x = Math.round(T_2 / 10.0 * graph_step_response_width/precision);
             let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
             let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
             let screen_x = graph_step_response_width / 10 * T_2;
@@ -1919,7 +1919,7 @@ function draw_time_responses(){
           let T_3 = range_slider_variables[variable_position["T_3"]];
           if (T_3 >= 0){
             // Now we know the x position. Let's find out the y position:
-            let linked_x = round(T_3 / 10.0 * graph_step_response_width/precision);
+            let linked_x = Math.round(T_3 / 10.0 * graph_step_response_width/precision);
             let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
             let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
             let screen_x = graph_step_response_width / 10 * T_3;
@@ -1936,7 +1936,7 @@ function draw_time_responses(){
           if (L >= 0){
             // Now we know the x position. Let's find out the y position:
             let T_1 = 1;
-            let linked_x = round((T_1+L) / 10.0 * graph_step_response_width/precision);
+            let linked_x = Math.round((T_1+L) / 10.0 * graph_step_response_width/precision);
             let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
             let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
             let screen_x = graph_step_response_width / 10 * (T_1 + L);
@@ -1952,7 +1952,7 @@ function draw_time_responses(){
           let T_6 = range_slider_variables[variable_position["T_6"]];
           if (T_6 >= 0){
             // Now we know the x position. Let's find out the y position:
-            let linked_x = round(T_6 / 10.0 * graph_step_response_width/precision);
+            let linked_x = Math.round(T_6 / 10.0 * graph_step_response_width/precision);
             let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
             let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
             let screen_x = graph_step_response_width / 10 * T_6;
@@ -1967,7 +1967,7 @@ function draw_time_responses(){
           let T_7 = range_slider_variables[variable_position["T_7"]];
           if (T_7 >= 0){
             // Now we know the x position. Let's find out the y position:
-            let linked_x = round(T_7 / 10.0 * graph_step_response_width/precision);
+            let linked_x = Math.round(T_7 / 10.0 * graph_step_response_width/precision);
             let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
             let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
             let screen_x = graph_step_response_width / 10 * T_7;
@@ -1982,7 +1982,7 @@ function draw_time_responses(){
           let T_8 = range_slider_variables[variable_position["T_8"]];
           if (T_8 >= 0){
             // Now we know the x position. Let's find out the y position:
-            let linked_x = round(T_8 / 10.0 * graph_step_response_width/precision);
+            let linked_x = Math.round(T_8 / 10.0 * graph_step_response_width/precision);
             let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
             let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
             let screen_x = graph_step_response_width / 10 * T_8;
@@ -4062,7 +4062,7 @@ class bode_graph{
     let screen_x1 = (Math.log(Math.abs(frequency))/Math.log(10) + 2) * graph_bode_mag_width/5;
     //console.log("frequency="+frequency);
     //console.log("screen_x1="+screen_x1);
-    let sample_no = round(screen_x1);
+    let sample_no = Math.round(screen_x1);
 //    let sample_no = Math.floor(new_complex_array.length * percentage);
     let current_complex = new_complex_array[sample_no];
 //    console.log("current_complex="+current_complex);
@@ -4084,7 +4084,7 @@ class bode_graph{
     //let new_complex_array = this.bode_complex_array.map(x => x.conjugate());
     let new_complex_array = this.bode_complex_array;
     let screen_x1 = (Math.log(Math.abs(frequency))/Math.log(10) + 2) * graph_bode_mag_width/5;
-    let sample_no = round(screen_x1);
+    let sample_no = Math.round(screen_x1);
     let current_complex = new_complex_array[sample_no];
     try {
       let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
