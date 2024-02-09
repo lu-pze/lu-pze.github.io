@@ -598,11 +598,11 @@ function download_script(id){
     `This is the<select id="language-choices" style="height:30px;margin-top:9px;margin-left:8px" onchange="update_programming_language(${id})">
   <option value="Python">Python script</option>
   <option value="MATLAB">MATLAB script</option>
+  <option value="Julia">Julia code</option>
 </select> for plotting your transfer function.<br>Copy to clipboard:
 <button type="button" onclick="copy_code()" class="copy-button"><i class="material-icons" style="font-size:24px;color:#404040">content_copy</i></button>
 <button type="button" class="delete-graph" onclick="hide_script()"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>
 <br><br><div id="the_code"></div>`;
-//  <option value="Julia">Julia code</option>
 
   var toggleElement = document.querySelector('.download_script_box');
   toggleElement.classList.toggle('active');
@@ -746,42 +746,42 @@ function get_julia_script(id){
     return "";
   }
 
-  var html=`* Julia version for ${id}:
-# Make sure you have the required Julia packages installed. You can install them using:
-# import Pkg
-# Pkg.add("ControlSystems")
-# Pkg.add("Plots")
+  var html=`# Installing required packages
+import Pkg
+pkgs = [ "ControlSystems", "Plots" ]
+Pkg.add(pkgs)
+# Loading packages
 using ControlSystems
 using Plots
-# Clear previous variables and plots
-plotly()  # or use another plot backend
-plotlyjs()  # For Jupyter notebooks
-# Define poles and zeroes
+
+# Creating the transfer function:
 ${julia_string}
-poles = [-65.0 - 25.5im, -65.0 + 25.5im]
-zeroes = []
-# Create transfer function
-system = TransferFunction([], poles)
-# Display transfer function
-println("Transfer Function:")
-print(system)
-# Plot poles and zeroes
-plot(pzmap(system), seriestype=:scatter, title="Pole-Zero Map")
-# Plot Bode diagram
-bode_opts = BodeDefaults()
-bode_opts.xlimits = (0.01, 100)
-bode(system, bode_opts, title="Bode Diagram")
-# Plot step response
-time, response = stepresponse(system)
-plot(time, response, title="Step Response", xlabel="Time", ylabel="Amplitude", grid=true)
-# Convert to discrete-time transfer function with zero-order hold (zoh)
-time_resolution = 0.05
-discrete_transfer_function = c2d(system, time_resolution, method="zoh")
-# Plot discrete-time pole-zero map
-pzmap(discrete_transfer_function, title="Discrete-Time Pole-Zero Map")
-# Plot step response of discrete-time system
-time_discrete, response_discrete = stepresponse(discrete_transfer_function)
-plot(time_discrete, response_discrete, title="Discrete-Time Step Response", xlabel="Time", ylabel="Amplitude", grid=true)
+system = tf(num, den)
+println("$(system)")
+
+# plot poles and zeros
+pzmap(system)
+title!("Pole-Zero Map")
+display(plot!())
+(zs, ps, k) = zpkdata(system)
+println("poles=$(ps)")
+println("zeros=$(zs)")
+ 
+# Step response for the system
+yout, T = step(system)
+plot(T, vec(yout), label = "")
+title!("Step input response")
+display(plot!())
+
+# Plot Bode diagram:
+bodeplot(system, label = "")
+title!("Bode Diagram")
+display(plot!())
+
+# Nyquist plot for the system
+nyquistplot(system, label = "")
+display(plot!())
+ 
 
 `.replace(/(?:\r\n|\r|\n)/g, "<br>");
   return html;
@@ -1295,7 +1295,7 @@ function draw(){
   pop();
 
   push();
-  translate(70+graph_bode_mag_x,30+graph_bode_mag_y);
+  translate(68+graph_bode_mag_x,30+graph_bode_mag_y);
   draw_bode_responses('gain');
   pop();
 
@@ -1305,7 +1305,7 @@ function draw(){
   pop();
 
   push();
-  translate(70+graph_bode_phase_x,30 + graph_bode_phase_y + 80);
+  translate(68+graph_bode_phase_x,30 + graph_bode_phase_y + 80);
   draw_bode_responses('phase');
   pop();
 
@@ -3063,7 +3063,7 @@ function mouseMoved(){
           push();
           stroke(text_color);
           strokeWeight(2);
-          line(graph_bode_mag_x+65,output[2] + graph_bode_mag_y,graph_bode_mag_x + 65 + graph_bode_mag_width, output[2] + graph_bode_mag_y);
+          line(graph_bode_mag_x+68,output[2] + graph_bode_mag_y,graph_bode_mag_x + 68 + graph_bode_mag_width, output[2] + graph_bode_mag_y);
           pop();
         } else {
           push();
@@ -3095,7 +3095,7 @@ function mouseMoved(){
           push();
           stroke(text_color);
           strokeWeight(2);
-          line(graph_bode_mag_x+65,mouseY,graph_bode_mag_x + 65 + graph_bode_mag_width, mouseY);
+          line(graph_bode_mag_x+68,mouseY,graph_bode_mag_x + 68 + graph_bode_mag_width, mouseY);
           pop();
         }
       }
