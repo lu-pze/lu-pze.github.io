@@ -104,10 +104,12 @@ let graph_bode_mag_width;
 let graph_bode_mag_height;
 let graph_bode_mag_x;
 let graph_bode_mag_y;
+const graph_bode_mag_x_offset = 68;
 let graph_bode_phase_width;
 let graph_bode_phase_height;
 let graph_bode_phase_x;
 let graph_bode_phase_y;
+const graph_bode_phase_x_offset = 68;
 let graph_step_response_width;
 let graph_step_response_height;
 let graph_step_response_x;
@@ -1297,7 +1299,7 @@ function draw(){
   pop();
 
   push();
-  translate(68+graph_bode_mag_x,30+graph_bode_mag_y);
+  translate(graph_bode_mag_x+graph_bode_mag_x_offset,30+graph_bode_mag_y);
   draw_bode_responses('gain');
   pop();
 
@@ -1307,7 +1309,7 @@ function draw(){
   pop();
 
   push();
-  translate(68+graph_bode_phase_x,30 + graph_bode_phase_y + 80);
+  translate(graph_bode_phase_x_offset+graph_bode_phase_x,30 + graph_bode_phase_y + 80);
   draw_bode_responses('phase');
   pop();
 
@@ -2326,10 +2328,10 @@ function mousePressed(){
     }
 
 
-  } else if(((mouseX-graph_bode_mag_x) > 68 && (mouseX-graph_bode_mag_x) < graph_bode_mag_width + 68)&&
+  } else if(((mouseX-graph_bode_mag_x) > graph_bode_mag_x_offset && (mouseX-graph_bode_mag_x) < graph_bode_mag_width + graph_bode_mag_x_offset)&&
     ((mouseY-graph_bode_mag_y) > 30 && (mouseY-graph_bode_mag_y) < graph_bode_mag_height + 30)){
     // we clicked the bode magnitude plot. Let's find out which graph we clicked:
-    let linked_x = mouseX - graph_bode_mag_x - 68;
+    let linked_x = mouseX - graph_bode_mag_x - graph_bode_mag_x_offset;
     let linked_y = mouseY - graph_bode_mag_y - 30;
     let perc_x = linked_x / graph_bode_mag_width;
     let perc_y = linked_y / graph_bode_mag_height;
@@ -2376,7 +2378,7 @@ function mousePressed(){
         let T_3 = range_slider_variables[variable_position["T_3"]];
         let T_3_frequency = 1 / T_3;
         let T_3_x = (log(T_3_frequency)/log(10) + 2) * graph_bode_mag_width/5;
-        let x = mouseX - 68 - graph_bode_mag_x;
+        let x = mouseX - graph_bode_mag_x_offset - graph_bode_mag_x;
         if (abs(T_2_x - x) < abs(T_3_x - x)){
           clicked_on_time_variable="T_2";
         } else {
@@ -2393,7 +2395,7 @@ function mousePressed(){
         let T_7 = range_slider_variables[variable_position["T_7"]];
         let T_7_frequency = 1 / T_7;
         let T_7_x = (log(T_7_frequency)/log(10) + 2) * graph_bode_mag_width/5;
-        let x = mouseX - 68 - graph_bode_mag_x;
+        let x = mouseX - graph_bode_mag_x_offset - graph_bode_mag_x;
         if ((abs(T_8_x - x) <= abs(T_6_x - x)) && (abs(T_8_x - x) <= abs(T_7_x - x))){
           clicked_on_time_variable="T_8";
         } else if ((abs(T_6_x - x) <= abs(T_7_x - x)) && (abs(T_6_x - x) <= abs(T_8_x - x))){
@@ -2404,10 +2406,10 @@ function mousePressed(){
       }
     }
 
-  } else if(((mouseX-graph_bode_phase_x) > 68) && ((mouseX-graph_bode_phase_x) < graph_bode_phase_width + 68) && 
+  } else if(((mouseX-graph_bode_phase_x) > graph_bode_phase_x_offset) && ((mouseX-graph_bode_phase_x) < graph_bode_phase_width + graph_bode_phase_x_offset) && 
     ((mouseY-graph_bode_phase_y-110) > 0) && ((mouseY-graph_bode_phase_y-110) < graph_bode_phase_height)){
     // Check if we've clicked the bode phase plot:
-    let linked_x = mouseX - graph_bode_phase_x - 68;
+    let linked_x = mouseX - graph_bode_phase_x - graph_bode_phase_x_offset;
     let linked_y = mouseY - graph_bode_phase_y - 110;
 //        console.log("# inside bode_phase graph, x="+linked_x+", y="+linked_y);
     let perc_x = linked_x / graph_bode_phase_width;
@@ -2454,7 +2456,7 @@ function mousePressed(){
         let T_3 = range_slider_variables[variable_position["T_3"]];
         let T_3_frequency = 1 / T_3;
         let T_3_x = (log(T_3_frequency)/log(10) + 2) * graph_bode_mag_width/5;
-        let x = mouseX - 68 - graph_bode_phase_x;
+        let x = mouseX - graph_bode_phase_x_offset - graph_bode_phase_x;
         if (abs(T_2_x - x) < abs(T_3_x - x)){
           clicked_on_time_variable="T_2";
         } else {
@@ -2471,7 +2473,7 @@ function mousePressed(){
         let T_7 = range_slider_variables[variable_position["T_7"]];
         let T_7_frequency = 1 / T_7;
         let T_7_x = (log(T_7_frequency)/log(10) + 2) * graph_bode_mag_width/5;
-        let x = mouseX - 68 - graph_bode_phase_x;
+        let x = mouseX - graph_bode_phase_x_offset - graph_bode_phase_x;
         if ((abs(T_8_x - x) <= abs(T_6_x - x)) && (abs(T_8_x - x) <= abs(T_7_x - x))){
           clicked_on_time_variable="T_8";
         } else if ((abs(T_6_x - x) <= abs(T_7_x - x)) && (abs(T_6_x - x) <= abs(T_8_x - x))){
@@ -2948,7 +2950,7 @@ function mouseMoved(){
           // Now paint a horizontal line on the Bode magnitude plot, at the right height:
           let magnitude_in_dB = 20*log(magnitude)/log(10);
           let screen_y5 = map(magnitude_in_dB,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
-          ellipse(graph_bode_mag_x+68,graph_bode_mag_y + screen_y5 + 30,12,12);
+          ellipse(graph_bode_mag_x+graph_bode_mag_x_offset,graph_bode_mag_y + screen_y5 + 30,12,12);
           noStroke();
           fill(linked_bode_graph.bode_hue,360,360);
           ellipse(mouseX,screen_y + 45 + graph_step_response_y,12,12);
@@ -2982,7 +2984,7 @@ function mouseMoved(){
           // Now paint a horizontal line on the Bode magnitude plot, at the right height:
           let magnitude_in_dB = 20*log(magnitude)/log(10);
           let screen_y5 = map(magnitude_in_dB,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
-          ellipse(graph_bode_mag_x+68,graph_bode_mag_y + screen_y5 + 30,12,12);
+          ellipse(graph_bode_mag_x+graph_bode_mag_x_offset,graph_bode_mag_y + screen_y5 + 30,12,12);
 
           translate(mouseX,mouseY);
           fill(box_background_color,200);
@@ -3002,9 +3004,9 @@ function mouseMoved(){
 
 
     // Check if we're hovering the bode magnitude plot:
-    if((mouseX-graph_bode_mag_x) > 68 && (mouseX-graph_bode_mag_x) < graph_bode_mag_width + 68){
+    if((mouseX-graph_bode_mag_x) > graph_bode_mag_x_offset && (mouseX-graph_bode_mag_x) < graph_bode_mag_width + graph_bode_mag_x_offset){
       if((mouseY-graph_bode_mag_y) > 30 && (mouseY-graph_bode_mag_y) < graph_bode_mag_height + 30){
-        let linked_x = mouseX - graph_bode_mag_x - 68;
+        let linked_x = mouseX - graph_bode_mag_x - graph_bode_mag_x_offset;
         let linked_y = mouseY - graph_bode_mag_y - 30;
 //        console.log("# inside bode_mag graph, x="+linked_x+", y="+linked_y);
         let perc_x = linked_x / graph_bode_mag_width;
@@ -3100,7 +3102,7 @@ function mouseMoved(){
           push();
           stroke(text_color);
           strokeWeight(2);
-          line(graph_bode_mag_x+68,output[2] + graph_bode_mag_y,graph_bode_mag_x + 68 + graph_bode_mag_width, output[2] + graph_bode_mag_y);
+          line(graph_bode_mag_x+graph_bode_mag_x_offset,output[2] + graph_bode_mag_y,graph_bode_mag_x + graph_bode_mag_x_offset + graph_bode_mag_width, output[2] + graph_bode_mag_y);
           pop();
         } else {
           push();
@@ -3132,7 +3134,7 @@ function mouseMoved(){
           push();
           stroke(text_color);
           strokeWeight(2);
-          line(graph_bode_mag_x+68,mouseY,graph_bode_mag_x + 68 + graph_bode_mag_width, mouseY);
+          line(graph_bode_mag_x+graph_bode_mag_x_offset,mouseY,graph_bode_mag_x + graph_bode_mag_x_offset + graph_bode_mag_width, mouseY);
           pop();
         }
       }
@@ -3187,7 +3189,7 @@ function mouseMoved(){
           push();
           stroke(angle_color);
           strokeWeight(2);
-          line(graph_bode_phase_x + 68,graph_bode_phase_y + screen_y + 110,graph_bode_phase_x + 68 + graph_bode_phase_width,graph_bode_phase_y + screen_y + 110);
+          line(graph_bode_phase_x + graph_bode_mag_x_offset,graph_bode_phase_y + screen_y + 110,graph_bode_phase_x + graph_bode_mag_x_offset + graph_bode_phase_width,graph_bode_phase_y + screen_y + 110);
           pop();
         }
         // We might show positive angles in the bode phase plot, so draw a line at positive angles as well:
@@ -3197,7 +3199,7 @@ function mouseMoved(){
           push();
           stroke(angle_color);
           strokeWeight(2);
-          line(graph_bode_phase_x + 68,graph_bode_phase_y + screen_y + 110,graph_bode_phase_x + 68 + graph_bode_phase_width,graph_bode_phase_y + screen_y + 110);
+          line(graph_bode_phase_x + graph_bode_mag_x_offset,graph_bode_phase_y + screen_y + 110,graph_bode_phase_x + graph_bode_mag_x_offset + graph_bode_phase_width,graph_bode_phase_y + screen_y + 110);
           pop();
         }
 
@@ -3209,16 +3211,16 @@ function mouseMoved(){
         push();
         stroke(text_color);
         strokeWeight(2);
-        line(graph_bode_mag_x + 68,graph_bode_mag_y + screen_y + 30,graph_bode_mag_x + 68 + graph_bode_mag_width,graph_bode_mag_y + screen_y + 30);
+        line(graph_bode_mag_x + graph_bode_mag_x_offset,graph_bode_mag_y + screen_y + 30,graph_bode_mag_x + graph_bode_mag_x_offset + graph_bode_mag_width,graph_bode_mag_y + screen_y + 30);
         pop();
       }
     }
 
 
     // Check if we're hovering the bode phase plot:
-    if((mouseX-graph_bode_phase_x) > 68 && (mouseX-graph_bode_phase_x) < graph_bode_phase_width + 68){
+    if((mouseX-graph_bode_phase_x) > graph_bode_mag_x_offset && (mouseX-graph_bode_phase_x) < graph_bode_phase_width + graph_bode_mag_x_offset){
       if((mouseY-graph_bode_phase_y-110) > 0 && (mouseY-graph_bode_phase_y-110) < graph_bode_phase_height){
-        let linked_x = mouseX - graph_bode_phase_x - 68;
+        let linked_x = mouseX - graph_bode_phase_x - graph_bode_mag_x_offset;
         let linked_y = mouseY - graph_bode_phase_y - 110;
 //        console.log("# inside bode_phase graph, x="+linked_x+", y="+linked_y);
         let perc_x = linked_x / graph_bode_phase_width;
@@ -3316,7 +3318,7 @@ function mouseMoved(){
             push();
             stroke(angle_color);
             strokeWeight(2);
-            line(graph_bode_phase_x + 68,graph_bode_phase_y + screen_y + 110,graph_bode_phase_x + 68 + graph_bode_phase_width,graph_bode_phase_y + screen_y + 110);
+            line(graph_bode_phase_x + graph_bode_phase_x_offset,graph_bode_phase_y + screen_y + 110,graph_bode_phase_x + graph_bode_phase_x_offset + graph_bode_phase_width,graph_bode_phase_y + screen_y + 110);
             pop();
           }
 
@@ -3401,7 +3403,7 @@ function mouseMoved(){
             push();
             stroke(angle_color);
             strokeWeight(2);
-            line(graph_bode_phase_x + 68,graph_bode_phase_y + screen_y + 110,graph_bode_phase_x + 68 + graph_bode_phase_width,graph_bode_phase_y + screen_y + 110);
+            line(graph_bode_phase_x + graph_bode_phase_x_offset,graph_bode_phase_y + screen_y + 110,graph_bode_phase_x + graph_bode_phase_x_offset + graph_bode_phase_width,graph_bode_phase_y + screen_y + 110);
             pop();
           }
         }
