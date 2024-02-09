@@ -117,7 +117,7 @@ let graph_step_response_height;
 let graph_step_response_x;
 let graph_step_response_y;
 const graph_step_response_x_offset = 65;
-const graph_step_response_y_offset = 45;
+const graph_step_response_y_offset = 40;
 let graph_nyquist_width;
 let graph_nyquist_height;
 let graph_nyquist_x;
@@ -1266,7 +1266,7 @@ function setGraphDimensions(){
   graph_pole_zero_width = (canvas_width - 100)*1/6 - 40;
   graph_pole_zero_height = canvas_height - 20;
   graph_pole_zero_x = canvas_width - graph_pole_zero_width - 20;
-  graph_pole_zero_y = 10;
+  graph_pole_zero_y = 0;
 }
 
 
@@ -2168,7 +2168,7 @@ function draw_pole_zeros(){
   textSize(15);
   textAlign(CENTER);
   fill(text_color);
-  text("Poles & zeros",graph_pole_zero_width/2,20);
+  text("Poles & zeros",graph_pole_zero_width/2,25);
   pop();
 }
 
