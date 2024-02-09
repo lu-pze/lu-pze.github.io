@@ -116,10 +116,14 @@ let graph_step_response_width;
 let graph_step_response_height;
 let graph_step_response_x;
 let graph_step_response_y;
+const graph_step_response_x_offset = 65;
+const graph_step_response_y_offset = 45;
 let graph_nyquist_width;
 let graph_nyquist_height;
 let graph_nyquist_x;
 let graph_nyquist_y;
+const graph_nyquist_x_offset = 65;
+const graph_nyquist_y_offset = 45;
 let graph_pole_zero_width;
 let graph_pole_zero_height;
 let graph_pole_zero_x;
@@ -1296,7 +1300,7 @@ function setup(){
 function draw(){
   background(background_color);
   push();
-  translate(65+graph_nyquist_x,45+graph_nyquist_y);
+  translate(graph_nyquist_x_offset+graph_nyquist_x,graph_nyquist_y + graph_nyquist_y_offset);
   draw_nyquist_responses();
   pop();
 
@@ -1316,7 +1320,7 @@ function draw(){
   pop();
 
   push();
-  translate(65+graph_step_response_x,45+graph_step_response_y);
+  translate(graph_step_response_x + graph_step_response_x_offset,graph_step_response_y + graph_step_response_y_offset);
   draw_time_responses();
   pop();
 
@@ -1838,7 +1842,7 @@ function draw_time_responses(){
     text("Time response",graph_step_response_width/2,-5);
   }
   text("output",0,-15);
-  text("time [s]",graph_step_response_width,graph_step_response_height+45);
+  text("time [s]",graph_step_response_width,graph_step_response_height + graph_step_response_y_offset);
   draw_timelines();
 
   // Draw "final value":
@@ -2097,7 +2101,7 @@ function draw_nyquist_responses(){
   fill(text_color);
   textSize(15);
   text("Nyquist diagram",graph_nyquist_width/2,-5);
-  text("Real axis",graph_nyquist_width/2,graph_nyquist_height+45);
+  text("Real axis",graph_nyquist_width/2,graph_nyquist_height+graph_step_response_y_offset);
 
   // text("im",-60,graph_nyquist_height/2 + 4);
   push();
@@ -2266,13 +2270,13 @@ function mousePressed(){
   // Check if we've clicked the step response graph:
   let queue = [];
   let yes_close_enough = false;
-  if(((mouseX-graph_step_response_x) > 65 && (mouseX-graph_step_response_x) < graph_step_response_width + 65)&&
-    ((mouseY-graph_step_response_y) > 45 && (mouseY-graph_step_response_y) < graph_step_response_height + 45)){
-    let linked_x = ceil((mouseX - graph_step_response_x - 65)/precision);
+  if(((mouseX-graph_step_response_x) > graph_step_response_x_offset && (mouseX-graph_step_response_x) < graph_step_response_width + graph_step_response_x_offset)&&
+    ((mouseY-graph_step_response_y) > graph_step_response_y_offset && (mouseY-graph_step_response_y) < graph_step_response_height + graph_step_response_y_offset)){
+    let linked_x = ceil((mouseX - graph_step_response_x - graph_step_response_x_offset)/precision);
     for(h=0; h<bode_graphs.length;h++){
       let current_graph = bode_graphs[h];
       let linked_y = current_graph.bode_timerep_array[linked_x];
-      let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true) + 45;
+      let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true) + graph_step_response_y_offset;
       let distance = abs(mouseY - graph_step_response_y - screen_y);
       if(distance < 70){
         yes_close_enough = true;
@@ -2290,7 +2294,7 @@ function mousePressed(){
     push();
     stroke(text_color);
     strokeWeight(2);
-    line(mouseX,graph_step_response_y+45,mouseX,graph_step_response_y + 45 + graph_step_response_height);
+    line(mouseX,graph_step_response_y+graph_step_response_y_offset,mouseX,graph_step_response_y + graph_step_response_y_offset + graph_step_response_height);
     pop();
     if(yes_close_enough){
       clicked_on_time_response_graph_no = output[1];  // 0 - 3
@@ -2304,7 +2308,7 @@ function mousePressed(){
         let T_2_x = graph_step_response_width / 10 * T_2;
         let T_3 = range_slider_variables[variable_position["T_3"]];
         let T_3_x = graph_step_response_width / 10 * T_3;
-        if (abs(T_2_x - (mouseX - graph_step_response_x - 65)) < abs(T_3_x - (mouseX - graph_step_response_x - 65))){
+        if (abs(T_2_x - (mouseX - graph_step_response_x - graph_step_response_x_offset)) < abs(T_3_x - (mouseX - graph_step_response_x - graph_step_response_x_offset))){
           clicked_on_time_variable = "T_2";
         } else {
           clicked_on_time_variable = "T_3";
@@ -2318,7 +2322,7 @@ function mousePressed(){
         let T_6_x = graph_step_response_width / 10 * T_6;
         let T_7 = range_slider_variables[variable_position["T_7"]];
         let T_7_x = graph_step_response_width / 10 * T_7;
-        let x = mouseX - graph_step_response_x - 65;
+        let x = mouseX - graph_step_response_x - graph_step_response_x_offset;
         if ((abs(T_8_x - x) <= abs(T_6_x - x)) && (abs(T_8_x - x) <= abs(T_7_x - x))){
           clicked_on_time_variable = "T_8";
         } else if ((abs(T_6_x - x) <= abs(T_7_x - x)) && (abs(T_6_x - x) <= abs(T_8_x - x))){
@@ -2912,14 +2916,14 @@ function mouseMoved(){
     // Check if we're hovering the step response graph:
     let queue = [];
     let yes_close_enough = false;
-    if((mouseX-graph_step_response_x) > 65 && (mouseX-graph_step_response_x) < graph_step_response_width + 65){
-      if((mouseY-graph_step_response_y) > 45 && (mouseY-graph_step_response_y) < graph_step_response_height + 45){
-        let linked_x = ceil((mouseX - graph_step_response_x - 65)/precision);
+    if((mouseX-graph_step_response_x) > graph_step_response_x_offset && (mouseX-graph_step_response_x) < graph_step_response_width + graph_step_response_x_offset){
+      if((mouseY-graph_step_response_y) > graph_step_response_y_offset && (mouseY-graph_step_response_y) < graph_step_response_height + graph_step_response_y_offset){
+        let linked_x = ceil((mouseX - graph_step_response_x - graph_step_response_x_offset)/precision);
         for(h=0; h<bode_graphs.length;h++){
           if(bode_graphs[h].bode_displaybool){
             let current_graph = bode_graphs[h];
             let linked_y = current_graph.bode_timerep_array[linked_x];
-            let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true) + 45;
+            let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true) + graph_step_response_y_offset;
             let distance = abs(mouseY - graph_step_response_y - screen_y);
             if(distance < 70){
               yes_close_enough = true;
@@ -2938,15 +2942,15 @@ function mouseMoved(){
         push();
         stroke(text_color);
         strokeWeight(2);
-        line(mouseX,graph_step_response_y+45,mouseX,graph_step_response_y + 45 + graph_step_response_height);
+        line(mouseX,graph_step_response_y+graph_step_response_y_offset,mouseX,graph_step_response_y + graph_step_response_y_offset + graph_step_response_height);
         pop();
         if(yes_close_enough){
           let linked_bode_graph = bode_graphs[output[1]];
-          let linked_x = map(mouseX - graph_step_response_x - 65,0,graph_step_response_width,0,max_x_timerep,true);
+          let linked_x = map(mouseX - graph_step_response_x - graph_step_response_x_offset,0,graph_step_response_width,0,max_x_timerep,true);
           let screen_y = map(output[2],min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
           // Draw a white dot at the right edge of the time response graph
           fill(text_color);
-          ellipse(graph_step_response_x+graph_step_response_width+65,graph_step_response_y+screen_y+45,12,12);
+          ellipse(graph_step_response_x+graph_step_response_width+graph_step_response_x_offset,graph_step_response_y+screen_y+graph_step_response_y_offset,12,12);
           // Draw a corresponding white dot at the left edge of the bode magnitude graph
           let magnitude = abs(output[2]);
           // Now paint a horizontal line on the Bode magnitude plot, at the right height:
@@ -2955,7 +2959,7 @@ function mouseMoved(){
           ellipse(graph_bode_mag_x+graph_bode_mag_x_offset,graph_bode_mag_y + screen_y5 + graph_bode_mag_y_offset,12,12);
           noStroke();
           fill(linked_bode_graph.bode_hue,360,360);
-          ellipse(mouseX,screen_y + 45 + graph_step_response_y,12,12);
+          ellipse(mouseX,screen_y + graph_step_response_y_offset + graph_step_response_y,12,12);
           push();
           translate(mouseX,mouseY);
           fill(box_background_color,200);
@@ -2974,13 +2978,13 @@ function mouseMoved(){
           text("output=" + output[2].toFixed(3),13,77);
           pop();
         } else {
-          let time=(mouseX - graph_step_response_x - 65) / graph_step_response_width * 10.0;
-          let output=max_y_timerep - (max_y_timerep - min_y_timerep) * (mouseY - graph_step_response_y - 45) / graph_step_response_height;
+          let time=(mouseX - graph_step_response_x - graph_step_response_x_offset) / graph_step_response_width * 10.0;
+          let output=max_y_timerep - (max_y_timerep - min_y_timerep) * (mouseY - graph_step_response_y - graph_step_response_y_offset) / graph_step_response_height;
           let linked_y = ceil((mouseY - graph_step_response_y)/precision);
           push();
           // Draw a white dot at the right edge of the time response graph
           fill(text_color);
-          ellipse(graph_step_response_x+graph_step_response_width+65,mouseY,12,12);
+          ellipse(graph_step_response_x+graph_step_response_width+graph_step_response_x_offset,mouseY,12,12);
           // Draw a corresponding white dot at the left edge of the bode magnitude graph
           let magnitude = abs(output);
           // Now paint a horizontal line on the Bode magnitude plot, at the right height:
@@ -3098,7 +3102,7 @@ function mouseMoved(){
           stroke(text_color);
           strokeWeight(2);
           noFill();
-          ellipse(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0);
+          ellipse(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0);
           pop();
           // Draw a horizontal line for the magnitude in the bode mag plot:
           push();
@@ -3129,7 +3133,7 @@ function mouseMoved(){
           stroke(text_color);
           strokeWeight(2);
           noFill();
-          ellipse(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0);
+          ellipse(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0);
           pop();
 
           // Draw a horizontal line for the magnitude in the bode mag plot:
@@ -3143,22 +3147,22 @@ function mouseMoved(){
     }
 
     // Check if we're hovering the Nyquist diagram:
-    if((mouseX-graph_nyquist_x) > 65 && (mouseX-graph_nyquist_x) < graph_nyquist_width + 65){
-      if((mouseY-graph_nyquist_y-45) > 0 && (mouseY-graph_nyquist_y-45) < graph_nyquist_height){
+    if((mouseX-graph_nyquist_x) > graph_nyquist_x_offset && (mouseX-graph_nyquist_x) < graph_nyquist_width + graph_nyquist_x_offset){
+      if((mouseY-graph_nyquist_y-graph_nyquist_y_offset) > 0 && (mouseY-graph_nyquist_y-graph_nyquist_y_offset) < graph_nyquist_height){
         let origo_x = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
         let origo_y = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
         push();
         stroke(text_color);
         strokeWeight(2);
-        let screen_x = graph_nyquist_x + origo_x + 65;
-        let screen_y = graph_nyquist_y + origo_y + 45;
+        let screen_x = graph_nyquist_x + origo_x + graph_nyquist_x_offset;
+        let screen_y = graph_nyquist_y + origo_y + graph_nyquist_y_offset;
         line(screen_x,screen_y,mouseX,mouseY);
         pop();
 
         // Let's calculate the angle we're at:
         // We need to map the mouseX and mouseY to real and imaginary axis:
-        let perc_x = (mouseX - graph_nyquist_x - 65) / graph_nyquist_width;
-        let perc_y = (mouseY - graph_nyquist_y - 45) / graph_nyquist_height;
+        let perc_x = (mouseX - graph_nyquist_x - graph_nyquist_x_offset) / graph_nyquist_width;
+        let perc_y = (mouseY - graph_nyquist_y - graph_nyquist_y_offset) / graph_nyquist_height;
         let axis_x = min_nyquist_x + (max_nyquist_x - min_nyquist_x) * perc_x;
         let axis_y = max_nyquist_y + (min_nyquist_y - max_nyquist_y) * perc_y;
 
@@ -3181,7 +3185,7 @@ function mouseMoved(){
         stroke(angle_color);
         strokeWeight(2);
         noFill();
-        arc(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
+        arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
         pop();
 
         // Now paint a horizontal line on the Bode phase plot, at the right height:
@@ -3307,9 +3311,9 @@ function mouseMoved(){
           strokeWeight(2);
           noFill();
           if (angle < 0){
-            arc(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
+            arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
           } else {
-            arc(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, -angle/180*PI, 0);
+            arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, -angle/180*PI, 0);
           }
           pop();
 
@@ -3335,7 +3339,7 @@ function mouseMoved(){
           push();
           stroke(text_color);
           strokeWeight(2);
-          translate(65+graph_nyquist_x,45+graph_nyquist_y);
+          translate(graph_nyquist_x_offset+graph_nyquist_x,graph_nyquist_y_offset+graph_nyquist_y);
           line(screen_x0,screen_y0,screen_x1,screen_y1);
           pop();
           // And draw a vertical white line in the bode phase plot.
@@ -3391,11 +3395,11 @@ function mouseMoved(){
           let screen_y2 = map(1.2*sin(angle/180*PI),max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
 
           if (angle < 0){
-            arc(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
+            arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
           } else {
-            arc(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, -angle/180*PI, 0);
+            arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, -angle/180*PI, 0);
           }
-          line(graph_nyquist_x + 65 + screen_x0, graph_nyquist_y + 45 + screen_y0,graph_nyquist_x + 65 + screen_x2, graph_nyquist_y + 45 + screen_y2);
+          line(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,graph_nyquist_x + graph_nyquist_x_offset + screen_x2, graph_nyquist_y + graph_nyquist_y_offset + screen_y2);
           pop();
 
           // Now paint a horizontal line on the Bode phase plot, at the right height:
@@ -4067,7 +4071,7 @@ class bode_graph{
       let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
       let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
       push();
-  //    translate(65+graph_nyquist_x,45+graph_nyquist_y);
+  //    translate(graph_nyquist_x_offset+graph_nyquist_x,45+graph_nyquist_y);
       //console.log("screen_x="+screen_x);
       //console.log("screen_y="+screen_y);
       stroke(bode_graphs[i].bode_hue,240,360);
@@ -4111,7 +4115,7 @@ class bode_graph{
     let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
     push();
     noStroke();
-    translate(65+graph_nyquist_x,45+graph_nyquist_y);
+    translate(graph_nyquist_x_offset+graph_nyquist_x,graph_nyquist_y_offset+graph_nyquist_y);
     fill(this.bode_hue,360,360);
     ellipse(screen_x,screen_y,12,12);
     pop();
