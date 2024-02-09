@@ -155,7 +155,7 @@ function updateInputFormula(event){
 
 function checkSlider(input_id){
   let linked_formula = getGraphById(input_id).bode_formula;
-  for(let i=0;i<range_slider_alphabet.length;i++){
+  for(let i=0; i<range_slider_alphabet.length; i++){
     let current_letter = range_slider_alphabet[i];
     let linked_button = document.getElementById("BTNS_" + input_id.toString() + "_" + i.toString());
     if(linked_formula.includes(current_letter)){
@@ -350,7 +350,7 @@ function removeSlider(event){
   range_slider_variables[linked_id] = 18012001;
   let slider = button.parentElement.parentElement.parentElement;
   slider.remove();
-  for(let b = 0;b < bode_graphs.length;b++){
+  for(let b=0; b<bode_graphs.length; b++){
     let graph_id = bode_graphs[b].bode_id;
     checkSlider(graph_id);
     redraw_canvas_gain(graph_id);
@@ -433,7 +433,7 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
 
 
   let input_element_id = id_bank;
-  for(let i = 0;i < bode_graphs.length;i++){
+  for(let i=0; i<bode_graphs.length; i++){
     let current_bode_graph = bode_graphs[i];
     if(parseInt(input_element_id) == current_bode_graph.bode_id){
 //      current_bode_graph.bode_formula = "k_1/(s+1)";
@@ -445,7 +445,7 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
       let equation_id=input_element_id; // The DOM number of the equation
       // Search for all variables in the equation_string:
 
-      for(let i=NOF_CONSTANT_VARIABLES;i<range_slider_alphabet.length;i++){
+      for(let i=NOF_CONSTANT_VARIABLES; i<range_slider_alphabet.length; i++){
         //let letter_id=i; // The variable position in the variable array.
         let current_letter = range_slider_alphabet[i];
         if(equation_string.includes(current_letter)){
@@ -507,7 +507,7 @@ function removeGraph(event){
   let linked_id = linked_equation.getElementsByClassName("formula")[0].id;
   removeInformationTab(+linked_id);
   let equation_to_remove = "";
-  for(let i = 0; i<bode_graphs.length;i++){
+  for(let i=0; i<bode_graphs.length; i++){
     let current_graph = bode_graphs[i];
     if(current_graph.bode_id == parseInt(linked_id)){
       equation_to_remove = current_graph.bode_formula;
@@ -530,7 +530,7 @@ function removeGraph(event){
   } else if (equation_to_remove == GRAPH_ONE_ZERO_TWO_POLES.formula){
     variables_to_delete = ["k_4","T_6","T_7","T_8"];
   }
-  for (let i = 0; i<variables_to_delete.length; i++){
+  for(let i=0; i<variables_to_delete.length; i++){
     let variable_to_delete = variables_to_delete[i];
     let button = document.getElementById("RANGE_" + variable_position[variable_to_delete]);
     let linked_id = button.parentElement.parentElement.getElementsByClassName("range-slider")[0].id.split("_")[1];
@@ -549,7 +549,7 @@ function removeGraph(event){
 
 function changeGraphDisplayStatus(event){
   let equation_id = event.target.parentElement.getElementsByClassName("formula")[0].id;
-  for(let i = 0; i < bode_graphs.length; i++){
+  for(let i=0; i<bode_graphs.length; i++){
     let current_graph = bode_graphs[i];
     if(current_graph.bode_id == parseInt(equation_id)){
       current_graph.bode_displaybool = !current_graph.bode_displaybool;
@@ -561,7 +561,7 @@ function changeGraphDisplayStatus(event){
 function updateFormulaAndDraw(input_element){
   input_element.addEventListener('input',(ev) => {
     let input_element_id = ev.target.id;
-    for(let i = 0;i < bode_graphs.length;i++){
+    for(let i=0; i<bode_graphs.length; i++){
       let current_bode_graph = bode_graphs[i];
       if(parseInt(input_element_id) == current_bode_graph.bode_id){
         current_bode_graph.bode_formula = ev.target.getValue('ascii-math');
@@ -636,7 +636,7 @@ function update_programming_language(id){
 
 function get_python_script(id){
   let current_graph;
-  for(let i = 0; i<bode_graphs.length;i++){
+  for(let i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_id == id){
       current_graph = bode_graphs[i];
     }
@@ -733,7 +733,7 @@ plt.show(block=False)
 
 function get_julia_script(id){
   let current_graph;
-  for(let i = 0; i<bode_graphs.length;i++){
+  for(let i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_id == id){
       current_graph = bode_graphs[i];
     }
@@ -801,7 +801,7 @@ display(plot!())
 
 function get_matlab_script(id){
   let current_graph;
-  for(let i = 0; i<bode_graphs.length;i++){
+  for(let i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_id == id){
       current_graph = bode_graphs[i];
     }
@@ -1206,7 +1206,7 @@ function updateGraphInformation(){
     if(inputs[h].checked){
       let input_id = +inputs[h].id.split("_")[1];
       let current_graph;
-      for(let j = 0;j < bode_graphs.length;j++){
+      for(let j=0; j<bode_graphs.length; j++){
         if(bode_graphs[j].bode_id == input_id){
           current_graph = bode_graphs[j];
         }
@@ -1457,7 +1457,7 @@ function draw_bode_responses(type){
     // Draw X for T_1, T_2, T_3 and w:
     let rad_phase_lower_bound = phase_lower_bound*PI/180;
     let rad_phase_upper_bound = phase_upper_bound*PI/180;
-    for (let i=0; i<bode_graphs.length; i++){
+    for(let i=0; i<bode_graphs.length; i++){
       if(bode_graphs[i].bode_displaybool){
         if(bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
           // Draw T_1:
@@ -1632,7 +1632,7 @@ function draw_bode_responses(type){
       text(value,-7,pas+5);
     }
 
-    for(let i=0;i < bode_graphs.length;i++){
+    for(let i=0; i<bode_graphs.length; i++){
       if(bode_graphs[i].bode_displaybool){
         bode_graphs[i].draw_gain();
       }
@@ -1640,7 +1640,7 @@ function draw_bode_responses(type){
 
 
     // Draw X for T_1, T_2, T_3 and w:
-    for (let i=0; i<bode_graphs.length; i++){
+    for(let i=0; i<bode_graphs.length; i++){
       if(bode_graphs[i].bode_displaybool){
         if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
           // Draw T_1:
@@ -1844,7 +1844,7 @@ function draw_time_responses(){
   draw_timelines();
 
   // Draw "final value":
-  for (let i=0; i<bode_graphs.length; i++){
+  for(let i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_displaybool){
       if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
         let k_1 = range_slider_variables[variable_position["k_1"]];
@@ -1881,7 +1881,7 @@ function draw_time_responses(){
   }
 
 
-  for (let i=0; i<bode_graphs.length; i++){
+  for(let i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_displaybool){
       if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
         // Draw T_1:
@@ -2271,7 +2271,7 @@ function mousePressed(){
   if(((mouseX-graph_step_response_x) > graph_step_response_x_offset && (mouseX-graph_step_response_x) < graph_step_response_width + graph_step_response_x_offset)&&
     ((mouseY-graph_step_response_y) > graph_step_response_y_offset && (mouseY-graph_step_response_y) < graph_step_response_height + graph_step_response_y_offset)){
     let linked_x = Math.ceil((mouseX - graph_step_response_x - graph_step_response_x_offset)/precision);
-    for(let h=0; h<bode_graphs.length;h++){
+    for(let h=0; h<bode_graphs.length; h++){
       let current_graph = bode_graphs[h];
       let linked_y = current_graph.bode_timerep_array[linked_x];
       let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true) + graph_step_response_y_offset;
@@ -2283,7 +2283,7 @@ function mousePressed(){
     }
     let output;
     let distance = 10000;
-    for(let h = 0;h < queue.length;h++){
+    for(let h=0; h<queue.length; h++){
       if(queue[h][0] < distance){
         distance = queue[h][0];
         output = queue[h];
@@ -2363,7 +2363,7 @@ function mousePressed(){
     // Find the closest point from the graphs:
     let output;
     let distance = 10000;
-    for(let h = 0;h < queue.length;h++){
+    for(let h=0; h<queue.length; h++){
       if(queue[h][0] < distance){
         distance = queue[h][0];
         output = queue[h];
@@ -2441,7 +2441,7 @@ function mousePressed(){
     // Find the closest point from the graphs:
     let output;
     let distance = 10000;
-    for(let h = 0;h < queue.length;h++){
+    for(let h=0; h<queue.length; h++){
       if(queue[h][0] < distance){
         distance = queue[h][0];
         output = queue[h];
@@ -2917,7 +2917,7 @@ function mouseMoved(){
     if((mouseX-graph_step_response_x) > graph_step_response_x_offset && (mouseX-graph_step_response_x) < graph_step_response_width + graph_step_response_x_offset){
       if((mouseY-graph_step_response_y) > graph_step_response_y_offset && (mouseY-graph_step_response_y) < graph_step_response_height + graph_step_response_y_offset){
         let linked_x = Math.ceil((mouseX - graph_step_response_x - graph_step_response_x_offset)/precision);
-        for(let h=0; h<bode_graphs.length;h++){
+        for(let h=0; h<bode_graphs.length; h++){
           if(bode_graphs[h].bode_displaybool){
             let current_graph = bode_graphs[h];
             let linked_y = current_graph.bode_timerep_array[linked_x];
@@ -2931,7 +2931,7 @@ function mouseMoved(){
         }
         let output;
         let distance = 10000;
-        for(let h = 0;h < queue.length;h++){
+        for(let h=0; h<queue.length; h++){
           if(queue[h][0] < distance){
             distance = queue[h][0];
             output = queue[h];
@@ -3051,7 +3051,7 @@ function mouseMoved(){
         // Find the closest point from the graphs:
         let output;
         let distance = 10000;
-        for(let h = 0;h < queue.length;h++){
+        for(let h=0; h<queue.length; h++){
           if(queue[h][0] < distance){
             distance = queue[h][0];
             output = queue[h];
@@ -3259,7 +3259,7 @@ function mouseMoved(){
         // Find the closest point from the graphs:
         let output;
         let distance = 10000;
-        for(let h = 0;h < queue.length;h++){
+        for(let h=0; h<queue.length; h++){
           if(queue[h][0] < distance){
             distance = queue[h][0];
             output = queue[h];
@@ -3426,7 +3426,7 @@ function draw_loglines(x_case,y_case,type){
   stroke(line_color);
   let sum = (1 - Math.pow(1/rate,9))/(1 - 1/rate);
   let step_x = (graph_bode_mag_width/x_case)/sum;
-  for(let x = 0; x < x_case; x++){
+  for(let x=0; x<x_case; x++){
     let pas = graph_bode_mag_width*x/x_case;
     for(let i=0; i<=9; i++){
       if(i == 0){
@@ -3876,7 +3876,7 @@ class bode_graph{
         this.bode_min_timerep = 100000;
         this.bode_timerep_array = []
 
-        for(let x=0;x < graph_step_response_width; x+=precision){
+        for(let x=0; x<graph_step_response_width; x+=precision){
           let math_x = map(x,0,graph_step_response_width,0,max_x_timerep);
           let math_y;
 
@@ -3906,7 +3906,7 @@ class bode_graph{
     strokeWeight(line_stroke_weight);
     stroke(this.bode_hue,360,360);
     beginShape();
-    for(let x=0;x < graph_bode_mag_width; x++){
+    for(let x=0; x<graph_bode_mag_width; x++){
       let screen_y = map(this.bode_gain_array[x],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
       if(screen_y < graph_bode_mag_height && screen_y > 0){
         vertex(x,screen_y);
@@ -3924,7 +3924,7 @@ class bode_graph{
     let rad_phase_upper_bound = phase_upper_bound*PI/180;
 
     beginShape();
-    for(let x=0;x < graph_bode_phase_width; x++){
+    for(let x=0; x<graph_bode_phase_width; x++){
       let screen_y = map(this.bode_phase_array[x],rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
       if(screen_y < graph_bode_phase_height && screen_y > 0){
         vertex(x,screen_y);
@@ -3943,7 +3943,7 @@ class bode_graph{
     strokeWeight(line_stroke_weight);
     stroke(this.bode_hue,360,360);
     beginShape();
-    for(let x=0;x < this.bode_timerep_array.length;x++){
+    for(let x=0; x<this.bode_timerep_array.length; x++){
       let screen_y = map(this.bode_timerep_array[x],min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
       vertex(x*precision,screen_y);
     }
@@ -3963,7 +3963,7 @@ class bode_graph{
     let new_complex_array = this.bode_complex_array;
 
     beginShape();
-    for(let x=0;x < new_complex_array.length;x++){
+    for(let x=0; x<new_complex_array.length; x++){
       let current_complex = this.bode_complex_array[x];
       let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
       let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
@@ -4342,7 +4342,7 @@ function getTimeValues(time,time_delay){
   const ln2=0.69314718056;
   let sum = 0;
   current_formula = current_formula.replace('⋅','');
-  for(let j=0;j<=9;j++){
+  for(let j=0; j<=9; j++){
     let new_s = (j+1)*ln2/time_to_use;
     let new_s_string = '(' + new_s.toString() + ')';
     let new_function_value = current_formula.replaceAll('s',new_s_string);
@@ -4360,7 +4360,7 @@ function findOmegaZero(input_array){
   f_a = 20*Math.log(math.evaluate(f_a).toPolar().r)/Math.log(10);
   f_b = 20*Math.log(math.evaluate(f_b).toPolar().r)/Math.log(10);
   if(f_a * f_b < 0){
-    for(let h = 0;h < 20;h++){
+    for(let h=0; h<20; h++){
       let mid_point = (a_bound + b_bound)/2;
       let f_mid = buffer_formula.replaceAll('s','(i*' + Math.pow(10,mid_point).toString() + ')');
       f_mid = 20*Math.log(math.evaluate(f_mid).toPolar().r)/Math.log(10);
@@ -4389,7 +4389,7 @@ function findOmega180(input_array){
   let f_a = input_array[Math.ceil(map(a_bound,min_10power,min_10power + x_case_gain,0,graph_width-1))] + PI;
   let f_b = input_array[Math.ceil(map(b_bound,min_10power,min_10power + x_case_gain,0,graph_width-1))] + PI;
   if(f_a * f_b < 0 && Math.abs(f_a) > 0.005 && Math.abs(f_b) > 0.005){
-    for(let h = 0;h < 20;h++){
+    for(let h=0; h<20; h++){
       let mid_point = (a_bound + b_bound)/2;
       let f_mid = input_array[Math.ceil(map(mid_point,min_10power,min_10power + x_case_gain,0,graph_width-1))] + PI;
       if(f_mid * f_a < 0){
@@ -4412,7 +4412,7 @@ function findOmega180(input_array){
 function fivePercentTimeResponse(input_array){
   let final_value = +getTimeValues(max_x_timerep + 50).toFixed(3);
   let values = [];
-  for(let h = 0;h < input_array.length;h++){
+  for(let h=0; h<input_array.length; h++){
     let ratio = Math.abs(input_array[h] - final_value)/final_value;
     if(Math.abs(ratio - 0.05) < 0.001){
       values.push(map(h,0,input_array.length,0,max_x_timerep));
