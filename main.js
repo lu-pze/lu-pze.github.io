@@ -76,6 +76,7 @@ let bode_graphs = [];
 let phase_lower_bound = 0;
 let phase_upper_bound = 0;
 let gain_upper_bound = 60;
+let phase_case_number;
 
 //                              red   yellow    green     blue  magenta       orange        green
 let color_table = [     270,    350,      32,     170,     202,-90+5*81,-90-360+6*81,-90-360+7*81,-90-360+8*81,-90-360+9*81,-90-360+10*81,-90-360+11*81,-90-360+12*81,-90-360+13*81,-90-360+14*81,-90-360+15*81];
@@ -125,7 +126,6 @@ let graph_nyquist_y;
 const graph_nyquist_x_offset = 65;
 const graph_nyquist_y_offset = 45;
 let graph_pole_zero_width;
-let graph_pole_zero_height;
 let graph_pole_zero_x;
 let graph_pole_zero_y;
 let pole_zero_width;
@@ -134,7 +134,6 @@ let pole_zero_height;
 const PI = 3.141592653589793238;
 
 let id_bank = 1;
-let current_info_tab_id = 1;
 let current_tab = 0;
 
 function getGraphById(input_id){
@@ -275,7 +274,7 @@ function createRangeSlider(event){
   // Printing variable names using mathlive:
   slider.getElementsByTagName("span")[0].innerHTML = "<math-field read-only style='vertical-align:bottom;display:inline-block'>" + range_slider_alphabet[button_id] + " =</math-field>";
 
-  let linked_letter = range_slider_alphabet[button_id];
+  //let linked_letter = range_slider_alphabet[button_id];
   let range_slider = slider.getElementsByClassName("range-slider")[0];
   let linked_span = slider.getElementsByClassName("value-wrapper")[0].getElementsByTagName("input")[0];
   linked_span.value = (+range_slider.value).toFixed(2);
@@ -445,11 +444,11 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
       // Search for all variables in the equation_string:
 
       for(let i=NOF_CONSTANT_VARIABLES;i<range_slider_alphabet.length;i++){
-        let letter_id=i; // The variable position in the variable array.
+        //let letter_id=i; // The variable position in the variable array.
         let current_letter = range_slider_alphabet[i];
         if(equation_string.includes(current_letter)){
 //          console.log("# found variable " + current_letter);
-          let linked_button = document.getElementById("BTNS_" + equation_id.toString() + "_" + i.toString());
+          //let linked_button = document.getElementById("BTNS_" + equation_id.toString() + "_" + i.toString());
           range_slider_variables[i] = 1.0;  // Initial value
           event.target.id="BTNS_" + equation_id.toString() + "_" + i.toString();
           createRangeSlider(event);
@@ -1126,9 +1125,9 @@ function updateToolbox(){
     let range_inputs2 = math_preferences.getElementsByClassName("range-wrapper-nyquist");
     let x_inputs2 = range_inputs2[0].getElementsByTagName("input");
     let y_inputs2 = range_inputs2[1].getElementsByTagName("input");
-    let x_min2 = x_inputs[0];
-    let x_max2 = x_inputs[1];
-    let y_min2 = y_inputs[0];
+    let x_min2 = x_inputs2[0];
+    let x_max2 = x_inputs2[1];
+    let y_min2 = y_inputs2[0];
 
     auto_range_checkbox2.onchange = function(){
       if(!auto_range_checkbox2.checked){
@@ -1264,7 +1263,6 @@ function setGraphDimensions(){
   graph_nyquist_y = graph_bode_mag_height+65;
 
   graph_pole_zero_width = (canvas_width - 100)*1/6 - 40;
-  graph_pole_zero_height = canvas_height - 20;
   graph_pole_zero_x = canvas_width - graph_pole_zero_width - 20;
   graph_pole_zero_y = 0;
 }
@@ -1310,7 +1308,7 @@ function draw(){
   pop();
 
   push();
-  translate(60+graph_bode_phase_x,30 + graph_bode_phase_y + 46);
+  translate(graph_bode_phase_x + 60,graph_bode_phase_y + 76);
   x_axis_steps_text();
   pop();
 
@@ -1402,7 +1400,7 @@ function draw_bode_responses(type){
     }
 
     // Limiting the phase axis into something sane:
-    min_phase = math.max(-5,min_phase);
+    min_phase = Math.max(-5,min_phase);
     //max_phase = math.min(5,max_phase);
 
     min_phase = min_phase*180/PI;
@@ -1432,7 +1430,7 @@ function draw_bode_responses(type){
     textAlign(RIGHT);
     textSize(15);
 
-    for(y=0; y<=phase_case_number; y++){
+    for(let y=0; y<=phase_case_number; y++){
       stroke(line_color);
       strokeWeight(1);
       let pas = graph_bode_phase_height*y/phase_case_number;
@@ -1516,10 +1514,10 @@ function draw_bode_responses(type){
                 draw_X(screen_x,screen_y);
               }
             } else {
-              //If sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
+              //If Math.sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
               // We should draw 2 X in this graph:
-              let bode_3_real_1 = z*w + w * sqrt(z*z-1);
-              let bode_3_real_2 = z*w - w * sqrt(z*z-1);
+              let bode_3_real_1 = z*w + w * Math.sqrt(z*z-1);
+              let bode_3_real_2 = z*w - w * Math.sqrt(z*z-1);
               w = bode_3_real_1;
               if (w >= 0){
                 let frequency = w;
@@ -1612,9 +1610,9 @@ function draw_bode_responses(type){
 
     textAlign(RIGHT);
     textSize(15);
-    for(y=0; y<=y_case_gain; y++){
+    for(let y=0; y<=y_case_gain; y++){
       stroke(line_color);
-      pas = graph_bode_mag_height*y/y_case_gain;
+      let pas = graph_bode_mag_height*y/y_case_gain;
       strokeWeight(1);
       line(0,pas,graph_bode_mag_width,pas);
       if (y>0){
@@ -1627,7 +1625,7 @@ function draw_bode_responses(type){
 
       noStroke();
       fill(text_color);
-      value_dB = gain_upper_bound - 20*y;
+      let value_dB = gain_upper_bound - 20*y;
       let value = 1.0 * Math.pow(10.0, value_dB / 20.0);
       text(value,-7,pas+5);
     }
@@ -1704,10 +1702,10 @@ function draw_bode_responses(type){
                 draw_X(screen_x,screen_y);
               }
             } else {
-              //If sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
+              //If Math.sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
               // We should draw 2 X in this graph:
-              let bode_3_real_1 = z*w + w * sqrt(z*z-1);
-              let bode_3_real_2 = z*w - w * sqrt(z*z-1);
+              let bode_3_real_1 = z*w + w * Math.sqrt(z*z-1);
+              let bode_3_real_2 = z*w - w * Math.sqrt(z*z-1);
               w = bode_3_real_1;
               if (w >= 0){
                 let frequency = w;
@@ -1811,9 +1809,9 @@ function draw_time_responses(){
     min_y_timerep = 100000;
     max_y_timerep = -100000;
 
-    for(let i = 0;i < bode_graphs.length;i++){
+    for(let i=0; i<bode_graphs.length; i++){
       if(bode_graphs[i].bode_displaybool){
-        current_graph = bode_graphs[i];
+        let current_graph = bode_graphs[i];
         if(current_graph.bode_max_timerep > max_y_timerep){
           max_y_timerep = current_graph.bode_max_timerep;
         }
@@ -1997,7 +1995,7 @@ function draw_time_responses(){
     }
   }
 
-  for(let i = 0;i < bode_graphs.length;i++){
+  for(let i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_displaybool){
       bode_graphs[i].draw_timeresponse();
     }
@@ -2172,12 +2170,12 @@ function draw_pole_zeros(){
 
 
 function redraw_canvas_gain(input_id){
-  for(v=0; v<bode_graphs.length; v++){
+  for(let v=0; v<bode_graphs.length; v++){
     if(bode_graphs[v].bode_id == input_id || input_id == "all"){
       bode_graphs[v].get_complex_p5();
     }
   }
-  for(v=0; v<bode_graphs.length; v++){
+  for(let v=0; v<bode_graphs.length; v++){
     if(bode_graphs[v].bode_id == input_id || input_id == "all"){
       bode_graphs[v].get_timevalues_p5();
     }
@@ -2234,8 +2232,8 @@ function mousePressed(){
         if(((mouseX-pole_zero_graph_x[i]) > 0) && ((mouseX-pole_zero_graph_x[i]) < pole_zero_width)){
           if(((mouseY-pole_zero_graph_y[i]) > 0) && ((mouseY-pole_zero_graph_y[i]) < pole_zero_height)){
             let real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 3;
-            let imaginary=2 - (mouseY-pole_zero_graph_y[i])/pole_zero_height * 4;
-            //
+            //let imaginary=2 - (mouseY-pole_zero_graph_y[i])/pole_zero_height * 4;
+
             if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
               // See if the user clicked on T_2 or T_3:
               let T_2 = range_slider_variables[variable_position["T_2"]];
@@ -2824,7 +2822,7 @@ function mouseDragged(){
 
               // Update variable w  = "cutoff frequency"
               // w = length of vector (re,im)
-              let w = sqrt(real*real + imaginary*imaginary);
+              let w = Math.sqrt(real*real + imaginary*imaginary);
               range_slider_variables[variable_position["w"]] = w;
               // Update range slider value:
               document.getElementById("variable_"+variable_position["w"]).value = w.toFixed(2);
@@ -2839,8 +2837,8 @@ function mouseDragged(){
               // z = 0.880 when (-1,0.5)
               // z = 0.707 when (-1,1)
               // z = 0.446 when (-0.5,1)
-              // ζ= - Re(pole) / sqrt(Re(pole)^2 + Im(pole)^2)
-              let z = -real / sqrt(real*real + imaginary*imaginary);
+              // ζ= - Re(pole) / Math.sqrt(Re(pole)^2 + Im(pole)^2)
+              let z = -real / Math.sqrt(real*real + imaginary*imaginary);
               range_slider_variables[variable_position["z"]] = z;
               // Update range slider value:
               document.getElementById("variable_"+variable_position["z"]).value = z.toFixed(2);
@@ -3164,7 +3162,7 @@ function mouseMoved(){
         let axis_x = min_nyquist_x + (max_nyquist_x - min_nyquist_x) * perc_x;
         let axis_y = max_nyquist_y + (min_nyquist_y - max_nyquist_y) * perc_y;
 
-        let angle_rad = atan(axis_x / axis_y);
+        let angle_rad = Math.atan(axis_x / axis_y);
         let angle=0;
         if (mouseY > screen_y){
           // The lower half plane: angles 0 at the right edge, 90 pointing downwards, and -180 to the left:
@@ -3208,7 +3206,7 @@ function mouseMoved(){
         }
 
         // Get the magnitude of the line from origo to the mouse:
-        let magnitude = sqrt(axis_x * axis_x + axis_y * axis_y);
+        let magnitude = Math.sqrt(axis_x * axis_x + axis_y * axis_y);
         // Now paint a horizontal line on the Bode magnitude plot, at the right height:
         let magnitude_in_dB = 20*Math.log(magnitude)/Math.log(10);
         screen_y = map(magnitude_in_dB,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
@@ -3425,13 +3423,11 @@ function capture_screen(){
 //Line functions
 function draw_loglines(x_case,y_case,type){
   stroke(line_color);
-
-  sum = (1 - Math.pow(1/rate,9))/(1 - 1/rate);
-  step_x = (graph_bode_mag_width/x_case)/sum;
-
-  for(x = 0; x < x_case; x++){
-    pas = graph_bode_mag_width*x/x_case;
-    for(let i = 0; i<=9 ; i++){
+  let sum = (1 - Math.pow(1/rate,9))/(1 - 1/rate);
+  let step_x = (graph_bode_mag_width/x_case)/sum;
+  for(let x = 0; x < x_case; x++){
+    let pas = graph_bode_mag_width*x/x_case;
+    for(let i=0; i<=9; i++){
       if(i == 0){
         strokeWeight(2);
       }
@@ -3475,7 +3471,7 @@ function draw_timelines(){
 
   textAlign(CENTER);
 
-  for(x=0; x<=x_case_number; x++){
+  for(let x=0; x<=x_case_number; x++){
     stroke(line_color);
     if (x==0){
       strokeWeight(3);
@@ -3491,7 +3487,7 @@ function draw_timelines(){
     text(text_value.toFixed(0),x*x_tile_length,graph_step_response_height + 25);
   }
 
-  for(y=0; y<=y_case_number; y++){
+  for(let y=0; y<=y_case_number; y++){
     stroke(line_color);
     strokeWeight(1);
     line(0,y*y_tile_length,graph_step_response_width,y*y_tile_length);
@@ -3531,7 +3527,7 @@ function draw_nyquist_lines(){
   let y_tile_length = graph_nyquist_height/y_case_number;
   textAlign(CENTER);
 
-  for(x=0; x<=x_case_number; x++){
+  for(let x=0; x<=x_case_number; x++){
     stroke(line_color);
     strokeWeight(1);
     line(x*x_tile_length,0,x*x_tile_length,graph_nyquist_height);
@@ -3542,7 +3538,7 @@ function draw_nyquist_lines(){
     text(text_value.toFixed(1),x*x_tile_length,graph_nyquist_height + 25);
   }
 
-  for(y=0; y<=y_case_number; y++){
+  for(let y=0; y<=y_case_number; y++){
     stroke(line_color);
     strokeWeight(1);
     line(0,y*y_tile_length,graph_nyquist_width,y*y_tile_length);
@@ -3783,7 +3779,7 @@ class bode_graph{
         // Step input response for
         //   H(s) = 1 / (s^2 + +2ζωs + w^2)
         // is
-        //   h(t) = 1/(w*sqrt(1-ζ^2)) * exp(-ζwt) * sin(w*sqrt(1-*ζ^2)*t)
+        //   h(t) = 1/(w*Math.sqrt(1-ζ^2)) * exp(-ζwt) * sin(w*Math.sqrt(1-*ζ^2)*t)
         if ((z < 1.0) && (z >= 0)){
           // When z > 1, we don't have an oscillating system. We have two real poles, which isn't handled here.
           // This handles two complex conjugated poles with a damped response:
@@ -3798,8 +3794,8 @@ class bode_graph{
             //console.log("w=" + w);
             //console.log("k_3=" + k_3);
             let exponentTerm = Math.exp(-z*w*t);
-            let sinTerm = sin(w * sqrt(1.0-z*z) * t + acos(z));  // acos = inverse cosine (in radians)
-            let math_y = k_3 * (1.0 - (1.0 / (sqrt(1.0-z*z)) * exponentTerm * sinTerm));
+            let sinTerm = Math.sin(w * Math.sqrt(1.0-z*z) * t + Math.acos(z));  // acos = inverse cosine (in radians)
+            let math_y = k_3 * (1.0 - (1.0 / (Math.sqrt(1.0-z*z)) * exponentTerm * sinTerm));
             if(math_y > this.bode_max_timerep){
               this.bode_max_timerep = math_y;
             }
@@ -3830,8 +3826,8 @@ class bode_graph{
               math_y = k_3 * t * Math.exp(-w*t);
             } else if (z<1){
               let exponentTerm = Math.exp(-z*w*t);
-              let sinTerm = sin(w * sqrt(1.0-z*z));
-              math_y = k_3 * (1.0 / sqrt(1-z*z)) * exponentTerm * sinTerm;
+              let sinTerm = sin(w * Math.sqrt(1.0-z*z));
+              math_y = k_3 * (1.0 / Math.sqrt(1-z*z)) * exponentTerm * sinTerm;
             }
 
             if(math_y > this.bode_max_timerep){
@@ -4016,10 +4012,10 @@ class bode_graph{
             this.draw_nyquist_X(frequency);
           }
         } else {
-          //If sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
+          //If Math.sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
           // We should draw 2 X in this graph:
-          let bode_3_real_1 = z*w + w * sqrt(z*z-1);
-          let bode_3_real_2 = z*w - w * sqrt(z*z-1);
+          let bode_3_real_1 = z*w + w * Math.sqrt(z*z-1);
+          let bode_3_real_2 = z*w - w * Math.sqrt(z*z-1);
           w = bode_3_real_1;
           if (w != 0){
             let frequency = w;
@@ -4130,7 +4126,7 @@ class bode_graph{
   }
 
   draw_pole_zero(draw_axis){
-    for(x=1; x<=3; x++){
+    for(let x=1; x<=3; x++){
       stroke(line_color);
       if (x==3){
         strokeWeight(3);
@@ -4140,7 +4136,7 @@ class bode_graph{
       line(x*pole_zero_width/4,0,x*pole_zero_width/4,pole_zero_height);
     }
 
-    for(y=0; y<=4; y++){
+    for(let y=0; y<=4; y++){
       if (y==2){
         strokeWeight(3);
       } else {
@@ -4161,7 +4157,7 @@ class bode_graph{
     line(pole_zero_width,0,pole_zero_width,pole_zero_height);
 
     noFill();
-    let blob_color = color('hsb(0, 0%, 20%)');
+    //let blob_color = color('hsb(0, 0%, 20%)');
     strokeWeight(line_stroke_weight);
     stroke(this.bode_hue,360,360);
 //    ellipse(pole_zero_width/2,pole_zero_height/2,12,12);
@@ -4172,15 +4168,13 @@ class bode_graph{
       textSize(15);
       textAlign(CENTER);
       fill(text_color);
-      for(x=0; x<=4; x++){
+      for(let x=0; x<=4; x++){
         text((x-3).toFixed(1),x*graph_pole_zero_width/4,pole_zero_height+20);
       }
       text("Real axis [1/s]",graph_pole_zero_width/2,pole_zero_height+35);
       pop();
     }
 
-
-    let pole_x = -1.0;
     if (this.bode_formula == GRAPH_ONE_REAL_POLE.formula){
       //pole_x = range_slider_variables[0];
       let T_1inv = 1/range_slider_variables[variable_position["T_1"]];
@@ -4196,13 +4190,13 @@ class bode_graph{
       this.plot_pole(-T_3inv,0); // Should be T_3
     } else if (this.bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
       // Calculate bode_3_real and imaginary from z and w:
-      // s = −ζω_n ± jω_n * sqrt(1−ζ^2)
+      // s = −ζω_n ± jω_n * Math.sqrt(1−ζ^2)
       let z = range_slider_variables[variable_position["z"]];
       let w = range_slider_variables[variable_position["w"]];
 
       if (z <= 1){
         bode_3_real = -z*w;
-        bode_3_imaginary = w * sqrt(1-z*z);
+        bode_3_imaginary = w * Math.sqrt(1-z*z);
         let tmp_x = bode_3_real;
         let tmp_y = bode_3_imaginary;
         if (tmp_x < -3.2){
@@ -4241,9 +4235,9 @@ class bode_graph{
         this.plot_pole(tmp_x,tmp_y); // complex
         this.plot_pole(tmp_x,-tmp_y); // complex
       } else {
-        //If sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
-        let bode_3_real_1 = -z*w + w * sqrt(z*z-1);
-        let bode_3_real_2 = -z*w - w * sqrt(z*z-1);
+        //If Math.sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
+        let bode_3_real_1 = -z*w + w * Math.sqrt(z*z-1);
+        let bode_3_real_2 = -z*w - w * Math.sqrt(z*z-1);
         bode_3_imaginary = 0;
 
         let tmp_x = bode_3_real_1;
@@ -4310,11 +4304,11 @@ let buffer_formula = 0;
 let input_formula = "1/s";
 
 function getComplexValues(freq){
-  jomega = '(' + freq.toString().concat('','i') + ')';
+  let jomega = '(' + freq.toString().concat('','i') + ')';
   //Can make it faster for the upcoming for loop by creating the string of the function just once
-  function_new_value = buffer_formula.replaceAll('s',jomega);
+  let function_new_value = buffer_formula.replaceAll('s',jomega);
   try{
-    complex_value = math.evaluate(function_new_value);
+    let complex_value = math.evaluate(function_new_value);
     return complex_value;
   }
   catch(error){
@@ -4345,12 +4339,12 @@ function getTimeValues(time,time_delay){
   let current_formula = "(" + input_formula + ")" + "(" + buffer_formula + ")"
   let v = [1/12,-385/12,1279,-46871/3,505465/6,-473915/2,1127735/3,-1020215/3,328125/2,-65625/2];
   const ln2=0.69314718056;
-  sum = 0;
+  let sum = 0;
   current_formula = current_formula.replace('⋅','');
   for(let j=0;j<=9;j++){
-    new_s = (j+1)*ln2/time_to_use;
-    new_s_string = '(' + new_s.toString() + ')';
-    new_function_value = current_formula.replaceAll('s',new_s_string);
+    let new_s = (j+1)*ln2/time_to_use;
+    let new_s_string = '(' + new_s.toString() + ')';
+    let new_function_value = current_formula.replaceAll('s',new_s_string);
     sum += v[j]*math.evaluate(new_function_value);
   }
   return ln2 * sum/time_to_use;
@@ -4367,7 +4361,7 @@ function findOmegaZero(input_array){
   if(f_a * f_b < 0){
     for(let h = 0;h < 20;h++){
       let mid_point = (a_bound + b_bound)/2;
-      f_mid = buffer_formula.replaceAll('s','(i*' + Math.pow(10,mid_point).toString() + ')');
+      let f_mid = buffer_formula.replaceAll('s','(i*' + Math.pow(10,mid_point).toString() + ')');
       f_mid = 20*Math.log(math.evaluate(f_mid).toPolar().r)/Math.log(10);
       if(f_mid * f_a < 0){
         b_bound = mid_point;
