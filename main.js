@@ -1336,10 +1336,10 @@ function roundup_decimal(input){
   input = Math.abs(input);
   let decimal_part = input % 1;
   if(decimal_part >= 0.5){
-    return ceil(input)*sign;
+    return Math.ceil(input)*sign;
   }
   else{
-    return floor(input)*sign;
+    return Math.floor(input)*sign;
   }
 }
 
@@ -2009,10 +2009,10 @@ function draw_nyquist_responses(){
 //  let nyquist_aspect_ratio = graph_nyquist_width / graph_nyquist_height;
 //  // Decide how many sqares there will be on each axis:
 //  let nyquist_y_squares = 10;
-//  let nyquist_x_squares = floor(nyquist_y_squares * nyquist_aspect_ratio);
+//  let nyquist_x_squares = Math.floor(nyquist_y_squares * nyquist_aspect_ratio);
 //  if (nyquist_aspect_ratio < 1.0){
 //    nyquist_x_squares = 10;
-//    nyquist_y_squares = floor(nyquist_x_squares / nyquist_aspect_ratio);
+//    nyquist_y_squares = Math.floor(nyquist_x_squares / nyquist_aspect_ratio);
 //  }
 //  //console.log("nyquist_y_squares=" + nyquist_y_squares);
 //  //console.log("nyquist_x_squares=" + nyquist_x_squares);
@@ -2270,7 +2270,7 @@ function mousePressed(){
   let yes_close_enough = false;
   if(((mouseX-graph_step_response_x) > graph_step_response_x_offset && (mouseX-graph_step_response_x) < graph_step_response_width + graph_step_response_x_offset)&&
     ((mouseY-graph_step_response_y) > graph_step_response_y_offset && (mouseY-graph_step_response_y) < graph_step_response_height + graph_step_response_y_offset)){
-    let linked_x = ceil((mouseX - graph_step_response_x - graph_step_response_x_offset)/precision);
+    let linked_x = Math.ceil((mouseX - graph_step_response_x - graph_step_response_x_offset)/precision);
     for(let h=0; h<bode_graphs.length;h++){
       let current_graph = bode_graphs[h];
       let linked_y = current_graph.bode_timerep_array[linked_x];
@@ -2342,7 +2342,7 @@ function mousePressed(){
     // 0.0   equals hovering over frequency 10^min_10power (= -2);
     // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
     let exponent = perc_x*x_case_gain + min_10power;
-    let frequency = pow(10,exponent);
+    let frequency = Math.pow(10,exponent);
 
     let queue = [];
     let yes_close_enough = false;
@@ -2421,7 +2421,7 @@ function mousePressed(){
     // 0.0   equals hovering over frequency 10^min_10power (= -2);
     // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
     let exponent = perc_x*x_case_gain + min_10power;
-    let frequency = pow(10,exponent);
+    let frequency = Math.pow(10,exponent);
     let rad_phase_lower_bound = phase_lower_bound*PI/180;
     let rad_phase_upper_bound = phase_upper_bound*PI/180;
     let queue = [];
@@ -2916,7 +2916,7 @@ function mouseMoved(){
     let yes_close_enough = false;
     if((mouseX-graph_step_response_x) > graph_step_response_x_offset && (mouseX-graph_step_response_x) < graph_step_response_width + graph_step_response_x_offset){
       if((mouseY-graph_step_response_y) > graph_step_response_y_offset && (mouseY-graph_step_response_y) < graph_step_response_height + graph_step_response_y_offset){
-        let linked_x = ceil((mouseX - graph_step_response_x - graph_step_response_x_offset)/precision);
+        let linked_x = Math.ceil((mouseX - graph_step_response_x - graph_step_response_x_offset)/precision);
         for(let h=0; h<bode_graphs.length;h++){
           if(bode_graphs[h].bode_displaybool){
             let current_graph = bode_graphs[h];
@@ -2978,7 +2978,7 @@ function mouseMoved(){
         } else {
           let time=(mouseX - graph_step_response_x - graph_step_response_x_offset) / graph_step_response_width * 10.0;
           let output=max_y_timerep - (max_y_timerep - min_y_timerep) * (mouseY - graph_step_response_y - graph_step_response_y_offset) / graph_step_response_height;
-          let linked_y = ceil((mouseY - graph_step_response_y)/precision);
+          let linked_y = Math.ceil((mouseY - graph_step_response_y)/precision);
           push();
           // Draw a white dot at the right edge of the time response graph
           fill(text_color);
@@ -3020,7 +3020,7 @@ function mouseMoved(){
         // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
         let exponent = perc_x*x_case_gain + min_10power;
 //        console.log("# inside bode_mag graph, x="+perc_x+", y="+perc_y+", exp="+exponent);
-        let frequency = pow(10,exponent);
+        let frequency = Math.pow(10,exponent);
 //        console.log("# inside bode_mag graph, x="+perc_x+", y="+perc_y+", freq="+frequency);
         let queue = [];
         let yes_close_enough = false;
@@ -3234,7 +3234,7 @@ function mouseMoved(){
         // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
         let exponent = perc_x*x_case_gain + min_10power;
 //        console.log("# inside bode_phase graph, x="+perc_x+", y="+perc_y+", exp="+exponent);
-        let frequency = pow(10,exponent);
+        let frequency = Math.pow(10,exponent);
 //        console.log("# inside bode_phase graph, x="+perc_x+", y="+perc_y+", freq="+frequency);
 
         let rad_phase_lower_bound = phase_lower_bound*PI/180;
@@ -3426,7 +3426,7 @@ function capture_screen(){
 function draw_loglines(x_case,y_case,type){
   stroke(line_color);
 
-  sum = (1 - pow(1/rate,9))/(1 - 1/rate);
+  sum = (1 - Math.pow(1/rate,9))/(1 - 1/rate);
   step_x = (graph_bode_mag_width/x_case)/sum;
 
   for(x = 0; x < x_case; x++){
@@ -3439,14 +3439,14 @@ function draw_loglines(x_case,y_case,type){
         strokeWeight(1);
       }
       line(pas,0,pas,graph_bode_mag_height);
-      pas += step_x/pow(rate,i);
+      pas += step_x/Math.pow(rate,i);
     }
   }
 }
 
 function draw_timelines(){
-  min_y_timerep = floor(min_y_timerep*1) / 1;
-  max_y_timerep = ceil(max_y_timerep*1) / 1;
+  min_y_timerep = Math.floor(min_y_timerep*1) / 1;
+  max_y_timerep = Math.ceil(max_y_timerep*1) / 1;
 //  min_y_timerep = 0;
 
   let x_step = +(Math.abs(max_x_timerep)/10).toPrecision(1);
@@ -3619,7 +3619,7 @@ class bode_graph{
       buffer_formula = buffer_formula.replace('⋅','');
       for(let x=0; x<graph_bode_mag_width; x++){
         let log_pow = map(x,0,graph_bode_mag_width,min_10power,min_10power+x_case_gain);
-        let math_x = pow(10,log_pow);
+        let math_x = Math.pow(10,log_pow);
         let bode_value = getComplexValues(math_x);
 
         if(bode_value.re > this.bode_max_nyquist_x){
@@ -3797,7 +3797,7 @@ class bode_graph{
             //console.log("z=" + z);
             //console.log("w=" + w);
             //console.log("k_3=" + k_3);
-            let exponentTerm = exp(-z*w*t);
+            let exponentTerm = Math.exp(-z*w*t);
             let sinTerm = sin(w * sqrt(1.0-z*z) * t + acos(z));  // acos = inverse cosine (in radians)
             let math_y = k_3 * (1.0 - (1.0 / (sqrt(1.0-z*z)) * exponentTerm * sinTerm));
             if(math_y > this.bode_max_timerep){
@@ -3827,9 +3827,9 @@ class bode_graph{
             if (z==0){
               math_y = k_3 * sin(w * t);
             } else if (z==1){
-              math_y = k_3 * t * exp(-w*t);
+              math_y = k_3 * t * Math.exp(-w*t);
             } else if (z<1){
-              let exponentTerm = exp(-z*w*t);
+              let exponentTerm = Math.exp(-z*w*t);
               let sinTerm = sin(w * sqrt(1.0-z*z));
               math_y = k_3 * (1.0 / sqrt(1-z*z)) * exponentTerm * sinTerm;
             }
@@ -3982,6 +3982,7 @@ class bode_graph{
     }
     endShape();
 
+
     // Draw a red X for T_1 in the Nyquist diagram:
     if(this.bode_displaybool){
       if(this.bode_formula == GRAPH_ONE_REAL_POLE.formula){
@@ -3989,20 +3990,20 @@ class bode_graph{
         let T_1 = range_slider_variables[variable_position["T_1"]];
         if (T_1 != 0){
           let frequency = 1 / T_1;
-          bode_graphs[i].draw_nyquist_X(frequency);
+          this.draw_nyquist_X(frequency);
         }
       } else if(this.bode_formula == GRAPH_TWO_REAL_POLES.formula){
         // Draw a X for T_2 in the Nyquist diagram:
         let T_2 = range_slider_variables[variable_position["T_2"]];
         if (T_2 != 0){
           let frequency = 1 / T_2;
-          bode_graphs[i].draw_nyquist_X(frequency);
+          this.draw_nyquist_X(frequency);
         }
         // Draw a X for T_3 in the Nyquist diagram:
         let T_3 = range_slider_variables[variable_position["T_3"]];
         if (T_3 != 0){
           let frequency = 1 / T_3;
-          bode_graphs[i].draw_nyquist_X(frequency);
+          this.draw_nyquist_X(frequency);
         }
       } else if(this.bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
         // Draw a X for w in the Nyquist diagram:
@@ -4012,7 +4013,7 @@ class bode_graph{
           // One single frequency, so only one X in the graph:
           if (w != 0){
             let frequency = w;
-            bode_graphs[i].draw_nyquist_X(frequency);
+            this.draw_nyquist_X(frequency);
           }
         } else {
           //If sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
@@ -4022,29 +4023,29 @@ class bode_graph{
           w = bode_3_real_1;
           if (w != 0){
             let frequency = w;
-            bode_graphs[i].draw_nyquist_X(frequency);
+            this.draw_nyquist_X(frequency);
           }
           w = bode_3_real_2;
           if (w != 0){
             let frequency = w;
-            bode_graphs[i].draw_nyquist_X(frequency);
+            this.draw_nyquist_X(frequency);
           }
         }
       } else if(this.bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
         let T_8 = range_slider_variables[variable_position["T_8"]];
         if (T_8 != 0){
           let frequency = 1 / T_8;
-          bode_graphs[i].draw_nyquist_O(frequency);
+          this.draw_nyquist_O(frequency);
         }
         let T_6 = range_slider_variables[variable_position["T_6"]];
         if (T_6 != 0){
           let frequency = 1 / T_6;
-          bode_graphs[i].draw_nyquist_X(frequency);
+          this.draw_nyquist_X(frequency);
         }
         let T_7 = range_slider_variables[variable_position["T_7"]];
         if (T_7 != 0){
           let frequency = 1 / T_7;
-          bode_graphs[i].draw_nyquist_X(frequency);
+          this.draw_nyquist_X(frequency);
         }
       }
     }
@@ -4056,13 +4057,13 @@ class bode_graph{
     // This is the values that we have calculated in new_complex_array[x]:
     //  for(let x=0; x<graph_bode_mag_width; x++){
     //    let log_pow = map(x,0,graph_bode_mag_width,min_10power,min_10power+x_case_gain);
-    //    let freq = pow(10,log_pow);
+    //    let freq = Math.pow(10,log_pow);
     //    let bode_value = getComplexValues(freq);
     let screen_x1 = (Math.log(Math.abs(frequency))/Math.log(10) + 2) * graph_bode_mag_width/5;
     //console.log("frequency="+frequency);
     //console.log("screen_x1="+screen_x1);
     let sample_no = round(screen_x1);
-//    let sample_no = floor(new_complex_array.length * percentage);
+//    let sample_no = Math.floor(new_complex_array.length * percentage);
     let current_complex = new_complex_array[sample_no];
 //    console.log("current_complex="+current_complex);
     try {
@@ -4072,7 +4073,7 @@ class bode_graph{
   //    translate(graph_nyquist_x_offset+graph_nyquist_x,45+graph_nyquist_y);
       //console.log("screen_x="+screen_x);
       //console.log("screen_y="+screen_y);
-      stroke(bode_graphs[i].bode_hue,240,360);
+      stroke(this.bode_hue,240,360);
       strokeWeight(3);
       draw_X(screen_x, screen_y);
       pop();
@@ -4089,7 +4090,7 @@ class bode_graph{
       let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
       let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
       push();
-      stroke(bode_graphs[i].bode_hue,240,360);
+      stroke(this.bode_hue,240,360);
       strokeWeight(3);
       draw_O(screen_x, screen_y);
       pop();
@@ -4102,11 +4103,11 @@ class bode_graph{
     // This is the values that we have calculated in new_complex_array[x]:
     //  for(let x=0; x<graph_bode_mag_width; x++){
     //    let log_pow = map(x,0,graph_bode_mag_width,min_10power,min_10power+x_case_gain);
-    //    let freq = pow(10,log_pow);
+    //    let freq = Math.pow(10,log_pow);
     //    let bode_value = getComplexValues(freq);
 
-    let sample_no = floor(graph_bode_mag_width * percentage);
-//    let sample_no = floor(new_complex_array.length * percentage);
+    let sample_no = Math.floor(graph_bode_mag_width * percentage);
+//    let sample_no = Math.floor(new_complex_array.length * percentage);
 
     let current_complex = new_complex_array[sample_no];
     let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
@@ -4121,7 +4122,7 @@ class bode_graph{
 
   get_nyquist_value(percentage){
     let new_complex_array = this.bode_complex_array;
-    let sample_no = floor(graph_bode_mag_width * percentage);
+    let sample_no = Math.floor(graph_bode_mag_width * percentage);
     let current_complex = new_complex_array[sample_no];
     let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
     let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
@@ -4281,7 +4282,7 @@ class bode_graph{
     textAlign(CENTER);
     let grey_color = color('hsb(0, 0%, 50%)');
     fill(grey_color,360,360);
-    text(bode_graphs[i].graph_name,graph_pole_zero_width/2,pole_zero_height-7);
+    text(this.graph_name,graph_pole_zero_width/2,pole_zero_height-7);
   }
 
   plot_pole(pole_x,pole_y){
@@ -4359,14 +4360,14 @@ function getTimeValues(time,time_delay){
 function findOmegaZero(input_array){
   let a_bound = min_10power;
   let b_bound = min_10power + x_case_gain;
-  let f_a = buffer_formula.replaceAll('s','(i*' + pow(10,a_bound).toString() + ')');
-  let f_b = buffer_formula.replaceAll('s','(i*' + pow(10,b_bound).toString() + ')');
+  let f_a = buffer_formula.replaceAll('s','(i*' + Math.pow(10,a_bound).toString() + ')');
+  let f_b = buffer_formula.replaceAll('s','(i*' + Math.pow(10,b_bound).toString() + ')');
   f_a = 20*Math.log(math.evaluate(f_a).toPolar().r)/Math.log(10);
   f_b = 20*Math.log(math.evaluate(f_b).toPolar().r)/Math.log(10);
   if(f_a * f_b < 0){
     for(let h = 0;h < 20;h++){
       let mid_point = (a_bound + b_bound)/2;
-      f_mid = buffer_formula.replaceAll('s','(i*' + pow(10,mid_point).toString() + ')');
+      f_mid = buffer_formula.replaceAll('s','(i*' + Math.pow(10,mid_point).toString() + ')');
       f_mid = 20*Math.log(math.evaluate(f_mid).toPolar().r)/Math.log(10);
       if(f_mid * f_a < 0){
         b_bound = mid_point;
@@ -4376,11 +4377,11 @@ function findOmegaZero(input_array){
       }
     }
     a_bound = (a_bound + b_bound)/2;
-    //let output = buffer_formula.replaceAll('s','(i*' + pow(10,a_bound).toString() + ')');
+    //let output = buffer_formula.replaceAll('s','(i*' + Math.pow(10,a_bound).toString() + ')');
     //output = math.evaluate(output).toPolar().phi;
     let linked_array_pos = map(a_bound,min_10power,min_10power + x_case_gain,0,graph_width-1);
-    let output = input_array[ceil(linked_array_pos)];
-    return [output*180/PI + 180, pow(10,a_bound)];
+    let output = input_array[Math.ceil(linked_array_pos)];
+    return [output*180/PI + 180, Math.pow(10,a_bound)];
   }
   else{
     return NaN
@@ -4390,12 +4391,12 @@ function findOmegaZero(input_array){
 function findOmega180(input_array){
   let a_bound = min_10power;
   let b_bound = min_10power + x_case_gain;
-  let f_a = input_array[ceil(map(a_bound,min_10power,min_10power + x_case_gain,0,graph_width-1))] + PI;
-  let f_b = input_array[ceil(map(b_bound,min_10power,min_10power + x_case_gain,0,graph_width-1))] + PI;
+  let f_a = input_array[Math.ceil(map(a_bound,min_10power,min_10power + x_case_gain,0,graph_width-1))] + PI;
+  let f_b = input_array[Math.ceil(map(b_bound,min_10power,min_10power + x_case_gain,0,graph_width-1))] + PI;
   if(f_a * f_b < 0 && Math.abs(f_a) > 0.005 && Math.abs(f_b) > 0.005){
     for(let h = 0;h < 20;h++){
       let mid_point = (a_bound + b_bound)/2;
-      let f_mid = input_array[ceil(map(mid_point,min_10power,min_10power + x_case_gain,0,graph_width-1))] + PI;
+      let f_mid = input_array[Math.ceil(map(mid_point,min_10power,min_10power + x_case_gain,0,graph_width-1))] + PI;
       if(f_mid * f_a < 0){
         b_bound = mid_point;
       }
@@ -4404,9 +4405,9 @@ function findOmega180(input_array){
       }
     }
     a_bound = (a_bound + b_bound)/2;
-    let output = buffer_formula.replaceAll('s','(i*' + pow(10,a_bound).toString() + ')');
+    let output = buffer_formula.replaceAll('s','(i*' + Math.pow(10,a_bound).toString() + ')');
     output = -20*Math.log(math.evaluate(output).toPolar().r)/Math.log(10);
-    return [output,pow(10,a_bound)];
+    return [output,Math.pow(10,a_bound)];
   }
   else{
     return NaN;
