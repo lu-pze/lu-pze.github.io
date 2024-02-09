@@ -27,6 +27,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+'use strict';
+
 if (document.readyState == 'loading') {
   document.addEventListener('DOMContentLoaded', ready)
 } else {
@@ -3401,7 +3403,7 @@ function mouseMoved(){
           // Now paint a horizontal line on the Bode phase plot, at the right height:
           let linked_y = phase;
           if ((angle >= phase_lower_bound) && (angle <= phase_upper_bound)){
-            screen_y = map(linked_y,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
+            let screen_y = map(linked_y,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
             push();
             stroke(angle_color);
             strokeWeight(2);
@@ -3411,7 +3413,6 @@ function mouseMoved(){
         }
       }
     }
-
   }
 }
 
