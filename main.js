@@ -3973,9 +3973,28 @@ class bode_graph{
       } else if(this.bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
         // Draw a X for w in the Nyquist diagram:
         var w = range_slider_variables[variable_position["w"]];
-        if (w != 0){
-          var frequency = w;
-          bode_graphs[i].draw_nyquist_X(frequency);
+        var z = range_slider_variables[variable_position["z"]];
+        if (z <= 1){
+          // One single frequency, so only one X in the graph:
+          if (w != 0){
+            var frequency = w;
+            bode_graphs[i].draw_nyquist_X(frequency);
+          }
+        } else {
+          //If sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
+          // We should draw 2 X in this graph:
+          var bode_3_real_1 = z*w + w * sqrt(z*z-1);
+          var bode_3_real_2 = z*w - w * sqrt(z*z-1);
+          w = bode_3_real_1;
+          if (w != 0){
+            var frequency = w;
+            bode_graphs[i].draw_nyquist_X(frequency);
+          }
+          w = bode_3_real_2;
+          if (w != 0){
+            var frequency = w;
+            bode_graphs[i].draw_nyquist_X(frequency);
+          }
         }
       } else if(this.bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
         var T_8 = range_slider_variables[variable_position["T_8"]];
