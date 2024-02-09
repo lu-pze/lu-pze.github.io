@@ -518,6 +518,8 @@ function removeGraph(event){
     variables_to_delete = ["k_3","w","z"];
   } else if (equation_to_remove == GRAPH_TIME_DELAY.formula){
     variables_to_delete = ["L"];
+  } else if (equation_to_remove == GRAPH_ONE_ZERO_TWO_POLES.formula){
+    variables_to_delete = ["k_4","T_6","T_7","T_8"];
   }
   for (let i = 0; i<variables_to_delete.length; i++){
     let variable_to_delete = variables_to_delete[i];
