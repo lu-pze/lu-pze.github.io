@@ -2908,7 +2908,7 @@ function mouseMoved(){
     // Check if we're hovering the step response graph:
     var queue = [];
     var yes_close_enough = false;
-    if((mouseX-graph_step_response_x) > 65 && (mouseX-graph_step_response_x) < graph_step_response_width + 62){
+    if((mouseX-graph_step_response_x) > 65 && (mouseX-graph_step_response_x) < graph_step_response_width + 65){
       if((mouseY-graph_step_response_y) > 45 && (mouseY-graph_step_response_y) < graph_step_response_height + 45){
         var linked_x = ceil((mouseX - graph_step_response_x - 65)/precision);
         for(h=0; h<bode_graphs.length;h++){
@@ -2940,6 +2940,15 @@ function mouseMoved(){
           var linked_bode_graph = bode_graphs[output[1]];
           var linked_x = map(mouseX - graph_step_response_x - 65,0,graph_step_response_width,0,max_x_timerep,true);
           var screen_y = map(output[2],min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
+          // Draw a white dot at the right edge of the time response graph
+          fill(text_color);
+          ellipse(graph_step_response_x+graph_step_response_width+65,graph_step_response_y+screen_y+45,12,12);
+          // Draw a corresponding white dot at the left edge of the bode magnitude graph
+          let magnitude = abs(output[2]);
+          // Now paint a horizontal line on the Bode magnitude plot, at the right height:
+          var magnitude_in_dB = 20*log(magnitude)/log(10);
+          let screen_y5 = map(magnitude_in_dB,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+          ellipse(graph_bode_mag_x+68,graph_bode_mag_y + screen_y5 + 30,12,12);
           noStroke();
           fill(linked_bode_graph.bode_hue,360,360);
           ellipse(mouseX,screen_y + 45 + graph_step_response_y,12,12);
@@ -2960,6 +2969,32 @@ function mouseMoved(){
           text("time=" + linked_x.toFixed(3) + "s",13,53);
           text("output=" + output[2].toFixed(3),13,77);
           pop();
+        } else {
+          let time=(mouseX - graph_step_response_x - 65) / graph_step_response_width * 10.0;
+          let output=max_y_timerep - (max_y_timerep - min_y_timerep) * (mouseY - graph_step_response_y - 45) / graph_step_response_height;
+          var linked_y = ceil((mouseY - graph_step_response_y)/precision);
+          push();
+          // Draw a white dot at the right edge of the time response graph
+          fill(text_color);
+          ellipse(graph_step_response_x+graph_step_response_width+65,mouseY,12,12);
+          // Draw a corresponding white dot at the left edge of the bode magnitude graph
+          let magnitude = abs(output);
+          // Now paint a horizontal line on the Bode magnitude plot, at the right height:
+          var magnitude_in_dB = 20*log(magnitude)/log(10);
+          let screen_y5 = map(magnitude_in_dB,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+          ellipse(graph_bode_mag_x+68,graph_bode_mag_y + screen_y5 + 30,12,12);
+
+          translate(mouseX,mouseY);
+          fill(box_background_color,200);
+          stroke(150);
+          rect(0,0,200,90);
+          noStroke();
+          fill(text_color);
+          textSize(15);
+          text("time=" + time.toFixed(3) + "s",13,53);
+          text("output=" + output.toFixed(3),13,77);
+          pop();
+
         }
       }
     }
