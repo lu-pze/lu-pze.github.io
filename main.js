@@ -138,7 +138,7 @@ let current_info_tab_id = 1;
 let current_tab = 0;
 
 function getGraphById(input_id){
-  for(i=0; i<bode_graphs.length; i++){
+  for(let i=0; i<bode_graphs.length; i++){
     let current_graph = bode_graphs[i];
     if(current_graph.bode_id == input_id){
       return current_graph;
@@ -154,7 +154,7 @@ function updateInputFormula(event){
 
 function checkSlider(input_id){
   let linked_formula = getGraphById(input_id).bode_formula;
-  for(i=0;i<range_slider_alphabet.length;i++){
+  for(let i=0;i<range_slider_alphabet.length;i++){
     let current_letter = range_slider_alphabet[i];
     let linked_button = document.getElementById("BTNS_" + input_id.toString() + "_" + i.toString());
     if(linked_formula.includes(current_letter)){
@@ -349,7 +349,7 @@ function removeSlider(event){
   range_slider_variables[linked_id] = 18012001;
   let slider = button.parentElement.parentElement.parentElement;
   slider.remove();
-  for(b = 0;b < bode_graphs.length;b++){
+  for(let b = 0;b < bode_graphs.length;b++){
     let graph_id = bode_graphs[b].bode_id;
     checkSlider(graph_id);
     redraw_canvas_gain(graph_id);
@@ -432,7 +432,7 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
 
 
   let input_element_id = id_bank;
-  for(i = 0;i < bode_graphs.length;i++){
+  for(let i = 0;i < bode_graphs.length;i++){
     let current_bode_graph = bode_graphs[i];
     if(parseInt(input_element_id) == current_bode_graph.bode_id){
 //      current_bode_graph.bode_formula = "k_1/(s+1)";
@@ -444,7 +444,7 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
       let equation_id=input_element_id; // The DOM number of the equation
       // Search for all variables in the equation_string:
 
-      for(i=NOF_CONSTANT_VARIABLES;i<range_slider_alphabet.length;i++){
+      for(let i=NOF_CONSTANT_VARIABLES;i<range_slider_alphabet.length;i++){
         let letter_id=i; // The variable position in the variable array.
         let current_letter = range_slider_alphabet[i];
         if(equation_string.includes(current_letter)){
@@ -506,7 +506,7 @@ function removeGraph(event){
   let linked_id = linked_equation.getElementsByClassName("formula")[0].id;
   removeInformationTab(+linked_id);
   let equation_to_remove = "";
-  for(i = 0; i<bode_graphs.length;i++){
+  for(let i = 0; i<bode_graphs.length;i++){
     let current_graph = bode_graphs[i];
     if(current_graph.bode_id == parseInt(linked_id)){
       equation_to_remove = current_graph.bode_formula;
@@ -538,7 +538,7 @@ function removeGraph(event){
     slider.remove();
   }
 
-  for(b=0; b<bode_graphs.length; b++){
+  for(let b=0; b<bode_graphs.length; b++){
     let graph_id = bode_graphs[b].bode_id;
     checkSlider(graph_id);
     redraw_canvas_gain(graph_id);
@@ -548,7 +548,7 @@ function removeGraph(event){
 
 function changeGraphDisplayStatus(event){
   let equation_id = event.target.parentElement.getElementsByClassName("formula")[0].id;
-  for(i = 0; i < bode_graphs.length; i++){
+  for(let i = 0; i < bode_graphs.length; i++){
     let current_graph = bode_graphs[i];
     if(current_graph.bode_id == parseInt(equation_id)){
       current_graph.bode_displaybool = !current_graph.bode_displaybool;
@@ -560,7 +560,7 @@ function changeGraphDisplayStatus(event){
 function updateFormulaAndDraw(input_element){
   input_element.addEventListener('input',(ev) => {
     let input_element_id = ev.target.id;
-    for(i = 0;i < bode_graphs.length;i++){
+    for(let i = 0;i < bode_graphs.length;i++){
       let current_bode_graph = bode_graphs[i];
       if(parseInt(input_element_id) == current_bode_graph.bode_id){
         current_bode_graph.bode_formula = ev.target.getValue('ascii-math');
@@ -635,7 +635,7 @@ function update_programming_language(id){
 
 function get_python_script(id){
   let current_graph;
-  for(i = 0; i<bode_graphs.length;i++){
+  for(let i = 0; i<bode_graphs.length;i++){
     if(bode_graphs[i].bode_id == id){
       current_graph = bode_graphs[i];
     }
@@ -732,7 +732,7 @@ plt.show(block=False)
 
 function get_julia_script(id){
   let current_graph;
-  for(i = 0; i<bode_graphs.length;i++){
+  for(let i = 0; i<bode_graphs.length;i++){
     if(bode_graphs[i].bode_id == id){
       current_graph = bode_graphs[i];
     }
@@ -800,7 +800,7 @@ display(plot!())
 
 function get_matlab_script(id){
   let current_graph;
-  for(i = 0; i<bode_graphs.length;i++){
+  for(let i = 0; i<bode_graphs.length;i++){
     if(bode_graphs[i].bode_id == id){
       current_graph = bode_graphs[i];
     }
@@ -1201,11 +1201,11 @@ function updateGraphInformation(){
   let gain = sub_information[0].getElementsByClassName("value")[2];
   let phase_cross = sub_information[0].getElementsByClassName("value")[3];
   let settling_time = sub_information[0].getElementsByClassName("value")[4];
-  for(h=0; h<inputs.length; h++){
+  for(let h=0; h<inputs.length; h++){
     if(inputs[h].checked){
       let input_id = +inputs[h].id.split("_")[1];
       let current_graph;
-      for(j = 0;j < bode_graphs.length;j++){
+      for(let j = 0;j < bode_graphs.length;j++){
         if(bode_graphs[j].bode_id == input_id){
           current_graph = bode_graphs[j];
         }
@@ -1282,13 +1282,13 @@ function setup(){
   angle_color = "#ff40ff";
 
   // To go from "T_1" to the index in range_slider_variables:
-  for (i=0; i<range_slider_alphabet.length; i++){
+  for(let i=0; i<range_slider_alphabet.length; i++){
     variable_position[range_slider_alphabet[i]] = i;
   }
 
-  id_bank = 0;
+  id_bank=0;
   // Add the initial startup graphs:
-  for (let graph_no=0; graph_no<NOF_GRAPHS_AT_STARTUP; graph_no++){
+  for(let graph_no=0; graph_no<NOF_GRAPHS_AT_STARTUP; graph_no++){
     let graph_to_add = GRAPH_ORDER[graph_no];
     addNewGraph(null, graph_to_add);
   }
@@ -1333,7 +1333,7 @@ function draw(){
 //Toolbox
 function roundup_decimal(input){
   let sign = Math.sign(input);
-  input = abs(input);
+  input = Math.abs(input);
   let decimal_part = input % 1;
   if(decimal_part >= 0.5){
     return ceil(input)*sign;
@@ -1350,7 +1350,7 @@ function value_magnet(input,magnet_value){
 
 function get_bestMultiple(input,divider,type){
   let sign = Math.sign(input);
-  input = abs(input);
+  input = Math.abs(input);
   let dividend = +(input/divider).toFixed(1);
   if(type == 'upper'){
     if(sign < 0){
@@ -1389,7 +1389,7 @@ function draw_bode_responses(type){
     let min_phase = 10000;
     let max_phase = -10000;
 
-    for(i=0; i<bode_graphs.length; i++){
+    for(let i=0; i<bode_graphs.length; i++){
       if(bode_graphs[i].bode_displaybool){
         let current_graph = bode_graphs[i];
         if(current_graph.bode_min_phase < min_phase){
@@ -1443,7 +1443,7 @@ function draw_bode_responses(type){
       text(value,-7,pas+5);
     }
 
-    for(i=0; i<bode_graphs.length; i++){
+    for(let i=0; i<bode_graphs.length; i++){
       if(bode_graphs[i].bode_displaybool){
         let stop_on_overflow=false;
         if (bode_graphs[i].bode_formula == GRAPH_TIME_DELAY.formula){
@@ -1465,7 +1465,7 @@ function draw_bode_responses(type){
             let T_1 = range_slider_variables[variable_position["T_1"]];
             if (T_1 >= 0){
               let frequency = 1 / T_1;
-              let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
               let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
               let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
@@ -1480,7 +1480,7 @@ function draw_bode_responses(type){
             if (T_2 >= 0){
               // Now we know the x position. Let's find out the y position:
               let frequency = 1 / T_2;
-              let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
               let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
               let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
@@ -1491,7 +1491,7 @@ function draw_bode_responses(type){
             if (T_3 >= 0){
               // Now we know the x position. Let's find out the y position:
               let frequency = 1 / T_3;
-              let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
               let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
               let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
@@ -1508,7 +1508,7 @@ function draw_bode_responses(type){
               // One single frequency, so only one X in the graph:
               if (w >= 0){
                 let frequency = w;
-                let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+                let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
                 let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
                 let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
                 stroke(bode_graphs[i].bode_hue,240,360);
@@ -1523,7 +1523,7 @@ function draw_bode_responses(type){
               w = bode_3_real_1;
               if (w >= 0){
                 let frequency = w;
-                let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+                let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
                 let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
                 let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
                 stroke(bode_graphs[i].bode_hue,240,360);
@@ -1533,7 +1533,7 @@ function draw_bode_responses(type){
               w = bode_3_real_2;
               if (w >= 0){
                 let frequency = w;
-                let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+                let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
                 let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
                 let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
                 stroke(bode_graphs[i].bode_hue,240,360);
@@ -1548,7 +1548,7 @@ function draw_bode_responses(type){
             let T_4 = range_slider_variables[variable_position["T_4"]];
             if (T_4 >= 0){
               let frequency = 1 / T_4;
-              let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
               let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
               let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
@@ -1563,7 +1563,7 @@ function draw_bode_responses(type){
             if (T_6 >= 0){
               // Now we know the x position. Let's find out the y position:
               let frequency = 1 / T_6;
-              let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
               let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
               let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
@@ -1574,7 +1574,7 @@ function draw_bode_responses(type){
             if (T_7 >= 0){
               // Now we know the x position. Let's find out the y position:
               let frequency = 1 / T_7;
-              let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
               let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
               let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
@@ -1585,7 +1585,7 @@ function draw_bode_responses(type){
             if (T_8 >= 0){
               // Now we know the x position. Let's find out the y position:
               let frequency = 1 / T_8;
-              let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
               let linked_y = bode_graphs[i].bode_phase_array[round(screen_x)];
               let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
@@ -1619,8 +1619,8 @@ function draw_bode_responses(type){
       line(0,pas,graph_bode_mag_width,pas);
       if (y>0){
         strokeWeight(0.5);
-        for(i=1; i<=9; i++){
-          let pas2 = pas - graph_bode_mag_height/y_case_gain * log(i+1)/log(10);
+        for(let i=1; i<=9; i++){
+          let pas2 = pas - graph_bode_mag_height/y_case_gain * Math.log(i+1)/Math.log(10);
           line(0,pas2,graph_bode_mag_width,pas2);
         }
       }
@@ -1632,7 +1632,7 @@ function draw_bode_responses(type){
       text(value,-7,pas+5);
     }
 
-    for(i=0;i < bode_graphs.length;i++){
+    for(let i=0;i < bode_graphs.length;i++){
       if(bode_graphs[i].bode_displaybool){
         bode_graphs[i].draw_gain();
       }
@@ -1649,9 +1649,7 @@ function draw_bode_responses(type){
             if (T_1 >= 0){
               let frequency = 1 / T_1;
               // Need to map frequency to pixel:
-  //            console.log("frequency="+frequency);
-              let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
-  //            console.log("screen_x="+screen_x);
+              let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
               // Now we know the x position. Let's find out the y position:
               let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
@@ -1667,7 +1665,7 @@ function draw_bode_responses(type){
               // Now we know the x position. Let's find out the y position:
               let frequency = 1 / T_2;
               // Need to map frequency to pixel:
-              let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
               // Now we know the x position. Let's find out the y position:
               let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
@@ -1680,7 +1678,7 @@ function draw_bode_responses(type){
               // Now we know the x position. Let's find out the y position:
               let frequency = 1 / T_3;
               // Need to map frequency to pixel:
-              let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
               // Now we know the x position. Let's find out the y position:
               let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
@@ -1698,7 +1696,7 @@ function draw_bode_responses(type){
               if (w >= 0){
                 let frequency = w;
                 // Need to map frequency to pixel:
-                let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+                let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
                 // Now we know the x position. Let's find out the y position:
                 let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
                 stroke(bode_graphs[i].bode_hue,240,360);
@@ -1714,7 +1712,7 @@ function draw_bode_responses(type){
               if (w >= 0){
                 let frequency = w;
                 // Need to map frequency to pixel:
-                let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+                let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
                 // Now we know the x position. Let's find out the y position:
                 let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
                 stroke(bode_graphs[i].bode_hue,240,360);
@@ -1725,7 +1723,7 @@ function draw_bode_responses(type){
               if (w >= 0){
                 let frequency = w;
                 // Need to map frequency to pixel:
-                let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+                let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
                 // Now we know the x position. Let's find out the y position:
                 let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
                 stroke(bode_graphs[i].bode_hue,240,360);
@@ -1742,7 +1740,7 @@ function draw_bode_responses(type){
               let frequency = 1 / T_4;
               // Need to map frequency to pixel:
   //            console.log("frequency="+frequency);
-              let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
   //            console.log("screen_x="+screen_x);
               // Now we know the x position. Let's find out the y position:
               let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
@@ -1759,7 +1757,7 @@ function draw_bode_responses(type){
               // Now we know the x position. Let's find out the y position:
               let frequency = 1 / T_6;
               // Need to map frequency to pixel:
-              let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
               // Now we know the x position. Let's find out the y position:
               let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
@@ -1772,7 +1770,7 @@ function draw_bode_responses(type){
               // Now we know the x position. Let's find out the y position:
               let frequency = 1 / T_7;
               // Need to map frequency to pixel:
-              let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
               // Now we know the x position. Let's find out the y position:
               let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
@@ -1784,7 +1782,7 @@ function draw_bode_responses(type){
               // Now we know the x position. Let's find out the y position:
               let frequency = 1 / T_8;
               // Need to map frequency to pixel:
-              let screen_x = (log(frequency)/log(10) + 2) * graph_bode_mag_width/5;
+              let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
               // Now we know the x position. Let's find out the y position:
               let screen_y = map(bode_graphs[i].bode_gain_array[round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
               stroke(bode_graphs[i].bode_hue,240,360);
@@ -1813,7 +1811,7 @@ function draw_time_responses(){
     min_y_timerep = 100000;
     max_y_timerep = -100000;
 
-    for(i = 0;i < bode_graphs.length;i++){
+    for(let i = 0;i < bode_graphs.length;i++){
       if(bode_graphs[i].bode_displaybool){
         current_graph = bode_graphs[i];
         if(current_graph.bode_max_timerep > max_y_timerep){
@@ -1826,7 +1824,7 @@ function draw_time_responses(){
     }
   }
   // Make sure that "0" is kind of stable if we have 'almost zero':
-  if (abs(min_y_timerep) < 0.1){
+  if (Math.abs(min_y_timerep) < 0.1){
     min_y_timerep = round(min_y_timerep);
   }
 
@@ -1999,7 +1997,7 @@ function draw_time_responses(){
     }
   }
 
-  for(i = 0;i < bode_graphs.length;i++){
+  for(let i = 0;i < bode_graphs.length;i++){
     if(bode_graphs[i].bode_displaybool){
       bode_graphs[i].draw_timeresponse();
     }
@@ -2024,7 +2022,7 @@ function draw_nyquist_responses(){
   min_nyquist_y = -1;
   max_nyquist_y = 0.2;
 
-  for(i=0; i<bode_graphs.length; i++){
+  for(let i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_displaybool){
       let current_graph = bode_graphs[i];
       if(current_graph.bode_max_nyquist_x > max_nyquist_x){
@@ -2110,7 +2108,7 @@ function draw_nyquist_responses(){
   text("Imaginary axis",0,0);
   pop();
 
-  for(i=0; i<bode_graphs.length; i++){
+  for(let i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_displaybool){
       bode_graphs[i].draw_nyquist_response();
     }
@@ -2127,7 +2125,7 @@ function draw_pole_zeros(){
   let draw_position = 0;
 
   // Find out the last pole zero graph:
-  for(i=0; i<bode_graphs.length; i++){
+  for(let i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_displaybool){
       if((bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula)||
          (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)||
@@ -2142,7 +2140,7 @@ function draw_pole_zeros(){
 
 
   draw_position = 0;
-  for(i=0; i<bode_graphs.length; i++){
+  for(let i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_displaybool){
       if((bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula)||
          (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)||
@@ -2227,7 +2225,7 @@ function mousePressed(){
   clicked_on_time_variable = "";
 
   // Check if we've clicked any of the pole-zero graphs:
-  for(i=0; i<bode_graphs.length; i++){
+  for(let i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_displaybool){
       if ((bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula)||
           (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)||
@@ -2242,7 +2240,7 @@ function mousePressed(){
               // See if the user clicked on T_2 or T_3:
               let T_2 = range_slider_variables[variable_position["T_2"]];
               let T_3 = range_slider_variables[variable_position["T_3"]];
-              if (abs(-1/T_2 - real) < abs(-1/T_3 - real)){
+              if (Math.abs(-1/T_2 - real) < Math.abs(-1/T_3 - real)){
                 clicked_on_time_variable = "T_2";
               } else {
                 clicked_on_time_variable = "T_3";
@@ -2252,9 +2250,9 @@ function mousePressed(){
               let T_8 = range_slider_variables[variable_position["T_8"]];
               let T_6 = range_slider_variables[variable_position["T_6"]];
               let T_7 = range_slider_variables[variable_position["T_7"]];
-              if ((abs(-1/T_8 - real) <= abs(-1/T_6 - real)) && (abs(-1/T_8 - real) <= abs(-1/T_7 - real))){
+              if ((Math.abs(-1/T_8 - real) <= Math.abs(-1/T_6 - real)) && (Math.abs(-1/T_8 - real) <= Math.abs(-1/T_7 - real))){
                 clicked_on_time_variable = "T_8";
-              } else if ((abs(-1/T_6 - real) <= abs(-1/T_7 - real)) && (abs(-1/T_6 - real) <= abs(-1/T_8 - real))){
+              } else if ((Math.abs(-1/T_6 - real) <= Math.abs(-1/T_7 - real)) && (Math.abs(-1/T_6 - real) <= Math.abs(-1/T_8 - real))){
                 clicked_on_time_variable = "T_6";
               } else {
                 clicked_on_time_variable = "T_7";
@@ -2273,11 +2271,11 @@ function mousePressed(){
   if(((mouseX-graph_step_response_x) > graph_step_response_x_offset && (mouseX-graph_step_response_x) < graph_step_response_width + graph_step_response_x_offset)&&
     ((mouseY-graph_step_response_y) > graph_step_response_y_offset && (mouseY-graph_step_response_y) < graph_step_response_height + graph_step_response_y_offset)){
     let linked_x = ceil((mouseX - graph_step_response_x - graph_step_response_x_offset)/precision);
-    for(h=0; h<bode_graphs.length;h++){
+    for(let h=0; h<bode_graphs.length;h++){
       let current_graph = bode_graphs[h];
       let linked_y = current_graph.bode_timerep_array[linked_x];
       let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true) + graph_step_response_y_offset;
-      let distance = abs(mouseY - graph_step_response_y - screen_y);
+      let distance = Math.abs(mouseY - graph_step_response_y - screen_y);
       if(distance < 70){
         yes_close_enough = true;
         queue.push([distance,h,linked_y]);
@@ -2285,7 +2283,7 @@ function mousePressed(){
     }
     let output;
     let distance = 10000;
-    for(h = 0;h < queue.length;h++){
+    for(let h = 0;h < queue.length;h++){
       if(queue[h][0] < distance){
         distance = queue[h][0];
         output = queue[h];
@@ -2308,7 +2306,7 @@ function mousePressed(){
         let T_2_x = graph_step_response_width / 10 * T_2;
         let T_3 = range_slider_variables[variable_position["T_3"]];
         let T_3_x = graph_step_response_width / 10 * T_3;
-        if (abs(T_2_x - (mouseX - graph_step_response_x - graph_step_response_x_offset)) < abs(T_3_x - (mouseX - graph_step_response_x - graph_step_response_x_offset))){
+        if (Math.abs(T_2_x - (mouseX - graph_step_response_x - graph_step_response_x_offset)) < Math.abs(T_3_x - (mouseX - graph_step_response_x - graph_step_response_x_offset))){
           clicked_on_time_variable = "T_2";
         } else {
           clicked_on_time_variable = "T_3";
@@ -2323,9 +2321,9 @@ function mousePressed(){
         let T_7 = range_slider_variables[variable_position["T_7"]];
         let T_7_x = graph_step_response_width / 10 * T_7;
         let x = mouseX - graph_step_response_x - graph_step_response_x_offset;
-        if ((abs(T_8_x - x) <= abs(T_6_x - x)) && (abs(T_8_x - x) <= abs(T_7_x - x))){
+        if ((Math.abs(T_8_x - x) <= Math.abs(T_6_x - x)) && (Math.abs(T_8_x - x) <= Math.abs(T_7_x - x))){
           clicked_on_time_variable = "T_8";
-        } else if ((abs(T_6_x - x) <= abs(T_7_x - x)) && (abs(T_6_x - x) <= abs(T_8_x - x))){
+        } else if ((Math.abs(T_6_x - x) <= Math.abs(T_7_x - x)) && (Math.abs(T_6_x - x) <= Math.abs(T_8_x - x))){
           clicked_on_time_variable = "T_6";
         } else {
           clicked_on_time_variable = "T_7";
@@ -2348,12 +2346,12 @@ function mousePressed(){
 
     let queue = [];
     let yes_close_enough = false;
-    for(i=0; i<bode_graphs.length; i++){
+    for(let i=0; i<bode_graphs.length; i++){
       if(bode_graphs[i].bode_displaybool){
         let current_graph = bode_graphs[i];
         let linked_y = current_graph.bode_gain_array[linked_x];
         let screen_y = graph_bode_mag_y_offset + map(linked_y,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
-        let distance = abs(mouseY - graph_step_response_y - screen_y);
+        let distance = Math.abs(mouseY - graph_step_response_y - screen_y);
         if(distance < 70){
           yes_close_enough = true;
           queue.push([distance,i,screen_y,linked_y]);
@@ -2365,7 +2363,7 @@ function mousePressed(){
     // Find the closest point from the graphs:
     let output;
     let distance = 10000;
-    for(h = 0;h < queue.length;h++){
+    for(let h = 0;h < queue.length;h++){
       if(queue[h][0] < distance){
         distance = queue[h][0];
         output = queue[h];
@@ -2380,12 +2378,12 @@ function mousePressed(){
         // If user clicked on TWO_REAL_POLES, let's find out if closest to T_2 or T_3:
         let T_2 = range_slider_variables[variable_position["T_2"]];
         let T_2_frequency = 1 / T_2;
-        let T_2_x = (log(T_2_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        let T_2_x = (Math.log(T_2_frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
         let T_3 = range_slider_variables[variable_position["T_3"]];
         let T_3_frequency = 1 / T_3;
-        let T_3_x = (log(T_3_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        let T_3_x = (Math.log(T_3_frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
         let x = mouseX - graph_bode_mag_x_offset - graph_bode_mag_x;
-        if (abs(T_2_x - x) < abs(T_3_x - x)){
+        if (Math.abs(T_2_x - x) < Math.abs(T_3_x - x)){
           clicked_on_time_variable="T_2";
         } else {
           clicked_on_time_variable="T_3";
@@ -2394,17 +2392,17 @@ function mousePressed(){
         // If user clicked on ONE_ZERO_TWO_POLES, let's find out if closest to T_8,T_6 or T_7:
         let T_8 = range_slider_variables[variable_position["T_8"]];
         let T_8_frequency = 1 / T_8;
-        let T_8_x = (log(T_8_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        let T_8_x = (Math.log(T_8_frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
         let T_6 = range_slider_variables[variable_position["T_6"]];
         let T_6_frequency = 1 / T_6;
-        let T_6_x = (log(T_6_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        let T_6_x = (Math.log(T_6_frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
         let T_7 = range_slider_variables[variable_position["T_7"]];
         let T_7_frequency = 1 / T_7;
-        let T_7_x = (log(T_7_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        let T_7_x = (Math.log(T_7_frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
         let x = mouseX - graph_bode_mag_x_offset - graph_bode_mag_x;
-        if ((abs(T_8_x - x) <= abs(T_6_x - x)) && (abs(T_8_x - x) <= abs(T_7_x - x))){
+        if ((Math.abs(T_8_x - x) <= Math.abs(T_6_x - x)) && (Math.abs(T_8_x - x) <= Math.abs(T_7_x - x))){
           clicked_on_time_variable="T_8";
-        } else if ((abs(T_6_x - x) <= abs(T_7_x - x)) && (abs(T_6_x - x) <= abs(T_8_x - x))){
+        } else if ((Math.abs(T_6_x - x) <= Math.abs(T_7_x - x)) && (Math.abs(T_6_x - x) <= Math.abs(T_8_x - x))){
           clicked_on_time_variable="T_6";
         } else {
           clicked_on_time_variable="T_7";
@@ -2428,12 +2426,12 @@ function mousePressed(){
     let rad_phase_upper_bound = phase_upper_bound*PI/180;
     let queue = [];
     let yes_close_enough = false;
-    for(i=0; i<bode_graphs.length; i++){
+    for(let i=0; i<bode_graphs.length; i++){
       if(bode_graphs[i].bode_displaybool){
         let current_graph = bode_graphs[i];
         let linked_y = current_graph.bode_phase_array[linked_x];
         let screen_y = graph_bode_phase_y_offset + map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-        let distance = abs(mouseY - graph_bode_phase_y - screen_y);
+        let distance = Math.abs(mouseY - graph_bode_phase_y - screen_y);
         if(distance < 70){
           yes_close_enough = true;
           queue.push([distance,i,screen_y,linked_y]);
@@ -2443,7 +2441,7 @@ function mousePressed(){
     // Find the closest point from the graphs:
     let output;
     let distance = 10000;
-    for(h = 0;h < queue.length;h++){
+    for(let h = 0;h < queue.length;h++){
       if(queue[h][0] < distance){
         distance = queue[h][0];
         output = queue[h];
@@ -2458,12 +2456,12 @@ function mousePressed(){
         // If user clicked on TWO_REAL_POLES, let's find out if closest to T_2 or T_3:
         let T_2 = range_slider_variables[variable_position["T_2"]];
         let T_2_frequency = 1 / T_2;
-        let T_2_x = (log(T_2_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        let T_2_x = (Math.log(T_2_frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
         let T_3 = range_slider_variables[variable_position["T_3"]];
         let T_3_frequency = 1 / T_3;
-        let T_3_x = (log(T_3_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        let T_3_x = (Math.log(T_3_frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
         let x = mouseX - graph_bode_phase_x_offset - graph_bode_phase_x;
-        if (abs(T_2_x - x) < abs(T_3_x - x)){
+        if (Math.abs(T_2_x - x) < Math.abs(T_3_x - x)){
           clicked_on_time_variable="T_2";
         } else {
           clicked_on_time_variable="T_3";
@@ -2472,17 +2470,17 @@ function mousePressed(){
         // If user clicked on ONE_ZERO_TWO_POLES, let's find out if closest to T_8,T_6 or T_7:
         let T_8 = range_slider_variables[variable_position["T_8"]];
         let T_8_frequency = 1 / T_8;
-        let T_8_x = (log(T_8_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        let T_8_x = (Math.log(T_8_frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
         let T_6 = range_slider_variables[variable_position["T_6"]];
         let T_6_frequency = 1 / T_6;
-        let T_6_x = (log(T_6_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        let T_6_x = (Math.log(T_6_frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
         let T_7 = range_slider_variables[variable_position["T_7"]];
         let T_7_frequency = 1 / T_7;
-        let T_7_x = (log(T_7_frequency)/log(10) + 2) * graph_bode_mag_width/5;
+        let T_7_x = (Math.log(T_7_frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
         let x = mouseX - graph_bode_phase_x_offset - graph_bode_phase_x;
-        if ((abs(T_8_x - x) <= abs(T_6_x - x)) && (abs(T_8_x - x) <= abs(T_7_x - x))){
+        if ((Math.abs(T_8_x - x) <= Math.abs(T_6_x - x)) && (Math.abs(T_8_x - x) <= Math.abs(T_7_x - x))){
           clicked_on_time_variable="T_8";
-        } else if ((abs(T_6_x - x) <= abs(T_7_x - x)) && (abs(T_6_x - x) <= abs(T_8_x - x))){
+        } else if ((Math.abs(T_6_x - x) <= Math.abs(T_7_x - x)) && (Math.abs(T_6_x - x) <= Math.abs(T_8_x - x))){
           clicked_on_time_variable="T_6";
         } else {
           clicked_on_time_variable="T_7";
@@ -2786,7 +2784,7 @@ function mouseDragged(){
 
   } else {
     // Check if we've dragged in any of the pole-zero graphs:
-    for(i=0; i<bode_graphs.length; i++){
+    for(let i=0; i<bode_graphs.length; i++){
       if(((mouseX-pole_zero_graph_x[i]) > 0) && ((mouseX-pole_zero_graph_x[i]) < pole_zero_width)){
         if(((mouseY-pole_zero_graph_y[i]) > 0) && ((mouseY-pole_zero_graph_y[i]) < pole_zero_height)){
           if(bode_graphs[i].bode_displaybool){
@@ -2885,7 +2883,7 @@ function mouseMoved(){
   if(additional_information_bool){
 
     // Check if we're hovering any of the pole-zero graphs:
-    for(i=0; i<bode_graphs.length; i++){
+    for(let i=0; i<bode_graphs.length; i++){
       if(bode_graphs[i].bode_displaybool){
         if ((bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula)||
             (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)||
@@ -2919,12 +2917,12 @@ function mouseMoved(){
     if((mouseX-graph_step_response_x) > graph_step_response_x_offset && (mouseX-graph_step_response_x) < graph_step_response_width + graph_step_response_x_offset){
       if((mouseY-graph_step_response_y) > graph_step_response_y_offset && (mouseY-graph_step_response_y) < graph_step_response_height + graph_step_response_y_offset){
         let linked_x = ceil((mouseX - graph_step_response_x - graph_step_response_x_offset)/precision);
-        for(h=0; h<bode_graphs.length;h++){
+        for(let h=0; h<bode_graphs.length;h++){
           if(bode_graphs[h].bode_displaybool){
             let current_graph = bode_graphs[h];
             let linked_y = current_graph.bode_timerep_array[linked_x];
             let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true) + graph_step_response_y_offset;
-            let distance = abs(mouseY - graph_step_response_y - screen_y);
+            let distance = Math.abs(mouseY - graph_step_response_y - screen_y);
             if(distance < 70){
               yes_close_enough = true;
               queue.push([distance,h,linked_y,current_graph.graph_name]);
@@ -2933,7 +2931,7 @@ function mouseMoved(){
         }
         let output;
         let distance = 10000;
-        for(h = 0;h < queue.length;h++){
+        for(let h = 0;h < queue.length;h++){
           if(queue[h][0] < distance){
             distance = queue[h][0];
             output = queue[h];
@@ -2952,9 +2950,9 @@ function mouseMoved(){
           fill(text_color);
           ellipse(graph_step_response_x+graph_step_response_width+graph_step_response_x_offset,graph_step_response_y+screen_y+graph_step_response_y_offset,12,12);
           // Draw a corresponding white dot at the left edge of the bode magnitude graph
-          let magnitude = abs(output[2]);
+          let magnitude = Math.abs(output[2]);
           // Now paint a horizontal line on the Bode magnitude plot, at the right height:
-          let magnitude_in_dB = 20*log(magnitude)/log(10);
+          let magnitude_in_dB = 20*Math.log(magnitude)/Math.log(10);
           let screen_y5 = map(magnitude_in_dB,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
           ellipse(graph_bode_mag_x+graph_bode_mag_x_offset,graph_bode_mag_y + screen_y5 + graph_bode_mag_y_offset,12,12);
           noStroke();
@@ -2986,9 +2984,9 @@ function mouseMoved(){
           fill(text_color);
           ellipse(graph_step_response_x+graph_step_response_width+graph_step_response_x_offset,mouseY,12,12);
           // Draw a corresponding white dot at the left edge of the bode magnitude graph
-          let magnitude = abs(output);
+          let magnitude = Math.abs(output);
           // Now paint a horizontal line on the Bode magnitude plot, at the right height:
-          let magnitude_in_dB = 20*log(magnitude)/log(10);
+          let magnitude_in_dB = 20*Math.log(magnitude)/Math.log(10);
           let screen_y5 = map(magnitude_in_dB,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
           ellipse(graph_bode_mag_x+graph_bode_mag_x_offset,graph_bode_mag_y + screen_y5 + graph_bode_mag_y_offset,12,12);
 
@@ -3026,14 +3024,14 @@ function mouseMoved(){
 //        console.log("# inside bode_mag graph, x="+perc_x+", y="+perc_y+", freq="+frequency);
         let queue = [];
         let yes_close_enough = false;
-        for(i=0; i<bode_graphs.length; i++){
+        for(let i=0; i<bode_graphs.length; i++){
           if(bode_graphs[i].bode_displaybool){
 //            bode_graphs[i].draw_nyquist_value(frequency);
             bode_graphs[i].draw_nyquist_value(perc_x);
             let current_graph = bode_graphs[i];
             let linked_y = current_graph.bode_gain_array[linked_x];
             let screen_y = graph_bode_mag_y_offset + map(linked_y,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
-            let distance = abs(mouseY - graph_step_response_y - screen_y);
+            let distance = Math.abs(mouseY - graph_step_response_y - screen_y);
             if(distance < 70){
               yes_close_enough = true;
               queue.push([distance,i,screen_y,linked_y,current_graph.graph_name]);
@@ -3053,7 +3051,7 @@ function mouseMoved(){
         // Find the closest point from the graphs:
         let output;
         let distance = 10000;
-        for(h = 0;h < queue.length;h++){
+        for(let h = 0;h < queue.length;h++){
           if(queue[h][0] < distance){
             distance = queue[h][0];
             output = queue[h];
@@ -3212,7 +3210,7 @@ function mouseMoved(){
         // Get the magnitude of the line from origo to the mouse:
         let magnitude = sqrt(axis_x * axis_x + axis_y * axis_y);
         // Now paint a horizontal line on the Bode magnitude plot, at the right height:
-        let magnitude_in_dB = 20*log(magnitude)/log(10);
+        let magnitude_in_dB = 20*Math.log(magnitude)/Math.log(10);
         screen_y = map(magnitude_in_dB,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
         push();
         stroke(text_color);
@@ -3243,14 +3241,14 @@ function mouseMoved(){
         let rad_phase_upper_bound = phase_upper_bound*PI/180;
         let queue = [];
         let yes_close_enough = false;
-        for(i=0; i<bode_graphs.length; i++){
+        for(let i=0; i<bode_graphs.length; i++){
           if(bode_graphs[i].bode_displaybool){
 //            bode_graphs[i].draw_nyquist_value(frequency);
             bode_graphs[i].draw_nyquist_value(perc_x);
             let current_graph = bode_graphs[i];
             let linked_y = current_graph.bode_phase_array[linked_x];
             let screen_y = graph_bode_phase_y_offset + map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-            let distance = abs(mouseY - graph_bode_phase_y - screen_y);
+            let distance = Math.abs(mouseY - graph_bode_phase_y - screen_y);
             if(distance < 70){
               yes_close_enough = true;
               queue.push([distance,i,screen_y,linked_y,current_graph.graph_name]);
@@ -3261,7 +3259,7 @@ function mouseMoved(){
         // Find the closest point from the graphs:
         let output;
         let distance = 10000;
-        for(h = 0;h < queue.length;h++){
+        for(let h = 0;h < queue.length;h++){
           if(queue[h][0] < distance){
             distance = queue[h][0];
             output = queue[h];
@@ -3433,7 +3431,7 @@ function draw_loglines(x_case,y_case,type){
 
   for(x = 0; x < x_case; x++){
     pas = graph_bode_mag_width*x/x_case;
-    for(i = 0; i<=9 ; i++){
+    for(let i = 0; i<=9 ; i++){
       if(i == 0){
         strokeWeight(2);
       }
@@ -3451,8 +3449,8 @@ function draw_timelines(){
   max_y_timerep = ceil(max_y_timerep*1) / 1;
 //  min_y_timerep = 0;
 
-  let x_step = +(abs(max_x_timerep)/10).toPrecision(1);
-  let y_step = +(abs(max_y_timerep - min_y_timerep)/10).toPrecision(1);
+  let x_step = +(Math.abs(max_x_timerep)/10).toPrecision(1);
+  let y_step = +(Math.abs(max_y_timerep - min_y_timerep)/10).toPrecision(1);
 
   if(document.getElementById("automatic-range-time").checked){
     max_y_timerep = +(get_bestMultiple(max_y_timerep, y_step, "upper") + y_step).toFixed(2);
@@ -3464,13 +3462,13 @@ function draw_timelines(){
   min_y_timerep = +(get_bestMultiple(min_y_timerep, y_step, "lower")).toFixed(2);
 
   // Since max_y and min_y might have changed - recalculate this:
-  y_step = +(abs(max_y_timerep - min_y_timerep)/10).toPrecision(1);
+  y_step = +(Math.abs(max_y_timerep - min_y_timerep)/10).toPrecision(1);
 
   let x_case_number = Math.ceil(max_x_timerep/x_step);
-  let y_case_number = Math.ceil(abs(max_y_timerep - min_y_timerep)/y_step);
+  let y_case_number = Math.ceil(Math.abs(max_y_timerep - min_y_timerep)/y_step);
 
   // Since max_y and min_y might have changed - recalculate this:
-  y_step = abs(max_y_timerep - min_y_timerep)/y_case_number;
+  y_step = Math.abs(max_y_timerep - min_y_timerep)/y_case_number;
 
   let x_tile_length = graph_step_response_width/x_case_number;
   let y_tile_length = graph_step_response_height/y_case_number;
@@ -3513,10 +3511,10 @@ function draw_timelines(){
 }
 
 function draw_nyquist_lines(){
-  let x_step = +(abs(max_nyquist_x - min_nyquist_x)/10).toPrecision(1);
-  let y_step = +(abs(max_nyquist_y - min_nyquist_y)/10).toPrecision(1);
+  let x_step = +(Math.abs(max_nyquist_x - min_nyquist_x)/10).toPrecision(1);
+  let y_step = +(Math.abs(max_nyquist_y - min_nyquist_y)/10).toPrecision(1);
 
-//  max_nyquist_y = Math.max(abs(max_nyquist_y),abs(min_nyquist_y));
+//  max_nyquist_y = Math.max(Math.abs(max_nyquist_y),Math.abs(min_nyquist_y));
 //  let tmp = max_nyquist_y;
 //  max_nyquist_y = -min_nyquist_y;
 //  min_nyquist_y = -tmp;
@@ -3526,8 +3524,8 @@ function draw_nyquist_lines(){
   min_nyquist_x = +(value_magnet(min_nyquist_x,x_step) - x_step).toFixed(2);
   max_nyquist_x = +(value_magnet(max_nyquist_x,x_step) + x_step).toFixed(2);
 
-  let x_case_number = roundup_decimal(abs(max_nyquist_x - min_nyquist_x)/x_step);
-  let y_case_number = roundup_decimal(abs(max_nyquist_y - min_nyquist_y)/y_step);
+  let x_case_number = roundup_decimal(Math.abs(max_nyquist_x - min_nyquist_x)/x_step);
+  let y_case_number = roundup_decimal(Math.abs(max_nyquist_y - min_nyquist_y)/y_step);
 
   let x_tile_length = graph_nyquist_width/x_case_number;
   let y_tile_length = graph_nyquist_height/y_case_number;
@@ -3566,7 +3564,7 @@ function draw_nyquist_lines(){
 
 function x_axis_steps_text(){
   let screen_step = graph_bode_mag_width / x_case_gain;
-  for(h=0; h<=x_case_gain; h++){
+  for(let h=0; h<=x_case_gain; h++){
     textPowerOfTen(min_10power + h,h * screen_step,-25);
     textPowerOfTen(min_10power + h,h * screen_step,graph_bode_mag_height+80 -25);
   }
@@ -3639,11 +3637,11 @@ class bode_graph{
         this.bode_complex_array.push(bode_value);
         bode_value = bode_value.toPolar();
 
-        let bode_gain = 20*log(bode_value.r)/log(10);
+        let bode_gain = 20*Math.log(bode_value.r)/Math.log(10);
         let bode_phase = bode_value.phi;
         bode_phase += phase_bias;
 
-        if(x > 0 && abs(bode_phase - this.bode_phase_array[x-1]) > 5.23 && corrector_bool){
+        if(x > 0 && Math.abs(bode_phase - this.bode_phase_array[x-1]) > 5.23 && corrector_bool){
           let sign = Math.sign(this.bode_phase_array[x-1]);
           phase_bias = sign * PI * 2;
           bode_phase += phase_bias;
@@ -4060,7 +4058,7 @@ class bode_graph{
     //    let log_pow = map(x,0,graph_bode_mag_width,min_10power,min_10power+x_case_gain);
     //    let freq = pow(10,log_pow);
     //    let bode_value = getComplexValues(freq);
-    let screen_x1 = (log(abs(frequency))/log(10) + 2) * graph_bode_mag_width/5;
+    let screen_x1 = (Math.log(Math.abs(frequency))/Math.log(10) + 2) * graph_bode_mag_width/5;
     //console.log("frequency="+frequency);
     //console.log("screen_x1="+screen_x1);
     let sample_no = round(screen_x1);
@@ -4084,7 +4082,7 @@ class bode_graph{
   draw_nyquist_O(frequency){
     //let new_complex_array = this.bode_complex_array.map(x => x.conjugate());
     let new_complex_array = this.bode_complex_array;
-    let screen_x1 = (log(abs(frequency))/log(10) + 2) * graph_bode_mag_width/5;
+    let screen_x1 = (Math.log(Math.abs(frequency))/Math.log(10) + 2) * graph_bode_mag_width/5;
     let sample_no = round(screen_x1);
     let current_complex = new_complex_array[sample_no];
     try {
@@ -4326,7 +4324,7 @@ function getComplexValues(freq){
 function replaceLetterByValue(input_bode_formula){
   let output = true;
   buffer_formula = input_bode_formula;
-  for(i=0; i<range_slider_alphabet.length; i++){
+  for(let i=0; i<range_slider_alphabet.length; i++){
     let current_letter = range_slider_alphabet[i];
     if(buffer_formula.includes(current_letter)){
       if(range_slider_variables[i] != 18012001){
@@ -4348,7 +4346,7 @@ function getTimeValues(time,time_delay){
   const ln2=0.69314718056;
   sum = 0;
   current_formula = current_formula.replace('⋅','');
-  for(j=0;j<=9;j++){
+  for(let j=0;j<=9;j++){
     new_s = (j+1)*ln2/time_to_use;
     new_s_string = '(' + new_s.toString() + ')';
     new_function_value = current_formula.replaceAll('s',new_s_string);
@@ -4363,13 +4361,13 @@ function findOmegaZero(input_array){
   let b_bound = min_10power + x_case_gain;
   let f_a = buffer_formula.replaceAll('s','(i*' + pow(10,a_bound).toString() + ')');
   let f_b = buffer_formula.replaceAll('s','(i*' + pow(10,b_bound).toString() + ')');
-  f_a = 20*log(math.evaluate(f_a).toPolar().r)/log(10);
-  f_b = 20*log(math.evaluate(f_b).toPolar().r)/log(10);
+  f_a = 20*Math.log(math.evaluate(f_a).toPolar().r)/Math.log(10);
+  f_b = 20*Math.log(math.evaluate(f_b).toPolar().r)/Math.log(10);
   if(f_a * f_b < 0){
-    for(h = 0;h < 20;h++){
+    for(let h = 0;h < 20;h++){
       let mid_point = (a_bound + b_bound)/2;
       f_mid = buffer_formula.replaceAll('s','(i*' + pow(10,mid_point).toString() + ')');
-      f_mid = 20*log(math.evaluate(f_mid).toPolar().r)/log(10);
+      f_mid = 20*Math.log(math.evaluate(f_mid).toPolar().r)/Math.log(10);
       if(f_mid * f_a < 0){
         b_bound = mid_point;
       }
@@ -4394,8 +4392,8 @@ function findOmega180(input_array){
   let b_bound = min_10power + x_case_gain;
   let f_a = input_array[ceil(map(a_bound,min_10power,min_10power + x_case_gain,0,graph_width-1))] + PI;
   let f_b = input_array[ceil(map(b_bound,min_10power,min_10power + x_case_gain,0,graph_width-1))] + PI;
-  if(f_a * f_b < 0 && abs(f_a) > 0.005 && abs(f_b) > 0.005){
-    for(h = 0;h < 20;h++){
+  if(f_a * f_b < 0 && Math.abs(f_a) > 0.005 && Math.abs(f_b) > 0.005){
+    for(let h = 0;h < 20;h++){
       let mid_point = (a_bound + b_bound)/2;
       let f_mid = input_array[ceil(map(mid_point,min_10power,min_10power + x_case_gain,0,graph_width-1))] + PI;
       if(f_mid * f_a < 0){
@@ -4407,7 +4405,7 @@ function findOmega180(input_array){
     }
     a_bound = (a_bound + b_bound)/2;
     let output = buffer_formula.replaceAll('s','(i*' + pow(10,a_bound).toString() + ')');
-    output = -20*log(math.evaluate(output).toPolar().r)/log(10);
+    output = -20*Math.log(math.evaluate(output).toPolar().r)/Math.log(10);
     return [output,pow(10,a_bound)];
   }
   else{
@@ -4418,9 +4416,9 @@ function findOmega180(input_array){
 function fivePercentTimeResponse(input_array){
   let final_value = +getTimeValues(max_x_timerep + 50).toFixed(3);
   let values = [];
-  for(h = 0;h < input_array.length;h++){
-    let ratio = abs(input_array[h] - final_value)/final_value;
-    if(abs(ratio - 0.05) < 0.001){
+  for(let h = 0;h < input_array.length;h++){
+    let ratio = Math.abs(input_array[h] - final_value)/final_value;
+    if(Math.abs(ratio - 0.05) < 0.001){
       values.push(map(h,0,input_array.length,0,max_x_timerep));
     }
   }
