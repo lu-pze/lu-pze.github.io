@@ -2215,7 +2215,7 @@ function mousePressed(){
     clicked_on_bode_mag_graph_no = -1;
     clicked_on_bode_phase_graph_no = -1;
     clicked_on_time_variable="";
-    return;
+    return true; // Let system handle mouse after this
   }
 
   // Reset what we've clicked on:
@@ -2258,6 +2258,8 @@ function mousePressed(){
                 clicked_on_time_variable = "T_7";
               }
             }
+            mouseDragged(); // Handle this directly
+            return false; // Cancel default actions
           }
         }
       }
@@ -2330,6 +2332,8 @@ function mousePressed(){
         }
       }
     }
+    mouseDragged(); // Handle this directly
+    return false; // Cancel default actions
 
 
   } else if(((mouseX-graph_bode_mag_x) > graph_bode_mag_x_offset && (mouseX-graph_bode_mag_x) < graph_bode_mag_width + graph_bode_mag_x_offset)&&
@@ -2343,13 +2347,12 @@ function mousePressed(){
     // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
     let exponent = perc_x*x_case_gain + min_10power;
     let frequency = Math.pow(10,exponent);
-
     let queue = [];
     let yes_close_enough = false;
     for(let i=0; i<bode_graphs.length; i++){
       if(bode_graphs[i].bode_displaybool){
         let current_graph = bode_graphs[i];
-        let linked_y = current_graph.bode_gain_array[linked_x];
+        let linked_y = current_graph.bode_gain_array[math.round(linked_x)];
         let screen_y = graph_bode_mag_y_offset + map(linked_y,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
         let distance = Math.abs(mouseY - graph_step_response_y - screen_y);
         if(distance < 70){
@@ -2409,6 +2412,9 @@ function mousePressed(){
         }
       }
     }
+    mouseDragged(); // Handle this directly
+    return false; // Cancel default actions
+
 
   } else if(((mouseX-graph_bode_phase_x) > graph_bode_phase_x_offset) && ((mouseX-graph_bode_phase_x) < graph_bode_phase_width + graph_bode_phase_x_offset) && 
     ((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) > 0) && ((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) < graph_bode_phase_height)){
@@ -2429,7 +2435,7 @@ function mousePressed(){
     for(let i=0; i<bode_graphs.length; i++){
       if(bode_graphs[i].bode_displaybool){
         let current_graph = bode_graphs[i];
-        let linked_y = current_graph.bode_phase_array[linked_x];
+        let linked_y = current_graph.bode_phase_array[math.round(linked_x)];
         let screen_y = graph_bode_phase_y_offset + map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
         let distance = Math.abs(mouseY - graph_bode_phase_y - screen_y);
         if(distance < 70){
@@ -2486,12 +2492,13 @@ function mousePressed(){
           clicked_on_time_variable="T_7";
         }
       }
-
     }
+    mouseDragged(); // Handle this directly
+    return false; // Cancel default actions
   }
 
-  // When we know what was clicked on, we can run mouseDragged directly:
-  mouseDragged();
+  // Let the system handle this click. It didn't touch anything we handle:
+  return true;
 }
 
 function mouseReleased(){
