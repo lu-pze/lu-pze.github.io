@@ -2415,6 +2415,12 @@ function mousePressed(){
     mouseDragged(); // Handle this directly
     return false; // Cancel default actions
 
+  // Check if we're dragging the Nyquist diagram:
+  } else if(((mouseX-graph_nyquist_x) > graph_nyquist_x_offset && ((mouseX-graph_nyquist_x) < graph_nyquist_width + graph_nyquist_x_offset)) &&
+            ((mouseY-graph_nyquist_y-graph_nyquist_y_offset) > 0 && (mouseY-graph_nyquist_y-graph_nyquist_y_offset) < graph_nyquist_height)) {
+    mouseDragged(); // Handle this directly
+    return false; // Cancel default actions
+
 
   } else if(((mouseX-graph_bode_phase_x) > graph_bode_phase_x_offset) && ((mouseX-graph_bode_phase_x) < graph_bode_phase_width + graph_bode_phase_x_offset) && 
     ((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) > 0) && ((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) < graph_bode_phase_height)){
@@ -2790,6 +2796,14 @@ function mouseDragged(){
     initial_mouseY = mouseY;
 
   } else {
+    // Check if we're dragging the Nyquist diagram:
+    if((mouseX-graph_nyquist_x) > graph_nyquist_x_offset && (mouseX-graph_nyquist_x) < graph_nyquist_width + graph_nyquist_x_offset){
+      if((mouseY-graph_nyquist_y-graph_nyquist_y_offset) > 0 && (mouseY-graph_nyquist_y-graph_nyquist_y_offset) < graph_nyquist_height){
+        draw();
+        draw_hover_nyquist();
+      }
+    }
+
     // Check if we've dragged in any of the pole-zero graphs:
     for(let i=0; i<bode_graphs.length; i++){
       if(((mouseX-pole_zero_graph_x[i]) > 0) && ((mouseX-pole_zero_graph_x[i]) < pole_zero_width)){
@@ -2882,6 +2896,81 @@ function mouseDragged(){
     }
   }
 }
+
+
+function draw_hover_nyquist(){
+  let origo_x = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+  let origo_y = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+  push();
+  stroke(text_color);
+  strokeWeight(2);
+  let screen_x = graph_nyquist_x + origo_x + graph_nyquist_x_offset;
+  let screen_y = graph_nyquist_y + origo_y + graph_nyquist_y_offset;
+  line(screen_x,screen_y,mouseX,mouseY);
+  pop();
+
+  // Let's calculate the angle we're at:
+  // We need to map the mouseX and mouseY to real and imaginary axis:
+  let perc_x = (mouseX - graph_nyquist_x - graph_nyquist_x_offset) / graph_nyquist_width;
+  let perc_y = (mouseY - graph_nyquist_y - graph_nyquist_y_offset) / graph_nyquist_height;
+  let axis_x = min_nyquist_x + (max_nyquist_x - min_nyquist_x) * perc_x;
+  let axis_y = max_nyquist_y + (min_nyquist_y - max_nyquist_y) * perc_y;
+
+  let angle_rad = Math.atan(axis_x / axis_y);
+  let angle=0;
+  if (mouseY > screen_y){
+    // The lower half plane: angles 0 at the right edge, 90 pointing downwards, and -180 to the left:
+    angle = -(90 + angle_rad * 180 / PI);
+  } else {
+    // The upper half plane: angles 360 at the right edge, 270 pointing upwards, and 180 to the left:
+    angle = -(270 + angle_rad * 180 / PI);
+  }
+
+  // Paint an arc in the nyquist diagram over the unit circle:
+  push();
+  let screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+  let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+  let screen_xw = map(2,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+  let screen_yw = map(-2,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+  stroke(angle_color);
+  strokeWeight(2);
+  noFill();
+  arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
+  pop();
+
+  // Now paint a horizontal line on the Bode phase plot, at the right height:
+  let linked_y = angle;
+  if ((angle >= phase_lower_bound) && (angle <= phase_upper_bound)){
+    screen_y = map(linked_y,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
+    push();
+    stroke(angle_color);
+    strokeWeight(2);
+    line(graph_bode_phase_x + graph_bode_mag_x_offset,graph_bode_phase_y + screen_y + graph_bode_phase_y_offset,graph_bode_phase_x + graph_bode_mag_x_offset + graph_bode_phase_width,graph_bode_phase_y + screen_y + graph_bode_phase_y_offset);
+    pop();
+  }
+  // We might show positive angles in the bode phase plot, so draw a line at positive angles as well:
+  linked_y = angle + 360;
+  if ((linked_y >= phase_lower_bound) && (linked_y <= phase_upper_bound)){
+    screen_y = map(linked_y,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
+    push();
+    stroke(angle_color);
+    strokeWeight(2);
+    line(graph_bode_phase_x + graph_bode_mag_x_offset,graph_bode_phase_y + screen_y + graph_bode_phase_y_offset,graph_bode_phase_x + graph_bode_mag_x_offset + graph_bode_phase_width,graph_bode_phase_y + screen_y + graph_bode_phase_y_offset);
+    pop();
+  }
+
+  // Get the magnitude of the line from origo to the mouse:
+  let magnitude = Math.sqrt(axis_x * axis_x + axis_y * axis_y);
+  // Now paint a horizontal line on the Bode magnitude plot, at the right height:
+  let magnitude_in_dB = 20*Math.log(magnitude)/Math.log(10);
+  screen_y = map(magnitude_in_dB,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+  push();
+  stroke(text_color);
+  strokeWeight(2);
+  line(graph_bode_mag_x + graph_bode_mag_x_offset,graph_bode_mag_y + screen_y + graph_bode_mag_y_offset,graph_bode_mag_x + graph_bode_mag_x_offset + graph_bode_mag_width,graph_bode_mag_y + screen_y + graph_bode_mag_y_offset);
+  pop();
+}
+
 
 function mouseMoved(){
   redraw();
@@ -3154,76 +3243,7 @@ function mouseMoved(){
     // Check if we're hovering the Nyquist diagram:
     if((mouseX-graph_nyquist_x) > graph_nyquist_x_offset && (mouseX-graph_nyquist_x) < graph_nyquist_width + graph_nyquist_x_offset){
       if((mouseY-graph_nyquist_y-graph_nyquist_y_offset) > 0 && (mouseY-graph_nyquist_y-graph_nyquist_y_offset) < graph_nyquist_height){
-        let origo_x = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-        let origo_y = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-        push();
-        stroke(text_color);
-        strokeWeight(2);
-        let screen_x = graph_nyquist_x + origo_x + graph_nyquist_x_offset;
-        let screen_y = graph_nyquist_y + origo_y + graph_nyquist_y_offset;
-        line(screen_x,screen_y,mouseX,mouseY);
-        pop();
-
-        // Let's calculate the angle we're at:
-        // We need to map the mouseX and mouseY to real and imaginary axis:
-        let perc_x = (mouseX - graph_nyquist_x - graph_nyquist_x_offset) / graph_nyquist_width;
-        let perc_y = (mouseY - graph_nyquist_y - graph_nyquist_y_offset) / graph_nyquist_height;
-        let axis_x = min_nyquist_x + (max_nyquist_x - min_nyquist_x) * perc_x;
-        let axis_y = max_nyquist_y + (min_nyquist_y - max_nyquist_y) * perc_y;
-
-        let angle_rad = Math.atan(axis_x / axis_y);
-        let angle=0;
-        if (mouseY > screen_y){
-          // The lower half plane: angles 0 at the right edge, 90 pointing downwards, and -180 to the left:
-          angle = -(90 + angle_rad * 180 / PI);
-        } else {
-          // The upper half plane: angles 360 at the right edge, 270 pointing upwards, and 180 to the left:
-          angle = -(270 + angle_rad * 180 / PI);
-        }
-
-        // Paint an arc in the nyquist diagram over the unit circle:
-        push();
-        let screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-        let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-        let screen_xw = map(2,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-        let screen_yw = map(-2,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-        stroke(angle_color);
-        strokeWeight(2);
-        noFill();
-        arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
-        pop();
-
-        // Now paint a horizontal line on the Bode phase plot, at the right height:
-        let linked_y = angle;
-        if ((angle >= phase_lower_bound) && (angle <= phase_upper_bound)){
-          screen_y = map(linked_y,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
-          push();
-          stroke(angle_color);
-          strokeWeight(2);
-          line(graph_bode_phase_x + graph_bode_mag_x_offset,graph_bode_phase_y + screen_y + graph_bode_phase_y_offset,graph_bode_phase_x + graph_bode_mag_x_offset + graph_bode_phase_width,graph_bode_phase_y + screen_y + graph_bode_phase_y_offset);
-          pop();
-        }
-        // We might show positive angles in the bode phase plot, so draw a line at positive angles as well:
-        linked_y = angle + 360;
-        if ((linked_y >= phase_lower_bound) && (linked_y <= phase_upper_bound)){
-          screen_y = map(linked_y,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
-          push();
-          stroke(angle_color);
-          strokeWeight(2);
-          line(graph_bode_phase_x + graph_bode_mag_x_offset,graph_bode_phase_y + screen_y + graph_bode_phase_y_offset,graph_bode_phase_x + graph_bode_mag_x_offset + graph_bode_phase_width,graph_bode_phase_y + screen_y + graph_bode_phase_y_offset);
-          pop();
-        }
-
-        // Get the magnitude of the line from origo to the mouse:
-        let magnitude = Math.sqrt(axis_x * axis_x + axis_y * axis_y);
-        // Now paint a horizontal line on the Bode magnitude plot, at the right height:
-        let magnitude_in_dB = 20*Math.log(magnitude)/Math.log(10);
-        screen_y = map(magnitude_in_dB,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
-        push();
-        stroke(text_color);
-        strokeWeight(2);
-        line(graph_bode_mag_x + graph_bode_mag_x_offset,graph_bode_mag_y + screen_y + graph_bode_mag_y_offset,graph_bode_mag_x + graph_bode_mag_x_offset + graph_bode_mag_width,graph_bode_mag_y + screen_y + graph_bode_mag_y_offset);
-        pop();
+        draw_hover_nyquist();
       }
     }
 
