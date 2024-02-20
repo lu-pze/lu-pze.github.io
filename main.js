@@ -665,8 +665,7 @@ function get_python_script(id){
 import control
 import matplotlib.pyplot as plt
 import numpy as np
-from control.matlab import *  # MATLAB-like functions
-# Clear previous variables and plots:
+# Clear previous plots:
 plt.close('all')
 
 # Creating the transfer function:
@@ -678,26 +677,27 @@ print ("Transfer function G(s)=", system)
 plt.figure(1)
 (poles, zeros) = control.pzmap(system)
 plt.title('Pole-Zero Map')
-plt.show()
+plt.show(block=False)
 print ("poles=", poles)
 print ("zeros=", zeros)
 
 # Step response for the system
 plt.figure(2)
-yout, T = step(system)
-plt.plot(T.T, yout.T)
-plt.show(block=False)
+(time, output) = control.step_response(system)
+plt.plot(time, output)
 plt.title('Step input response')
+plt.show(block=False)
 
 # Plot Bode diagram:
 plt.figure(3)
 Gmag, Gphase, Gomega = control.bode_plot(system, plot=True)
 plt.title('Bode Diagram')
-plt.show()
+plt.show(block=False)
 
 # Nyquist plot for the system
 plt.figure(4)
-control.nyquist(system)
+control.nyquist(system,mirror_style=False)
+plt.axis('equal')
 plt.show(block=False)
 
 `.replace(/(?:\r\n|\r|\n)/g, "<br>");
