@@ -41,8 +41,8 @@ const GRAPH_TWO_REAL_POLES = {name:"Two real poles", mf:"\\frac{k_2}{(1+T_2s)(1+
 const GRAPH_TWO_COMPLEX_POLES = {name:"Two complex poles", mf:"\\frac{k_3w^2}{s^2+2zws+w^2}", formula:"k_3*w^2/(s^2+2*z*w*s+w^2)"};
 const GRAPH_TIME_DELAY = {name:"Time delay", mf:"\\frac{3}{1+s}e^{-Ls}", formula:"3/(1+s)*e^(-L*s)"};
 const GRAPH_ONE_ZERO_TWO_POLES = {name:"One zero two poles", mf:"\\frac{k_4(1+T_8s)}{(1+T_6s)(1+T_7s)}", formula:"k_4(1+T_8s)/(1+T_6s)*1/(1+T_7s)"};
+const GRAPH_FOUR_POLES = {name:"Four poles", mf:"\\frac{1}{(1+T_5s)^4}", formula:"1/((1+T_5s)^4)"};
 const GRAPH_ONE_ZERO = {name:"One zero", mf:"T_4s+0.5", formula:"T_4*s+0.5"};
-const GRAPH_FOUR_POLES = {name:"Four poles", mf:"\\frac{1}{(T_5s+1)^4}", formula:"1/((T_5s+1)^4)"};
 
 const GRAPH_ORDER = [
   GRAPH_ONE_REAL_POLE,
