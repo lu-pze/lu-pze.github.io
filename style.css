@@ -75,6 +75,13 @@ body{
   height:50px;
 }
 
+.option-button{color:#fff}
+.option-button:hover {color:#d0d0ff}
+
+.add-graph{color:#fff}
+.add-graph:hover {color:#d0d0ff;}
+
+
 .graph-tabs{
   width: 100%;
   height: 35px;
@@ -197,7 +204,9 @@ body{
   font-family: "Roboto";
   font-size: 15px;
   color: #b0b0b0;
+  transition: all .4s ease-in;
 }
+.eq-info:hover {background-color: #f8f890;transition:0s}
 
 .show-graph{
   -webkit-appearance: none;
