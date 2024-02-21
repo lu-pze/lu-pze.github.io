@@ -42,6 +42,7 @@
   <body>
     <div class="page">
       <div class="toolbox">
+        <button type="button" class="delete-graph" onclick="toolboxMenuToggle();"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>
         <div class="math-preferences">
           <span style="font-weight:500;color:#777777">Math preferences:</span>
           <div class="expression-wrapper">
@@ -70,19 +71,20 @@
           </div>
         </div>
         <div class="graphic-preferences">
-          <span style="font-weight:500;color:#777777">Graphic preferences:</span>
+          <span style="font-weight:500;color:#777777">Preferences:</span>
           <div class="expression-wrapper">
-            <span>Lines stroke weight:</span>
-            <input type="range" id="stroke-range" name="" value="2" step="0.1" min="1" max="5" onchange="changeStrokeWeight()">
+            <span>Line stroke weight:</span>
+            <input type="range" id="stroke-range" name="" value="2" step="0.1" min="1" max="7" onchange="changeStrokeWeight()" oninput="changeStrokeWeight()">
           </div>
           <div class="expression-wrapper">
-            <span>Dark/Bright mode</span>
-            <input type="checkbox" id="color-mode-checkbox" value="" style="width:15px;height:15px;" onclick="changeColorMode()">
+            <label><input type="checkbox" id="color-mode-checkbox" value="" style="width:15px;height:15px;" onclick="changeColorMode()">Light mode</label>
           </div>
         </div>
       </div>
 
-      <div class="help"><center><h2>LU-PZE: Lund University Pole-Zero Explorer</h2></center>
+      <div class="help">
+<button type="button" class="delete-graph" onclick="helpToggle();"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>
+        <center><h2>LU-PZE: Lund University Pole-Zero Explorer</h2></center>
 <center>- <i>an Automatic Control theory playground</i></center><br>
 <hr>
 <center>This webapp is a tool for understanding transfer functions<br>
@@ -131,7 +133,7 @@ pex.tufvesson@control.lth.se</center><br>
           <button type="button" class="option-button" style="float:right;margin-right:10px;background:none;border:none;margin-top:9px" title="Preferences"><i class="material-icons" style="font-size: 30px">tune</i></button>
           <button type="button" class="option-button" style="float:right;margin-right:0px;background:none;border:none;margin-top:11px" onclick="capture_screen()" title="Save screenshot"><i class="material-icons" style="font-size: 27px">photo_camera</i></button>
           <button type="button" class="option-button" style="float:right;margin-right:0px;background:none;border:none;margin-top:9px" onclick="location.reload()" title="Reload app"><i class="material-icons" style="font-size: 30px">restart_alt</i></button>
-          <button type="button" class="option-button" style="float:right;margin-right:0px;background:none;border:none;margin-top:11px" onclick="helpToogle()" title="Help screen"><i class="material-icons" style="font-size: 27px">help</i></button>
+          <button type="button" class="option-button" style="float:right;margin-right:0px;background:none;border:none;margin-top:11px" onclick="helpToggle()" title="Help screen"><i class="material-icons" style="font-size: 27px">help</i></button>
           <button type="button" class="option-button" style="float:right;margin-right:0px;background:none;border:none;margin-top:11px" onclick="toggle_fullscreen()" title="Toggle Fullscreen"><i class="material-icons" style="font-size: 27px">fullscreen</i></button>
         </div>
         <div class="equations">

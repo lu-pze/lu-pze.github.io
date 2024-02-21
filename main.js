@@ -583,12 +583,12 @@ function updateFormulaAndDraw(input_element){
 }
 
 
-function toolboxMenuToogle(event){
+function toolboxMenuToggle(event){
   let toggleElement = document.querySelector('.toolbox');
   toggleElement.classList.toggle('active');
 }
 
-function helpToogle(event){
+function helpToggle(event){
   let toggleElement = document.querySelector('.help');
   toggleElement.classList.toggle('active');
 }
@@ -4499,7 +4499,7 @@ function ready(){
   let add_button = document.getElementsByClassName("add-graph")[0];
   add_button.addEventListener('click',addNewGraph);
   let setting_button = document.getElementsByClassName("option-button")[0];
-  setting_button.addEventListener('click',toolboxMenuToogle);
+  setting_button.addEventListener('click',toolboxMenuToggle);
   let input_equation = document.getElementsByClassName("input-equation")[0].getElementsByClassName("formula")[0];
   input_equation.addEventListener('input',updateInputFormula);
   // Make sure that input function selector is visible:
