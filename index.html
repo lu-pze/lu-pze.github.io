@@ -79,6 +79,9 @@
           <div class="expression-wrapper">
             <label><input type="checkbox" id="color-mode-checkbox" value="" style="width:15px;height:15px;" onclick="changeColorMode()">Light mode</label>
           </div>
+          <div class="expression-wrapper">
+            <label><input type="checkbox" id="color-mode-checkbox" value="" style="width:15px;height:15px;" onclick="toggle_gamification()" checked>Enable gamification</label>
+          </div>
         </div>
       </div>
 
@@ -122,6 +125,10 @@ pex.tufvesson@control.lth.se</center><br>
       <div class="download_script_box" id="download_script_box">
       </div>
 
+      <div class="achievements_box" id="achievements_box">
+        Score: 0/100
+      </div>
+
       <div class="footer">
         <div class="footer-info">
           <h1>LU-PZE: Lund University Pole-Zero Explorer - an Automatic Control Theory Playground. Suggestions -> pex.tufvesson@control.lth.se</h1>
@@ -135,6 +142,7 @@ pex.tufvesson@control.lth.se</center><br>
           <button type="button" class="option-button" style="float:right;margin-right:0px;background:none;border:none;margin-top:9px" onclick="location.reload()" title="Reload app"><i class="material-icons" style="font-size: 30px">restart_alt</i></button>
           <button type="button" class="option-button" style="float:right;margin-right:0px;background:none;border:none;margin-top:11px" onclick="helpToggle()" title="Help screen"><i class="material-icons" style="font-size: 27px">help</i></button>
           <button type="button" class="option-button" style="float:right;margin-right:0px;background:none;border:none;margin-top:11px" onclick="toggle_fullscreen()" title="Toggle Fullscreen"><i class="material-icons" style="font-size: 27px">fullscreen</i></button>
+          <button type="button" class="option-button" id="show_achievements" style="float:right;margin-right:0px;background:none;border:none;margin-top:11px;display:none" onclick="toggle_achievements()" title="Show achievements"><i class="material-icons" style="font-size: 27px;">star</i></button>
         </div>
         <div class="equations">
           <div class="input-equation" style="margin-bottom:0px;padding:10px 0 6px;">

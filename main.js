@@ -150,6 +150,13 @@ function getGraphById(input_id){
 
 function updateInputFormula(event){
   input_formula = event.target.getValue('ascii-math');
+  console.log(input_formula);
+  if ((input_formula.includes("/(s^2)")) ||
+      (input_formula.includes("/(s⋅s)")) ||
+      (input_formula.includes("/(s*s)"))){
+    achievement_done("set_input_to_ramp");
+  }
+
   redraw_canvas_gain("all");
 }
 
@@ -283,6 +290,19 @@ function createRangeSlider(event){
   range_slider.oninput = function(){
     linked_span.value = +(+range_slider.value).toFixed(2);
     range_slider_variables[button_id] = +range_slider.value;
+    if (range_slider_alphabet[button_id]=="L"){
+      achievement_done("change_L");
+    } else if ((range_slider_alphabet[button_id][0]=="k") && (+range_slider.value >= 100)){
+      // We dragged a slider to a k-value above or equal 100:
+      achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
+    } else if ((range_slider_alphabet[button_id]=="z") && (+range_slider.value <= 0.1)){
+      achievement_done("low_z");
+    } else if (range_slider_alphabet[button_id][0]=="T"){
+      let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
+      if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
+        achievement_done("T2_T3_far_apart");
+      }
+    }
 
     let variable_name = range_slider_alphabet[button_id];
     if ((variable_name == "k_1")||(variable_name == "T_1")){
@@ -327,6 +347,20 @@ function createRangeSlider(event){
       slider_min.value = linked_span.value;
     }
     range_slider_variables[button_id] = +linked_span.value;
+    if (range_slider_alphabet[button_id]=="L"){
+      achievement_done("change_L");
+    } else if ((range_slider_alphabet[button_id][0]=="k") && (+linked_span.value >= 100)){
+      // We have entered a k-value above or equal 100 in the text box:
+      achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
+    } else if ((range_slider_alphabet[button_id]=="z") && (+linked_span.value <= 0.1)){
+      achievement_done("low_z");
+    } else if (range_slider_alphabet[button_id][0]=="T"){
+      let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
+      if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
+        achievement_done("T2_T3_far_apart");
+      }
+    }
+
     range_slider.value = +linked_span.value;
     redraw_canvas_gain("all");
   }
@@ -357,6 +391,11 @@ function removeSlider(event){
   }
 }
 
+
+function addNewGraphClicked(event, graph_to_add){
+  achievement_done("add_graph");
+  addNewGraph(event, graph_to_add);
+}
 
 function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\frac{v^2}{s^2+2qvs+v^2}", formula:"(0.9s+1)/((s+1)^2)*(v^2)/(s^2+2*q*v*s+v^2)"}){
   let graph_name = graph_to_add.name;
@@ -904,6 +943,141 @@ function showInputFunction(input){
   current_tab = input;
 }
 
+
+// ----------------------
+// Gamification
+
+let gamification_enabled = false;
+
+function toggle_gamification(event){
+  if (gamification_enabled == false){
+    gamification_enabled = true;
+    let show_achievements_icon = document.getElementById("show_achievements");
+    show_achievements_icon.style.display = "inline";
+
+  } else {
+    gamification_enabled = false;
+    let show_achievements_icon = document.getElementById("show_achievements");
+    show_achievements_icon.style.display = "none";
+
+  }
+}
+
+function achievement_done(which_one){
+  if (!(done_achievements.includes(which_one))){
+    // This is a new achievement
+    done_achievements.push(which_one);
+    update_achievements();
+  } else {
+    // This has already been done.
+  }
+}
+
+const all_achievements={
+  "drag_pole":"Drag a pole in the s-domain",
+  "drag_zero":"Drag a zero in the s-domain",
+  "drag_bode_mag":"Drag a transfer function in the Bode magnitude plot",
+  "drag_bode_phase":"Drag a transfer function in the Bode phase plot",
+  "drag_complex_pole":"Drag a complex pole in the s-domain",
+  "hover_nyquist_-90":"Hover the Nyquist diagram at -90 degrees on the unit circle",
+  "add_graph":"Add another graph",
+  "set_input_to_impulse":"Change the input function to a dirac impulse",
+  "change_L":"Change L in the <b>time delay</b> transfer function",
+  "low_z":"Make the damping factor z for <b>two complex poles</b> less or equal to 0.1",
+  "T2_T3_far_apart":"Separate the time constants for <b>two real poles</b> more than a factor 100 apart",
+  "k_above_or_equal_100":"Change a transfer function to have a magnitude k≥100",
+  "set_input_to_ramp":"Change the input to a ramp function"
+};
+
+const achievement_ranks={
+  99:"Automatic Control Legend",
+  95:"Automatic Control Guru",
+  90:"Automatic Control Diamond Welder",
+  85:"Gold Medal Control 先生 Sensei",
+  80:"Automatic Contrl 指導者 Shidousha", // "guidance person"
+  75:"Silver Medal Control Master",
+  70:"Automatic Control 真剣な競争者 Shinken na Kyoushuusha", //  "Serious contender"
+  65:"Automatic Control Brave Knight",
+  60:"Bronze Medal Control Whiz",
+  50:"Automatic Control Hero",
+  40:"Automatic Control Citizen",
+  25:"Automatic Control Apprentice",
+  10:"Automatic Control Wannabe",
+  5:"Automatic Control 初心者 Shoshinsha", // "beginner"
+  0:"Automatic Control Newbie"
+}
+
+let done_achievements=[];
+let achievement_score=0;
+let achievement_rank="";
+let achievement_score_to_next_rank=0;
+
+function update_achievements(){
+  achievement_score = 100.0 * done_achievements.length / Object.keys(all_achievements).length;
+  achievement_rank="";
+  achievement_score_to_next_rank=-1;
+
+  const entries = Object.entries(achievement_ranks);
+  // Sort the array based on integer keys in descending order
+  entries.sort(([keyA], [keyB]) => keyB - keyA);
+
+  // Iterate over the sorted array
+  for (const [threshold, rank] of entries) {
+    if (achievement_score>=threshold){
+      achievement_rank=achievement_ranks[threshold];
+      break;
+    } else {
+      achievement_score_to_next_rank=threshold-achievement_score;
+    }
+  }
+
+
+  let achievements_box = document.querySelector('.achievements_box');
+  let s = "";
+  s += "<center>";
+  s += "Your Achievements ";
+  s += '<i class="material-icons" style="font-size: 27px;">star</i>';
+  s += "</center><br>";
+  for (let achievement_id in all_achievements){
+    if (done_achievements.includes(achievement_id)){
+      let long_name = all_achievements[achievement_id]
+      s += "<input type='checkbox' checked>&nbsp;" + long_name + "<br>";
+    }
+  }
+  s += "<br>Your Score: <b>" + achievement_score.toFixed(1) + "/100</b><br>";
+  s += "Your Rank: <b>" + achievement_rank + "</b><br><br>";
+
+  if (done_achievements.length == Object.keys(all_achievements).length){
+    s += "<center>Well done! You're one in a million, Legend.</center><br>";
+  } else {
+    s += "Level up with another " + achievement_score_to_next_rank.toFixed(1) + " points:<br>";
+
+//    s+="<center>Raise your score:</center><br>";
+    for (let achievement_id in all_achievements){
+      if (!(done_achievements.includes(achievement_id))){
+        let long_name = all_achievements[achievement_id]
+        s += "<input type='checkbox'>&nbsp;" + long_name + "<br>";
+      }
+    }
+  }
+
+  s += "<br>";
+  achievements_box.innerHTML=s;
+
+}
+
+function toggle_achievements(event){
+  let achievements_box = document.querySelector('.achievements_box');
+  achievements_box.classList.toggle('active');
+  update_achievements();
+}
+
+
+
+
+
+// ----------------------
+
 function changeStrokeWeight(event){
   let slider_value = document.getElementById("stroke-range").value;
   line_stroke_weight = +slider_value;
@@ -1178,6 +1352,7 @@ function updateInputFormulaFromList(event){
       input_equation.value = "\\frac{1}{s}";
       break;
     case 'Impulse':
+      achievement_done("set_input_to_impulse");
       input_formula = "1";
       input_equation.value = "1";
       break;
@@ -2544,6 +2719,10 @@ function mouseDragged(){
       document.getElementById("variable_"+variable_position["k_1"]).value = k_1.toFixed(2);
       // Update range slider:
       document.getElementById("RANGE_"+variable_position["k_1"]).value = k_1.toFixed(2);
+      if (k_1>=100){
+        // We dragged a slider to a k-value above or equal 100:
+        achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
+      }
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
     } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
@@ -2556,6 +2735,10 @@ function mouseDragged(){
       document.getElementById("variable_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
       // Update range slider:
       document.getElementById("RANGE_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
+      let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
+      if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
+        achievement_done("T2_T3_far_apart");
+      }
 
       let k_2 = range_slider_variables[variable_position["k_2"]];
       k_2 = k_2 - mouseDiffY * y_range;
@@ -2564,6 +2747,10 @@ function mouseDragged(){
       document.getElementById("variable_"+variable_position["k_2"]).value = k_2.toFixed(2);
       // Update range slider:
       document.getElementById("RANGE_"+variable_position["k_2"]).value = k_2.toFixed(2);
+      if (k_2>=100){
+        // We dragged a slider to a k-value above or equal 100:
+        achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
+      }
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
     } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
@@ -2587,8 +2774,12 @@ function mouseDragged(){
       document.getElementById("variable_"+variable_position["z"]).value = z.toFixed(2);
       // Update range slider:
       document.getElementById("RANGE_"+variable_position["z"]).value = z.toFixed(2);
+      if (z <= 0.1){
+        achievement_done("low_z");
+      }
       redraw_canvas_gain(bode_graphs[i].bode_id);
     } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_TIME_DELAY.formula){
+      achievement_done("change_L");
       let L = range_slider_variables[variable_position["L"]];
       L = L + mouseDiffX * 10.0;
       if (L < 0) L=0;
@@ -2617,6 +2808,10 @@ function mouseDragged(){
       document.getElementById("variable_"+variable_position["k_4"]).value = k_4.toFixed(2);
       // Update range slider:
       document.getElementById("RANGE_"+variable_position["k_4"]).value = k_4.toFixed(2);
+      if (k_4>=100){
+        // We dragged a slider to a k-value above or equal 100:
+        achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
+      }
       redraw_canvas_gain(bode_graphs[i].bode_id);
     }
 
@@ -2630,6 +2825,7 @@ function mouseDragged(){
     let mouseDiffY = (mouseY - initial_mouseY) / graph_step_response_height;
 
     if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_ONE_REAL_POLE.formula){
+      achievement_done("drag_bode_mag");
       let T_1 = range_slider_variables[variable_position["T_1"]];
       T_1 = T_1 * (1.0 - mouseDiffX*10.0);
       if (T_1 < 0) T_1=0;
@@ -2646,9 +2842,14 @@ function mouseDragged(){
       document.getElementById("variable_"+variable_position["k_1"]).value = k_1.toFixed(2);
       // Update range slider:
       document.getElementById("RANGE_"+variable_position["k_1"]).value = k_1.toFixed(2);
+      if (k_1>=100){
+        // We dragged a slider to a k-value above or equal 100:
+        achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
+      }
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
     } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
+      achievement_done("drag_bode_mag");
       let variable_to_change = clicked_on_time_variable;
       let T_x = range_slider_variables[variable_position[variable_to_change]];
       T_x = T_x * (1.0 - mouseDiffX*10.0);
@@ -2658,6 +2859,10 @@ function mouseDragged(){
       document.getElementById("variable_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
       // Update range slider:
       document.getElementById("RANGE_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
+      let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
+      if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
+        achievement_done("T2_T3_far_apart");
+      }
 
       let k_2 = range_slider_variables[variable_position["k_2"]];
       k_2 = k_2 * (1.0 - mouseDiffY*12.0);
@@ -2666,9 +2871,14 @@ function mouseDragged(){
       document.getElementById("variable_"+variable_position["k_2"]).value = k_2.toFixed(2);
       // Update range slider:
       document.getElementById("RANGE_"+variable_position["k_2"]).value = k_2.toFixed(2);
+      if (k_2>=100){
+        // We dragged a slider to a k-value above or equal 100:
+        achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
+      }
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
     } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
+      achievement_done("drag_bode_mag");
       let w = range_slider_variables[variable_position["w"]];
       let T=1/w;
       T = T * (1.0 - mouseDiffX*10.0);
@@ -2689,9 +2899,13 @@ function mouseDragged(){
       document.getElementById("variable_"+variable_position["z"]).value = z.toFixed(2);
       // Update range slider:
       document.getElementById("RANGE_"+variable_position["z"]).value = z.toFixed(2);
+      if (z <= 0.1){
+        achievement_done("low_z");
+      }
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
     } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_ONE_ZERO.formula){
+      achievement_done("drag_bode_mag");
       let T_4 = range_slider_variables[variable_position["T_4"]];
       T_4 = T_4 * (1.0 - mouseDiffX*10.0);
       if (T_4 < 0) T_4=0;
@@ -2703,6 +2917,7 @@ function mouseDragged(){
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
     } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
+      achievement_done("drag_bode_mag");
       let variable_to_change = clicked_on_time_variable;
       let T_x = range_slider_variables[variable_position[variable_to_change]];
       T_x = T_x * (1.0 - mouseDiffX*10.0);
@@ -2720,6 +2935,10 @@ function mouseDragged(){
       document.getElementById("variable_"+variable_position["k_4"]).value = k_4.toFixed(2);
       // Update range slider:
       document.getElementById("RANGE_"+variable_position["k_4"]).value = k_4.toFixed(2);
+      if (k_4>=100){
+        // We dragged a slider to a k-value above or equal 100:
+        achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
+      }
       redraw_canvas_gain(bode_graphs[i].bode_id);
     }
 
@@ -2733,6 +2952,7 @@ function mouseDragged(){
     let mouseDiffY = (mouseY - initial_mouseY) / graph_step_response_height;
 
     if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_ONE_REAL_POLE.formula){
+      achievement_done("drag_bode_phase");
       let T_1 = range_slider_variables[variable_position["T_1"]];
       T_1 = T_1 * (1.0 - mouseDiffX*10.0);
       if (T_1 < 0) T_1=0;
@@ -2744,6 +2964,7 @@ function mouseDragged(){
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
     } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
+      achievement_done("drag_bode_phase");
       let variable_to_change = clicked_on_time_variable;
       let T_x = range_slider_variables[variable_position[variable_to_change]];
       T_x = T_x * (1.0 - mouseDiffX*10.0);
@@ -2753,9 +2974,14 @@ function mouseDragged(){
       document.getElementById("variable_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
       // Update range slider:
       document.getElementById("RANGE_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
+      let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
+      if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
+        achievement_done("T2_T3_far_apart");
+      }
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
     } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
+      achievement_done("drag_bode_phase");
       let w = range_slider_variables[variable_position["w"]];
       let T=1/w;
       T = T * (1.0 - mouseDiffX*10.0);
@@ -2769,6 +2995,7 @@ function mouseDragged(){
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
     } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_ONE_ZERO.formula){
+      achievement_done("drag_bode_phase");
       let T_4 = range_slider_variables[variable_position["T_4"]];
       T_4 = T_4 * (1.0 - mouseDiffX*10.0);
       if (T_4 < 0) T_4=0;
@@ -2780,6 +3007,7 @@ function mouseDragged(){
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
     } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
+      achievement_done("drag_bode_phase");
       let variable_to_change = clicked_on_time_variable;
       let T_x = range_slider_variables[variable_position[variable_to_change]];
       T_x = T_x * (1.0 - mouseDiffX*10.0);
@@ -2814,6 +3042,7 @@ function mouseDragged(){
 
             const EPS = 0.06666667;
             if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
+              achievement_done("drag_pole");
               // Change T_1
               if (real > EPS) real=EPS;
 
@@ -2825,6 +3054,7 @@ function mouseDragged(){
               redraw_canvas_gain(bode_graphs[i].bode_id);
 
             } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
+              achievement_done("drag_pole");
               // Change T_2 or T_3
               let variable_to_change = clicked_on_time_variable;
               if (real > EPS) real=EPS;
@@ -2837,6 +3067,8 @@ function mouseDragged(){
               redraw_canvas_gain(bode_graphs[i].bode_id);
 
             } else if (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
+              achievement_done("drag_pole");
+              achievement_done("drag_complex_pole");
               // Change complex poles:
               if (real > 0) real=0;
               if (imaginary < 0) imaginary=-imaginary;
@@ -2871,6 +3103,7 @@ function mouseDragged(){
               redraw_canvas_gain(bode_graphs[i].bode_id);
 
             } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula){
+              achievement_done("drag_pole");
               // Change T_4
               if (real > EPS) real=EPS;
               range_slider_variables[variable_position["T_4"]] = -1/real;
@@ -2881,8 +3114,14 @@ function mouseDragged(){
               redraw_canvas_gain(bode_graphs[i].bode_id);
 
             } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
+
               // Change T_8, T_6 or T_7:
               let variable_to_change = clicked_on_time_variable;
+              if (variable_to_change=="T_8"){
+                achievement_done("drag_zero");
+              } else {
+                achievement_done("drag_pole");
+              }
               range_slider_variables[variable_position[variable_to_change]] = -1/real;
               // Update range slider value:
               document.getElementById("variable_"+variable_position[variable_to_change]).value = -(1/real).toFixed(2);
@@ -2969,6 +3208,11 @@ function draw_hover_nyquist(){
   strokeWeight(2);
   line(graph_bode_mag_x + graph_bode_mag_x_offset,graph_bode_mag_y + screen_y + graph_bode_mag_y_offset,graph_bode_mag_x + graph_bode_mag_x_offset + graph_bode_mag_width,graph_bode_mag_y + screen_y + graph_bode_mag_y_offset);
   pop();
+
+  if ((magnitude > 0.8) && (magnitude < 1.2) && (angle < -75) && (angle > -105)){
+    achievement_done("hover_nyquist_-90");
+  }
+
 }
 
 
@@ -4497,7 +4741,7 @@ function closeFullscreen() {
 
 function ready(){
   let add_button = document.getElementsByClassName("add-graph")[0];
-  add_button.addEventListener('click',addNewGraph);
+  add_button.addEventListener('click',addNewGraphClicked);
   let setting_button = document.getElementsByClassName("option-button")[0];
   setting_button.addEventListener('click',toolboxMenuToggle);
   let input_equation = document.getElementsByClassName("input-equation")[0].getElementsByClassName("formula")[0];
@@ -4505,5 +4749,7 @@ function ready(){
   // Make sure that input function selector is visible:
   let toggleElement = document.querySelector('.input-equation');
   toggleElement.classList="active";
+  // For now, let's do gamification from start:
+  toggle_gamification();
   updateToolbox();
 }
