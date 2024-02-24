@@ -674,6 +674,7 @@ function update_programming_language(id){
 }
 
 function get_python_script(id){
+  achievement_done("python_script");
   let current_graph;
   for(let i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_id == id){
@@ -839,6 +840,7 @@ display(plot!())
 
 
 function get_matlab_script(id){
+  achievement_done("matlab_script");
   let current_graph;
   for(let i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_id == id){
@@ -974,15 +976,20 @@ function achievement_done(which_one){
 }
 
 const all_achievements={
+  "view_achievements":"Open your achivements",
   "drag_pole":"Drag a pole in the s-domain",
   "drag_zero":"Drag a zero in the s-domain",
   "drag_bode_mag":"Drag a transfer function in the Bode magnitude plot",
   "drag_bode_phase":"Drag a transfer function in the Bode phase plot",
-  "drag_complex_pole":"Drag a complex pole in the s-domain",
+  "drag_complex_pole":"Drag <b>two complex poles</b> in the s-domain",
   "hover_nyquist_-90":"Hover the Nyquist diagram at -90 degrees on the unit circle",
+  "drag_pole_to_right_half_plane":"Drag a pole in the s-domain into the right half plane",
+  "drag_zero_to_right_half_plane":"Drag a zero in the s-domain into the right half plane",
   "add_graph":"Add another graph",
   "set_input_to_impulse":"Change the input function to a dirac impulse",
-  "change_L":"Change L in the <b>time delay</b> transfer function",
+  "python_script":"Get the Python script for any transfer function",
+  "matlab_script":"Get the MATLAB script for any transfer function",
+  "change_L":"Change time delay L in the <b>time delay</b> transfer function",
   "low_z":"Make the damping factor z for <b>two complex poles</b> less or equal to 0.1",
   "T2_T3_far_apart":"Separate the time constants for <b>two real poles</b> more than a factor 100 apart",
   "k_above_or_equal_100":"Change a transfer function to have a magnitude k≥100",
@@ -1067,6 +1074,7 @@ function update_achievements(){
 }
 
 function toggle_achievements(event){
+  achievement_done("view_achievements");
   let achievements_box = document.querySelector('.achievements_box');
   achievements_box.classList.toggle('active');
   update_achievements();
@@ -3051,6 +3059,9 @@ function mouseDragged(){
               document.getElementById("variable_"+variable_position["T_1"]).value = -(1/real).toFixed(2);
               // Update range slider:
               document.getElementById("RANGE_"+variable_position["T_1"]).value = -(1/real).toFixed(2);
+              if (real>0){
+                achievement_done("drag_pole_to_right_half_plane");
+              }
               redraw_canvas_gain(bode_graphs[i].bode_id);
 
             } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
@@ -3064,6 +3075,9 @@ function mouseDragged(){
               document.getElementById("variable_"+variable_position[variable_to_change]).value = -(1/real).toFixed(2);
               // Update range slider:
               document.getElementById("RANGE_"+variable_position[variable_to_change]).value = -(1/real).toFixed(2);
+              if (real>0){
+                achievement_done("drag_pole_to_right_half_plane");
+              }
               redraw_canvas_gain(bode_graphs[i].bode_id);
 
             } else if (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
@@ -3103,14 +3117,16 @@ function mouseDragged(){
               redraw_canvas_gain(bode_graphs[i].bode_id);
 
             } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula){
-              achievement_done("drag_pole");
+              achievement_done("drag_zero");
               // Change T_4
-              if (real > EPS) real=EPS;
               range_slider_variables[variable_position["T_4"]] = -1/real;
               // Update range slider value:
               document.getElementById("variable_"+variable_position["T_4"]).value = -(1/real).toFixed(2);
               // Update range slider:
               document.getElementById("RANGE_"+variable_position["T_4"]).value = -(1/real).toFixed(2);
+              if (real>0){
+                achievement_done("drag_zero_to_right_half_plane");
+              }
               redraw_canvas_gain(bode_graphs[i].bode_id);
 
             } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
@@ -3119,8 +3135,15 @@ function mouseDragged(){
               let variable_to_change = clicked_on_time_variable;
               if (variable_to_change=="T_8"){
                 achievement_done("drag_zero");
+                if (real>0){
+                  achievement_done("drag_zero_to_right_half_plane");
+                }
               } else {
+                if (real > EPS) real=EPS;
                 achievement_done("drag_pole");
+                if (real>0){
+                  achievement_done("drag_pole_to_right_half_plane");
+                }
               }
               range_slider_variables[variable_position[variable_to_change]] = -1/real;
               // Update range slider value:
