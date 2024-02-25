@@ -951,18 +951,30 @@ function showInputFunction(input){
 // Gamification
 
 let gamification_enabled = false;
+let sound_enabled=0; // 1 means "audio context needs to be initialized". true means "everything works"
+                     // 0 means "audio context needs to be initialized". false means "everything works but don't play anything"
 
 function toggle_gamification(event){
   if (gamification_enabled == false){
     gamification_enabled = true;
     let show_achievements_icon = document.getElementById("show_achievements");
     show_achievements_icon.style.display = "inline";
-
   } else {
     gamification_enabled = false;
     let show_achievements_icon = document.getElementById("show_achievements");
     show_achievements_icon.style.display = "none";
+  }
+}
 
+function toggle_sound(event){
+  if (sound_enabled==0){
+    sound_enabled = 1;
+  } else if (sound_enabled==false){
+    sound_enabled = true;
+  } else if (sound_enabled==1){
+    sound_enabled = 0;
+  } else {
+    sound_enabled = false;
   }
 }
 
@@ -999,6 +1011,10 @@ function achievement_done (which_one){
       achievement_star_div.style.animation = 'none';
       achievement_star_div.offsetHeight; /* trigger reflow */
       achievement_star_div.style.animation="MoveToStar2 8s ease-out 0s 1";
+
+      if (sound_enabled==true){
+        play_jingle();
+      }
     }
 
     update_achievements();
@@ -1117,7 +1133,117 @@ function toggle_achievements(event){
 }
 
 
+//// seed_jingle1:
+//var jingle_positions = [
+//  0.0,
+//  6.87,
+//  13.92,
+//  21.58,
+//  30.82,
+//  41.40,
+//  50.78,
+//  61.32,
+//  71.61,
+//  82.81,
+//  95.55,
+//  109.48
+//];
+//// pling_v01.mp3:
+//var jingle_positions = [
+//  0.0,
+//  1.0,
+//  2.0,
+//  3.0,
+//  4.0,
+//  5.0,
+//  6.0,
+//  7.0,
+//  8.0,
+//  9.0,
+//  10.0,
+//  11.0,
+//  12.0,
+//  13.0,
+//  14.0,
+//  15.0,
+//  16.0,
+//  17.0,
+//  18.0,
+//  19.0,
+//  20.0,
+//  21.0,
+//  22.0,
+//  23.0,
+//  24.0,
+//  25.0,
+//  26.0,
+//  27.0,
+//  28.0
+//];
 
+// bonus_pling7.wav:
+var jingle_positions = [
+  0.0,
+  3.0
+];
+
+var current_jingle = 0;// Jingle_positions.length-2;
+var last_jingle_play = 0;
+var jingle_buffer;
+var jingle_source;
+function init_jingle () {
+//  var audioSource = "audio/pling_v01.mp3";
+//  var audioSource = "audio/seed_jingle1.mp3";
+  var audioSource = "audio/bonus_pling7.wav";
+  var request = new XMLHttpRequest();
+  request.open("GET", audioSource, true);
+  request.responseType = "arraybuffer";
+  // Decode asynchronously
+  request.onload = function () {
+    window.audioContext.decodeAudioData(request.response, (theBuffer) => {
+      jingle_buffer = theBuffer;
+      //        Play_jingle();
+    });
+  };
+  request.send();
+}
+function play_jingle () {
+  console.log("Play jingle");
+  try {
+    // This is how non-iOS stops a sound:
+    if (jingle_source) {
+      jingle_source.stop();
+    }
+  } catch (e) {}
+  try {
+    // This is how iOS stops a sound:
+    if (jingle_source) {
+      jingle_source.noteOff();
+    }
+  } catch (e) {}
+  try {
+    if (jingle_source) {
+      jingle_source.disconnect();
+    }
+  } catch (e) {}
+  if (jingle_buffer) {
+    jingle_source = window.audioContext.createBufferSource();
+    jingle_source.buffer = jingle_buffer;
+    jingle_source.connect(window.audioContext.destination);
+  }
+  if (current_jingle >= jingle_positions.length - 1) {
+    current_jingle = 0;
+  }
+  var real_from = jingle_positions[current_jingle] - 0.05;
+  if (real_from < 0) {
+    real_from = 0;
+  }
+  var to = jingle_positions[current_jingle + 1];
+  if (jingle_source) {
+    jingle_source.start(0, real_from, to - real_from - 0.10);  //-0.3 for seed_jingle1.mp3
+    current_jingle++;
+  }
+}
 
 
 // ----------------------
@@ -2426,6 +2552,19 @@ let initial_mouseY = 0;
 //function mouseClicked(){
 function mousePressed(){
   // Decide what we clicked on initially, to know what to move.
+
+  if (sound_enabled==1){
+    // Audio API stuff:
+    // https://webaudio.github.io/web-audio-api/#AudioBufferSourceNode
+    try {
+      window.AudioContext = window.AudioContext || window.webkitAudioContext;
+      window.audioContext = new window.AudioContext();
+      sound_enabled = true;
+    } catch (e) {
+      console.log("No Web Audio API support");
+    }
+    init_jingle();
+  }
 
   let toggleElement = document.querySelector('.download_script_box');
   if (toggleElement.classList.contains('active')){
