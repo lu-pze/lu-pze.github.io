@@ -971,33 +971,35 @@ function achievement_done (which_one){
     // This is a new achievement
     done_achievements.push(which_one);
 
-    // Trigger an animation with the text:
-    let achievement_text_div = document.getElementById("achievement_text");
-    achievement_text_div.innerHTML=all_achievements[which_one];
-    let left = (100*mouseX /windowWidth);
-    if (left > 85) left = 85;
-    let top = (100*mouseY/windowHeight);
-    if (top > 90) left = 90;
-    document.querySelector('.achievement_text').style.setProperty('--left',left+"%");
-    document.querySelector('.achievement_text').style.setProperty('--top',top+"%");
-    document.querySelector('.achievement_star').style.setProperty('--left',left+"%");
-    document.querySelector('.achievement_star').style.setProperty('--top',top+"%");
-    let achievement_star_div = document.getElementById("achievement_star");
-    // Order of the animation parameters:
-    //div {
-    //  animation-name: example;
-    //  animation-duration: 5s;
-    //  animation-timing-function: linear;
-    //  animation-delay: 2s;
-    //  animation-iteration-count: infinite;
-    //  animation-direction: alternate;
-    //}
-    achievement_text_div.style.animation = 'none';
-    achievement_text_div.offsetHeight; /* trigger reflow */
-    achievement_text_div.style.animation="MoveToStar 7s ease-in-out 0s 1";
-    achievement_star_div.style.animation = 'none';
-    achievement_star_div.offsetHeight; /* trigger reflow */
-    achievement_star_div.style.animation="MoveToStar2 8s ease-out 0s 1";
+    if (gamification_enabled==true){
+      // Trigger an animation with the text:
+      let achievement_text_div = document.getElementById("achievement_text");
+      achievement_text_div.innerHTML=all_achievements[which_one];
+      let left = (100*mouseX /windowWidth);
+      if (left > 85) left = 85;
+      let top = (100*mouseY/windowHeight);
+      if (top > 90) left = 90;
+      document.querySelector('.achievement_text').style.setProperty('--left',left+"%");
+      document.querySelector('.achievement_text').style.setProperty('--top',top+"%");
+      document.querySelector('.achievement_star').style.setProperty('--left',left+"%");
+      document.querySelector('.achievement_star').style.setProperty('--top',top+"%");
+      let achievement_star_div = document.getElementById("achievement_star");
+      // Order of the animation parameters:
+      //div {
+      //  animation-name: example;
+      //  animation-duration: 5s;
+      //  animation-timing-function: linear;
+      //  animation-delay: 2s;
+      //  animation-iteration-count: infinite;
+      //  animation-direction: alternate;
+      //}
+      achievement_text_div.style.animation = 'none';
+      achievement_text_div.offsetHeight; /* trigger reflow */
+      achievement_text_div.style.animation="MoveToStar 7s ease-in-out 0s 1";
+      achievement_star_div.style.animation = 'none';
+      achievement_star_div.offsetHeight; /* trigger reflow */
+      achievement_star_div.style.animation="MoveToStar2 8s ease-out 0s 1";
+    }
 
     update_achievements();
   } else {
