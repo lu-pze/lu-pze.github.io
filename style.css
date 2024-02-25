@@ -408,6 +408,40 @@ body{
   }
 }
 
+.achievement_star{
+  width:10%;
+  transform: translate(-50%,-50%);
+  z-index:40;
+  color:#808000;
+  position: absolute;
+  font-family: courier;
+  opacity:0;
+  pointer-events: none;
+}
+@keyframes MoveToStar2 {
+  0% {left:var(--left);top:var(--top);transform: translate(-50%,-50%) scale(0.0) rotate(0);opacity: 1.0;color:#808000;}
+  10% {left:var(--left);top:var(--top);transform: translate(-50%,-50%) scale(1.0) rotate(0);opacity: 1.0;color:#a0a000;}
+  100% {left:85%;top:3%;transform: translate(-50%,-50%) scale(0.1) rotate(360deg);opacity: 0.1;  color:#ffff00;}
+}
+
+.achievement_text{
+  width:15%;
+  transform: translate(-50%,-50%) rotate(-5deg);
+  z-index:50;
+  color:#ffffff;
+  position: absolute;
+  font-family: courier;
+  font-size: 150%;
+  text-align:center;
+  text-shadow: 1px 1px 3px #000000;
+  opacity:0;
+  pointer-events: none;
+}
+@keyframes MoveToStar {
+  from {left:var(--left);top:var(--top);opacity:1.0;transform:rotate(-5deg);color:#ffffff;}
+  to {left:85%;top:3%;opacity:0.0;transform:rotate(10deg);color:#ffff00;}
+}
+
 .expression-wrapper{
   display:flex;
   flex-direction: column;
