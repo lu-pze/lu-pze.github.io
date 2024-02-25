@@ -976,7 +976,7 @@ function achievement_done(which_one){
 }
 
 const all_achievements={
-  "view_achievements":"Open your achivements",
+  "view_achievements":"Open your achievements",
   "drag_pole":"Drag a pole in the s-domain",
   "drag_zero":"Drag a zero in the s-domain",
   "drag_bode_mag":"Drag a transfer function in the Bode magnitude plot",
