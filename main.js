@@ -628,6 +628,7 @@ function toolboxMenuToggle(event){
 }
 
 function helpToggle(event){
+  achievement_done("view_help");
   let toggleElement = document.querySelector('.help');
   toggleElement.classList.toggle('active');
 }
@@ -977,12 +978,14 @@ function achievement_done(which_one){
 
 const all_achievements={
   "view_achievements":"Open your achievements",
+  "view_help":"Open the help section",
   "drag_pole":"Drag a pole in the s-domain",
   "drag_zero":"Drag a zero in the s-domain",
   "drag_bode_mag":"Drag a transfer function in the Bode magnitude plot",
   "drag_bode_phase":"Drag a transfer function in the Bode phase plot",
   "drag_complex_pole":"Drag <b>two complex poles</b> in the s-domain",
   "hover_nyquist_-90":"Hover the Nyquist diagram at -90 degrees on the unit circle",
+  "drag_time_response":"Drag the <b>two complex poles</b> transfer function in the time domain",
   "drag_pole_to_right_half_plane":"Drag a pole in the s-domain into the right half plane",
   "drag_zero_to_right_half_plane":"Drag a zero in the s-domain into the right half plane",
   "add_graph":"Add another graph",
@@ -990,8 +993,8 @@ const all_achievements={
   "python_script":"Get the Python script for any transfer function",
   "matlab_script":"Get the MATLAB script for any transfer function",
   "change_L":"Change time delay L in the <b>time delay</b> transfer function",
-  "low_z":"Make the damping factor z for <b>two complex poles</b> less or equal to 0.1",
-  "T2_T3_far_apart":"Separate the time constants for <b>two real poles</b> more than a factor 100 apart",
+  "low_z":"Make damping factor z for <b>two complex poles</b> less than 0.1",
+  "T2_T3_far_apart":"Separate <b>two real poles'</b> time constants a factor 100 apart",
   "k_above_or_equal_100":"Change a transfer function to have a magnitude k≥100",
   "set_input_to_ramp":"Change the input to a ramp function"
 };
@@ -1041,6 +1044,8 @@ function update_achievements(){
 
   let achievements_box = document.querySelector('.achievements_box');
   let s = "";
+  s += '<br><button type="button" class="delete-graph" onclick="toggle_achievements();"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>';
+
   s += "<center>";
   s += "Your Achievements ";
   s += '<i class="material-icons" style="font-size: 27px;">star</i>';
@@ -2762,6 +2767,7 @@ function mouseDragged(){
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
     } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
+      achievement_done("drag_time_response");
       let w = range_slider_variables[variable_position["w"]];
       let T=1/w;
       T = T + mouseDiffX * 10.0;
