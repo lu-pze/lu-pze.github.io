@@ -200,13 +200,13 @@ body{
 .formula:hover {background-color: #f8f890;transition:0s}
 
 .eq-info{
-  text-align: center;
+  margin:10px;
   font-family: "Roboto";
   font-size: 15px;
-  color: #b0b0b0;
+  color: #505090;
   transition: all .4s ease-in;
 }
-.eq-info:hover {background-color: #f8f890;transition:0s}
+.yellow_hover:hover {background-color: #f8f890;transition:0s}
 
 .show-graph{
   -webkit-appearance: none;
@@ -367,6 +367,45 @@ body{
 .download_script_box.active{
   visibility: visible;
   opacity: 1;
+}
+
+.assignments_box{
+  --d:700px;
+  --angle:135deg; 
+  --w:100%;
+  padding:0px 20px 10px 20px;
+  left:50%;
+  top:40%;
+  transform: translate(-50%,-50%);
+  z-index:5;
+  position: absolute;
+  visibility: hidden;
+  font-family: courier;
+  border-radius: 25px;
+}
+.assignments_box.active{
+  visibility: visible;
+  opacity: 1;
+}
+.assignments_box:before{
+  border-radius: 25px;
+  margin:0;
+  padding:0;
+  content:"";
+  height:100%;
+  left:0;
+  width:var(--w);
+  position: absolute;
+  box-shadow: 0 0 30px #d0d0b0;
+  z-index:-1;
+  background: repeating-linear-gradient(var(--angle), #f0f0f0e8, #c0c0e0f4, #f0f0f0e8 var(--d));
+  background-size: calc(var(--d)/sin(var(--angle))) 100%;
+  animation: AnimationName 8s linear infinite;
+}
+@keyframes AnimationName {
+  0% {
+    background-position: calc(var(--d)/sin(var(--angle))) 0;
+  }
 }
 
 .achievements_box{

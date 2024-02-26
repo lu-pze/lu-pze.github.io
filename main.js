@@ -948,6 +948,202 @@ function showInputFunction(input){
 
 
 // ----------------------
+// Assignments
+
+let assignments_enabled = false;
+let current_assignment = "none";
+
+function toggle_assignments(event){
+  if (assignments_enabled == false){
+    assignments_enabled = true;
+    let show_assignments_icon = document.getElementById("show_assignments");
+    show_assignments_icon.style.display = "inline";
+  } else {
+    assignments_enabled = false;
+    let show_assignments_icon = document.getElementById("show_assignments");
+    show_assignments_icon.style.display = "none";
+  }
+}
+
+function toggle_assignments_box(event){
+  let assignments_box = document.querySelector('.assignments_box');
+  assignments_box.classList.toggle('active');
+  update_assignments();
+}
+
+
+function assignment_done (which_one){
+  if (!(done_assignments.includes(which_one))){
+    // This is a new assignments
+    done_assignments.push(which_one);
+
+    if (assignments_enabled==true){
+      // Trigger an animation with the text:
+      let achievement_text_div = document.getElementById("achievement_text");
+      achievement_text_div.innerHTML=all_assignments[which_one];
+      let left = (100*mouseX /windowWidth);
+      if (left > 85) left = 85;
+      let top = (100*mouseY/windowHeight);
+      if (top > 90) left = 90;
+      document.querySelector('.achievement_text').style.setProperty('--left',left+"%");
+      document.querySelector('.achievement_text').style.setProperty('--top',top+"%");
+      document.querySelector('.achievement_star').style.setProperty('--left',left+"%");
+      document.querySelector('.achievement_star').style.setProperty('--top',top+"%");
+      let achievement_star_div = document.getElementById("achievement_star");
+      // Order of the animation parameters:
+      //div {
+      //  animation-name: example;
+      //  animation-duration: 5s;
+      //  animation-timing-function: linear;
+      //  animation-delay: 2s;
+      //  animation-iteration-count: infinite;
+      //  animation-direction: alternate;
+      //}
+      achievement_text_div.style.animation = 'none';
+      achievement_text_div.offsetHeight; /* trigger reflow */
+      achievement_text_div.style.animation="MoveToStar 7s ease-in-out 0s 1";
+      achievement_star_div.style.animation = 'none';
+      achievement_star_div.offsetHeight; /* trigger reflow */
+      achievement_star_div.style.animation="MoveToStar2 8s ease-out 0s 1";
+      if (sound_enabled==true){
+        play_jingle();
+      }
+    }
+    update_assignments();
+  } else {
+    // This has already been done. No need to do anything.
+  }
+}
+
+const all_assignments={
+  "one_pole":{t:"Investigate a system with <b>one pole</b>",tasks:["T1=2","T1_pole=-2","k1_3","T1_k1_bode","T1_unstable"],info:"This is one of the basic system responses, where high frequencies are attenuated."},
+  "two_real_poles":{t:"Investigate a system with <b>two real poles</b>",tasks:["T2,T3_phase","T2,T3=1;k2=0.5","T2=10;T3=0.5","two_real_poles1"],info:"When combining two poles, the phase goes all the way to -180 degrees."},
+//  "two_complex_poles":{t:"Investigate a system with <b>two complex poles</b>",tasks:["low_z"],info:"A set of two complex poles will make a system oscillate."},
+//  "time_delay":{t:"See how a <b>time delay</b> affects stability",tasks:["k_above_or_equal_100","set_input_to_ramp"],info:"A time delayed system is more difficult to control."},
+//  "one_zero_two_poles":{t:"Investigate a system with <b>one zero two poles</b>",tasks:["set_input_to_ramp"],info:"With more poles and zeros, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
+//  "nyquist":{t:"Check out the <b>Nyquist diagram</b>",tasks:["k_above_or_equal_100","set_input_to_ramp"],info:"Named after Harry Nyquist 1889-1976, a Swedish-American physicist and electronic engineer."}
+};
+let done_assignments=["nyquist"];
+
+const all_tasks={
+
+
+
+// ToDo:
+//## One pole
+//"reference eq in step response(k=0.65, T1=2)"
+"T1=2":"Change T1 so that the pole is placed in -1/2",//. (T1=2)
+"T1_pole=-2":"Drag the pole in the pole-zero map so the system is four times faster",//. (pole in -2)
+"k1_3":"Drag the step respomse so that the static gain is 3",//. (k1=3)
+"T1_k1_bode":"Drag the Bode plots so that the step reponse follows the dotted line",// (k=0.65, T1=2)
+"T1_unstable":"Make the pole unstable",
+
+//## Two real poles
+"T2,T3_phase":"Change T2 and T3 so that the Bode phase curve is as the dotted one",//. (T2=0.05, T3=5.0)
+"T2,T3=1;k2=0.5":"Drag the poles in the pole-zero map so that the step response follows the dotted line",// (T2=T3=1, k2=0.5)
+"T2=10;T3=0.5":"Drag the poles in the pole-zero map so that the cutoff frequencies in the bode plot are 0.1 rad/s and 2rad/s",//. (T2=10, T3=0.5 eller vice versa)
+"two_real_poles1":"Drag the bode diagram so that the Phase margin for the system is 55 degrees with a gain crossover frequency of 2.68 rad/s",
+
+  "hover_nyquist_-90":"Hover the Nyquist diagram at -90 degrees on the unit circle",
+  "set_input_to_impulse":"Change the input function to a dirac impulse",
+  "change_L":"Change time delay L in the <b>time delay</b> transfer function",
+  "low_z":"Make damping factor z for <b>two complex poles</b> less than 0.1",
+  "T2_T3_far_apart":"Separate <b>two real poles'</b> time constants a factor 100 apart",
+  "k_above_or_equal_100":"Change a transfer function to have a magnitude k≥100",
+  "set_input_to_ramp":"Change the input to a ramp function"
+};
+let done_tasks=["set_input_to_ramp"];
+
+
+function update_assignments(){
+  let assignments_box = document.querySelector('.assignments_box');
+  let s = "";
+  s += '<br><button type="button" class="delete-graph" onclick="toggle_assignments_box();"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>';
+
+  s += "<center>";
+  s += '<i class="material-icons" style="font-size: 27px;">assignments</i>';
+  s += "Your Assignments ";
+  s += "</center><br>";
+
+  s += "Please select an assignment:<br>";
+  for (let assignment_id in all_assignments){
+    if (!(done_assignments.includes(assignment_id))){
+      let long_name = all_assignments[assignment_id].t;
+      s += "<input type='radio' name='assignment' id='"+assignment_id+"' value='"+assignment_id+"' onchange='select_assignment(this);'";
+      if (current_assignment == assignment_id){
+        s+=" checked";
+      }
+      s+="><label for='"+assignment_id+"'>&nbsp;" + long_name + "</label><br>";
+    }
+  }
+  s += "<input type='radio' name='assignment' id='none' value='none' onchange='select_assignment(this);'";
+  if (current_assignment == "none"){
+    s+=" checked";
+  }
+  s += "><label for='none'>&nbsp;...no assignment</label><br>";
+  s += "<br><b>" + (done_assignments.length) + "/"+Object.keys(all_assignments).length+"</b> done so far.<br><br>";
+
+  s+="Completed assignments:<br>";
+  for (let assignment_id in all_assignments){
+    if (done_assignments.includes(assignment_id)){
+      let long_name = all_assignments[assignment_id].t;
+//      s += "<input type='checkbox' checked>&nbsp;" + long_name + "<br>";
+      s += "<input type='radio' name='assignment' id='"+assignment_id+"' value='"+assignment_id+"' onchange='select_assignment(this);'";
+      if (current_assignment == assignment_id){
+        s+=" checked";
+      }
+      s+="><label for='"+assignment_id+"'>&nbsp;" + long_name + "</label><br>";
+    }
+  }
+
+  s += "<br>";
+  assignments_box.innerHTML=s;
+
+}
+
+function select_assignment(event){
+  current_assignment = event.value;
+  update_tasks();
+}
+
+function update_tasks(){
+  let task_div=document.getElementById("task_list");
+  if (current_assignment=="none"){
+    task_div.innerHTML = '<div class="yellow_hover"><center><span onclick="addNewGraph();" style="color:#b0b0b0">Click <i class="material-icons" style="font-size:28px; vertical-align: middle;">add</i> or here to add next graph</span></center></div>';
+    return;
+  }
+
+  let s="";
+  // List all tasks not yet done:
+  s += "<center><b>Your tasks:</b></center><br>";
+  let nof_done_subtasks = 0;
+  for (let task_id in all_tasks){
+    if (all_assignments[current_assignment].tasks.includes(task_id)){
+      if (done_tasks.includes(task_id)){
+        nof_done_subtasks+=1;
+      } else {
+        let long_name = all_tasks[task_id];
+        s += "<input type='checkbox'>&nbsp;" + long_name + "<br><br>";
+      }
+    }
+  }
+
+  s += "<br><center><b>Completed tasks:</b></center><br>";
+  for (let task_id in all_tasks){
+    if (all_assignments[current_assignment].tasks.includes(task_id)){
+      if (done_tasks.includes(task_id)){
+        let long_name = all_tasks[task_id];
+        s += "<input type='checkbox' checked>&nbsp;" + long_name + "<br>";
+      }
+    }
+  }
+  s += "<br><b>" + (nof_done_subtasks) + "/"+Object.keys(all_assignments[current_assignment].tasks).length+"</b> done so far.<br>";
+  s += "<br><br><center>"+all_assignments[current_assignment].info+"</center>";
+  task_div.innerHTML=s;
+
+}
+
+// ----------------------
 // Gamification
 
 let gamification_enabled = false;
@@ -4948,7 +5144,8 @@ function ready(){
   // Make sure that input function selector is visible:
   let toggleElement = document.querySelector('.input-equation');
   toggleElement.classList="active";
-  // For now, let's do gamification from start:
+  // Enable gamification from start:
   toggle_gamification();
+//  toggle_assignments();
   updateToolbox();
 }

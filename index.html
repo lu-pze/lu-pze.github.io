@@ -89,6 +89,9 @@
           <div class="expression-wrapper">
             <label><input type="checkbox" id="color-mode-checkbox" value="" style="width:15px;height:15px;" onclick="toggle_sound()">Enable sound</label>
           </div>
+          <div class="expression-wrapper">
+            <label><input type="checkbox" id="color-mode-checkbox" value="" style="width:15px;height:15px;" onclick="toggle_assignments()">Enable assignments</label>
+          </div>
         </div>
       </div>
 
@@ -133,7 +136,9 @@ pex.tufvesson@control.lth.se</center><br>
       </div>
 
       <div class="achievements_box" id="achievements_box">
-        Score: 0/100
+      </div>
+
+      <div class="assignments_box" id="assignments_box">
       </div>
 
       <div class="footer">
@@ -150,6 +155,7 @@ pex.tufvesson@control.lth.se</center><br>
           <button type="button" class="option-button" style="float:right;margin-right:0px;background:none;border:none;margin-top:11px" onclick="helpToggle()" title="Help screen"><i class="material-icons" style="font-size: 27px">help</i></button>
           <button type="button" class="option-button" style="float:right;margin-right:0px;background:none;border:none;margin-top:11px" onclick="toggle_fullscreen()" title="Toggle Fullscreen"><i class="material-icons" style="font-size: 27px">fullscreen</i></button>
           <button type="button" class="option-button" id="show_achievements" style="float:right;margin-right:0px;background:none;border:none;margin-top:11px;display:none" onclick="toggle_achievements()" title="Show achievements"><i class="material-icons" style="font-size: 27px;">star</i></button>
+          <button type="button" class="option-button" id="show_assignments" style="float:right;margin-right:0px;background:none;border:none;margin-top:11px;display:none" onclick="toggle_assignments_box()" title="Show assignments"><i class="material-icons" style="font-size: 27px;">assignment</i></button>
         </div>
         <div class="equations">
           <div class="input-equation" style="margin-bottom:0px;padding:10px 0 6px;">
@@ -166,9 +172,9 @@ pex.tufvesson@control.lth.se</center><br>
           </div>
         </div>
 <hr>
-<div class="eq-info" onclick="addNewGraph();">Click 
+<div class="eq-info" id="task_list"><div class="yellow_hover"><center><span onclick="addNewGraph();" style="color:#b0b0b0">Click 
 <i class="material-icons" style="font-size:28px; vertical-align: middle;">add</i>
-or here to add next graph</div>
+or here to add next graph</span></center></div></div>
 
       </div>
       <div class="graph-space">
