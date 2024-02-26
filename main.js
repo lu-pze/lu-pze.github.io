@@ -1073,7 +1073,7 @@ const all_tasks={
 //## One pole
 //"reference eq in step response(k=0.65, T1=2)"
 "T1=2":"Change T<sub>1</sub> by moving the slider or type in the value to make the pole's location -1/2 in the s-domain",//. (T1=2)
-"k1=3":"Drag the step response so that the static gain is 3",//. (k1=3)
+"k1=3":"Drag the step response so that the static gain is 3.0",//. (k1=3)
 "T1_k1_bode":"Drag the Bode plots so that the step response follows the dotted line",// (k=0.65, T1=2)
 "T1_pole=-2":"Drag the pole in the pole-zero map so the system is four times faster than the system in the dotted line.",//. (pole in -2)
 "T1_unstable":"Make the pole unstable", // T_1 < 0
@@ -1311,7 +1311,7 @@ const all_achievements={
   "drag_bode_mag":"Drag a transfer function in the Bode magnitude plot",
   "drag_bode_phase":"Drag a transfer function in the Bode phase plot",
   "drag_complex_pole":"Drag <b>two complex poles</b> in the s-domain",
-  "hover_nyquist_-90":"Hover the Nyquist diagram at -90 degrees on the unit circle",
+  "hover_nyquist_-90":"Hover or click the Nyquist diagram at -90 degrees on the unit circle",
   "drag_time_response":"Drag the <b>two complex poles</b> transfer function in the time domain",
   "drag_pole_to_right_half_plane":"Drag a pole in the s-domain into the right half plane",
   "drag_zero_to_right_half_plane":"Drag a zero in the s-domain into the right half plane",
