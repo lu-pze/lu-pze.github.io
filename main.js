@@ -1186,6 +1186,39 @@ function select_assignment(event){
   // Set the color of the graph:
   id_bank = next_graph_no_to_add;
   addNewGraph();
+
+  // Add ghost graphs:
+  // The name tells where this formula will be shown:
+  // GhostMPTNIE_Displayed name
+  //      M      = shows up in Bode magnitude plot
+  //       P     = shows up in Bode phase plot
+  //        T    = shows up in Bode time response plot
+  //         N   = shows up in Nyquist diagram
+  //          I  = shows up in information tab
+  //           E = shows up in Equations
+  if(event.value=="one_pole"){
+    //"reference eq in step response(k=0.65, T1=2)"
+    addNewGraph(none, {name:"Ghost..T..._1", mf:"\\frac{0.65}{1+2s}", formula:"(0.65)/((1+2s))"});
+  } else if(event.value=="two_real_poles"){
+    //reference in step (T2=T3=1, k2=0.5)
+    addNewGraph(none, {name:"Ghost..T..._2", mf:"\\frac{0.5}{(1+s)(1+s)}", formula:"0.5/(1+s)*1/(1+s)"});
+    //reference in bode phase (T2=5, T3=0.05, k2=1)
+    addNewGraph(none, {name:"Ghost.P...._3", mf:"\\frac{1}{(1+5s)(1+0.05s)}", formula:"1/(1+5s)*1/(1+0.05s)"});
+  } else if(event.value=="two_complex_poles"){
+    //Bode reference (w=8, z=0.05)
+    addNewGraph(none, {name:"GhostMP...._4", mf:"\\frac{8^2}{s^2+2*0.05*8*s+8^2}", formula:"8^2/(s^2+2*0.05*8*s+8^2)"});
+    //Step reference (w=2,z=0.7,k=0.7)
+    addNewGraph(none, {name:"Ghost..T..._5", mf:"\\frac{0.7*2^2}{s^2+2*0.7*2*s+2^2}", formula:"0.7*2^2/(s^2+2*0.7*2*s+2^2)"});
+  } else if(event.value=="one_zero_two_poles"){
+    //Nyquist reference (k=1,T6=2.5,T7=1,T8=6)
+    addNewGraph(none, {name:"Ghost...N.._6", mf:"\\frac{(1+6s)}{(1+2.5s)(1+s)}", formula:"(1+6s)/(1+2.5s)*1/(1+s)"});
+    //Bode reference (k4=0.75,T6=9.25,T7=0.5,T8=2)
+    addNewGraph(none, {name:"GhostMP...._7", mf:"\\frac{0.75(1+2s)}{(1+9.25s)(1+0.5s)}", formula:"0.75(1+2s)/(1+9.25s)*1/(1+0.5s)"});
+    //Step reference (k4=1,T6=1,T7=1,T8=-1.5)
+    addNewGraph(none, {name:"Ghost..T..._8", mf:"\\frac{(1-1.5s)}{(1+s)(1+s)}", formula:"(1-1.5s)/(1+s)*1/(1+s)"});
+  }
+
+
 }
 
 function update_tasks(){
