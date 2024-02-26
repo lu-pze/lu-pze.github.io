@@ -289,6 +289,14 @@ function createRangeSlider(event){
   let range_slider = slider.getElementsByClassName("range-slider")[0];
   let linked_span = slider.getElementsByClassName("value-wrapper")[0].getElementsByTagName("input")[0];
   linked_span.value = (+range_slider.value).toFixed(2);
+
+  range_slider.onchange = function(){
+    // Only reacts on the final value of the slider, and not continuous movements:
+    if ((range_slider_alphabet[button_id]=="T_1") && (+range_slider.value >= 1.93) && (+range_slider.value <= 2.1)){
+      task_done("T1=2");
+    }
+  }
+
   range_slider.oninput = function(){
     linked_span.value = +(+range_slider.value).toFixed(2);
     range_slider_variables[button_id] = +range_slider.value;
@@ -299,8 +307,6 @@ function createRangeSlider(event){
       achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
     } else if ((range_slider_alphabet[button_id]=="z") && (+range_slider.value <= 0.1)){
       achievement_done("low_z");
-//    } else if (range_slider_alphabet[button_id]=="T_1") && (+range_slider.value >= 1.95) && (+range_slider.value <= 2.05)){
-//      task_done("T1=2");
     } else if (range_slider_alphabet[button_id][0]=="T"){
       let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
       if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
@@ -340,6 +346,13 @@ function createRangeSlider(event){
   let slider_max = slider_bounds[1];
   slider_max.oninput = function(){
     range_slider.max = +slider_max.value;
+  }
+
+  linked_span.onchange = function(){
+    // Only reacts on the final value, and not while editing:
+    if ((range_slider_alphabet[button_id]=="T_1") && (+linked_span.value >= 1.93) && (+linked_span.value <= 2.1)){
+      task_done("T1=2");
+    }
   }
 
   linked_span.oninput = function(){
@@ -992,46 +1005,47 @@ function toggle_assignments_box(event){
 }
 
 
-function assignment_done (which_one){
-  if (!(done_assignments.includes(which_one))){
-    // This is a new assignments
-    done_assignments.push(which_one);
+function task_done (which_one){
+  if (assignments_enabled==true){
+    if (all_assignments[current_assignment].tasks.includes(which_one)){
+      if (!(done_tasks.includes(which_one))){
+        // This is a task that hasn't been done before:
+        done_tasks.push(which_one);
 
-    if (assignments_enabled==true){
-      // Trigger an animation with the text:
-      let achievement_text_div = document.getElementById("achievement_text");
-      achievement_text_div.innerHTML=all_assignments[which_one];
-      let left = (100*mouseX /windowWidth);
-      if (left > 85) left = 85;
-      let top = (100*mouseY/windowHeight);
-      if (top > 90) left = 90;
-      document.querySelector('.achievement_text').style.setProperty('--left',left+"%");
-      document.querySelector('.achievement_text').style.setProperty('--top',top+"%");
-      document.querySelector('.achievement_star').style.setProperty('--left',left+"%");
-      document.querySelector('.achievement_star').style.setProperty('--top',top+"%");
-      let achievement_star_div = document.getElementById("achievement_star");
-      // Order of the animation parameters:
-      //div {
-      //  animation-name: example;
-      //  animation-duration: 5s;
-      //  animation-timing-function: linear;
-      //  animation-delay: 2s;
-      //  animation-iteration-count: infinite;
-      //  animation-direction: alternate;
-      //}
-      achievement_text_div.style.animation = 'none';
-      achievement_text_div.offsetHeight; /* trigger reflow */
-      achievement_text_div.style.animation="MoveToStar 7s ease-in-out 0s 1";
-      achievement_star_div.style.animation = 'none';
-      achievement_star_div.offsetHeight; /* trigger reflow */
-      achievement_star_div.style.animation="MoveToStar2 8s ease-out 0s 1";
-      if (sound_enabled==true){
-        play_jingle();
+        // Trigger an animation with the text:
+        let achievement_text_div = document.getElementById("achievement_text");
+        achievement_text_div.innerHTML=all_tasks[which_one];
+        let left = (100*mouseX /windowWidth);
+        if (left > 85) left = 85;
+        let top = (100*mouseY/windowHeight);
+        if (top > 90) left = 90;
+        document.querySelector('.achievement_text').style.setProperty('--left',left+"%");
+        document.querySelector('.achievement_text').style.setProperty('--top',top+"%");
+        document.querySelector('.achievement_star').style.setProperty('--left',left+"%");
+        document.querySelector('.achievement_star').style.setProperty('--top',top+"%");
+        let achievement_star_div = document.getElementById("achievement_star");
+        // Order of the animation parameters:
+        //div {
+        //  animation-name: example;
+        //  animation-duration: 5s;
+        //  animation-timing-function: linear;
+        //  animation-delay: 2s;
+        //  animation-iteration-count: infinite;
+        //  animation-direction: alternate;
+        //}
+        achievement_text_div.style.animation = 'none';
+        achievement_text_div.offsetHeight; /* trigger reflow */
+        achievement_text_div.style.animation="MoveToStar 7s ease-in-out 0s 1";
+        achievement_star_div.style.animation = 'none';
+        achievement_star_div.offsetHeight; /* trigger reflow */
+        achievement_star_div.style.animation="MoveToStar2 8s ease-out 0s 1";
+        if (sound_enabled==true){
+          play_jingle();
+        }
+        update_assignments();
+        update_tasks();
       }
     }
-    update_assignments();
-  } else {
-    // This has already been done. No need to do anything.
   }
 }
 
@@ -1042,6 +1056,7 @@ const all_assignments={
   "time_delay":{t:"See how a <b>time delay</b> affects stability",tasks:["L=3","L=0.3"],info:"A time delayed system is more difficult to control."},
   "one_zero_two_poles":{t:"Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4=1_poles"],info:"With more poles and zeros, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
   "four_poles":{t:"Investigate a system with <b>four poles</b>",tasks:["T5=0.3;k=2","phase_margin=20"],info:""},
+  "none":{t:"...no assignment",tasks:[],info:""},
 //  "nyquist":{t:"Check out the <b>Nyquist diagram</b>",tasks:["k_above_or_equal_100","set_input_to_ramp"],info:"Named after Harry Nyquist 1889-1976, a Swedish-American physicist and electronic engineer."}
 };
 let done_assignments=[];
@@ -1113,12 +1128,7 @@ function update_assignments(){
       s+="><label for='"+assignment_id+"'>&nbsp;" + long_name + "</label><br>";
     }
   }
-  s += "<input type='radio' name='assignment' id='none' value='none' onchange='select_assignment(this);'";
-  if (current_assignment == "none"){
-    s+=" checked";
-  }
-  s += "><label for='none'>&nbsp;...no assignment</label><br>";
-  s += "<br><b>" + (done_assignments.length) + "/"+Object.keys(all_assignments).length+"</b> done so far.<br><br>";
+  s += "<br><b>" + (done_assignments.length) + "/"+(Object.keys(all_assignments).length-1)+"</b> done so far.<br><br>";
 
   s+="Completed assignments:<br>";
   for (let assignment_id in all_assignments){
