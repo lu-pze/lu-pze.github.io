@@ -3219,7 +3219,7 @@ function mouseReleased(){
   if ((clicked_on_bode_mag_graph_no==0)||(clicked_on_bode_phase_graph_no==0)){
     let k_1 = range_slider_variables[variable_position["k_1"]];
     let T_1 = range_slider_variables[variable_position["T_1"]];
-    if ((k_1 >= 0.55) && (k_1 <= 0.75) && (T_1 >= 1.9) && (T_1 <= 2.1)){
+    if ((k_1 >= 0.55) && (k_1 <= 0.75) && (T_1 >= 1.82) && (T_1 <= 2.25)){
       task_done("T1_k1_bode");
     }
   }
