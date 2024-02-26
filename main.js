@@ -295,6 +295,9 @@ function createRangeSlider(event){
     if ((range_slider_alphabet[button_id]=="T_1") && (+range_slider.value >= 1.93) && (+range_slider.value <= 2.1)){
       task_done("T1=2");
     }
+    if ((range_slider_alphabet[button_id]=="T_1") && (+range_slider.value < 0)){
+      task_done("T1_unstable");
+    }
   }
 
   range_slider.oninput = function(){
@@ -352,6 +355,9 @@ function createRangeSlider(event){
     // Only reacts on the final value, and not while editing:
     if ((range_slider_alphabet[button_id]=="T_1") && (+linked_span.value >= 1.93) && (+linked_span.value <= 2.1)){
       task_done("T1=2");
+    }
+    if ((range_slider_alphabet[button_id]=="T_1") && (+linked_span.value < 0)){
+      task_done("T1_unstable");
     }
   }
 
@@ -1050,7 +1056,7 @@ function task_done (which_one){
 }
 
 const all_assignments={
-  "one_pole":{t:"Investigate a system with <b>one pole</b>",tasks:["T1=2","k1_3","T1_k1_bode","T1_pole=-2","T1_unstable"],info:"<b>One pole</b> is one of the basic system responses, where high frequencies are attenuated."},
+  "one_pole":{t:"Investigate a system with <b>one pole</b>",tasks:["T1=2","k1=3","T1_k1_bode","T1_pole=-2","T1_unstable"],info:"<b>One pole</b> is one of the basic system responses, where high frequencies are attenuated."},
   "two_real_poles":{t:"Investigate a system with <b>two real poles</b>",tasks:["T2,T3_phase","T2,T3=1;k2=0.5","T2=10;T3=0.5","two_real_poles1"],info:"When combining <b>two real poles</b>, the phase goes all the way to -180 degrees."},
   "two_complex_poles":{t:"Investigate a system with <b>two complex poles</b>",tasks:["w=0.9;z=0.9","w=1.6;z=0.2","w=8;z=0.05","w=2;z=0.7;k3=0.7"],info:"A set of two complex poles will make a system oscillate."},
   "time_delay":{t:"See how a <b>time delay</b> affects stability",tasks:["L=3","L=0.3"],info:"A time delayed system is more difficult to control."},
@@ -1067,10 +1073,10 @@ const all_tasks={
 //## One pole
 //"reference eq in step response(k=0.65, T1=2)"
 "T1=2":"Change T<sub>1</sub> by moving the slider or type in the value to make the pole's location -1/2 in the s-domain",//. (T1=2)
-"k1_3":"Drag the step response so that the static gain is 3",//. (k1=3)
+"k1=3":"Drag the step response so that the static gain is 3",//. (k1=3)
 "T1_k1_bode":"Drag the Bode plots so that the step response follows the dotted line",// (k=0.65, T1=2)
 "T1_pole=-2":"Drag the pole in the pole-zero map so the system is four times faster than the system in the dotted line.",//. (pole in -2)
-"T1_unstable":"Make the pole unstable",
+"T1_unstable":"Make the pole unstable", // T_1 < 0
 
 //## Two real poles
 //reference in step (T2=T3=1, k2=0.5)
@@ -2819,6 +2825,7 @@ let clicked_on_time_response_graph_no=-1;
 let clicked_on_bode_mag_graph_no=-1;
 let clicked_on_bode_phase_graph_no=-1;
 let clicked_on_time_variable="";
+let clicked_on_pole_zero_graph_no = -1;
 
 let initial_mouseX = 0;
 let initial_mouseY = 0;
@@ -2847,6 +2854,7 @@ function mousePressed(){
     clicked_on_bode_mag_graph_no = -1;
     clicked_on_bode_phase_graph_no = -1;
     clicked_on_time_variable="";
+    clicked_on_pole_zero_graph_no = -1;
     return true; // Let system handle mouse after this
   }
 
@@ -2855,6 +2863,7 @@ function mousePressed(){
   clicked_on_bode_mag_graph_no = -1;
   clicked_on_bode_phase_graph_no = -1;
   clicked_on_time_variable = "";
+  clicked_on_pole_zero_graph_no = -1;
 
   // Check if we've clicked any of the pole-zero graphs:
   for(let i=0; i<bode_graphs.length; i++){
@@ -2867,7 +2876,7 @@ function mousePressed(){
           if(((mouseY-pole_zero_graph_y[i]) > 0) && ((mouseY-pole_zero_graph_y[i]) < pole_zero_height)){
             let real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 3;
             //let imaginary=2 - (mouseY-pole_zero_graph_y[i])/pole_zero_height * 4;
-
+            clicked_on_pole_zero_graph_no = i;
             if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
               // See if the user clicked on T_2 or T_3:
               let T_2 = range_slider_variables[variable_position["T_2"]];
@@ -3140,10 +3149,34 @@ function mousePressed(){
 }
 
 function mouseReleased(){
+  if (clicked_on_time_response_graph_no==0){
+    let k_1 = range_slider_variables[variable_position["k_1"]];
+    if ((k_1 > 2.9) && (k_1 <= 3.1)){
+      task_done("k1=3");
+    }
+  }
+  if ((clicked_on_bode_mag_graph_no==0)||(clicked_on_bode_phase_graph_no==0)){
+    let k_1 = range_slider_variables[variable_position["k_1"]];
+    let T_1 = range_slider_variables[variable_position["T_1"]];
+    if ((k_1 >= 0.55) && (k_1 <= 0.75) && (T_1 >= 1.9) && (T_1 <= 2.1)){
+      task_done("T1_k1_bode");
+    }
+  }
+  if (clicked_on_pole_zero_graph_no==0){
+    let T_1 = range_slider_variables[variable_position["T_1"]];
+    if ((T_1 >= 0.45) && (T_1 <= 0.55)){
+      task_done("T1_pole=-2");
+    }
+    if (T_1 < 0){
+      task_done("T1_unstable");
+    }
+  }
+
   clicked_on_time_response_graph_no = -1;
   clicked_on_bode_mag_graph_no = -1;
   clicked_on_bode_phase_graph_no = -1;
   clicked_on_time_variable="";
+  clicked_on_pole_zero_graph_no = -1;
 }
 
 function mouseDragged(){
@@ -3764,10 +3797,15 @@ function mouseMoved(){
           ellipse(graph_step_response_x+graph_step_response_width+graph_step_response_x_offset,graph_step_response_y+screen_y+graph_step_response_y_offset,12,12);
           // Draw a corresponding white dot at the left edge of the bode magnitude graph
           let magnitude = Math.abs(output[2]);
-          // Now paint a horizontal line on the Bode magnitude plot, at the right height:
           let magnitude_in_dB = 20*Math.log(magnitude)/Math.log(10);
           let screen_y5 = map(magnitude_in_dB,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
           ellipse(graph_bode_mag_x+graph_bode_mag_x_offset,graph_bode_mag_y + screen_y5 + graph_bode_mag_y_offset,12,12);
+          // Draw a corresponding white dot at the real axis of the Nyquist diagram
+          let screen_x0 = map(output[2],min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+          let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+          let screen_xw = map(2*magnitude,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+          let screen_yw = map(-2*magnitude,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+          ellipse(graph_nyquist_x+graph_nyquist_x_offset+screen_x0,graph_nyquist_y+graph_nyquist_y_offset+screen_y0,12,12);
           noStroke();
           fill(linked_bode_graph.bode_hue,360,360);
           ellipse(mouseX,screen_y + graph_step_response_y_offset + graph_step_response_y,12,12);
@@ -3798,10 +3836,15 @@ function mouseMoved(){
           ellipse(graph_step_response_x+graph_step_response_width+graph_step_response_x_offset,mouseY,12,12);
           // Draw a corresponding white dot at the left edge of the bode magnitude graph
           let magnitude = Math.abs(output);
-          // Now paint a horizontal line on the Bode magnitude plot, at the right height:
           let magnitude_in_dB = 20*Math.log(magnitude)/Math.log(10);
           let screen_y5 = map(magnitude_in_dB,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
           ellipse(graph_bode_mag_x+graph_bode_mag_x_offset,graph_bode_mag_y + screen_y5 + graph_bode_mag_y_offset,12,12);
+          // Draw a corresponding white dot at the real axis of the Nyquist diagram
+          let screen_x0 = map(output,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+          let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+          let screen_xw = map(2*magnitude,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+          let screen_yw = map(-2*magnitude,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+          ellipse(graph_nyquist_x+graph_nyquist_x_offset+screen_x0,graph_nyquist_y+graph_nyquist_y_offset+screen_y0,12,12);
 
           translate(mouseX,mouseY);
           fill(box_background_color,200);
