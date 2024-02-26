@@ -1867,7 +1867,8 @@ function updateGraphInformation(){
 }
 
 function setGraphDimensions(){
-  canvas_width = windowWidth - 395;
+  let this_window_width=max(1295,windowWidth);  // Also present in style.css  "body{min-width: 1280px;}
+  canvas_width = this_window_width - 395;
   canvas_height = windowHeight - 110;
   graph_width = (canvas_width - 100)*2/5;
 
