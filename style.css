@@ -203,7 +203,6 @@ body{
   margin:10px;
   font-family: "Roboto";
   font-size: 15px;
-  color: #505090;
   transition: all .4s ease-in;
 }
 .yellow_hover:hover {background-color: #f8f890;transition:0s}

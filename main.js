@@ -297,11 +297,14 @@ function createRangeSlider(event){
       achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
     } else if ((range_slider_alphabet[button_id]=="z") && (+range_slider.value <= 0.1)){
       achievement_done("low_z");
+//    } else if (range_slider_alphabet[button_id]=="T_1") && (+range_slider.value >= 1.95) && (+range_slider.value <= 2.05)){
+//      task_done("T1=2");
     } else if (range_slider_alphabet[button_id][0]=="T"){
       let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
       if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
         achievement_done("T2_T3_far_apart");
       }
+
     }
 
     let variable_name = range_slider_alphabet[button_id];
@@ -1016,43 +1019,60 @@ function assignment_done (which_one){
 }
 
 const all_assignments={
-  "one_pole":{t:"Investigate a system with <b>one pole</b>",tasks:["T1=2","T1_pole=-2","k1_3","T1_k1_bode","T1_unstable"],info:"This is one of the basic system responses, where high frequencies are attenuated."},
-  "two_real_poles":{t:"Investigate a system with <b>two real poles</b>",tasks:["T2,T3_phase","T2,T3=1;k2=0.5","T2=10;T3=0.5","two_real_poles1"],info:"When combining two poles, the phase goes all the way to -180 degrees."},
-//  "two_complex_poles":{t:"Investigate a system with <b>two complex poles</b>",tasks:["low_z"],info:"A set of two complex poles will make a system oscillate."},
-//  "time_delay":{t:"See how a <b>time delay</b> affects stability",tasks:["k_above_or_equal_100","set_input_to_ramp"],info:"A time delayed system is more difficult to control."},
-//  "one_zero_two_poles":{t:"Investigate a system with <b>one zero two poles</b>",tasks:["set_input_to_ramp"],info:"With more poles and zeros, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
+  "one_pole":{t:"Investigate a system with <b>one pole</b>",tasks:["T1=2","k1_3","T1_k1_bode","T1_pole=-2","T1_unstable"],info:"<b>One pole</b> is one of the basic system responses, where high frequencies are attenuated."},
+  "two_real_poles":{t:"Investigate a system with <b>two real poles</b>",tasks:["T2,T3_phase","T2,T3=1;k2=0.5","T2=10;T3=0.5","two_real_poles1"],info:"When combining <b>two real poles</b>, the phase goes all the way to -180 degrees."},
+  "two_complex_poles":{t:"Investigate a system with <b>two complex poles</b>",tasks:["w=0.9;z=0.9","w=1.6;z=0.2","w=8;z=0.05","w=2;z=0.7;k3=0.7"],info:"A set of two complex poles will make a system oscillate."},
+  "time_delay":{t:"See how a <b>time delay</b> affects stability",tasks:["L=3","L=0.3"],info:"A time delayed system is more difficult to control."},
+  "one_zero_two_poles":{t:"Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4=1_poles"],info:"With more poles and zeros, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
+  "four_poles":{t:"Investigate a system with <b>four poles</b>",tasks:["T5=0.3;k=2","phase_margin=20"],info:""},
 //  "nyquist":{t:"Check out the <b>Nyquist diagram</b>",tasks:["k_above_or_equal_100","set_input_to_ramp"],info:"Named after Harry Nyquist 1889-1976, a Swedish-American physicist and electronic engineer."}
 };
-let done_assignments=["nyquist"];
+let done_assignments=[];
+
 
 const all_tasks={
-
-
-
 // ToDo:
 //## One pole
 //"reference eq in step response(k=0.65, T1=2)"
-"T1=2":"Change T1 so that the pole is placed in -1/2",//. (T1=2)
-"T1_pole=-2":"Drag the pole in the pole-zero map so the system is four times faster",//. (pole in -2)
-"k1_3":"Drag the step respomse so that the static gain is 3",//. (k1=3)
-"T1_k1_bode":"Drag the Bode plots so that the step reponse follows the dotted line",// (k=0.65, T1=2)
+"T1=2":"Change T<sub>1</sub> by moving the slider or type in the value to make the pole's location -1/2 in the s-domain",//. (T1=2)
+"k1_3":"Drag the step response so that the static gain is 3",//. (k1=3)
+"T1_k1_bode":"Drag the Bode plots so that the step response follows the dotted line",// (k=0.65, T1=2)
+"T1_pole=-2":"Drag the pole in the pole-zero map so the system is four times faster than the system in the dotted line.",//. (pole in -2)
 "T1_unstable":"Make the pole unstable",
 
 //## Two real poles
-"T2,T3_phase":"Change T2 and T3 so that the Bode phase curve is as the dotted one",//. (T2=0.05, T3=5.0)
-"T2,T3=1;k2=0.5":"Drag the poles in the pole-zero map so that the step response follows the dotted line",// (T2=T3=1, k2=0.5)
-"T2=10;T3=0.5":"Drag the poles in the pole-zero map so that the cutoff frequencies in the bode plot are 0.1 rad/s and 2rad/s",//. (T2=10, T3=0.5 eller vice versa)
-"two_real_poles1":"Drag the bode diagram so that the Phase margin for the system is 55 degrees with a gain crossover frequency of 2.68 rad/s",
+//reference in step (T2=T3=1, k2=0.5)
+//reference in bode phase (T2=5, T3=0.05, k2=1)
+"T2,T3_phase":"Change T<sub>2</sub> and T<sub>3</sub> so that the Bode phase curve is as the dotted one",//. (T2=0.05, T3=5.0)
+"T2,T3=1;k2=0.5":"Drag the poles in the pole-zero map so that the step response follows the dotted line when k2=1",//. (T2=T3=1, k2=1)
+"T2=10;T3=0.5":"Drag the step response so that the cutoff frequencies in the bode plot are 0.1 rad/s and 2 rad/s",// (T2=10, T3=0.5 eller vice versa)
+"two_real_poles1":"Drag the bode diagram so that the Phase margin for the system is 55 degrees with a gain crossover frequency of 3 rad/s",// (T2=T3=0.5-1.5k k2=7-8 ungefär)
 
-  "hover_nyquist_-90":"Hover the Nyquist diagram at -90 degrees on the unit circle",
-  "set_input_to_impulse":"Change the input function to a dirac impulse",
-  "change_L":"Change time delay L in the <b>time delay</b> transfer function",
-  "low_z":"Make damping factor z for <b>two complex poles</b> less than 0.1",
-  "T2_T3_far_apart":"Separate <b>two real poles'</b> time constants a factor 100 apart",
-  "k_above_or_equal_100":"Change a transfer function to have a magnitude k≥100",
-  "set_input_to_ramp":"Change the input to a ramp function"
+//## Two complex poles
+//Step reference (w=2,z=0.7,k=0.7)
+//Bode reference (w=8, z=0.05)
+"w=0.9;z=0.9":"Drag the poles in the pole-zero map so that the w=0.9 and z=0",
+"w=1.6;z=0.2":"Drag the poles in the pole-zero map so that the w=1.6 and z=0.2",
+"w=8;z=0.05":"Change w and z so that the bode plots follow the dotted lines",
+"w=2;z=0.7;k3=0.7":"Drag the bode plot so that the step response follows the dotted line",
+
+//## Time delay
+"L=3":"Drag the step response to change the time delay to 3 seconds",
+"L=0.3":"Change the Time delay L so that the Gain margin is 2",// (L=0.3)
+
+//## One zero two Poles
+//Nyquist reference (k=1,T6=2.5,T7=1,T8=6)
+//Bode reference (k4=0.75,T6=9.25,T7=0.5,T8=2)
+//Step reference (k4=1,T6=1,T7=1,T8=-1.5)
+"k4=1;T6=2.5;T7=1;T8=6":"Drag the Bode plot to make the Nyquist curve follow the dotted line",// (k=1,T6=2.5,T7=1,T8=6)
+"k4=0.75;T6=9.25;T7=0.5;T8=2":"Change the parameters so that the Bode plots follow the dotted lines",//. (k4=0.75,T6=9.25,T7=0.5,T8=2)
+"k4=1_poles":"With k<sub>4</sub>=1, drag the poles and zeros in the pole-zero map so that the step response follows the dotted line",
+
+//#Four poles
+"T5=0.3;k=2":"Change k and T5 by dragging the sliders or typing in a number so that the Gain margin is 0.5 and the phase crossover frequency is 1.25 rad/s",// (T5=0.3, k=2)
+"phase_margin=20":"Drag the Bode plot so that the Phase margin is 20 degree with a Gain crossover frequency of 5 rad/s",
 };
-let done_tasks=["set_input_to_ramp"];
+let done_tasks=["T2,T3_phase"];
 
 
 function update_assignments(){
@@ -1115,7 +1135,9 @@ function update_tasks(){
 
   let s="";
   // List all tasks not yet done:
-  s += "<center><b>Your tasks:</b></center><br>";
+  s += "<center><b>"+all_assignments[current_assignment].t+"</b></center><br>";
+
+  s += "Your tasks in this assignment:<br>";
   let nof_done_subtasks = 0;
   for (let task_id in all_tasks){
     if (all_assignments[current_assignment].tasks.includes(task_id)){
@@ -1123,17 +1145,17 @@ function update_tasks(){
         nof_done_subtasks+=1;
       } else {
         let long_name = all_tasks[task_id];
-        s += "<input type='checkbox'>&nbsp;" + long_name + "<br><br>";
+        s += "<input type='checkbox' onclick='return false;'>&nbsp;<span style='color:#4040b0;'>" + long_name + "</span><br><br>";
       }
     }
   }
 
-  s += "<br><center><b>Completed tasks:</b></center><br>";
+  s += "Completed tasks:<br>";
   for (let task_id in all_tasks){
     if (all_assignments[current_assignment].tasks.includes(task_id)){
       if (done_tasks.includes(task_id)){
         let long_name = all_tasks[task_id];
-        s += "<input type='checkbox' checked>&nbsp;" + long_name + "<br>";
+        s += "<input type='checkbox' checked onclick='return false;'>&nbsp;<span style='color:#4040b0;'>" + long_name + "</span><br>";
       }
     }
   }
@@ -1296,7 +1318,7 @@ function update_achievements(){
   for (let achievement_id in all_achievements){
     if (done_achievements.includes(achievement_id)){
       let long_name = all_achievements[achievement_id]
-      s += "<input type='checkbox' checked>&nbsp;" + long_name + "<br>";
+      s += "<input type='checkbox' checked onclick='return false;'>&nbsp;" + long_name + "<br>";
     }
   }
   s += "<br>Your Score: <b>" + achievement_score.toFixed(1) + "/100</b><br>";
@@ -1311,7 +1333,7 @@ function update_achievements(){
     for (let achievement_id in all_achievements){
       if (!(done_achievements.includes(achievement_id))){
         let long_name = all_achievements[achievement_id]
-        s += "<input type='checkbox'>&nbsp;" + long_name + "<br>";
+        s += "<input type='checkbox' onclick='return false;'>&nbsp;" + long_name + "<br>";
       }
     }
   }
