@@ -153,6 +153,8 @@ function updateInputFormula(event){
   console.log(input_formula);
   if ((input_formula.includes("/(s^2)")) ||
       (input_formula.includes("/(s⋅s)")) ||
+      (input_formula.includes("(1)/(s)⋅(1)/(s)")) ||
+      (input_formula.includes("(1)/(s)(1)/(s)")) ||
       (input_formula.includes("/(s*s)"))){
     achievement_done("set_input_to_ramp");
   }
@@ -543,6 +545,17 @@ function removeInformationTab(input_id){
   linked_label.remove();
 }
 
+
+function removeAllGraphs(){
+  const equations = document.querySelectorAll(".equation-wrapper .equation .delete-graph .material-icons");
+  equations.forEach((equation) => {
+    equation.click();
+  });
+  bode_graphs = [];
+  id_bank = 1;
+}
+
+
 function removeGraph(event){
   let clicked_button = event.target;
   let linked_equation = clicked_button.parentElement.parentElement;
@@ -557,9 +570,7 @@ function removeGraph(event){
       redraw();
     }
   }
-  linked_equation.parentElement.remove();
-
-  //Now also remove any variables that belongs to this equation:
+  //Now remove any variables that belongs to this equation:
   let variables_to_delete = [];
   if (equation_to_remove == GRAPH_ONE_REAL_POLE.formula){
     variables_to_delete = ["k_1","T_1"];
@@ -571,15 +582,21 @@ function removeGraph(event){
     variables_to_delete = ["L"];
   } else if (equation_to_remove == GRAPH_ONE_ZERO_TWO_POLES.formula){
     variables_to_delete = ["k_4","T_6","T_7","T_8"];
+  } else if (equation_to_remove == GRAPH_FOUR_POLES.formula){
+    variables_to_delete = ["T_5"];
+  } else if (equation_to_remove == GRAPH_ONE_ZERO.formula){
+    variables_to_delete = ["T_4"];
   }
   for(let i=0; i<variables_to_delete.length; i++){
     let variable_to_delete = variables_to_delete[i];
     let button = document.getElementById("RANGE_" + variable_position[variable_to_delete]);
-    let linked_id = button.parentElement.parentElement.getElementsByClassName("range-slider")[0].id.split("_")[1];
     range_slider_variables[linked_id] = 18012001;
+//    let linked_id = button.parentElement.parentElement.getElementsByClassName("range-slider")[0].id.split("_")[1];
     let slider = button.parentElement.parentElement.parentElement;
     slider.remove();
   }
+
+  linked_equation.parentElement.remove();
 
   for(let b=0; b<bode_graphs.length; b++){
     let graph_id = bode_graphs[b].bode_id;
@@ -655,7 +672,7 @@ function download_script(id){
   <option value="Julia">Julia code</option>
 </select> for plotting your transfer function.<br>Copy to clipboard:
 <button type="button" onclick="copy_code()" class="copy-button"><i class="material-icons" style="font-size:24px;color:#404040">content_copy</i></button>
-<button type="button" class="delete-graph" onclick="hide_script()"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>
+<button type="button" class="close-window" onclick="hide_script()"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>
 <br><br><div id="the_code"></div>`;
 
   let toggleElement = document.querySelector('.download_script_box');
@@ -1078,7 +1095,7 @@ let done_tasks=["T2,T3_phase"];
 function update_assignments(){
   let assignments_box = document.querySelector('.assignments_box');
   let s = "";
-  s += '<br><button type="button" class="delete-graph" onclick="toggle_assignments_box();"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>';
+  s += '<br><button type="button" class="close-window" onclick="toggle_assignments_box();"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>';
 
   s += "<center>";
   s += '<i class="material-icons" style="font-size: 27px;">assignments</i>';
@@ -1124,6 +1141,35 @@ function update_assignments(){
 function select_assignment(event){
   current_assignment = event.value;
   update_tasks();
+  removeAllGraphs();
+  if(event.value=="none"){
+    next_graph_no_to_add=0;
+    id_bank=0;
+    // Add the initial startup graphs:
+    for(let graph_no=0; graph_no<NOF_GRAPHS_AT_STARTUP; graph_no++){
+      let graph_to_add = GRAPH_ORDER[graph_no];
+      addNewGraph(null, graph_to_add);
+    }
+    next_graph_no_to_add = NOF_GRAPHS_AT_STARTUP;
+    return;
+  }
+
+  if(event.value=="one_pole"){
+    next_graph_no_to_add=0;
+  } else if(event.value=="two_real_poles"){
+    next_graph_no_to_add=1;
+  } else if(event.value=="two_complex_poles"){
+    next_graph_no_to_add=2;
+  } else if(event.value=="time_delay"){
+    next_graph_no_to_add=3;
+  } else if(event.value=="one_zero_two_poles"){
+    next_graph_no_to_add=4;
+  } else if(event.value=="four_poles"){
+    next_graph_no_to_add=5;
+  }
+  // Set the color of the graph:
+  id_bank = next_graph_no_to_add;
+  addNewGraph();
 }
 
 function update_tasks(){
@@ -1309,7 +1355,7 @@ function update_achievements(){
 
   let achievements_box = document.querySelector('.achievements_box');
   let s = "";
-  s += '<br><button type="button" class="delete-graph" onclick="toggle_achievements();"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>';
+  s += '<br><button type="button" class="close-window" onclick="toggle_achievements();"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>';
 
   s += "<center>";
   s += "Your Achievements ";
@@ -5168,6 +5214,6 @@ function ready(){
   toggleElement.classList="active";
   // Enable gamification from start:
   toggle_gamification();
-//  toggle_assignments();
+  toggle_assignments();
   updateToolbox();
 }

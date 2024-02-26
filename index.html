@@ -46,7 +46,7 @@
 
     <div class="page">
       <div class="toolbox">
-        <button type="button" class="delete-graph" onclick="toolboxMenuToggle();"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>
+        <button type="button" class="close-window" onclick="toolboxMenuToggle();"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>
         <div class="math-preferences">
           <span style="font-weight:500;color:#777777">Math preferences:</span>
           <div class="expression-wrapper">
@@ -90,13 +90,13 @@
             <label><input type="checkbox" id="color-mode-checkbox" value="" style="width:15px;height:15px;" onclick="toggle_sound()">Enable sound</label>
           </div>
           <div class="expression-wrapper">
-            <label><input type="checkbox" id="color-mode-checkbox" value="" style="width:15px;height:15px;" onclick="toggle_assignments()">Enable assignments</label>
+            <label><input type="checkbox" id="color-mode-checkbox" value="" style="width:15px;height:15px;" onclick="toggle_assignments()" checked>Enable assignments</label>
           </div>
         </div>
       </div>
 
       <div class="help">
-<button type="button" class="delete-graph" onclick="helpToggle();"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>
+<button type="button" class="close-window" onclick="helpToggle();"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>
         <center><h2>LU-PZE: Lund University Pole-Zero Explorer</h2></center>
 <center>- <i>an Automatic Control theory playground</i></center><br>
 <hr>
