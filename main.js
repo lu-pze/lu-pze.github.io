@@ -446,12 +446,15 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   new_equation_wrapper.classList.add('equation-wrapper');
   id_bank += 1;
   let linked_color = color_table[id_bank%color_table.length];
-  let s =
-  `
-  <hr>
-  <div class="equation">
-    <input type="checkbox" class="show-graph" style="background: hsl(${linked_color},100%,50%)" title="${graph_name}">
-    <math-field `
+  let s ='<hr><div class="equation"';
+  if (graph_name.startsWith("Ghost")){
+    if (graph_name[10]==".") s='<div class="equation" style="display:none;"';
+  }
+  s +=">";
+
+
+  s +=`<input type="checkbox" class="show-graph" style="background: hsl(${linked_color},100%,50%)" title="${graph_name}">`;
+  s += "<math-field ";
   // These are the GRAPHS that should be not changeable. "read only":
   if ((equation_string == GRAPH_ONE_REAL_POLE.formula) ||
       (equation_string == GRAPH_TWO_REAL_POLES.formula) ||
@@ -494,6 +497,26 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   bode_graphs.push(new_bode_graph);
   new_bode_graph.graph_name = graph_name;
 
+  // Let's set the displaybools:
+  // The name tells where this formula will be shown:
+  // GhostMPTNIE_Displayed name
+  //      M      = shows up in Bode magnitude plot
+  //       P     = shows up in Bode phase plot
+  //        T    = shows up in Bode time response plot
+  //         N   = shows up in Nyquist diagram
+  //          I  = shows up in information tab
+  //           E = shows up in Equations
+  if (graph_name.startsWith("Ghost")){
+    if (graph_name[5]==".")  new_bode_graph.bode_display_bodemag_bool = false;
+    if (graph_name[6]==".")  new_bode_graph.bode_display_bodephase_bool = false;
+    if (graph_name[7]==".")  new_bode_graph.bode_display_timeresponse_bool = false;
+    if (graph_name[8]==".")  new_bode_graph.bode_display_nyquist_bool = false;
+    if (graph_name[9]==".")  new_bode_graph.bode_display_information_bool = false;
+    if (graph_name[10]==".") new_bode_graph.bode_display_equation_bool = false;
+    new_bode_graph.graph_name = graph_name.substr(12);
+  }
+
+
 
   let input_element_id = id_bank;
   for(let i=0; i<bode_graphs.length; i++){
@@ -521,7 +544,11 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
       }
     }
   }
-  addNewInformationTab(id_bank, graph_name);
+
+  if (!((graph_name.startsWith("Ghost"))&&(graph_name[9]=="."))){
+    addNewInformationTab(id_bank, graph_name);
+  }
+
 //  bode_graphs[bode_graphs.length-1].get_complex_p5();
   updateFormulaAndDraw(document.getElementById(id_bank.toString()));
   redraw_canvas_gain(id_bank);
@@ -560,8 +587,8 @@ function addNewInformationTab(input_id, graph_name){
 function removeInformationTab(input_id){
   let linked_tab = document.getElementById("graph_" + input_id.toString() + "_info");
   let linked_label = document.getElementById("graph_" + input_id.toString() + "_infolabel");
-  linked_tab.remove();
-  linked_label.remove();
+  if (linked_tab) linked_tab.remove();
+  if (linked_label) linked_label.remove();
 }
 
 
@@ -1198,27 +1225,25 @@ function select_assignment(event){
   //           E = shows up in Equations
   if(event.value=="one_pole"){
     //"reference eq in step response(k=0.65, T1=2)"
-    addNewGraph(none, {name:"Ghost..T..._1", mf:"\\frac{0.65}{1+2s}", formula:"(0.65)/((1+2s))"});
+    addNewGraph(none, {name:"Ghost..T..._Match this response", mf:"\\frac{0.65}{1+2s}", formula:"(0.65)/((1+2s))"});
   } else if(event.value=="two_real_poles"){
     //reference in step (T2=T3=1, k2=0.5)
-    addNewGraph(none, {name:"Ghost..T..._2", mf:"\\frac{0.5}{(1+s)(1+s)}", formula:"0.5/(1+s)*1/(1+s)"});
+    addNewGraph(none, {name:"Ghost..T..._Match this response", mf:"\\frac{0.5}{(1+s)(1+s)}", formula:"0.5/(1+s)*1/(1+s)"});
     //reference in bode phase (T2=5, T3=0.05, k2=1)
-    addNewGraph(none, {name:"Ghost.P...._3", mf:"\\frac{1}{(1+5s)(1+0.05s)}", formula:"1/(1+5s)*1/(1+0.05s)"});
+    addNewGraph(none, {name:"Ghost.P...._Match this Bode phase", mf:"\\frac{1}{(1+5s)(1+0.05s)}", formula:"1/(1+5s)*1/(1+0.05s)"});
   } else if(event.value=="two_complex_poles"){
     //Bode reference (w=8, z=0.05)
-    addNewGraph(none, {name:"GhostMP...._4", mf:"\\frac{8^2}{s^2+2*0.05*8*s+8^2}", formula:"8^2/(s^2+2*0.05*8*s+8^2)"});
+    addNewGraph(none, {name:"GhostMP...._Match this Bode", mf:"\\frac{8^2}{s^2+2*0.05*8*s+8^2}", formula:"8^2/(s^2+2*0.05*8*s+8^2)"});
     //Step reference (w=2,z=0.7,k=0.7)
-    addNewGraph(none, {name:"Ghost..T..._5", mf:"\\frac{0.7*2^2}{s^2+2*0.7*2*s+2^2}", formula:"0.7*2^2/(s^2+2*0.7*2*s+2^2)"});
+    addNewGraph(none, {name:"Ghost..T..._Match this response", mf:"\\frac{0.7*2^2}{s^2+2*0.7*2*s+2^2}", formula:"0.7*2^2/(s^2+2*0.7*2*s+2^2)"});
   } else if(event.value=="one_zero_two_poles"){
     //Nyquist reference (k=1,T6=2.5,T7=1,T8=6)
-    addNewGraph(none, {name:"Ghost...N.._6", mf:"\\frac{(1+6s)}{(1+2.5s)(1+s)}", formula:"(1+6s)/(1+2.5s)*1/(1+s)"});
+    addNewGraph(none, {name:"Ghost...N.._Match this Nyquist", mf:"\\frac{(1+6s)}{(1+2.5s)(1+s)}", formula:"(1+6s)/(1+2.5s)*1/(1+s)"});
     //Bode reference (k4=0.75,T6=9.25,T7=0.5,T8=2)
-    addNewGraph(none, {name:"GhostMP...._7", mf:"\\frac{0.75(1+2s)}{(1+9.25s)(1+0.5s)}", formula:"0.75(1+2s)/(1+9.25s)*1/(1+0.5s)"});
+    addNewGraph(none, {name:"GhostMP...._Match this Bode", mf:"\\frac{0.75(1+2s)}{(1+9.25s)(1+0.5s)}", formula:"0.75(1+2s)/(1+9.25s)*1/(1+0.5s)"});
     //Step reference (k4=1,T6=1,T7=1,T8=-1.5)
-    addNewGraph(none, {name:"Ghost..T..._8", mf:"\\frac{(1-1.5s)}{(1+s)(1+s)}", formula:"(1-1.5s)/(1+s)*1/(1+s)"});
+    addNewGraph(none, {name:"Ghost..T..._Match this response", mf:"\\frac{(1-1.5s)}{(1+s)(1+s)}", formula:"(1-1.5s)/(1+s)*1/(1+s)"});
   }
-
-
 }
 
 function update_tasks(){
@@ -2049,7 +2074,7 @@ function draw_bode_responses(type){
     let max_phase = -10000;
 
     for(let i=0; i<bode_graphs.length; i++){
-      if(bode_graphs[i].bode_displaybool){
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
         let current_graph = bode_graphs[i];
         if(current_graph.bode_min_phase < min_phase){
           min_phase = current_graph.bode_min_phase;
@@ -2103,7 +2128,7 @@ function draw_bode_responses(type){
     }
 
     for(let i=0; i<bode_graphs.length; i++){
-      if(bode_graphs[i].bode_displaybool){
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
         let stop_on_overflow=false;
         if (bode_graphs[i].bode_formula == GRAPH_TIME_DELAY.formula){
           // A workaround to not plot the high frequency way-off phase in the bode phase plot of GRAPH_TIME_DELAY with L > 1:
@@ -2117,7 +2142,7 @@ function draw_bode_responses(type){
     let rad_phase_lower_bound = phase_lower_bound*PI/180;
     let rad_phase_upper_bound = phase_upper_bound*PI/180;
     for(let i=0; i<bode_graphs.length; i++){
-      if(bode_graphs[i].bode_displaybool){
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
         if(bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
           // Draw T_1:
           try{ // The graph may be deleted, so this might fail:
@@ -2292,7 +2317,7 @@ function draw_bode_responses(type){
     }
 
     for(let i=0; i<bode_graphs.length; i++){
-      if(bode_graphs[i].bode_displaybool){
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodemag_bool)){
         bode_graphs[i].draw_gain();
       }
     }
@@ -2300,7 +2325,7 @@ function draw_bode_responses(type){
 
     // Draw X for T_1, T_2, T_3 and w:
     for(let i=0; i<bode_graphs.length; i++){
-      if(bode_graphs[i].bode_displaybool){
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodemag_bool)){
         if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
           // Draw T_1:
           try{ // The graph may be deleted, so this might fail:
@@ -2471,7 +2496,7 @@ function draw_time_responses(){
     max_y_timerep = -100000;
 
     for(let i=0; i<bode_graphs.length; i++){
-      if(bode_graphs[i].bode_displaybool){
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_timeresponse_bool)){
         let current_graph = bode_graphs[i];
         if(current_graph.bode_max_timerep > max_y_timerep){
           max_y_timerep = current_graph.bode_max_timerep;
@@ -2504,7 +2529,7 @@ function draw_time_responses(){
 
   // Draw "final value":
   for(let i=0; i<bode_graphs.length; i++){
-    if(bode_graphs[i].bode_displaybool){
+    if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_timeresponse_bool)){
       if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
         let k_1 = range_slider_variables[variable_position["k_1"]];
         let screen_y = map(k_1,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
@@ -2541,7 +2566,7 @@ function draw_time_responses(){
 
 
   for(let i=0; i<bode_graphs.length; i++){
-    if(bode_graphs[i].bode_displaybool){
+    if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_timeresponse_bool)){
       if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
         // Draw T_1:
         try{ // The graph may be deleted, so this might fail:
@@ -2657,7 +2682,7 @@ function draw_time_responses(){
   }
 
   for(let i=0; i<bode_graphs.length; i++){
-    if(bode_graphs[i].bode_displaybool){
+    if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_timeresponse_bool)){
       bode_graphs[i].draw_timeresponse();
     }
   }
@@ -2682,7 +2707,7 @@ function draw_nyquist_responses(){
   max_nyquist_y = 0.2;
 
   for(let i=0; i<bode_graphs.length; i++){
-    if(bode_graphs[i].bode_displaybool){
+    if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_nyquist_bool)){
       let current_graph = bode_graphs[i];
       if(current_graph.bode_max_nyquist_x > max_nyquist_x){
         max_nyquist_x = current_graph.bode_max_nyquist_x;
@@ -2768,7 +2793,7 @@ function draw_nyquist_responses(){
   pop();
 
   for(let i=0; i<bode_graphs.length; i++){
-    if(bode_graphs[i].bode_displaybool){
+    if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_nyquist_bool)){
       bode_graphs[i].draw_nyquist_response();
     }
   }
@@ -2949,13 +2974,15 @@ function mousePressed(){
     ((mouseY-graph_step_response_y) > graph_step_response_y_offset && (mouseY-graph_step_response_y) < graph_step_response_height + graph_step_response_y_offset)){
     let linked_x = Math.ceil((mouseX - graph_step_response_x - graph_step_response_x_offset)/precision);
     for(let h=0; h<bode_graphs.length; h++){
-      let current_graph = bode_graphs[h];
-      let linked_y = current_graph.bode_timerep_array[linked_x];
-      let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true) + graph_step_response_y_offset;
-      let distance = Math.abs(mouseY - graph_step_response_y - screen_y);
-      if(distance < 70){
-        yes_close_enough = true;
-        queue.push([distance,h,linked_y]);
+      if((bode_graphs[h].bode_displaybool)&&(bode_graphs[h].bode_display_timeresponse_bool)){
+        let current_graph = bode_graphs[h];
+        let linked_y = current_graph.bode_timerep_array[linked_x];
+        let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true) + graph_step_response_y_offset;
+        let distance = Math.abs(mouseY - graph_step_response_y - screen_y);
+        if(distance < 70){
+          yes_close_enough = true;
+          queue.push([distance,h,linked_y]);
+        }
       }
     }
     let output;
@@ -3025,7 +3052,7 @@ function mousePressed(){
     let queue = [];
     let yes_close_enough = false;
     for(let i=0; i<bode_graphs.length; i++){
-      if(bode_graphs[i].bode_displaybool){
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodemag_bool)){
         let current_graph = bode_graphs[i];
         let linked_y = current_graph.bode_gain_array[math.round(linked_x)];
         let screen_y = graph_bode_mag_y_offset + map(linked_y,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
@@ -3114,7 +3141,7 @@ function mousePressed(){
     let queue = [];
     let yes_close_enough = false;
     for(let i=0; i<bode_graphs.length; i++){
-      if(bode_graphs[i].bode_displaybool){
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
         let current_graph = bode_graphs[i];
         let linked_y = current_graph.bode_phase_array[math.round(linked_x)];
         let screen_y = graph_bode_phase_y_offset + map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
@@ -3798,7 +3825,7 @@ function mouseMoved(){
       if((mouseY-graph_step_response_y) > graph_step_response_y_offset && (mouseY-graph_step_response_y) < graph_step_response_height + graph_step_response_y_offset){
         let linked_x = Math.ceil((mouseX - graph_step_response_x - graph_step_response_x_offset)/precision);
         for(let h=0; h<bode_graphs.length; h++){
-          if(bode_graphs[h].bode_displaybool){
+          if((bode_graphs[h].bode_displaybool)&&(bode_graphs[h].bode_display_timeresponse_bool)){
             let current_graph = bode_graphs[h];
             let linked_y = current_graph.bode_timerep_array[linked_x];
             let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true) + graph_step_response_y_offset;
@@ -3915,7 +3942,7 @@ function mouseMoved(){
         let queue = [];
         let yes_close_enough = false;
         for(let i=0; i<bode_graphs.length; i++){
-          if(bode_graphs[i].bode_displaybool){
+          if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodemag_bool)){
 //            bode_graphs[i].draw_nyquist_value(frequency);
             bode_graphs[i].draw_nyquist_value(perc_x);
             let current_graph = bode_graphs[i];
@@ -4063,7 +4090,7 @@ function mouseMoved(){
         let queue = [];
         let yes_close_enough = false;
         for(let i=0; i<bode_graphs.length; i++){
-          if(bode_graphs[i].bode_displaybool){
+          if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
 //            bode_graphs[i].draw_nyquist_value(frequency);
             bode_graphs[i].draw_nyquist_value(perc_x);
             let current_graph = bode_graphs[i];
@@ -4402,6 +4429,12 @@ class bode_graph{
     this.bode_min_timerep = 10000;
     this.bode_hue = color_table[a % color_table.length];
     this.bode_displaybool = true;
+    this.bode_display_bodemag_bool = true;
+    this.bode_display_bodephase_bool = true;
+    this.bode_display_timeresponse_bool = true;
+    this.bode_display_nyquist_bool = true;
+    this.bode_display_information_bool = true;
+    this.bode_display_equation_bool = true;
     this.bode_min_nyquist_x = 10000;
     this.bode_max_nyquist_x = -10000;
     this.bode_min_nyquist_y = 10000;
