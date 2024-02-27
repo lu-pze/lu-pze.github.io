@@ -150,7 +150,6 @@ function getGraphById(input_id){
 
 function updateInputFormula(event){
   input_formula = event.target.getValue('ascii-math');
-  console.log(input_formula);
   if ((input_formula.includes("/(s^2)")) ||
       (input_formula.includes("/(s⋅s)")) ||
       (input_formula.includes("(1)/(s)⋅(1)/(s)")) ||
@@ -2147,7 +2146,7 @@ function draw_bode_responses(type){
     fill(text_color);
     textSize(15);
     text("Bode phase plot",graph_bode_phase_width/2,-5);
-    text("phase",0,-30);
+    text("phase arg{Y(s)}",0,-30);
     text("[degrees]",0,-15);
     draw_loglines(x_case_gain,y_case_gain);
     text("angular freq [rad/s]",graph_bode_phase_width,graph_bode_phase_height+35);
@@ -2328,7 +2327,7 @@ function draw_bode_responses(type){
     fill(text_color);
     textSize(15);
     text("Bode magnitude plot",graph_bode_mag_x + graph_bode_mag_width/2,graph_bode_mag_y-5);
-    text("magnitude",0,-15);
+    text("magnitude |Y(s)|",0,-15);
     draw_loglines(x_case_gain,y_case_gain);
     text("angular freq [rad/s]",graph_bode_phase_width,graph_bode_phase_height+35);
 //    draw_loglines(x_case_gain,y_case_gain);
@@ -2562,7 +2561,7 @@ function draw_time_responses(){
   } else {
     text("Time response",graph_step_response_width/2,-5);
   }
-  text("output",0,-15);
+  text("output y(t)",0,-15);
   text("time [s]",graph_step_response_width,graph_step_response_height + graph_step_response_y_offset);
   draw_timelines();
 
@@ -2889,7 +2888,7 @@ function draw_pole_zeros(){
   textSize(15);
   textAlign(CENTER);
   fill(text_color);
-  text("Poles & zeros",graph_pole_zero_width/2,25);
+  text("Pole-zero map",graph_pole_zero_width/2,25);
   pop();
 }
 
