@@ -1083,12 +1083,12 @@ function task_done (which_one){
 }
 
 const all_assignments={
-  "one_pole":{t:"Investigate a system with <b>one pole</b>",tasks:["T1=2","k1=2.9","T1_k1_bode","T1_pole=-2","T1_unstable"],info:"<b>One pole</b> is one of the basic system responses, where high frequencies are attenuated."},
-  "two_real_poles":{t:"Investigate a system with <b>two real poles</b>",tasks:["T2,T3_phase","T2,T3=1;k2=0.5","T2=10;T3=0.5","two_real_poles1"],info:"When combining <b>two real poles</b>, the phase goes all the way to -180 degrees."},
-  "two_complex_poles":{t:"Investigate a system with <b>two complex poles</b>",tasks:["w=0.9;z=0.9","w=1.6;z=0.2","w=8;z=0.05","w=2;z=0.7;k3=0.7"],info:"A set of two complex poles will make a system oscillate."},
-  "time_delay":{t:"See how a <b>time delay</b> affects stability",tasks:["L=3","L=0.3"],info:"A time delayed system is more difficult to control."},
-  "one_zero_two_poles":{t:"Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4=1_poles"],info:"With more poles and zeros, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
-  "four_poles":{t:"Investigate a system with <b>four poles</b>",tasks:["T5=0.3;k=2","phase_margin=20"],info:""},
+  "one_pole":{t:"Investigate a system with <b>one pole</b>",tasks:["T1=2","k1=2.9","T1_k1_bode","T1_pole=-2","T1_unstable"],info:"A system with <b>one pole</b> is one of the fundamental system responses, where high frequencies are attenuated."},
+  "two_real_poles":{t:"Investigate a system with <b>two real poles</b>",tasks:["T2,T3_phase","T2,T3=1;k2=0.5","T2=10;T3=0.5","two_real_poles1"],info:"When combining <b>two real poles</b>, the Bode phase response goes all the way to -180 degrees."},
+  "two_complex_poles":{t:"Investigate a system with <b>two complex poles</b>",tasks:["w=0.9;z=0.9","w=1.6;z=0.2","w=8;z=0.05","w=2;z=0.7;k3=0.7"],info:"A set of <b>two complex poles</b> will make the system's time response oscillate."},
+  "time_delay":{t:"See how a <b>time delay</b> affects stability",tasks:["L=3","L=0.3"],info:"A system with <b>time delay</b> is more difficult to control."},
+  "one_zero_two_poles":{t:"Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4=1_poles"],info:"With <b>one zero and two poles</b>, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
+  "four_poles":{t:"Investigate a system with <b>four poles</b>",tasks:["T5=0.3;k=2","phase_margin=20"],info:"A system with <b>four poles</b> gets a lot more phase shift, with a larger spin in the Nyquist diagram."},
   "none":{t:"...no assignment",tasks:["impossible"],info:""},
 //  "nyquist":{t:"Check out the <b>Nyquist diagram</b>",tasks:["k_above_or_equal_100","set_input_to_ramp"],info:"Named after Harry Nyquist 1889-1976, a Swedish-American physicist and electronic engineer."}
 };
@@ -1102,7 +1102,7 @@ const all_tasks={
 "T1=2":"Change T<sub>1</sub> by moving the slider or type in the value to make the pole's location -1/2 in the s-domain.",//. (T1=2)
 "k1=2.9":"Drag the step response so that the static gain is 2.9.",//. (k1=2.9)
 "T1_k1_bode":"Drag the Bode plots to mimick the orange step response.",// (k=0.65, T1=2)
-"T1_pole=-2":"Drag the pole in the pole-zero map to make the system four times faster than orange one.",//. (pole in -2)
+"T1_pole=-2":"Drag the pole in the pole-zero map to make the system four times faster than the orange one.",//. (pole in -2)
 "T1_unstable":"Make the pole unstable.", // T_1 < 0
 
 //## Two real poles
@@ -1316,12 +1316,12 @@ function update_tasks(){
   }
 
   if (nof_done_subtasks != Object.keys(all_assignments[current_assignment].tasks).length){
-    s += "<br><b>" + (nof_done_subtasks) + "/"+Object.keys(all_assignments[current_assignment].tasks).length+"</b> done so far.<br>";
+    s += "<br><b>" + (nof_done_subtasks) + "/"+Object.keys(all_assignments[current_assignment].tasks).length+"</b> done so far.";
   } else {
-    s+="<span onclick='toggle_assignments_box()' class='clickable-link'>You're done with this assignment. Please choose another assignment</span>.";
+    s+="<br><span onclick='toggle_assignments_box()' class='clickable-link'>You're done with this assignment. Click here to choose another assignment.</span>";
   }
 
-  s += "<br><br><center>"+all_assignments[current_assignment].info+"</center>";
+  s += "<br><br><br><center><i><div style='width:70%;border-radius:20px;padding:5%;background:#e0e0e0;'>"+all_assignments[current_assignment].info+"</span></i></center>";
   task_div.innerHTML=s;
 }
 
