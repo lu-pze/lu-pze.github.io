@@ -297,6 +297,14 @@ function createRangeSlider(event){
     if ((range_slider_alphabet[button_id]=="T_1") && (+range_slider.value < 0)){
       task_done("T1_unstable");
     }
+    let T_2 = range_slider_variables[variable_position["T_2"]];
+    let T_3 = range_slider_variables[variable_position["T_3"]];
+    let max_T = Math.max(T_2,T_3);
+    let min_T = Math.min(T_2,T_3);
+    if ((min_T >= 0.035) && (min_T <= 0.07)&&
+        (max_T >= 4.0) && (max_T <= 5.8)){
+      task_done("T2,T3=0.05_and_5");
+    }
   }
 
   range_slider.oninput = function(){
@@ -313,14 +321,6 @@ function createRangeSlider(event){
       let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
       if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
         achievement_done("T2_T3_far_apart");
-      }
-      let T_2 = range_slider_variables[variable_position["T_2"]];
-      let T_3 = range_slider_variables[variable_position["T_3"]];
-      let max_T = Math.max(T_2,T_3);
-      let min_T = Math.min(T_2,T_3);
-      if ((min_T >= 0.035) && (min_T <= 0.07)&&
-          (max_T >= 4.0) && (max_T <= 5.8)){
-        task_done("T2,T3=0.05_and_5");
       }
     }
 
@@ -365,6 +365,14 @@ function createRangeSlider(event){
     if ((range_slider_alphabet[button_id]=="T_1") && (+linked_span.value < 0)){
       task_done("T1_unstable");
     }
+    let T_2 = range_slider_variables[variable_position["T_2"]];
+    let T_3 = range_slider_variables[variable_position["T_3"]];
+    let max_T = Math.max(T_2,T_3);
+    let min_T = Math.min(T_2,T_3);
+    if ((min_T >= 0.035) && (min_T <= 0.07)&&
+        (max_T >= 4.0) && (max_T <= 5.8)){
+      task_done("T2,T3=0.05_and_5");
+    }
   }
 
   linked_span.oninput = function(){
@@ -388,14 +396,6 @@ function createRangeSlider(event){
       let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
       if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
         achievement_done("T2_T3_far_apart");
-      }
-      let T_2 = range_slider_variables[variable_position["T_2"]];
-      let T_3 = range_slider_variables[variable_position["T_3"]];
-      let max_T = Math.max(T_2,T_3);
-      let min_T = Math.min(T_2,T_3);
-      if ((min_T >= 0.035) && (min_T <= 0.07)&&
-          (max_T >= 4.0) && (max_T <= 5.8)){
-        task_done("T2,T3=0.05_and_5");
       }
     }
 
@@ -1123,10 +1123,10 @@ const all_tasks={
 //reference in bode phase (T2=5, T3=0.05, k2=1)
 "T2,T3=0.05_and_5":"Change T<sub>2</sub> and T<sub>3</sub> to make your Bode phase plot mimick the blue curve in the Bode phase plot.",//. (T2=0.05, T3=5.0)
 "T2,T3=1;k2=0.5":"Set k<sub>2</sub>=0.5 exactly, then drag the two poles in the <b>pole-zero s-domain</b> to make the step response follow the cyan line.",//. (T2=T3=1, k2=1)
-// ToDo:
-"T2=10;T3=0.5":"Drag the poles in the step response making the <b>cutoff frequencies</b> in the Bode plot become 0.1 rad/s and 2.0 rad/s.",// (T2=10, T3=0.5 eller vice versa)
-"two_real_poles1":"Drag the two poles in the Bode diagram to ensure that the <b>Phase margin</b> for the system is 55° with a gain crossover frequency of 3 rad/s.",// (T2=T3=0.5-1.5k k2=7-8 ungefär)
+"T2=10;T3=0.5":"Drag the poles in the step response making the <b>cutoff frequencies</b> in the Bode plot become 0.1 rad/s and 2.0 rad/s.",// (T2=10, T3=0.5 or vice versa)
+"two_real_poles1":"Drag the two poles in the Bode diagram to ensure that the <b>Phase margin</b> for the system is 55° with a gain crossover frequency of 3 rad/s.",// (T2=T3=0.5-1.5k k2=7-8 approximately)
 
+// ToDo:
 //## Two complex poles
 //Step reference (w=2,z=0.7,k=0.7)
 //Bode reference (w=8, z=0.05)
@@ -3263,19 +3263,54 @@ function mousePressed(){
 }
 
 function mouseReleased(){
+  for(let v=0; v<bode_graphs.length; v++){
+    if (bode_graphs[v].bode_formula == GRAPH_TWO_REAL_POLES.formula){
+      if ((bode_graphs[v].bode_phase_margin >= 53.0)&&(bode_graphs[v].bode_phase_margin <= 57.0)&&
+          (bode_graphs[v].bode_gain_crossover_freq >= 2.8)&&(bode_graphs[v].bode_gain_crossover_freq <= 3.2)){
+        task_done("two_real_poles1");
+      }
+    }
+  }
   if (clicked_on_time_response_graph_no==0){
     let k_1 = range_slider_variables[variable_position["k_1"]];
     if ((k_1 > 2.8) && (k_1 <= 2.99)){
       task_done("k1=2.9");
     }
+
+    let T_2 = range_slider_variables[variable_position["T_2"]];
+    let T_3 = range_slider_variables[variable_position["T_3"]];
+    let max_T = Math.max(T_2,T_3);
+    let min_T = Math.min(T_2,T_3);
+    if ((min_T >= 0.035) && (min_T <= 0.07)&&
+        (max_T >= 4.0) && (max_T <= 5.8)){
+      task_done("T2,T3=0.05_and_5");
+    }
   }
+
   if ((clicked_on_bode_mag_graph_no==0)||(clicked_on_bode_phase_graph_no==0)){
     let k_1 = range_slider_variables[variable_position["k_1"]];
     let T_1 = range_slider_variables[variable_position["T_1"]];
     if ((k_1 >= 0.55) && (k_1 <= 0.75) && (T_1 >= 1.82) && (T_1 <= 2.25)){
       task_done("T1_k1_bode");
     }
+
+    let T_2 = range_slider_variables[variable_position["T_2"]];
+    let T_3 = range_slider_variables[variable_position["T_3"]];
+    let max_T = Math.max(T_2,T_3);
+    let min_T = Math.min(T_2,T_3);
+    if ((min_T >= 0.035) && (min_T <= 0.07)&&
+        (max_T >= 4.0) && (max_T <= 5.8)){
+      task_done("T2,T3=0.05_and_5");
+    }
+    //let T_2 = range_slider_variables[variable_position["T_2"]];
+    //let T_3 = range_slider_variables[variable_position["T_3"]];
+    //let min_T = Math.min(T_2,T_3);
+    //let max_T = Math.max(T_2,T_3);
+    if ((min_T>=0.45)&&(min_T<=0.55)&&(max_T>=9.0)&&(max_T<=11.0)){
+      task_done("T2=10;T3=0.5");
+    }
   }
+
   if (clicked_on_pole_zero_graph_no==0){
     let T_1 = range_slider_variables[variable_position["T_1"]];
     if ((T_1 >= 0.45) && (T_1 <= 0.55)){
@@ -3284,6 +3319,16 @@ function mouseReleased(){
     if (T_1 < 0){
       task_done("T1_unstable");
     }
+
+    let T_2 = range_slider_variables[variable_position["T_2"]];
+    let T_3 = range_slider_variables[variable_position["T_3"]];
+    let max_T = Math.max(T_2,T_3);
+    let min_T = Math.min(T_2,T_3);
+    if ((min_T >= 0.035) && (min_T <= 0.07)&&
+        (max_T >= 4.0) && (max_T <= 5.8)){
+      task_done("T2,T3=0.05_and_5");
+    }
+
     let k_2 = range_slider_variables[variable_position["k_2"]];
     if ((k_2 >=0.49)&&(k_2<=0.51)){
       let T_2 = range_slider_variables[variable_position["T_2"]];
@@ -3353,14 +3398,6 @@ function mouseDragged(){
       let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
       if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
         achievement_done("T2_T3_far_apart");
-      }
-      let T_2 = range_slider_variables[variable_position["T_2"]];
-      let T_3 = range_slider_variables[variable_position["T_3"]];
-      let max_T = Math.max(T_2,T_3);
-      let min_T = Math.min(T_2,T_3);
-      if ((min_T >= 0.035) && (min_T <= 0.07)&&
-          (max_T >= 4.0) && (max_T <= 5.8)){
-        task_done("T2,T3=0.05_and_5");
       }
 
       let k_2 = range_slider_variables[variable_position["k_2"]];
@@ -3487,14 +3524,6 @@ function mouseDragged(){
       if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
         achievement_done("T2_T3_far_apart");
       }
-      let T_2 = range_slider_variables[variable_position["T_2"]];
-      let T_3 = range_slider_variables[variable_position["T_3"]];
-      let max_T = Math.max(T_2,T_3);
-      let min_T = Math.min(T_2,T_3);
-      if ((min_T >= 0.035) && (min_T <= 0.07)&&
-          (max_T >= 4.0) && (max_T <= 5.8)){
-        task_done("T2,T3=0.05_and_5");
-      }
 
       let k_2 = range_slider_variables[variable_position["k_2"]];
       k_2 = k_2 * (1.0 - mouseDiffY*12.0);
@@ -3609,14 +3638,6 @@ function mouseDragged(){
       let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
       if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
         achievement_done("T2_T3_far_apart");
-      }
-      let T_2 = range_slider_variables[variable_position["T_2"]];
-      let T_3 = range_slider_variables[variable_position["T_3"]];
-      let max_T = Math.max(T_2,T_3);
-      let min_T = Math.min(T_2,T_3);
-      if ((min_T >= 0.035) && (min_T <= 0.07)&&
-          (max_T >= 4.0) && (max_T <= 5.8)){
-        task_done("T2,T3=0.05_and_5");
       }
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
