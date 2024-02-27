@@ -41,7 +41,7 @@ const GRAPH_TWO_REAL_POLES = {name:"Two real poles", mf:"\\frac{k_2}{(1+T_2s)(1+
 const GRAPH_TWO_COMPLEX_POLES = {name:"Two complex poles", mf:"\\frac{k_3w^2}{s^2+2zws+w^2}", formula:"k_3*w^2/(s^2+2*z*w*s+w^2)"};
 const GRAPH_TIME_DELAY = {name:"Time delay", mf:"\\frac{3}{1+s}e^{-Ls}", formula:"3/(1+s)*e^(-L*s)"};
 const GRAPH_ONE_ZERO_TWO_POLES = {name:"One zero two poles", mf:"\\frac{k_4(1+T_8s)}{(1+T_6s)(1+T_7s)}", formula:"k_4(1+T_8s)/(1+T_6s)*1/(1+T_7s)"};
-const GRAPH_FOUR_POLES = {name:"Four poles", mf:"\\frac{1}{(1+T_5s)^4}", formula:"1/((1+T_5s)^4)"};
+const GRAPH_FOUR_POLES = {name:"Four poles", mf:"\\frac{k_5}{(1+T_5s)^4}", formula:"k_5/((1+T_5s)^4)"};
 const GRAPH_ONE_ZERO = {name:"One zero", mf:"T_4s+0.5", formula:"T_4*s+0.5"};
 
 const GRAPH_ORDER = [
@@ -650,7 +650,7 @@ function removeGraph(event){
   } else if (equation_to_remove == GRAPH_ONE_ZERO_TWO_POLES.formula){
     variables_to_delete = ["k_4","T_6","T_7","T_8"];
   } else if (equation_to_remove == GRAPH_FOUR_POLES.formula){
-    variables_to_delete = ["T_5"];
+    variables_to_delete = ["T_5","k_5"];
   } else if (equation_to_remove == GRAPH_ONE_ZERO.formula){
     variables_to_delete = ["T_4"];
   }
@@ -1108,7 +1108,7 @@ const all_assignments={
   "two_real_poles":{t:"Investigate a system with <b>two real poles</b>",tasks:["T2,T3=0.05_and_5","T2,T3=1;k2=0.5","T2=10;T3=0.5","two_real_poles1"],info:"When combining <b>two real poles</b>, the Bode phase response goes all the way to -180°."},
   "two_complex_poles":{t:"Investigate a system with <b>two complex poles</b>",tasks:["w=0.9;z=0.0","w=1.6;z=0.2","w=8;z=0.05;k_3=1","w=2;z=0.7;k3=0.7"],info:"A set of <b>two complex poles</b> will make the system's time response oscillate."},
   "time_delay":{t:"See how a <b>time delay</b> affects stability",tasks:["L=3","L_gain_margin=2"],info:"A system with <b>time delay</b> is more difficult to control."},
-  "one_zero_two_poles":{t:"Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4=1_poles"],info:"With <b>one zero and two poles</b>, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
+  "one_zero_two_poles":{t:"Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4,T6,T7=1,T8=1.5_poles"],info:"With <b>one zero and two poles</b>, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
   "four_poles":{t:"Investigate a system with <b>four poles</b>",tasks:["T5=0.3;k=2","phase_margin=20"],info:"A system with <b>four poles</b> gets a lot more phase shift, with a larger spin in the Nyquist diagram."},
   "none":{t:"...no assignment",tasks:["impossible"],info:""},
 //  "nyquist":{t:"Check out the <b>Nyquist diagram</b>",tasks:["k_above_or_equal_100","set_input_to_ramp"],info:"Named after Harry Nyquist 1889-1976, a Swedish-American physicist and electronic engineer."}
@@ -1151,14 +1151,14 @@ const all_tasks={
 //Step reference (k4=1,T6=1,T7=1,T8=-1.5)
 "k4=1;T6=2.5;T7=1;T8=6":"Your task is to make your Nyquist diagram match up with the orange one. You should probably choose your k<sub>4</sub> first. Then, drag the poles and zero in the Bode plots to make the Nyquist curve follow the orange line. Note that there are many combinations of T<sub>6</sub>, T<sub>7</sub>, and T<sub>8</sub> that gives identical Nyquist diagrams but non-similar Bode diagrams. Can you explain why?",// (k=1,T6=2.5,T7=1,T8=6)
 "k4=0.75;T6=9.25;T7=0.5;T8=2":"Change the parameters so that the Bode plots follow the green lines.",//. (k4=0.75,T6=9.25,T7=0.5,T8=2)
-// ToDo:
-"k4=1_poles":"With k<sub>4</sub>=1, drag the poles and zeros in the <b>pole-zero map</b> so that the step response follows the blue line.",
+"k4,T6,T7=1,T8=1.5_poles":"With k<sub>4</sub>=1, drag the poles and zeros in the <b>pole-zero map</b> so that the step response follows the blue line.",
 
 //#Four poles
+// ToDo:
 "T5=0.3;k=2":"Change k and T<sub>5</sub> by dragging the sliders or typing in a number so that the <b>Gain margin</b> is 0.5 and the <b>Phase crossover frequency</b> is 1.25 rad/s.",// (T5=0.3, k=2)
 "phase_margin=20":"Drag the Bode plot so that the <b>Phase margin</b> is 20° with a <b>Gain crossover frequency</b> of 5 rad/s.",
 };
-let done_tasks=[];
+let done_tasks=["T5=0.3;k=2","phase_margin=20"];
 //let done_tasks=["T1=2","k1=2.9","T1_k1_bode","T1_pole=-2","T1_unstable"];
 
 
@@ -2339,6 +2339,20 @@ function draw_bode_responses(type){
               draw_O(screen_x,screen_y);
             }
           } catch {}
+        } else if(bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula){
+          // Draw T_5:
+          try{ // The graph may be deleted, so this might fail:
+            let T_5 = range_slider_variables[variable_position["T_5"]];
+            if (T_5 >= 0){
+              let frequency = 1 / T_5;
+              let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
+              let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
+              let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
+              stroke(bode_graphs[i].bode_hue,240,360);
+              strokeWeight(3);
+              draw_X(screen_x,screen_y);
+            }
+          } catch {}
         }
       }
     }
@@ -2536,6 +2550,21 @@ function draw_bode_responses(type){
               draw_O(screen_x,screen_y);
             }
           } catch {}
+        } else if (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula){
+          // Draw T_5:
+          try{ // The graph may be deleted, so this might fail:
+            let T_5 = range_slider_variables[variable_position["T_5"]];
+            if (T_5 >= 0){
+              let frequency = 1 / T_5;
+              // Need to map frequency to pixel:
+              let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
+              // Now we know the x position. Let's find out the y position:
+              let screen_y = map(bode_graphs[i].bode_gain_array[Math.round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+              stroke(bode_graphs[i].bode_hue,240,360);
+              strokeWeight(3);
+              draw_X(screen_x,screen_y);
+            }
+          } catch {}
         }
       }
     }
@@ -2618,6 +2647,12 @@ function draw_time_responses(){
       } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
         let k_4 = range_slider_variables[variable_position["k_4"]];
         let screen_y = map(k_4,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
+        stroke(bode_graphs[i].bode_hue,240,360);
+        strokeWeight(0.5);
+        line(0,screen_y,graph_step_response_width,screen_y);
+      } else if (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula){
+        let k_5 = range_slider_variables[variable_position["k_5"]];
+        let screen_y = map(k_5,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
         stroke(bode_graphs[i].bode_hue,240,360);
         strokeWeight(0.5);
         line(0,screen_y,graph_step_response_width,screen_y);
@@ -2737,8 +2772,23 @@ function draw_time_responses(){
             draw_O(screen_x,screen_y);
           }
         } catch {}
-
+      } else if (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula){
+        // Draw T_5:
+        try{ // The graph may be deleted, so this might fail:
+          let T_5 = range_slider_variables[variable_position["T_5"]];
+          if (T_5 >= 0){
+            // Now we know the x position. Let's find out the y position:
+            let linked_x = Math.round(T_5 / 10.0 * graph_step_response_width/precision);
+            let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
+            let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
+            let screen_x = graph_step_response_width / 10 * T_5;
+            stroke(bode_graphs[i].bode_hue,240,360);
+            strokeWeight(3);
+            draw_X(screen_x,screen_y);
+          }
+        } catch {}
       }
+
     }
   }
 
@@ -3363,9 +3413,9 @@ function mouseReleased(){
       // This is not allowed to differ too much.
       let max_gain_user = Math.max(...bode_graphs[0].bode_gain_array);
       let max_gain_ghost = Math.max(...bode_graphs[1].bode_gain_array);
-      console.log("max_gain_user=" + max_gain_user);
-      console.log("max_gain_ghost=" + max_gain_ghost);
-      if ((max_gain_ghost >= max_gain_user*0.95)&&(max_gain_ghost <= max_gain_user*1.05)){
+      //console.log("max_gain_user=" + max_gain_user);
+      //console.log("max_gain_ghost=" + max_gain_ghost);
+      if ((max_gain_ghost >= max_gain_user*0.92)&&(max_gain_ghost <= max_gain_user*1.07)){
         //console.log("max gain ok");
         // Find the maximum amplitude in the s-plane real axis
         // for both Ghost...N.._Match this Nyquist and One_zero_two_poles.
@@ -3380,9 +3430,9 @@ function mouseReleased(){
           let this_re=bode_graphs[1].bode_complex_array[complex_no].re;
           if (this_re > max_real_ghost) max_real_ghost=this_re;
         }
-        console.log("max_real_user=" + max_real_user);
-        console.log("max_real_ghost=" + max_real_ghost);
-        if ((max_real_ghost >= max_real_user*0.95)&&(max_real_ghost <= max_real_user*1.05)){
+        //console.log("max_real_user=" + max_real_user);
+        //console.log("max_real_ghost=" + max_real_ghost);
+        if ((max_real_ghost >= max_real_user*0.92)&&(max_real_ghost <= max_real_user*1.07)){
           //console.log("max real ok");
           // Find the maximum amplitude in the s-plane imaginary axis
           // for both Ghost...N.._Match this Nyquist and One_zero_two_poles.
@@ -3401,13 +3451,13 @@ function mouseReleased(){
             if (this_im > max_imaginary_ghost) max_imaginary_ghost=this_im;
             if (this_im < min_imaginary_ghost) min_imaginary_ghost=this_im;
           }
-          console.log("max_imaginary_user=" + max_imaginary_user);
-          console.log("max_imaginary_ghost=" + max_imaginary_ghost);
-          console.log("min_imaginary_user=" + min_imaginary_user);
-          console.log("min_imaginary_ghost=" + min_imaginary_ghost);
-          if ((max_imaginary_ghost >= max_imaginary_user*0.95)&&(max_imaginary_ghost <= max_imaginary_user*1.05)){
+          //console.log("max_imaginary_user=" + max_imaginary_user);
+          //console.log("max_imaginary_ghost=" + max_imaginary_ghost);
+          //console.log("min_imaginary_user=" + min_imaginary_user);
+          //console.log("min_imaginary_ghost=" + min_imaginary_ghost);
+          if ((max_imaginary_ghost >= max_imaginary_user*0.92)&&(max_imaginary_ghost <= max_imaginary_user*1.07)){
             //console.log("max imaginary ok");
-            if ((-min_imaginary_ghost >= -min_imaginary_user*0.95)&&(-min_imaginary_ghost <= -min_imaginary_user*1.05)){
+            if ((-min_imaginary_ghost >= -min_imaginary_user*0.92)&&(-min_imaginary_ghost <= -min_imaginary_user*1.07)){
               //console.log("min imaginary ok");
               task_done("k4=1;T6=2.5;T7=1;T8=6");
             }
@@ -3457,9 +3507,16 @@ function mouseReleased(){
       task_done("w=1.6;z=0.2");
     }
 
-
-
-
+    //"k4,T6,T7=1,T8=1.5_poles":"With k<sub>4</sub>=1, drag the poles and zeros in the <b>pole-zero map</b> so that the step response follows the blue line.",
+    let k_4 = range_slider_variables[variable_position["k_4"]];
+    let T_6 = range_slider_variables[variable_position["T_6"]];
+    let T_7 = range_slider_variables[variable_position["T_7"]];
+    let T_8 = range_slider_variables[variable_position["T_8"]];
+    let min_T67 = Math.min(T_6,T_7);
+    let max_T67 = Math.max(T_6,T_7);
+    if ((k_4>0.95)&&(k_4<=1.05)&&(T_8>=-1.7)&&(T_8<=-1.35)&&(min_T67+max_T67>=1.7)&&(min_T67+max_T67<=2.3)){
+      task_done("k4,T6,T7=1,T8=1.5_poles");
+    }
   }
 
   clicked_on_time_response_graph_no = -1;
@@ -3594,10 +3651,29 @@ function mouseDragged(){
         achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
       }
       redraw_canvas_gain(bode_graphs[i].bode_id);
+    } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_FOUR_POLES.formula){
+      let T_5 = range_slider_variables[variable_position["T_5"]];
+      T_5 = T_5 + mouseDiffX * 10.0;
+      if (T_5 < 0) T_5=0;
+      range_slider_variables[variable_position["T_5"]] = T_5;
+      // Update range slider value:
+      document.getElementById("variable_"+variable_position["T_5"]).value = T_5.toFixed(2);
+      // Update range slider:
+      document.getElementById("RANGE_"+variable_position["T_5"]).value = T_5.toFixed(2);
+
+      let k_5 = range_slider_variables[variable_position["k_5"]];
+      k_5 = k_5 - mouseDiffY * y_range;
+      range_slider_variables[variable_position["k_5"]] = k_5;
+      // Update range slider value:
+      document.getElementById("variable_"+variable_position["k_5"]).value = k_5.toFixed(2);
+      // Update range slider:
+      document.getElementById("RANGE_"+variable_position["k_5"]).value = k_5.toFixed(2);
+      redraw_canvas_gain(bode_graphs[i].bode_id);
     }
 
     initial_mouseX = mouseX;
     initial_mouseY = mouseY;
+
 
   } else if (clicked_on_bode_mag_graph_no != -1){
     let i=clicked_on_bode_mag_graph_no;
@@ -3721,6 +3797,26 @@ function mouseDragged(){
         achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
       }
       redraw_canvas_gain(bode_graphs[i].bode_id);
+
+    } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_FOUR_POLES.formula){
+      achievement_done("drag_bode_mag");
+      let T_5 = range_slider_variables[variable_position["T_5"]];
+      T_5 = T_5 * (1.0 - mouseDiffX*10.0);
+      if (T_5 < 0) T_5=0;
+      range_slider_variables[variable_position["T_5"]] = T_5;
+      // Update range slider value:
+      document.getElementById("variable_"+variable_position["T_5"]).value = T_5.toFixed(2);
+      // Update range slider:
+      document.getElementById("RANGE_"+variable_position["T_5"]).value = T_5.toFixed(2);
+
+      let k_5 = range_slider_variables[variable_position["k_5"]];
+      k_5 = k_5 * (1.0 - mouseDiffY*12.0);
+      range_slider_variables[variable_position["k_5"]] = k_5;
+      // Update range slider value:
+      document.getElementById("variable_"+variable_position["k_5"]).value = k_5.toFixed(2);
+      // Update range slider:
+      document.getElementById("RANGE_"+variable_position["k_5"]).value = k_5.toFixed(2);
+      redraw_canvas_gain(bode_graphs[i].bode_id);
     }
 
     initial_mouseX = mouseX;
@@ -3798,6 +3894,18 @@ function mouseDragged(){
       document.getElementById("variable_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
       // Update range slider:
       document.getElementById("RANGE_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
+      redraw_canvas_gain(bode_graphs[i].bode_id);
+
+    } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_FOUR_POLES.formula){
+      achievement_done("drag_bode_phase");
+      let T_5 = range_slider_variables[variable_position["T_5"]];
+      T_5 = T_5 * (1.0 - mouseDiffX*10.0);
+      if (T_5 < 0) T_5=0;
+      range_slider_variables[variable_position["T_5"]] = T_5;
+      // Update range slider value:
+      document.getElementById("variable_"+variable_position["T_5"]).value = T_5.toFixed(2);
+      // Update range slider:
+      document.getElementById("RANGE_"+variable_position["T_5"]).value = T_5.toFixed(2);
       redraw_canvas_gain(bode_graphs[i].bode_id);
     }
 
