@@ -373,6 +373,13 @@ function createRangeSlider(event){
         (max_T >= 4.0) && (max_T <= 5.8)){
       task_done("T2,T3=0.05_and_5");
     }
+
+    let w = range_slider_variables[variable_position["w"]];
+    let z = range_slider_variables[variable_position["z"]];
+    let k_3 = range_slider_variables[variable_position["k_3"]];
+    if ((k_3>=0.90)&&(k_3<=1.1)&&(w>=7.3)&&(w<=8.7)&&(z>=0.2)&&(z<=0.7)){
+      task_done("w=8;z=0.05;k_3=1");
+    }
   }
 
   linked_span.oninput = function(){
@@ -1099,7 +1106,7 @@ function task_done (which_one){
 const all_assignments={
   "one_pole":{t:"Investigate a system with <b>one pole</b>",tasks:["T1=2","k1=2.9","T1_k1_bode","T1_pole=-2","T1_unstable"],info:"A system with <b>one pole</b> is one of the fundamental system responses, where high frequencies are attenuated."},
   "two_real_poles":{t:"Investigate a system with <b>two real poles</b>",tasks:["T2,T3=0.05_and_5","T2,T3=1;k2=0.5","T2=10;T3=0.5","two_real_poles1"],info:"When combining <b>two real poles</b>, the Bode phase response goes all the way to -180°."},
-  "two_complex_poles":{t:"Investigate a system with <b>two complex poles</b>",tasks:["w=0.9;z=0.9","w=1.6;z=0.2","w=8;z=0.05","w=2;z=0.7;k3=0.7"],info:"A set of <b>two complex poles</b> will make the system's time response oscillate."},
+  "two_complex_poles":{t:"Investigate a system with <b>two complex poles</b>",tasks:["w=0.9;z=0.0","w=1.6;z=0.2","w=8;z=0.05;k_3=1","w=2;z=0.7;k3=0.7"],info:"A set of <b>two complex poles</b> will make the system's time response oscillate."},
   "time_delay":{t:"See how a <b>time delay</b> affects stability",tasks:["L=3","L=0.3"],info:"A system with <b>time delay</b> is more difficult to control."},
   "one_zero_two_poles":{t:"Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4=1_poles"],info:"With <b>one zero and two poles</b>, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
   "four_poles":{t:"Investigate a system with <b>four poles</b>",tasks:["T5=0.3;k=2","phase_margin=20"],info:"A system with <b>four poles</b> gets a lot more phase shift, with a larger spin in the Nyquist diagram."},
@@ -1124,16 +1131,16 @@ const all_tasks={
 "T2,T3=0.05_and_5":"Change T<sub>2</sub> and T<sub>3</sub> to make your Bode phase plot mimick the blue curve in the Bode phase plot.",//. (T2=0.05, T3=5.0)
 "T2,T3=1;k2=0.5":"Set k<sub>2</sub>=0.5 exactly, then drag the two poles in the <b>pole-zero s-domain</b> to make the step response follow the cyan line.",//. (T2=T3=1, k2=1)
 "T2=10;T3=0.5":"Drag the poles in the step response making the <b>cutoff frequencies</b> in the Bode plot become 0.1 rad/s and 2.0 rad/s.",// (T2=10, T3=0.5 or vice versa)
-"two_real_poles1":"Drag the two poles in the Bode diagram to ensure that the <b>Phase margin</b> for the system is 55° with a gain crossover frequency of 3 rad/s.",// (T2=T3=0.5-1.5k k2=7-8 approximately)
+"two_real_poles1":"Drag the two poles in the Bode diagram to ensure that the <b>Phase margin</b> for the system is 55° with a gain crossover frequency of 3.0 rad/s.",// (T2=T3=0.5-1.5k k2=7-8 approximately)
 
-// ToDo:
 //## Two complex poles
 //Step reference (w=2,z=0.7,k=0.7)
 //Bode reference (w=8, z=0.05)
-"w=0.9;z=0.9":"Drag the poles in the <b>pole-zero map</b> so that the resonance frequency w=0.9 and damping factor z=0.",
+"w=0.9;z=0.0":"Move the poles in the <b>pole-zero map</b> in such way that the resonance frequency w becomes 0.9 and the damping factor z becomes 0.0.",
 "w=1.6;z=0.2":"Drag the poles in the <b>pole-zero map</b> so that the resonance frequency w=1.6 and damping factor z=0.2.",
-"w=8;z=0.05":"Change the <b>resonance frequency</b> w and <b>damping factor</b> z to make the Bode plots mimick the blue lines.",
-"w=2;z=0.7;k3=0.7":"Drag the bode plot so that the step input response follows the pink step input response.",
+"w=8;z=0.05;k_3=1":"Change the <b>resonance frequency</b> w, <b>damping factor</b> z and <b>static gain</b> k<sub>3</sub> to make the Bode plots mimick the blue lines.",
+// ToDo:
+"w=2;z=0.7;k3=0.7":"Your task is to match the pink step input response. First, set your <b>static gain</b> k<sub>3</sub>. Then, drag the <b>Bode plot</b> to align your system response with the pink step input response.",
 
 //## Time delay
 "L=3":"Drag the step input response to change the time delay to 3 seconds.",
@@ -3271,6 +3278,16 @@ function mouseReleased(){
       }
     }
   }
+
+  let w = range_slider_variables[variable_position["w"]];
+  let z = range_slider_variables[variable_position["z"]];
+  let k_3 = range_slider_variables[variable_position["k_3"]];
+  if ((k_3>=0.90)&&(k_3<=1.1)&&(w>=7.3)&&(w<=8.7)&&(z>=0.02)&&(z<=0.07)){
+    task_done("w=8;z=0.05;k_3=1");
+  } else if ((k_3>=0.6)&&(k_3<=0.8)&&(w>=1.88)&&(w<=2.15)&&(z>=0.66)&&(z<=0.75)){
+    task_done("w=2;z=0.7;k3=0.7");
+  }
+
   if (clicked_on_time_response_graph_no==0){
     let k_1 = range_slider_variables[variable_position["k_1"]];
     if ((k_1 > 2.8) && (k_1 <= 2.99)){
@@ -3340,6 +3357,19 @@ function mouseReleased(){
         console.log("T2 task done");
       }
     }
+
+    let w = range_slider_variables[variable_position["w"]];
+    let z = range_slider_variables[variable_position["z"]];
+    if ((w>=0.85)&&(w<=0.95)&&(z<=0.05)){
+      task_done("w=0.9;z=0.0");
+    }
+    if ((w>=1.55)&&(w<=1.65)&&(z>=0.15)&&(z<=0.25)){
+      task_done("w=1.6;z=0.2");
+    }
+
+
+
+
   }
 
   clicked_on_time_response_graph_no = -1;
@@ -3954,7 +3984,7 @@ function mouseMoved(){
           }
         }
         push();
-        stroke(text_color);
+        stroke("#808080");
         strokeWeight(2);
         line(mouseX,graph_step_response_y+graph_step_response_y_offset,mouseX,graph_step_response_y + graph_step_response_y_offset + graph_step_response_height);
         pop();
@@ -4084,8 +4114,8 @@ function mouseMoved(){
           }
         }
         push();
-        stroke(angle_color);
         strokeWeight(2);
+        stroke("#808080");
         line(mouseX,graph_bode_mag_y+graph_bode_mag_y_offset,mouseX,graph_bode_mag_y + graph_bode_mag_y_offset + graph_bode_mag_height);
         line(mouseX,graph_bode_phase_y+graph_bode_phase_y_offset,mouseX,graph_bode_phase_y + graph_bode_phase_y_offset + graph_bode_phase_height);
         pop();
@@ -4300,9 +4330,10 @@ function mouseMoved(){
           // And draw a vertical white line in the bode phase plot.
           // And draw a vertical line ending up at the hovered graph:
           push();
-          stroke(text_color);
           strokeWeight(2);
+          stroke("#808080");
           line(mouseX,graph_bode_phase_y+graph_bode_phase_y_offset,mouseX,graph_bode_phase_y + graph_bode_phase_y_offset + graph_bode_phase_height);
+          stroke(text_color);
           let current_graph = bode_graphs[hovered_graph_no];
           let linked_y8 = current_graph.bode_gain_array[linked_x];
           let screen_y = graph_bode_mag_y_offset + map(linked_y8,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
@@ -4316,8 +4347,8 @@ function mouseMoved(){
 
         } else {
           push();
-          stroke(text_color);
           strokeWeight(2);
+          stroke("#808080");
           line(mouseX,graph_bode_mag_y+graph_bode_mag_y_offset,mouseX,graph_bode_mag_y + graph_bode_mag_y_offset + graph_bode_mag_height);
           line(mouseX,graph_bode_phase_y+graph_bode_phase_y_offset,mouseX,graph_bode_phase_y + graph_bode_phase_y_offset + graph_bode_phase_height);
           pop();
