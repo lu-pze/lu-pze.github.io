@@ -172,6 +172,11 @@ body{
   color: #31fb56;
 }
 
+.clickable-link{
+  transition: all .4s ease-in;
+}
+.clickable-link:hover {background-color: #f8f890;transition:0s}
+
 .equation{
   display:flex;
   flex-direction:row;

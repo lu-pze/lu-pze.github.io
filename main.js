@@ -1083,27 +1083,27 @@ function task_done (which_one){
 }
 
 const all_assignments={
-  "one_pole":{t:"Investigate a system with <b>one pole</b>",tasks:["T1=2","k1=3","T1_k1_bode","T1_pole=-2","T1_unstable"],info:"<b>One pole</b> is one of the basic system responses, where high frequencies are attenuated."},
+  "one_pole":{t:"Investigate a system with <b>one pole</b>",tasks:["T1=2","k1=2.9","T1_k1_bode","T1_pole=-2","T1_unstable"],info:"<b>One pole</b> is one of the basic system responses, where high frequencies are attenuated."},
   "two_real_poles":{t:"Investigate a system with <b>two real poles</b>",tasks:["T2,T3_phase","T2,T3=1;k2=0.5","T2=10;T3=0.5","two_real_poles1"],info:"When combining <b>two real poles</b>, the phase goes all the way to -180 degrees."},
   "two_complex_poles":{t:"Investigate a system with <b>two complex poles</b>",tasks:["w=0.9;z=0.9","w=1.6;z=0.2","w=8;z=0.05","w=2;z=0.7;k3=0.7"],info:"A set of two complex poles will make a system oscillate."},
   "time_delay":{t:"See how a <b>time delay</b> affects stability",tasks:["L=3","L=0.3"],info:"A time delayed system is more difficult to control."},
   "one_zero_two_poles":{t:"Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4=1_poles"],info:"With more poles and zeros, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
   "four_poles":{t:"Investigate a system with <b>four poles</b>",tasks:["T5=0.3;k=2","phase_margin=20"],info:""},
-  "none":{t:"...no assignment",tasks:[],info:""},
+  "none":{t:"...no assignment",tasks:["impossible"],info:""},
 //  "nyquist":{t:"Check out the <b>Nyquist diagram</b>",tasks:["k_above_or_equal_100","set_input_to_ramp"],info:"Named after Harry Nyquist 1889-1976, a Swedish-American physicist and electronic engineer."}
 };
-let done_assignments=[];
+let done_assignments={};
 
 
 const all_tasks={
 // ToDo:
 //## One pole
 //"reference eq in step response(k=0.65, T1=2)"
-"T1=2":"Change T<sub>1</sub> by moving the slider or type in the value to make the pole's location -1/2 in the s-domain",//. (T1=2)
-"k1=3":"Drag the step response so that the static gain is 3.0",//. (k1=3)
-"T1_k1_bode":"Drag the Bode plots so that the step response follows the dotted line",// (k=0.65, T1=2)
-"T1_pole=-2":"Drag the pole in the pole-zero map so the system is four times faster than the system in the dotted line.",//. (pole in -2)
-"T1_unstable":"Make the pole unstable", // T_1 < 0
+"T1=2":"Change T<sub>1</sub> by moving the slider or type in the value to make the pole's location -1/2 in the s-domain.",//. (T1=2)
+"k1=2.9":"Drag the step response so that the static gain is 2.9.",//. (k1=2.9)
+"T1_k1_bode":"Drag the Bode plots to mimick the orange step response.",// (k=0.65, T1=2)
+"T1_pole=-2":"Drag the pole in the pole-zero map to make the system four times faster than orange one.",//. (pole in -2)
+"T1_unstable":"Make the pole unstable.", // T_1 < 0
 
 //## Two real poles
 //reference in step (T2=T3=1, k2=0.5)
@@ -1137,7 +1137,9 @@ const all_tasks={
 "T5=0.3;k=2":"Change k and T5 by dragging the sliders or typing in a number so that the Gain margin is 0.5 and the phase crossover frequency is 1.25 rad/s",// (T5=0.3, k=2)
 "phase_margin=20":"Drag the Bode plot so that the Phase margin is 20 degree with a Gain crossover frequency of 5 rad/s",
 };
-let done_tasks=["T2,T3_phase"];
+let done_tasks=[];
+//let done_tasks=["T1=2","k1=2.9","T1_k1_bode","T1_pole=-2","T1_unstable"];
+
 
 
 function update_assignments(){
@@ -1147,38 +1149,68 @@ function update_assignments(){
 
   s += "<center>";
   s += '<i class="material-icons" style="font-size: 27px;">assignments</i>';
-  s += "Your Assignments ";
+  s += "Your Assignments";
   s += "</center><br>";
 
+  // Let's see which assignments are done:
+  done_assignments = {};
+  for (let assignment_id in all_assignments){
+    done_assignments[assignment_id]=0;
+  }
+  for (let task_id in all_tasks){
+    if (done_tasks.includes(task_id)){
+      // Increase a done counter for the assignments:
+      for (let assignment_id in all_assignments){
+        if (all_assignments[assignment_id].tasks.includes(task_id)){
+          done_assignments[assignment_id]+=1;
+        }
+      }
+    }
+  }
+  console.log(done_assignments);
+
+  let nof_assignments_done=0;
   s += "Please select an assignment:<br>";
   for (let assignment_id in all_assignments){
-    if (!(done_assignments.includes(assignment_id))){
+    if (done_assignments[assignment_id] != all_assignments[assignment_id].tasks.length){
       let long_name = all_assignments[assignment_id].t;
       s += "<input type='radio' name='assignment' id='"+assignment_id+"' value='"+assignment_id+"' onchange='select_assignment(this);'";
       if (current_assignment == assignment_id){
         s+=" checked";
       }
       s+="><label for='"+assignment_id+"'>&nbsp;" + long_name + "</label><br>";
+    } else {
+      nof_assignments_done+=1;
     }
   }
-  s += "<br><b>" + (done_assignments.length) + "/"+(Object.keys(all_assignments).length-1)+"</b> done so far.<br><br>";
 
-  s+="Completed assignments:<br>";
-  for (let assignment_id in all_assignments){
-    if (done_assignments.includes(assignment_id)){
-      let long_name = all_assignments[assignment_id].t;
-//      s += "<input type='checkbox' checked>&nbsp;" + long_name + "<br>";
-      s += "<input type='radio' name='assignment' id='"+assignment_id+"' value='"+assignment_id+"' onchange='select_assignment(this);'";
-      if (current_assignment == assignment_id){
-        s+=" checked";
+  s += "<br><b>" + (nof_assignments_done) + "/"+(Object.keys(all_assignments).length-1)+"</b> done so far. ";
+  if (nof_assignments_done == 0) s+="Better get going!";
+  else if (nof_assignments_done == 1) s+="That's a good start!";
+  else if (nof_assignments_done == 2) s+="So get on with the next one!";
+  else if (nof_assignments_done == 3) s+="You're halfway there!";
+  else if (nof_assignments_done == 4) s+="Good job!";
+  else if (nof_assignments_done == 5) s+="You can see the finish line!";
+  else if (nof_assignments_done == 6) s+="You're a legend!";
+  s += "<br><br>";
+
+  if (nof_assignments_done > 0){
+    s+="Completed assignments:<br>";
+    for (let assignment_id in all_assignments){
+      if (done_assignments[assignment_id] == all_assignments[assignment_id].tasks.length){
+        let long_name = all_assignments[assignment_id].t;
+  //      s += "<input type='checkbox' checked>&nbsp;" + long_name + "<br>";
+        s += "<input type='radio' name='assignment' id='"+assignment_id+"' value='"+assignment_id+"' onchange='select_assignment(this);'";
+        if (current_assignment == assignment_id){
+          s+=" checked";
+        }
+        s+="><label for='"+assignment_id+"'>&nbsp;" + long_name + "</label><br>";
       }
-      s+="><label for='"+assignment_id+"'>&nbsp;" + long_name + "</label><br>";
     }
+    s += "<br>";
   }
 
-  s += "<br>";
   assignments_box.innerHTML=s;
-
 }
 
 function select_assignment(event){
@@ -1257,7 +1289,7 @@ function update_tasks(){
   // List all tasks not yet done:
   s += "<center><b>"+all_assignments[current_assignment].t+"</b></center><br>";
 
-  s += "Your tasks in this assignment:<br>";
+  let todo = "Your tasks in this assignment:<br>";
   let nof_done_subtasks = 0;
   for (let task_id in all_tasks){
     if (all_assignments[current_assignment].tasks.includes(task_id)){
@@ -1265,12 +1297,15 @@ function update_tasks(){
         nof_done_subtasks+=1;
       } else {
         let long_name = all_tasks[task_id];
-        s += "<input type='checkbox' onclick='return false;'>&nbsp;<span style='color:#4040b0;'>" + long_name + "</span><br><br>";
+        todo += "<input type='checkbox' onclick='return false;'>&nbsp;<span style='color:#4040b0;'>" + long_name + "</span><br><br>";
       }
     }
   }
+  if (nof_done_subtasks != Object.keys(all_assignments[current_assignment].tasks).length){
+    s += todo;
+    s += "Completed tasks:<br>";
+  }
 
-  s += "Completed tasks:<br>";
   for (let task_id in all_tasks){
     if (all_assignments[current_assignment].tasks.includes(task_id)){
       if (done_tasks.includes(task_id)){
@@ -1279,10 +1314,15 @@ function update_tasks(){
       }
     }
   }
-  s += "<br><b>" + (nof_done_subtasks) + "/"+Object.keys(all_assignments[current_assignment].tasks).length+"</b> done so far.<br>";
+
+  if (nof_done_subtasks != Object.keys(all_assignments[current_assignment].tasks).length){
+    s += "<br><b>" + (nof_done_subtasks) + "/"+Object.keys(all_assignments[current_assignment].tasks).length+"</b> done so far.<br>";
+  } else {
+    s+="<span onclick='toggle_assignments_box()' class='clickable-link'>You're done with this assignment. Please choose another assignment</span>.";
+  }
+
   s += "<br><br><center>"+all_assignments[current_assignment].info+"</center>";
   task_div.innerHTML=s;
-
 }
 
 // ----------------------
@@ -3212,8 +3252,8 @@ function mousePressed(){
 function mouseReleased(){
   if (clicked_on_time_response_graph_no==0){
     let k_1 = range_slider_variables[variable_position["k_1"]];
-    if ((k_1 > 2.9) && (k_1 <= 3.1)){
-      task_done("k1=3");
+    if ((k_1 > 2.8) && (k_1 <= 2.99)){
+      task_done("k1=2.9");
     }
   }
   if ((clicked_on_bode_mag_graph_no==0)||(clicked_on_bode_phase_graph_no==0)){
