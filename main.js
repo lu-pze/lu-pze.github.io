@@ -1107,7 +1107,7 @@ const all_assignments={
   "one_pole":{t:"Investigate a system with <b>one pole</b>",tasks:["T1=2","k1=2.9","T1_k1_bode","T1_pole=-2","T1_unstable"],info:"A system with <b>one pole</b> is one of the fundamental system responses, where high frequencies are attenuated."},
   "two_real_poles":{t:"Investigate a system with <b>two real poles</b>",tasks:["T2,T3=0.05_and_5","T2,T3=1;k2=0.5","T2=10;T3=0.5","two_real_poles1"],info:"When combining <b>two real poles</b>, the Bode phase response goes all the way to -180°."},
   "two_complex_poles":{t:"Investigate a system with <b>two complex poles</b>",tasks:["w=0.9;z=0.0","w=1.6;z=0.2","w=8;z=0.05;k_3=1","w=2;z=0.7;k3=0.7"],info:"A set of <b>two complex poles</b> will make the system's time response oscillate."},
-  "time_delay":{t:"See how a <b>time delay</b> affects stability",tasks:["L=3","L=0.3"],info:"A system with <b>time delay</b> is more difficult to control."},
+  "time_delay":{t:"See how a <b>time delay</b> affects stability",tasks:["L=3","L_gain_margin=2"],info:"A system with <b>time delay</b> is more difficult to control."},
   "one_zero_two_poles":{t:"Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4=1_poles"],info:"With <b>one zero and two poles</b>, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
   "four_poles":{t:"Investigate a system with <b>four poles</b>",tasks:["T5=0.3;k=2","phase_margin=20"],info:"A system with <b>four poles</b> gets a lot more phase shift, with a larger spin in the Nyquist diagram."},
   "none":{t:"...no assignment",tasks:["impossible"],info:""},
@@ -1139,13 +1139,13 @@ const all_tasks={
 "w=0.9;z=0.0":"Move the poles in the <b>pole-zero map</b> in such way that the resonance frequency w becomes 0.9 and the damping factor z becomes 0.0.",
 "w=1.6;z=0.2":"Drag the poles in the <b>pole-zero map</b> so that the resonance frequency w=1.6 and damping factor z=0.2.",
 "w=8;z=0.05;k_3=1":"Change the <b>resonance frequency</b> w, <b>damping factor</b> z and <b>static gain</b> k<sub>3</sub> to make the Bode plots mimick the blue lines.",
-// ToDo:
 "w=2;z=0.7;k3=0.7":"Your task is to match the pink step input response. First, set your <b>static gain</b> k<sub>3</sub>. Then, drag the <b>Bode plot</b> to align your system response with the pink step input response.",
 
 //## Time delay
-"L=3":"Drag the step input response to change the time delay to 3 seconds.",
-"L=0.3":"Change the <b>time delay</b> L so that the Gain margin becomes 2.",// (L=0.3)
+"L=3":"Drag the step input response to change the time delay to 3.0 seconds.",
+"L_gain_margin=2":"Change the <b>time delay</b> L so that the <b>Gain margin</b> becomes 2.0.",// (L=0.3)
 
+// ToDo:
 //## One zero two Poles
 //Nyquist reference (k=1,T6=2.5,T7=1,T8=6)
 //Bode reference (k4=0.75,T6=9.25,T7=0.5,T8=2)
@@ -3277,6 +3277,11 @@ function mouseReleased(){
         task_done("two_real_poles1");
       }
     }
+    if (bode_graphs[v].bode_formula == GRAPH_TIME_DELAY.formula){
+      if ((bode_graphs[v].bode_gain_margin >= 1.91)&&(bode_graphs[v].bode_gain_margin <= 2.1)){
+        task_done("L_gain_margin=2");
+      }
+    }
   }
 
   let w = range_slider_variables[variable_position["w"]];
@@ -3301,6 +3306,11 @@ function mouseReleased(){
     if ((min_T >= 0.035) && (min_T <= 0.07)&&
         (max_T >= 4.0) && (max_T <= 5.8)){
       task_done("T2,T3=0.05_and_5");
+    }
+
+    let L = range_slider_variables[variable_position["L"]];
+    if ((L>=2.93)&&(L<3.1)){
+      task_done("L=3");
     }
   }
 
