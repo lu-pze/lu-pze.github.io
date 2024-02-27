@@ -1149,8 +1149,8 @@ const all_tasks={
 //Nyquist reference (k=1,T6=2.5,T7=1,T8=6)
 //Bode reference (k4=0.75,T6=9.25,T7=0.5,T8=2)
 //Step reference (k4=1,T6=1,T7=1,T8=-1.5)
+"k4=1;T6=2.5;T7=1;T8=6":"Your task is to make your Nyquist diagram match up with the orange one. You should probably choose your k<sub>4</sub> first. Then, drag the poles and zero in the Bode plots to make the Nyquist curve follow the orange line. Note that there are many combinations of T<sub>6</sub>, T<sub>7</sub>, and T<sub>8</sub> that gives identical Nyquist diagrams but non-similar Bode diagrams. Can you explain why?",// (k=1,T6=2.5,T7=1,T8=6)
 // ToDo:
-"k4=1;T6=2.5;T7=1;T8=6":"Drag the Bode plot to make the Nyquist curve follow the orange line.",// (k=1,T6=2.5,T7=1,T8=6)
 "k4=0.75;T6=9.25;T7=0.5;T8=2":"Change the parameters so that the Bode plots follow the green lines.",//. (k4=0.75,T6=9.25,T7=0.5,T8=2)
 "k4=1_poles":"With k<sub>4</sub>=1, drag the poles and zeros in the <b>pole-zero map</b> so that the step response follows the blue line.",
 
@@ -1290,7 +1290,8 @@ function select_assignment(event){
     addNewGraph(none, {name:"Ghost..T..._Match this response", mf:"\\frac{0.7*2^2}{s^2+2*0.7*2*s+2^2}", formula:"0.7*2^2/(s^2+2*0.7*2*s+2^2)"});
   } else if(event.value=="one_zero_two_poles"){
     //Nyquist reference (k=1,T6=2.5,T7=1,T8=6)
-    addNewGraph(none, {name:"Ghost...N.._Match this Nyquist", mf:"\\frac{(1+6s)}{(1+2.5s)(1+s)}", formula:"(1+6s)/(1+2.5s)*1/(1+s)"});
+//    addNewGraph(none, {name:"Ghost...N.._Match this Nyquist", mf:"\\frac{(1+6s)}{(1+2.5s)(1+s)}", formula:"(1+6s)/(1+2.5s)*1/(1+s)"});
+    addNewGraph(none, {name:"GhostMPTNIE_Match this Nyquist", mf:"\\frac{(1+6s)}{(1+2.5s)(1+s)}", formula:"(1+6s)/(1+2.5s)*1/(1+s)"});
     //Bode reference (k4=0.75,T6=9.25,T7=0.5,T8=2)
     addNewGraph(none, {name:"GhostMP...._Match this Bode", mf:"\\frac{0.75(1+2s)}{(1+9.25s)(1+0.5s)}", formula:"0.75(1+2s)/(1+9.25s)*1/(1+0.5s)"});
     //Step reference (k4=1,T6=1,T7=1,T8=-1.5)
@@ -3337,14 +3338,71 @@ function mouseReleased(){
       task_done("T2=10;T3=0.5");
     }
 
+    // See if two Nyquist diagrams are equal:
     let k_4 = range_slider_variables[variable_position["k_4"]];
     if ((k_4>=0.95)&&(k_4<=1.05)){
+      //console.log("k_4 ok");
       // This is kind of difficult to check using ranges for T_6, T_7 and T_8.
       // Depending on T_8 (the zero), T_6 and T_7 can vary a lot.
       // So let's find a couple of angles in the Nyquist diagram, and 
       // check the distance between the lines.
-      // ToDo...
-      task_done("k4=1;T6=2.5;T7=1;T8=6");
+
+      // Find the maximum amplitude in magnitude
+      // for both Ghost...N.._Match this Nyquist and One_zero_two_poles.
+      // This is not allowed to differ too much.
+      let max_gain_user = Math.max(...bode_graphs[0].bode_gain_array);
+      let max_gain_ghost = Math.max(...bode_graphs[1].bode_gain_array);
+      console.log("max_gain_user=" + max_gain_user);
+      console.log("max_gain_ghost=" + max_gain_ghost);
+      if ((max_gain_ghost >= max_gain_user*0.95)&&(max_gain_ghost <= max_gain_user*1.05)){
+        //console.log("max gain ok");
+        // Find the maximum amplitude in the s-plane real axis
+        // for both Ghost...N.._Match this Nyquist and One_zero_two_poles.
+        // This is not allowed to differ too much.
+        let max_real_user=-100;
+        for (let complex_no in bode_graphs[0].bode_complex_array){
+          let this_re=bode_graphs[0].bode_complex_array[complex_no].re;
+          if (this_re > max_real_user) max_real_user=this_re;
+        }
+        let max_real_ghost=-100;
+        for (let complex_no in bode_graphs[1].bode_complex_array){
+          let this_re=bode_graphs[1].bode_complex_array[complex_no].re;
+          if (this_re > max_real_ghost) max_real_ghost=this_re;
+        }
+        console.log("max_real_user=" + max_real_user);
+        console.log("max_real_ghost=" + max_real_ghost);
+        if ((max_real_ghost >= max_real_user*0.95)&&(max_real_ghost <= max_real_user*1.05)){
+          //console.log("max real ok");
+          // Find the maximum amplitude in the s-plane imaginary axis
+          // for both Ghost...N.._Match this Nyquist and One_zero_two_poles.
+          // This is not allowed to differ too much.
+          let max_imaginary_user=-100;
+          let min_imaginary_user=100;
+          for (let complex_no in bode_graphs[0].bode_complex_array){
+            let this_im=bode_graphs[0].bode_complex_array[complex_no].im;
+            if (this_im > max_imaginary_user) max_imaginary_user=this_im;
+            if (this_im < min_imaginary_user) min_imaginary_user=this_im;
+          }
+          let max_imaginary_ghost=-100;
+          let min_imaginary_ghost=100;
+          for (let complex_no in bode_graphs[1].bode_complex_array){
+            let this_im=bode_graphs[1].bode_complex_array[complex_no].im;
+            if (this_im > max_imaginary_ghost) max_imaginary_ghost=this_im;
+            if (this_im < min_imaginary_ghost) min_imaginary_ghost=this_im;
+          }
+          console.log("max_imaginary_user=" + max_imaginary_user);
+          console.log("max_imaginary_ghost=" + max_imaginary_ghost);
+          console.log("min_imaginary_user=" + min_imaginary_user);
+          console.log("min_imaginary_ghost=" + min_imaginary_ghost);
+          if ((max_imaginary_ghost >= max_imaginary_user*0.95)&&(max_imaginary_ghost <= max_imaginary_user*1.05)){
+            //console.log("max imaginary ok");
+            if ((-min_imaginary_ghost >= -min_imaginary_user*0.95)&&(-min_imaginary_ghost <= -min_imaginary_user*1.05)){
+              //console.log("min imaginary ok");
+              task_done("k4=1;T6=2.5;T7=1;T8=6");
+            }
+          }
+        }
+      }
     }
 
   }
