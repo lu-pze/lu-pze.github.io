@@ -1145,11 +1145,11 @@ const all_tasks={
 "L=3":"Drag the step input response to change the time delay to 3.0 seconds.",
 "L_gain_margin=2":"Change the <b>time delay</b> L so that the <b>Gain margin</b> becomes 2.0.",// (L=0.3)
 
-// ToDo:
 //## One zero two Poles
 //Nyquist reference (k=1,T6=2.5,T7=1,T8=6)
 //Bode reference (k4=0.75,T6=9.25,T7=0.5,T8=2)
 //Step reference (k4=1,T6=1,T7=1,T8=-1.5)
+// ToDo:
 "k4=1;T6=2.5;T7=1;T8=6":"Drag the Bode plot to make the Nyquist curve follow the orange line.",// (k=1,T6=2.5,T7=1,T8=6)
 "k4=0.75;T6=9.25;T7=0.5;T8=2":"Change the parameters so that the Bode plots follow the green lines.",//. (k4=0.75,T6=9.25,T7=0.5,T8=2)
 "k4=1_poles":"With k<sub>4</sub>=1, drag the poles and zeros in the <b>pole-zero map</b> so that the step response follows the blue line.",
@@ -3336,6 +3336,17 @@ function mouseReleased(){
     if ((min_T>=0.45)&&(min_T<=0.55)&&(max_T>=9.0)&&(max_T<=11.0)){
       task_done("T2=10;T3=0.5");
     }
+
+    let k_4 = range_slider_variables[variable_position["k_4"]];
+    if ((k_4>=0.95)&&(k_4<=1.05)){
+      // This is kind of difficult to check using ranges for T_6, T_7 and T_8.
+      // Depending on T_8 (the zero), T_6 and T_7 can vary a lot.
+      // So let's find a couple of angles in the Nyquist diagram, and 
+      // check the distance between the lines.
+      // ToDo...
+      task_done("k4=1;T6=2.5;T7=1;T8=6");
+    }
+
   }
 
   if (clicked_on_pole_zero_graph_no==0){
@@ -4093,7 +4104,9 @@ function mouseMoved(){
         for(let i=0; i<bode_graphs.length; i++){
           if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodemag_bool)){
 //            bode_graphs[i].draw_nyquist_value(frequency);
-            bode_graphs[i].draw_nyquist_value(perc_x);
+            if (bode_graphs[i].bode_display_nyquist_bool){
+              bode_graphs[i].draw_nyquist_value(perc_x);
+            }
             let current_graph = bode_graphs[i];
             let linked_y = current_graph.bode_gain_array[linked_x];
             let screen_y = graph_bode_mag_y_offset + map(linked_y,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
@@ -4140,9 +4153,6 @@ function mouseMoved(){
           fill(box_background_color,200);
           stroke(150);
           rect(0,0,200,90);
-          noStroke();
-          fill(bode_graphs[output[1]].bode_hue,360,360);
-          ellipse(18,18,20,20);
           noStroke();
           fill(text_color);
           textSize(18);
@@ -4241,7 +4251,9 @@ function mouseMoved(){
         for(let i=0; i<bode_graphs.length; i++){
           if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
 //            bode_graphs[i].draw_nyquist_value(frequency);
-            bode_graphs[i].draw_nyquist_value(perc_x);
+            if (bode_graphs[i].bode_display_nyquist_bool){
+              bode_graphs[i].draw_nyquist_value(perc_x);
+            }
             let current_graph = bode_graphs[i];
             let linked_y = current_graph.bode_phase_array[linked_x];
             let screen_y = graph_bode_phase_y_offset + map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
@@ -4295,22 +4307,24 @@ function mouseMoved(){
           text("phase=" + phase.toFixed(1) + "°",13,77);
           pop();
 
-          // Paint an arc in the nyquist diagram over the unit circle:
           let angle = phase;
-          push();
           let screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
           let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
           let screen_xw = map(2,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
           let screen_yw = map(-2,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-          stroke(angle_color);
-          strokeWeight(2);
-          noFill();
-          if (angle < 0){
-            arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
-          } else {
-            arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, -angle/180*PI, 0);
+          if (bode_graphs[output[1]].bode_display_nyquist_bool){
+            // Paint an arc in the nyquist diagram over the unit circle:
+            push();
+            stroke(angle_color);
+            strokeWeight(2);
+            noFill();
+            if (angle < 0){
+              arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
+            } else {
+              arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, -angle/180*PI, 0);
+            }
+            pop();
           }
-          pop();
 
           // Now paint a horizontal line on the Bode phase plot, at the right height:
           let linked_y = phase;
@@ -4331,12 +4345,14 @@ function mouseMoved(){
           let screen_y1 = point[1];
           screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
           screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-          push();
-          stroke(text_color);
-          strokeWeight(2);
-          translate(graph_nyquist_x_offset+graph_nyquist_x,graph_nyquist_y_offset+graph_nyquist_y);
-          line(screen_x0,screen_y0,screen_x1,screen_y1);
-          pop();
+          if (bode_graphs[output[1]].bode_display_nyquist_bool){
+            push();
+            stroke(text_color);
+            strokeWeight(2);
+            translate(graph_nyquist_x_offset+graph_nyquist_x,graph_nyquist_y_offset+graph_nyquist_y);
+            line(screen_x0,screen_y0,screen_x1,screen_y1);
+            pop();
+          }
           // And draw a vertical white line in the bode phase plot.
           // And draw a vertical line ending up at the hovered graph:
           push();
