@@ -1150,8 +1150,8 @@ const all_tasks={
 //Bode reference (k4=0.75,T6=9.25,T7=0.5,T8=2)
 //Step reference (k4=1,T6=1,T7=1,T8=-1.5)
 "k4=1;T6=2.5;T7=1;T8=6":"Your task is to make your Nyquist diagram match up with the orange one. You should probably choose your k<sub>4</sub> first. Then, drag the poles and zero in the Bode plots to make the Nyquist curve follow the orange line. Note that there are many combinations of T<sub>6</sub>, T<sub>7</sub>, and T<sub>8</sub> that gives identical Nyquist diagrams but non-similar Bode diagrams. Can you explain why?",// (k=1,T6=2.5,T7=1,T8=6)
-// ToDo:
 "k4=0.75;T6=9.25;T7=0.5;T8=2":"Change the parameters so that the Bode plots follow the green lines.",//. (k4=0.75,T6=9.25,T7=0.5,T8=2)
+// ToDo:
 "k4=1_poles":"With k<sub>4</sub>=1, drag the poles and zeros in the <b>pole-zero map</b> so that the step response follows the blue line.",
 
 //#Four poles
@@ -3292,6 +3292,17 @@ function mouseReleased(){
     task_done("w=8;z=0.05;k_3=1");
   } else if ((k_3>=0.6)&&(k_3<=0.8)&&(w>=1.88)&&(w<=2.15)&&(z>=0.66)&&(z<=0.75)){
     task_done("w=2;z=0.7;k3=0.7");
+  }
+
+  //"k4=0.75;T6=9.25;T7=0.5;T8=2":"Change the parameters so that the Bode plots follow the green lines.",//. (k4=0.75,T6=9.25,T7=0.5,T8=2)
+  let k_4 = range_slider_variables[variable_position["k_4"]];
+  let T_6 = range_slider_variables[variable_position["T_6"]];
+  let T_7 = range_slider_variables[variable_position["T_7"]];
+  let T_8 = range_slider_variables[variable_position["T_8"]];
+  let max_T67 = Math.max(T_6,T_7);
+  let min_T67 = Math.min(T_6,T_7);
+  if ((k_4>=0.65)&&(k_4<=0.85)&&(min_T67>=0.33)&&(min_T67<=0.7)&&(max_T67>=8)&&(max_T67<=10)&&(T_8>=1.5)&&(T_8<=2.5)){
+    task_done("k4=0.75;T6=9.25;T7=0.5;T8=2");
   }
 
   if (clicked_on_time_response_graph_no==0){
