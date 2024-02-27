@@ -1096,46 +1096,46 @@ let done_assignments={};
 
 
 const all_tasks={
-// ToDo:
 //## One pole
 //"reference eq in step response(k=0.65, T1=2)"
 "T1=2":"Change T<sub>1</sub> by moving the slider or type in the value to make the pole's location -1/2 in the s-domain.",//. (T1=2)
-"k1=2.9":"Drag the step response so that the static gain is 2.9.",//. (k1=2.9)
-"T1_k1_bode":"Drag the Bode plots to mimick the orange step response.",// (k=0.65, T1=2)
-"T1_pole=-2":"Drag the pole in the pole-zero map to make the system four times faster than the orange one.",//. (pole in -2)
-"T1_unstable":"Make the pole unstable.", // T_1 < 0
+"k1=2.9":"Drag the <b>step input response</b> so that the static gain is 2.9.",//. (k1=2.9)
+"T1_k1_bode":"Drag the pole in the Bode plots to mimick the orange step response.",// (k=0.65, T1=2)
+"T1_pole=-2":"Drag the pole in the pole-zero s-domain to make the system four times faster than the orange one.",//. (pole in -2)
+"T1_unstable":"Make the pole <b>unstable</b>.", // T_1 < 0
 
+// ToDo:
 //## Two real poles
 //reference in step (T2=T3=1, k2=0.5)
 //reference in bode phase (T2=5, T3=0.05, k2=1)
-"T2,T3_phase":"Change T<sub>2</sub> and T<sub>3</sub> so that the Bode phase curve is as the dotted one",//. (T2=0.05, T3=5.0)
-"T2,T3=1;k2=0.5":"Drag the poles in the pole-zero map so that the step response follows the dotted line when k2=1",//. (T2=T3=1, k2=1)
-"T2=10;T3=0.5":"Drag the step response so that the cutoff frequencies in the bode plot are 0.1 rad/s and 2 rad/s",// (T2=10, T3=0.5 eller vice versa)
-"two_real_poles1":"Drag the bode diagram so that the Phase margin for the system is 55 degrees with a gain crossover frequency of 3 rad/s",// (T2=T3=0.5-1.5k k2=7-8 ungefär)
+"T2,T3_phase":"Change T<sub>2</sub> and T<sub>3</sub> to make your Bode phase plot mimick the blue Bode phase plot.",//. (T2=0.05, T3=5.0)
+"T2,T3=1;k2=0.5":"Drag the two poles in the pole-zero s-domain to make the step response follow the cyan line when k<sub>2</sub>=1.",//. (T2=T3=1, k2=1)
+"T2=10;T3=0.5":"Drag the step response so that the <b>cutoff frequencies</b> in the Bode plot become 0.1 rad/s and 2.0 rad/s.",// (T2=10, T3=0.5 eller vice versa)
+"two_real_poles1":"Drag the two poles in the Bode diagram to ensure that the <b>Phase margin</b> for the system is 55° with a gain crossover frequency of 3 rad/s.",// (T2=T3=0.5-1.5k k2=7-8 ungefär)
 
 //## Two complex poles
 //Step reference (w=2,z=0.7,k=0.7)
 //Bode reference (w=8, z=0.05)
-"w=0.9;z=0.9":"Drag the poles in the pole-zero map so that the w=0.9 and z=0",
-"w=1.6;z=0.2":"Drag the poles in the pole-zero map so that the w=1.6 and z=0.2",
-"w=8;z=0.05":"Change w and z so that the bode plots follow the dotted lines",
-"w=2;z=0.7;k3=0.7":"Drag the bode plot so that the step response follows the dotted line",
+"w=0.9;z=0.9":"Drag the poles in the pole-zero map so that the resonance frequency w=0.9 and damping factor z=0.",
+"w=1.6;z=0.2":"Drag the poles in the pole-zero map so that the resonance frequency w=1.6 and damping factor z=0.2.",
+"w=8;z=0.05":"Change the <b>resonance frequency</b> w and <b>damping factor</b> z to make the Bode plots mimick the blue lines.",
+"w=2;z=0.7;k3=0.7":"Drag the bode plot so that the step input response follows the pink step input response.",
 
 //## Time delay
-"L=3":"Drag the step response to change the time delay to 3 seconds",
-"L=0.3":"Change the Time delay L so that the Gain margin is 2",// (L=0.3)
+"L=3":"Drag the step input response to change the time delay to 3 seconds.",
+"L=0.3":"Change the <b>time delay</b> L so that the Gain margin becomes 2.",// (L=0.3)
 
 //## One zero two Poles
 //Nyquist reference (k=1,T6=2.5,T7=1,T8=6)
 //Bode reference (k4=0.75,T6=9.25,T7=0.5,T8=2)
 //Step reference (k4=1,T6=1,T7=1,T8=-1.5)
-"k4=1;T6=2.5;T7=1;T8=6":"Drag the Bode plot to make the Nyquist curve follow the dotted line",// (k=1,T6=2.5,T7=1,T8=6)
-"k4=0.75;T6=9.25;T7=0.5;T8=2":"Change the parameters so that the Bode plots follow the dotted lines",//. (k4=0.75,T6=9.25,T7=0.5,T8=2)
-"k4=1_poles":"With k<sub>4</sub>=1, drag the poles and zeros in the pole-zero map so that the step response follows the dotted line",
+"k4=1;T6=2.5;T7=1;T8=6":"Drag the Bode plot to make the Nyquist curve follow the orange line.",// (k=1,T6=2.5,T7=1,T8=6)
+"k4=0.75;T6=9.25;T7=0.5;T8=2":"Change the parameters so that the Bode plots follow the green lines.",//. (k4=0.75,T6=9.25,T7=0.5,T8=2)
+"k4=1_poles":"With k<sub>4</sub>=1, drag the poles and zeros in the <b>pole-zero map</b> so that the step response follows the blue line.",
 
 //#Four poles
-"T5=0.3;k=2":"Change k and T5 by dragging the sliders or typing in a number so that the Gain margin is 0.5 and the phase crossover frequency is 1.25 rad/s",// (T5=0.3, k=2)
-"phase_margin=20":"Drag the Bode plot so that the Phase margin is 20 degree with a Gain crossover frequency of 5 rad/s",
+"T5=0.3;k=2":"Change k and T<sub>5</sub> by dragging the sliders or typing in a number so that the <b>Gain margin</b> is 0.5 and the <b>Phase crossover frequency</b> is 1.25 rad/s.",// (T5=0.3, k=2)
+"phase_margin=20":"Drag the Bode plot so that the <b>Phase margin</b> is 20° with a <b>Gain crossover frequency</b> of 5 rad/s.",
 };
 let done_tasks=[];
 //let done_tasks=["T1=2","k1=2.9","T1_k1_bode","T1_pole=-2","T1_unstable"];
@@ -1167,7 +1167,6 @@ function update_assignments(){
       }
     }
   }
-  console.log(done_assignments);
 
   let nof_assignments_done=0;
   s += "Please select an assignment:<br>";
@@ -1409,7 +1408,7 @@ const all_achievements={
   "drag_bode_mag":"Drag a transfer function in the Bode magnitude plot",
   "drag_bode_phase":"Drag a transfer function in the Bode phase plot",
   "drag_complex_pole":"Drag <b>two complex poles</b> in the s-domain",
-  "hover_nyquist_-90":"Hover or click the Nyquist diagram at -90 degrees on the unit circle",
+  "hover_nyquist_-90":"Hover or click the Nyquist diagram at -90° on the unit circle",
   "drag_time_response":"Drag the <b>two complex poles</b> transfer function in the time domain",
   "drag_pole_to_right_half_plane":"Drag a pole in the s-domain into the right half plane",
   "drag_zero_to_right_half_plane":"Drag a zero in the s-domain into the right half plane",
