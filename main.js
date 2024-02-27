@@ -4705,8 +4705,7 @@ class bode_graph{
           this.bode_timerep_array = []
           for(let x=0; x<graph_step_response_width; x+=precision){
             let t = map(x,0,graph_step_response_width,0,max_x_timerep);
-
-            let math_y = k_2 * (1/T_2) * (1/T_3) * (Math.exp(-t / T_2) - Math.exp(-t / T_3)) / (1/T_3 - 1/T_2);
+            let math_y = k_2/T_2/T_3 * (Math.exp(-t / T_2) - Math.exp(-t / T_3)) / (1/T_3 - 1/T_2);
             if (T_2 == 0){
               math_y = k_2 * Math.exp(-t / T_3);
             } else if (T_3 == 0){
@@ -4758,9 +4757,11 @@ class bode_graph{
           }
         }
       } else if (input_formula=="1"){      // Dirac Impulse response:
-/*        if ((z < 1.0) && (z >= 0)){
+        if ((z < 1.0) && (z >= 0)){
           // When z > 1, we don't have an oscillating system. We have two real poles, which isn't handled here.
           // This handles two complex conjugated poles with a damped response:
+          // https://lpsa.swarthmore.edu/LaplaceZTable/LaplaceZFuncTable.html
+          // "Prototype 2nd order lowpass impulse response":
           have_a_solution = true;
           this.bode_timerep_array = []
           this.bode_max_timerep = -100000;
@@ -4768,20 +4769,10 @@ class bode_graph{
           for(let x=0; x<graph_step_response_width; x+=precision){
             let t = map(x,0,graph_step_response_width,0,max_x_timerep);
             // Calculate time-step response
-            //console.log("z=" + z);
-            //console.log("w=" + w);
-            //console.log("k_3=" + k_3);
             let math_y;
-            if (z==0){
-              math_y = k_3 * sin(w * t);
-            } else if (z==1){
-              math_y = k_3 * t * Math.exp(-w*t);
-            } else if (z<1){
-              let exponentTerm = Math.exp(-z*w*t);
-              let sinTerm = sin(w * Math.sqrt(1.0-z*z));
-              math_y = k_3 * (1.0 / Math.sqrt(1-z*z)) * exponentTerm * sinTerm;
-            }
-
+            let exponentTerm = Math.exp(-z*w*t);
+            let sinTerm = sin(w * Math.sqrt(1.0-z*z) * t);
+            math_y = k_3*w/(Math.sqrt(1-z*z)) * exponentTerm * sinTerm;
             if(math_y > this.bode_max_timerep){
               this.bode_max_timerep = math_y;
             }
@@ -4791,7 +4782,6 @@ class bode_graph{
             this.bode_timerep_array.push(math_y);
           }
         }
-*/
       }
     }
 
