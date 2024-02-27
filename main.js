@@ -3284,6 +3284,17 @@ function mouseReleased(){
     if (T_1 < 0){
       task_done("T1_unstable");
     }
+    let k_2 = range_slider_variables[variable_position["k_2"]];
+    if ((k_2 >=0.49)&&(k_2<=0.51)){
+      let T_2 = range_slider_variables[variable_position["T_2"]];
+      let T_3 = range_slider_variables[variable_position["T_3"]];
+      let min_T = Math.min(T_2,T_3);
+      let max_T = Math.max(T_2,T_3);
+      if ((min_T >= 0.55)&&(max_T<=1.65)&&((min_T+max_T)>=1.75)&&((min_T+max_T)<=2.3)){
+        task_done("T2,T3=1;k2=0.5");
+        console.log("T2 task done");
+      }
+    }
   }
 
   clicked_on_time_response_graph_no = -1;
@@ -4664,19 +4675,15 @@ class bode_graph{
         //   s + w_0          s/w_0 + 1
         // v_out(t) = V_i * (1 - e^{-\omega_{0}*t})}
         if ((T_2 >= 0) && (T_3 >= 0)){
-
           // Y(s)=1/(s(s-1)^2) ->
           // y(t)=1 - e^{-t} - te^{-t}
-
           // To find the inverse Laplace transform of the transfer function
-          // \( Y(s) = \frac{1.0}{s(1+s)^2} \),
           // https://lpsa.swarthmore.edu/LaplaceZTable/LaplaceZFuncTable.html
           // "Asymptotic double exponential"
           // 1/(s(s+a)(s+b))
           // ab / (s(1+s/a)(1+s/b))
           // Let a=1/T_2
           // let b=1/T_3
-
           // This solution cannot be calculated when T_2==T_3, so let's just move them a little bit apart:
           if (T_2==T_3) T_2+=0.001;
           let a = 1/T_2;
@@ -4685,10 +4692,7 @@ class bode_graph{
           this.bode_timerep_array = []
           for(let x=0; x<graph_step_response_width; x+=precision){
             let t = map(x,0,graph_step_response_width,0,max_x_timerep);
-
             let math_y = k_2*(1-(b*Math.exp(-a*t) - a*Math.exp(-b*t))/(b-a));
-
-//            let math_y = k_2 * (1.0 - Math.exp(-t / T_2)) * (1.0 - Math.exp(-t / T_3));
             this.bode_timerep_array.push(math_y);
           }
           if (k_2 > 0){
