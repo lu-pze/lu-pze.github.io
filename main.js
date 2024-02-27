@@ -37,7 +37,7 @@ if (document.readyState == 'loading') {
 
 
 const GRAPH_ONE_REAL_POLE = {name:"One real pole", mf:"\\frac{k_1}{1+T_1s}", formula:"k_1/(1+T_1*s)"};
-const GRAPH_TWO_REAL_POLES = {name:"Two real poles", mf:"\\frac{k_2}{(1+T_2s)(1+T_3s)}", formula:"k_2/(1+T_2s)*1/(1+T_3s)"};
+const GRAPH_TWO_REAL_POLES = {name:"Two real poles", mf:"\\frac{k_2}{(1+T_2s)(1+T_3s)}", formula:"k_2/((1+T_2)(1+T_3s))"};
 const GRAPH_TWO_COMPLEX_POLES = {name:"Two complex poles", mf:"\\frac{k_3w^2}{s^2+2zws+w^2}", formula:"k_3*w^2/(s^2+2*z*w*s+w^2)"};
 const GRAPH_TIME_DELAY = {name:"Time delay", mf:"\\frac{3}{1+s}e^{-Ls}", formula:"3/(1+s)*e^(-L*s)"};
 const GRAPH_ONE_ZERO_TWO_POLES = {name:"One zero two poles", mf:"\\frac{k_4(1+T_8s)}{(1+T_6s)(1+T_7s)}", formula:"k_4(1+T_8s)/(1+T_6s)*1/(1+T_7s)"};
@@ -314,7 +314,14 @@ function createRangeSlider(event){
       if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
         achievement_done("T2_T3_far_apart");
       }
-
+      let T_2 = range_slider_variables[variable_position["T_2"]];
+      let T_3 = range_slider_variables[variable_position["T_3"]];
+      let max_T = Math.max(T_2,T_3);
+      let min_T = Math.min(T_2,T_3);
+      if ((min_T >= 0.035) && (min_T <= 0.07)&&
+          (max_T >= 4.0) && (max_T <= 5.8)){
+        task_done("T2,T3=0.05_and_5");
+      }
     }
 
     let variable_name = range_slider_alphabet[button_id];
@@ -381,6 +388,14 @@ function createRangeSlider(event){
       let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
       if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
         achievement_done("T2_T3_far_apart");
+      }
+      let T_2 = range_slider_variables[variable_position["T_2"]];
+      let T_3 = range_slider_variables[variable_position["T_3"]];
+      let max_T = Math.max(T_2,T_3);
+      let min_T = Math.min(T_2,T_3);
+      if ((min_T >= 0.035) && (min_T <= 0.07)&&
+          (max_T >= 4.0) && (max_T <= 5.8)){
+        task_done("T2,T3=0.05_and_5");
       }
     }
 
@@ -1083,7 +1098,7 @@ function task_done (which_one){
 
 const all_assignments={
   "one_pole":{t:"Investigate a system with <b>one pole</b>",tasks:["T1=2","k1=2.9","T1_k1_bode","T1_pole=-2","T1_unstable"],info:"A system with <b>one pole</b> is one of the fundamental system responses, where high frequencies are attenuated."},
-  "two_real_poles":{t:"Investigate a system with <b>two real poles</b>",tasks:["T2,T3_phase","T2,T3=1;k2=0.5","T2=10;T3=0.5","two_real_poles1"],info:"When combining <b>two real poles</b>, the Bode phase response goes all the way to -180 degrees."},
+  "two_real_poles":{t:"Investigate a system with <b>two real poles</b>",tasks:["T2,T3=0.05_and_5","T2,T3=1;k2=0.5","T2=10;T3=0.5","two_real_poles1"],info:"When combining <b>two real poles</b>, the Bode phase response goes all the way to -180°."},
   "two_complex_poles":{t:"Investigate a system with <b>two complex poles</b>",tasks:["w=0.9;z=0.9","w=1.6;z=0.2","w=8;z=0.05","w=2;z=0.7;k3=0.7"],info:"A set of <b>two complex poles</b> will make the system's time response oscillate."},
   "time_delay":{t:"See how a <b>time delay</b> affects stability",tasks:["L=3","L=0.3"],info:"A system with <b>time delay</b> is more difficult to control."},
   "one_zero_two_poles":{t:"Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4=1_poles"],info:"With <b>one zero and two poles</b>, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
@@ -1103,20 +1118,20 @@ const all_tasks={
 "T1_pole=-2":"Drag the pole in the pole-zero s-domain to make the system four times faster than the orange one.",//. (pole in -2)
 "T1_unstable":"Make the pole <b>unstable</b>.", // T_1 < 0
 
-// ToDo:
 //## Two real poles
 //reference in step (T2=T3=1, k2=0.5)
 //reference in bode phase (T2=5, T3=0.05, k2=1)
-"T2,T3_phase":"Change T<sub>2</sub> and T<sub>3</sub> to make your Bode phase plot mimick the blue Bode phase plot.",//. (T2=0.05, T3=5.0)
-"T2,T3=1;k2=0.5":"Drag the two poles in the pole-zero s-domain to make the step response follow the cyan line when k<sub>2</sub>=1.",//. (T2=T3=1, k2=1)
-"T2=10;T3=0.5":"Drag the step response so that the <b>cutoff frequencies</b> in the Bode plot become 0.1 rad/s and 2.0 rad/s.",// (T2=10, T3=0.5 eller vice versa)
+"T2,T3=0.05_and_5":"Change T<sub>2</sub> and T<sub>3</sub> to make your Bode phase plot mimick the blue curve in the Bode phase plot.",//. (T2=0.05, T3=5.0)
+// ToDo:
+"T2,T3=1;k2=0.5":"Set k<sub>2</sub>=0.5 exactly, then drag the two poles in the <b>pole-zero s-domain</b> to make the step response follow the cyan line.",//. (T2=T3=1, k2=1)
+"T2=10;T3=0.5":"Drag the poles in the step response making the <b>cutoff frequencies</b> in the Bode plot become 0.1 rad/s and 2.0 rad/s.",// (T2=10, T3=0.5 eller vice versa)
 "two_real_poles1":"Drag the two poles in the Bode diagram to ensure that the <b>Phase margin</b> for the system is 55° with a gain crossover frequency of 3 rad/s.",// (T2=T3=0.5-1.5k k2=7-8 ungefär)
 
 //## Two complex poles
 //Step reference (w=2,z=0.7,k=0.7)
 //Bode reference (w=8, z=0.05)
-"w=0.9;z=0.9":"Drag the poles in the pole-zero map so that the resonance frequency w=0.9 and damping factor z=0.",
-"w=1.6;z=0.2":"Drag the poles in the pole-zero map so that the resonance frequency w=1.6 and damping factor z=0.2.",
+"w=0.9;z=0.9":"Drag the poles in the <b>pole-zero map</b> so that the resonance frequency w=0.9 and damping factor z=0.",
+"w=1.6;z=0.2":"Drag the poles in the <b>pole-zero map</b> so that the resonance frequency w=1.6 and damping factor z=0.2.",
 "w=8;z=0.05":"Change the <b>resonance frequency</b> w and <b>damping factor</b> z to make the Bode plots mimick the blue lines.",
 "w=2;z=0.7;k3=0.7":"Drag the bode plot so that the step input response follows the pink step input response.",
 
@@ -1183,12 +1198,12 @@ function update_assignments(){
   }
 
   s += "<br><b>" + (nof_assignments_done) + "/"+(Object.keys(all_assignments).length-1)+"</b> done so far. ";
-  if (nof_assignments_done == 0) s+="Better get going!";
-  else if (nof_assignments_done == 1) s+="That's a good start!";
+  if (nof_assignments_done == 0) s+="Better get started!";
+  else if (nof_assignments_done == 1) s+="You're getting up to speed!";
   else if (nof_assignments_done == 2) s+="So get on with the next one!";
   else if (nof_assignments_done == 3) s+="You're halfway there!";
   else if (nof_assignments_done == 4) s+="Good job!";
-  else if (nof_assignments_done == 5) s+="You can see the finish line!";
+  else if (nof_assignments_done == 5) s+="You can smell the finish line!";
   else if (nof_assignments_done == 6) s+="You're a legend!";
   s += "<br><br>";
 
@@ -1258,7 +1273,7 @@ function select_assignment(event){
     addNewGraph(none, {name:"Ghost..T..._Match this response", mf:"\\frac{0.65}{1+2s}", formula:"(0.65)/((1+2s))"});
   } else if(event.value=="two_real_poles"){
     //reference in step (T2=T3=1, k2=0.5)
-    addNewGraph(none, {name:"Ghost..T..._Match this response", mf:"\\frac{0.5}{(1+s)(1+s)}", formula:"0.5/(1+s)*1/(1+s)"});
+    addNewGraph(none, {name:"Ghost..T..._Match this response", mf:"\\frac{0.5}{1+2s+s^2}", formula:"0.5/(1+2s+s^2)"});
     //reference in bode phase (T2=5, T3=0.05, k2=1)
     addNewGraph(none, {name:"Ghost.P...._Match this Bode phase", mf:"\\frac{1}{(1+5s)(1+0.05s)}", formula:"1/(1+5s)*1/(1+0.05s)"});
   } else if(event.value=="two_complex_poles"){
@@ -2146,7 +2161,7 @@ function draw_bode_responses(type){
     fill(text_color);
     textSize(15);
     text("Bode phase plot",graph_bode_phase_width/2,-5);
-    text("phase arg{Y(s)}",0,-30);
+    text("phase arg{G(s)}",0,-30);
     text("[degrees]",0,-15);
     draw_loglines(x_case_gain,y_case_gain);
     text("angular freq [rad/s]",graph_bode_phase_width,graph_bode_phase_height+35);
@@ -2327,7 +2342,7 @@ function draw_bode_responses(type){
     fill(text_color);
     textSize(15);
     text("Bode magnitude plot",graph_bode_mag_x + graph_bode_mag_width/2,graph_bode_mag_y-5);
-    text("magnitude |Y(s)|",0,-15);
+    text("magnitude |G(s)|",0,-15);
     draw_loglines(x_case_gain,y_case_gain);
     text("angular freq [rad/s]",graph_bode_phase_width,graph_bode_phase_height+35);
 //    draw_loglines(x_case_gain,y_case_gain);
@@ -3328,6 +3343,14 @@ function mouseDragged(){
       if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
         achievement_done("T2_T3_far_apart");
       }
+      let T_2 = range_slider_variables[variable_position["T_2"]];
+      let T_3 = range_slider_variables[variable_position["T_3"]];
+      let max_T = Math.max(T_2,T_3);
+      let min_T = Math.min(T_2,T_3);
+      if ((min_T >= 0.035) && (min_T <= 0.07)&&
+          (max_T >= 4.0) && (max_T <= 5.8)){
+        task_done("T2,T3=0.05_and_5");
+      }
 
       let k_2 = range_slider_variables[variable_position["k_2"]];
       k_2 = k_2 - mouseDiffY * y_range;
@@ -3453,6 +3476,14 @@ function mouseDragged(){
       if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
         achievement_done("T2_T3_far_apart");
       }
+      let T_2 = range_slider_variables[variable_position["T_2"]];
+      let T_3 = range_slider_variables[variable_position["T_3"]];
+      let max_T = Math.max(T_2,T_3);
+      let min_T = Math.min(T_2,T_3);
+      if ((min_T >= 0.035) && (min_T <= 0.07)&&
+          (max_T >= 4.0) && (max_T <= 5.8)){
+        task_done("T2,T3=0.05_and_5");
+      }
 
       let k_2 = range_slider_variables[variable_position["k_2"]];
       k_2 = k_2 * (1.0 - mouseDiffY*12.0);
@@ -3567,6 +3598,14 @@ function mouseDragged(){
       let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
       if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
         achievement_done("T2_T3_far_apart");
+      }
+      let T_2 = range_slider_variables[variable_position["T_2"]];
+      let T_3 = range_slider_variables[variable_position["T_3"]];
+      let max_T = Math.max(T_2,T_3);
+      let min_T = Math.min(T_2,T_3);
+      if ((min_T >= 0.035) && (min_T <= 0.07)&&
+          (max_T >= 4.0) && (max_T <= 5.8)){
+        task_done("T2,T3=0.05_and_5");
       }
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
@@ -4625,11 +4664,31 @@ class bode_graph{
         //   s + w_0          s/w_0 + 1
         // v_out(t) = V_i * (1 - e^{-\omega_{0}*t})}
         if ((T_2 >= 0) && (T_3 >= 0)){
+
+          // Y(s)=1/(s(s-1)^2) ->
+          // y(t)=1 - e^{-t} - te^{-t}
+
+          // To find the inverse Laplace transform of the transfer function
+          // \( Y(s) = \frac{1.0}{s(1+s)^2} \),
+          // https://lpsa.swarthmore.edu/LaplaceZTable/LaplaceZFuncTable.html
+          // "Asymptotic double exponential"
+          // 1/(s(s+a)(s+b))
+          // ab / (s(1+s/a)(1+s/b))
+          // Let a=1/T_2
+          // let b=1/T_3
+
+          // This solution cannot be calculated when T_2==T_3, so let's just move them a little bit apart:
+          if (T_2==T_3) T_2+=0.001;
+          let a = 1/T_2;
+          let b = 1/T_3;
           have_a_solution = true;
           this.bode_timerep_array = []
           for(let x=0; x<graph_step_response_width; x+=precision){
             let t = map(x,0,graph_step_response_width,0,max_x_timerep);
-            let math_y = k_2 * (1.0 - Math.exp(-t / T_2)) * (1.0 - Math.exp(-t / T_3));
+
+            let math_y = k_2*(1-(b*Math.exp(-a*t) - a*Math.exp(-b*t))/(b-a));
+
+//            let math_y = k_2 * (1.0 - Math.exp(-t / T_2)) * (1.0 - Math.exp(-t / T_3));
             this.bode_timerep_array.push(math_y);
           }
           if (k_2 > 0){
