@@ -724,7 +724,7 @@ const copy_code = async () => {
   let text=document.getElementById('the_code').innerHTML;
   try {
     await navigator.clipboard.writeText(text.replace(/(?:<br>)/g, "\n"));
-    console.log('Content copied to clipboard');
+    //console.log('Content copied to clipboard');
   } catch (err) {
 //      console.error('Failed to copy: ', err);
   }
@@ -1149,13 +1149,13 @@ const all_tasks={
 //Nyquist reference (k=1,T6=2.5,T7=1,T8=6)
 //Bode reference (k4=0.75,T6=9.25,T7=0.5,T8=2)
 //Step reference (k4=1,T6=1,T7=1,T8=-1.5)
-"k4=1;T6=2.5;T7=1;T8=6":"Your task is to make your Nyquist diagram match up with the orange one. You should probably choose your k<sub>4</sub> first. Then, drag the poles and zero in the Bode plots to make the Nyquist curve follow the orange line. Note that there are many combinations of T<sub>6</sub>, T<sub>7</sub>, and T<sub>8</sub> that gives identical Nyquist diagrams but non-similar Bode diagrams. Can you explain why?",// (k=1,T6=2.5,T7=1,T8=6)
-"k4=0.75;T6=9.25;T7=0.5;T8=2":"Change the parameters so that the Bode plots follow the green lines.",//. (k4=0.75,T6=9.25,T7=0.5,T8=2)
+"k4=1;T6=2.5;T7=1;T8=6":"Your task is to make your Nyquist diagram match up with the orange one. <b>Drag the poles and zero in the Bode plots</b>, and change k<sub>4</sub> to make the Nyquist curve follow the orange line. Note that there are many combinations of T<sub>6</sub>, T<sub>7</sub>, and T<sub>8</sub> that gives identical Nyquist diagrams but non-similar Bode diagrams. Can you explain why?",// (k=1,T6=2.5,T7=1,T8=6)
+"k4=0.75;T6=9.25;T7=0.5;T8=2":"Change the parameters so that your Bode plots align with the green lines.",//. (k4=0.75,T6=9.25,T7=0.5,T8=2)
 "k4,T6,T7=1,T8=1.5_poles":"With k<sub>4</sub>=1, drag the poles and zeros in the <b>pole-zero map</b> so that the step response follows the blue line.",
 
 //#Four poles
 // ToDo:
-"T5=0.3;k=2":"Change k and T<sub>5</sub> by dragging the sliders or typing in a number so that the <b>Gain margin</b> is 0.5 and the <b>Phase crossover frequency</b> is 1.25 rad/s.",// (T5=0.3, k=2)
+"T5=0.3;k=2":"Change k<sub>5</sub> and T<sub>5</sub> by dragging the sliders or typing in a number so that the <b>Gain margin</b> is 0.5 and the <b>Phase crossover frequency</b> is 1.25 rad/s.",// (T5=0.3, k=2)
 "phase_margin=20":"Drag the Bode plot so that the <b>Phase margin</b> is 20° with a <b>Gain crossover frequency</b> of 5 rad/s.",
 };
 let done_tasks=["T5=0.3;k=2","phase_margin=20"];
@@ -1291,7 +1291,7 @@ function select_assignment(event){
   } else if(event.value=="one_zero_two_poles"){
     //Nyquist reference (k=1,T6=2.5,T7=1,T8=6)
 //    addNewGraph(none, {name:"Ghost...N.._Match this Nyquist", mf:"\\frac{(1+6s)}{(1+2.5s)(1+s)}", formula:"(1+6s)/(1+2.5s)*1/(1+s)"});
-    addNewGraph(none, {name:"GhostMPTNIE_Match this Nyquist", mf:"\\frac{(1+6s)}{(1+2.5s)(1+s)}", formula:"(1+6s)/(1+2.5s)*1/(1+s)"});
+    addNewGraph(none, {name:"Ghost...N.._Match this Nyquist", mf:"\\frac{(1+6s)}{(1+2.5s)(1+s)}", formula:"(1+6s)/(1+2.5s)*1/(1+s)"});
     //Bode reference (k4=0.75,T6=9.25,T7=0.5,T8=2)
     addNewGraph(none, {name:"GhostMP...._Match this Bode", mf:"\\frac{0.75(1+2s)}{(1+9.25s)(1+0.5s)}", formula:"0.75(1+2s)/(1+9.25s)*1/(1+0.5s)"});
     //Step reference (k4=1,T6=1,T7=1,T8=-1.5)
@@ -1607,7 +1607,7 @@ function init_jingle () {
   request.send();
 }
 function play_jingle () {
-  console.log("Play jingle");
+  //console.log("Play jingle");
   try {
     // This is how non-iOS stops a sound:
     if (jingle_source) {
@@ -1810,7 +1810,7 @@ function updateToolbox(){
     precision_range.onchange = function(){
       precision = 7 - precision_range.value;
       redraw_canvas_gain("all");
-      console.log(precision);
+      //console.log(precision);
     }
 
     auto_range_checkbox.onchange = function(){
@@ -3494,7 +3494,6 @@ function mouseReleased(){
       let max_T = Math.max(T_2,T_3);
       if ((min_T >= 0.55)&&(max_T<=1.65)&&((min_T+max_T)>=1.75)&&((min_T+max_T)<=2.3)){
         task_done("T2,T3=1;k2=0.5");
-        console.log("T2 task done");
       }
     }
 
