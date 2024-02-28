@@ -1116,12 +1116,12 @@ function task_done (which_one){
 }
 
 const all_assignments={
-  "one_pole":{t:"Investigate a system with <b>one pole</b>",tasks:["T1=2","k1=2.9","T1_k1_bode","T1_pole=-2","T1_unstable"],info:"A system with <b>one pole</b> is one of the fundamental system responses, where high frequencies are attenuated."},
-  "two_real_poles":{t:"Investigate a system with <b>two real poles</b>",tasks:["T2,T3=0.05_and_5","T2,T3=1;k2=0.5","T2=10;T3=0.5","two_real_poles1"],info:"When combining <b>two real poles</b>, the Bode phase response goes all the way to -180°."},
-  "two_complex_poles":{t:"Investigate a system with <b>two complex poles</b>",tasks:["w=0.9;z=0.0","w=1.6;z=0.2","w=8;z=0.05;k_3=1","w=2;z=0.7;k3=0.7"],info:"A set of <b>two complex poles</b> will make the system's time response oscillate."},
-  "time_delay":{t:"See how a <b>time delay</b> affects stability",tasks:["L=3","L_gain_margin=2"],info:"A system with <b>time delay</b> is more difficult to control."},
-  "one_zero_two_poles":{t:"Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4,T6,T7=1,T8=1.5_poles"],info:"With <b>one zero and two poles</b>, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
-  "four_poles":{t:"Investigate a system with <b>four poles</b>",tasks:["T5=0.3;k=2","phase_margin=20"],info:"A system with <b>four poles</b> gets a lot more phase shift, with a larger spin in the Nyquist diagram."},
+  "one_pole":{t:"1. Investigate a system with <b>one pole</b>",tasks:["T1=2","k1=2.9","T1_k1_bode","T1_pole=-2","T1_unstable"],info:"A system with <b>one pole</b> is one of the fundamental system responses, where high frequencies are attenuated."},
+  "two_real_poles":{t:"2. Investigate a system with <b>two real poles</b>",tasks:["T2,T3=0.05_and_5","T2,T3=1;k2=0.5","T2=10;T3=0.5","phasemargin=55","gaincrossover=3"],info:"When combining <b>two real poles</b>, the Bode phase response goes all the way to -180°."},
+  "two_complex_poles":{t:"3. Investigate a system with <b>two complex poles</b>",tasks:["w=0.9;z=0.0","w=1.6;z=0.2","w=8;z=0.05;k_3=1","w=2;z=0.7;k3=0.7"],info:"A set of <b>two complex poles</b> will make the system's time response oscillate."},
+  "time_delay":{t:"4. See how a <b>time delay</b> affects stability",tasks:["L=3","L_gain_margin=2"],info:"A system with <b>time delay</b> is more difficult to control."},
+  "one_zero_two_poles":{t:"5. Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4,T6,T7=1,T8=1.5_poles"],info:"With <b>one zero and two poles</b>, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
+  "four_poles":{t:"6. Investigate a system with <b>four poles</b>",tasks:["T5=0.3;k=2","phase_margin=20"],info:"A system with <b>four poles</b> gets a lot more phase shift, with a larger spin in the Nyquist diagram."},
   "none":{t:"...no assignment",tasks:["impossible"],info:""},
 //  "nyquist":{t:"Check out the <b>Nyquist diagram</b>",tasks:["k_above_or_equal_100","set_input_to_ramp"],info:"Named after Harry Nyquist 1889-1976, a Swedish-American physicist and electronic engineer."}
 };
@@ -1134,7 +1134,7 @@ const all_tasks={
 "T1=2":"Change T<sub>1</sub> by moving the slider or type in the value to make the pole's location -1/2 in the s-domain.",//. (T1=2)
 "k1=2.9":"Drag the <b>step input response</b> so that the static gain is 2.9.",//. (k1=2.9)
 "T1_k1_bode":"Drag the pole in the Bode plots to mimick the orange step response.",// (k=0.65, T1=2)
-"T1_pole=-2":"Drag the pole in the pole-zero s-domain to make the system four times faster than the orange one.",//. (pole in -2)
+"T1_pole=-2":"Drag the pole in the <b>pole-zero map</b> to make the system four times faster than the orange one.",//. (pole in -2)
 "T1_unstable":"Make the pole <b>unstable</b>.", // T_1 < 0
 
 //## Two real poles
@@ -1142,8 +1142,9 @@ const all_tasks={
 //reference in bode phase (T2=5, T3=0.05, k2=1)
 "T2,T3=0.05_and_5":"Change T<sub>2</sub> and T<sub>3</sub> to make your Bode phase plot mimick the blue curve in the Bode phase plot.",//. (T2=0.05, T3=5.0)
 "T2,T3=1;k2=0.5":"Set k<sub>2</sub>=0.5 exactly, then drag the two poles in the <b>pole-zero s-domain</b> to make the step response follow the cyan line.",//. (T2=T3=1, k2=1)
-"T2=10;T3=0.5":"Drag the poles in the step response making the <b>cutoff frequencies</b> in the Bode plot become 0.1 rad/s and 2.0 rad/s.",// (T2=10, T3=0.5 or vice versa)
-"two_real_poles1":"Drag the two poles in the Bode diagram to ensure that the <b>Phase margin</b> for the system is 55° with a gain crossover frequency of 3.0 rad/s.",// (T2=T3=0.5-1.5k k2=7-8 approximately)
+"T2=10;T3=0.5":"Drag the poles in the Bode plots making the <b>cutoff frequencies</b> in the Bode plot become 0.1 rad/s and 2.0 rad/s.",// (T2=10, T3=0.5 or vice versa)
+"phasemargin=55"::"Drag the two poles in the Bode diagram to ensure that the <b>Phase margin</b> for the system is 55°.",// (T2=T3=0.5-1.5k k2=7-8 approximately)
+"gaincrossover=3":"Drag the two poles in the Bode diagram to ensure that the <b>gain crossover frequency</b> becomes 3.0 rad/s.",// (T2=T3=0.5-1.5k k2=7-8 approximately)
 
 //## Two complex poles
 //Step reference (w=2,z=0.7,k=0.7)
@@ -3360,11 +3361,14 @@ function mousePressed(){
 function mouseReleased(){
   for(let v=0; v<bode_graphs.length; v++){
     if (bode_graphs[v].bode_formula == GRAPH_TWO_REAL_POLES.formula){
-      if ((bode_graphs[v].bode_phase_margin >= 53.0)&&(bode_graphs[v].bode_phase_margin <= 57.0)&&
-          (bode_graphs[v].bode_gain_crossover_freq >= 2.8)&&(bode_graphs[v].bode_gain_crossover_freq <= 3.2)){
-        task_done("two_real_poles1");
+      if ((bode_graphs[v].bode_phase_margin >= 53.0)&&(bode_graphs[v].bode_phase_margin <= 57.0)){
+        task_done("phasemargin=55");
+      }
+      if ((bode_graphs[v].bode_gain_crossover_freq >= 2.8)&&(bode_graphs[v].bode_gain_crossover_freq <= 3.2)){
+        task_done("gaincrossover=3");
       }
     }
+
     if (bode_graphs[v].bode_formula == GRAPH_TIME_DELAY.formula){
       if ((bode_graphs[v].bode_gain_margin >= 1.91)&&(bode_graphs[v].bode_gain_margin <= 2.1)){
         task_done("L_gain_margin=2");
