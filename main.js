@@ -1245,6 +1245,21 @@ function update_assignments(){
   assignments_box.innerHTML=s;
 }
 
+function restart_lupze(){
+  //location.reload();
+  current_assignment = "none";
+  update_tasks();
+  removeAllGraphs();
+  next_graph_no_to_add=0;
+  id_bank=0;
+  // Add the initial startup graphs:
+  for(let graph_no=0; graph_no<NOF_GRAPHS_AT_STARTUP; graph_no++){
+    let graph_to_add = GRAPH_ORDER[graph_no];
+    addNewGraph(null, graph_to_add);
+  }
+  next_graph_no_to_add = NOF_GRAPHS_AT_STARTUP;
+}
+
 function select_assignment(event){
   current_assignment = event.value;
   update_tasks();
