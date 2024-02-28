@@ -1080,6 +1080,7 @@ function task_done (which_one){
 
         // Trigger an animation with the text:
         let achievement_text_div = document.getElementById("achievement_text");
+        let assignment_star_div = document.getElementById("assignment_star");
         achievement_text_div.innerHTML=all_tasks[which_one];
         let left = (100*mouseX /windowWidth);
         if (left > 85) left = 85;
@@ -1087,9 +1088,8 @@ function task_done (which_one){
         if (top > 90) left = 90;
         document.querySelector('.achievement_text').style.setProperty('--left',left+"%");
         document.querySelector('.achievement_text').style.setProperty('--top',top+"%");
-        document.querySelector('.achievement_star').style.setProperty('--left',left+"%");
-        document.querySelector('.achievement_star').style.setProperty('--top',top+"%");
-        let achievement_star_div = document.getElementById("achievement_star");
+        document.querySelector('.assignment_star').style.setProperty('--left',left+"%");
+        document.querySelector('.assignment_star').style.setProperty('--top',top+"%");
         // Order of the animation parameters:
         //div {
         //  animation-name: example;
@@ -1101,10 +1101,10 @@ function task_done (which_one){
         //}
         achievement_text_div.style.animation = 'none';
         achievement_text_div.offsetHeight; /* trigger reflow */
-        achievement_text_div.style.animation="MoveToStar 7s ease-in-out 0s 1";
-        achievement_star_div.style.animation = 'none';
-        achievement_star_div.offsetHeight; /* trigger reflow */
-        achievement_star_div.style.animation="MoveToStar2 8s ease-out 0s 1";
+        achievement_text_div.style.animation="MoveToStar4 7s ease-in-out 0s 1";
+        assignment_star_div.style.animation = 'none';
+        assignment_star_div.offsetHeight; /* trigger reflow */
+        assignment_star_div.style.animation="MoveToStar3 8s ease-out 0s 1";
         if (sound_enabled==true){
           play_jingle();
         }
