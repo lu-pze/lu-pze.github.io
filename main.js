@@ -3047,8 +3047,8 @@ function mousePressed(){
     init_jingle();
   }
 
-  let toggleElement = document.querySelector('.download_script_box');
-  if (toggleElement.classList.contains('active')){
+  let download_box = document.querySelector('.download_script_box');
+  if (download_box.classList.contains('active')){
     // The code text is active. Just disable mouse clicks to prevent poles & zeros from moving:
     clicked_on_time_response_graph_no = -1;
     clicked_on_bode_mag_graph_no = -1;
@@ -3081,6 +3081,9 @@ function mousePressed(){
               // See if the user clicked on T_2 or T_3:
               let T_2 = range_slider_variables[variable_position["T_2"]];
               let T_3 = range_slider_variables[variable_position["T_3"]];
+              // If T is outside of the box, clamp it to the side of the box:
+              if ((1/T_2) > 3.2) T_2=1/3.2;
+              if ((1/T_3) > 3.2) T_3=1/3.2;
               if (Math.abs(-1/T_2 - real) < Math.abs(-1/T_3 - real)){
                 clicked_on_time_variable = "T_2";
               } else {
@@ -3091,6 +3094,10 @@ function mousePressed(){
               let T_8 = range_slider_variables[variable_position["T_8"]];
               let T_6 = range_slider_variables[variable_position["T_6"]];
               let T_7 = range_slider_variables[variable_position["T_7"]];
+              // If T is outside of the box, clamp it to the side of the box:
+              if ((1/T_6) > 3.2) T_6=1/3.2;
+              if ((1/T_7) > 3.2) T_7=1/3.2;
+              if ((1/T_8) > 3.2) T_8=1/3.2;
               if ((Math.abs(-1/T_8 - real) <= Math.abs(-1/T_6 - real)) && (Math.abs(-1/T_8 - real) <= Math.abs(-1/T_7 - real))){
                 clicked_on_time_variable = "T_8";
               } else if ((Math.abs(-1/T_6 - real) <= Math.abs(-1/T_7 - real)) && (Math.abs(-1/T_6 - real) <= Math.abs(-1/T_8 - real))){
