@@ -1143,7 +1143,7 @@ const all_tasks={
 "T2,T3=0.05_and_5":"Change T<sub>2</sub> and T<sub>3</sub> to make your Bode phase plot mimick the blue curve in the Bode phase plot.",//. (T2=0.05, T3=5.0)
 "T2,T3=1;k2=0.5":"Set k<sub>2</sub>=0.5 exactly, then drag the two poles in the <b>pole-zero s-domain</b> to make the step response follow the cyan line.",//. (T2=T3=1, k2=1)
 "T2=10;T3=0.5":"Drag the poles in the Bode plots making the <b>cutoff frequencies</b> in the Bode plot become 0.1 rad/s and 2.0 rad/s.",// (T2=10, T3=0.5 or vice versa)
-"phasemargin=55"::"Drag the two poles in the Bode diagram to ensure that the <b>Phase margin</b> for the system is 55°.",// (T2=T3=0.5-1.5k k2=7-8 approximately)
+"phasemargin=55":"Drag the two poles in the Bode diagram to ensure that the <b>Phase margin</b> for the system is 55°.",// (T2=T3=0.5-1.5k k2=7-8 approximately)
 "gaincrossover=3":"Drag the two poles in the Bode diagram to ensure that the <b>gain crossover frequency</b> becomes 3.0 rad/s.",// (T2=T3=0.5-1.5k k2=7-8 approximately)
 
 //## Two complex poles
