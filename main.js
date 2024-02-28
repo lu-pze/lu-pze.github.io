@@ -392,6 +392,8 @@ function createRangeSlider(event){
     if ((k_3>=0.90)&&(k_3<=1.1)&&(w>=7.3)&&(w<=8.7)&&(z>=0.2)&&(z<=0.7)){
       task_done("w=8;z=0.05;k_3=1");
     }
+    // When pressing enter, we shall lose focus:
+    this.blur();
   }
 
   linked_span.oninput = function(){
