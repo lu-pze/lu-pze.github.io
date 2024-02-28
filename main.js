@@ -341,6 +341,18 @@ function createRangeSlider(event){
       // Make information bar "3" active:
       let info_tab = document.getElementById("graph_4_info");
       info_tab.checked = "true";
+    } else if ((variable_name == "k_4")||(variable_name == "T_6")||(variable_name == "T_7")||(variable_name == "T_8")){
+      // Make information bar "4" active:
+      let info_tab = document.getElementById("graph_5_info");
+      info_tab.checked = "true";
+    } else if ((variable_name == "k_5")||(variable_name == "T_5")){
+      // Make information bar "5" active:
+      let info_tab = document.getElementById("graph_6_info");
+      info_tab.checked = "true";
+    } else if (variable_name == "T_4"){
+      // Make information bar "6" active:
+      let info_tab = document.getElementById("graph_7_info");
+      info_tab.checked = "true";
     }
 
     redraw_canvas_gain("all");
@@ -1265,6 +1277,9 @@ function select_assignment(event){
   // Set the color of the graph:
   id_bank = next_graph_no_to_add;
   addNewGraph();
+  // Make main graph information bar active:
+  let info_tab = document.getElementById("graph_"+(next_graph_no_to_add)+"_info");
+  info_tab.checked = "true";
 
   // Add ghost graphs:
   // The name tells where this formula will be shown:
