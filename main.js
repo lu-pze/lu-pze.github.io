@@ -1131,20 +1131,20 @@ let done_assignments={};
 const all_tasks={
 //## One pole
 //"reference eq in step response(k=0.65, T1=2)"
-"T1=2":"Change T<sub>1</sub> by moving the slider or type in the value to make the pole's location -1/2 in the s-domain.",//. (T1=2)
-"k1=2.9":"Drag the <b>step input response</b> so that the static gain is 2.9.",//. (k1=2.9)
-"T1_k1_bode":"Drag the pole in the Bode plots to mimick the orange step response.",// (k=0.65, T1=2)
-"T1_pole=-2":"Drag the pole in the <b>pole-zero map</b> to make the system four times faster than the orange one.",//. (pole in -2)
+"T1=2":"Your task is to change T<sub>1</sub> by moving the slider or type in T<sub>1</sub>'s value to make the pole's location -1/2 in the pole-zero map. Can you explain how the pole's location and its time constant are related?",//. (T1=2)
+"k1=2.9":"Your task is to drag the <b>step input response</b> making the static gain of the system 2.9. When will the system reach its static gain?",//. (k1=2.9)
+"T1_k1_bode":"Save the pricess from the dragon by dragging the pole in the Bode plots to mimick the orange step response. The princess, as it turns out, will only leave the dragon if you can explain how she can find the <b>static gain</b> in the Bode magnitude plot. Can you save her?",// (k=0.65, T1=2)
+"T1_pole=-2":"Drag the pole in the <b>pole-zero map</b> to make the system four times faster than the orange one. What does it mean to have a faster system?",//. (pole in -2)
 "T1_unstable":"Make the pole <b>unstable</b>.", // T_1 < 0
 
 //## Two real poles
 //reference in step (T2=T3=1, k2=0.5)
 //reference in bode phase (T2=5, T3=0.05, k2=1)
-"T2,T3=0.05_and_5":"Change T<sub>2</sub> and T<sub>3</sub> to make your Bode phase plot mimick the blue curve in the Bode phase plot.",//. (T2=0.05, T3=5.0)
-"T2,T3=1;k2=0.5":"Set k<sub>2</sub>=0.5 exactly, then drag the two poles in the <b>pole-zero s-domain</b> to make the step response follow the cyan line.",//. (T2=T3=1, k2=1)
-"T2=10;T3=0.5":"Drag the poles in the Bode plots making the <b>cutoff frequencies</b> in the Bode plot become 0.1 rad/s and 2.0 rad/s.",// (T2=10, T3=0.5 or vice versa)
-"phasemargin=55":"Drag the two poles in the Bode diagram to ensure that the <b>Phase margin</b> for the system is 55°.",// (T2=T3=0.5-1.5k k2=7-8 approximately)
-"gaincrossover=3":"Drag the two poles in the Bode diagram to ensure that the <b>gain crossover frequency</b> becomes 3.0 rad/s.",// (T2=T3=0.5-1.5k k2=7-8 approximately)
+"T2,T3=0.05_and_5":"Your task is to change T<sub>2</sub> and T<sub>3</sub> to make your Bode phase plot mimick the blue curve in the Bode phase plot. Feel free to change these time constants in whatever way you find suitable.",//. (T2=0.05, T3=5.0)
+"T2,T3=1;k2=0.5":"Your first subtask is to set k<sub>2</sub>=0.5 exactly, then drag the two poles in the <b>pole-zero map</b> to make the step response follow the cyan line. Can you explain how this second-order step response differs from a first-order system?",//. (T2=T3=1, k2=1)
+"T2=10;T3=0.5":"Your task is to drag the poles in the Bode plots making the <b>cutoff frequencies</b> in the Bode plot become 0.1 rad/s and 2.0 rad/s. Now, tell me how the cutoff frequencies as seen in the Bode plots are related to the poles' locations in the pole-zero map.",// (T2=10, T3=0.5 or vice versa)
+"phasemargin=55":"Please drag the two poles in the Bode diagram to ensure that the <b>Phase margin</b> for the system is 55°. Can you explain how the phase margin can be found in the Nyquist diagram?",// (T2=T3=0.5-1.5k k2=7-8 approximately
+"gaincrossover=3":"Finally, drag the two poles in the Bode diagram to ensure that the <b>gain crossover frequency</b> becomes 3.0 rad/s. But before you go, call your friend and tell them how you can get the gain crossover frequency from a Bode magnitude plot.",// (T2=T3=0.5-1.5k k2=7-8 approximately)
 
 //## Two complex poles
 //Step reference (w=2,z=0.7,k=0.7)
