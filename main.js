@@ -1372,7 +1372,7 @@ function update_tasks(){
   if (nof_done_subtasks != Object.keys(all_assignments[current_assignment].tasks).length){
     s += "<br><b>" + (nof_done_subtasks) + "/"+Object.keys(all_assignments[current_assignment].tasks).length+"</b> done so far.";
   } else {
-    s+="<br><span onclick='toggle_assignments_box()' class='clickable-link'>You're done with this assignment. Click here to choose another assignment.</span>";
+    s+="<br><span onclick='toggle_assignments_box()' class='clickable-link'>You're done with this assignment! Click <b>here</b> to choose the next assignment.</span>";
   }
 
   s += "<br><br><br><center><i><div style='width:70%;border-radius:20px;padding:5%;background:#e0e0e0;'>"+all_assignments[current_assignment].info+"</span></i></center>";
@@ -3050,23 +3050,32 @@ function mousePressed(){
     init_jingle();
   }
 
-  let download_box = document.querySelector('.download_script_box');
-  if (download_box.classList.contains('active')){
-    // The code text is active. Just disable mouse clicks to prevent poles & zeros from moving:
-    clicked_on_time_response_graph_no = -1;
-    clicked_on_bode_mag_graph_no = -1;
-    clicked_on_bode_phase_graph_no = -1;
-    clicked_on_time_variable="";
-    clicked_on_pole_zero_graph_no = -1;
-    return true; // Let system handle mouse after this
-  }
-
   // Reset what we've clicked on:
   clicked_on_time_response_graph_no = -1;
   clicked_on_bode_mag_graph_no = -1;
   clicked_on_bode_phase_graph_no = -1;
   clicked_on_time_variable = "";
   clicked_on_pole_zero_graph_no = -1;
+
+  const boxes_to_not_handle_clicks_in=['.download_script_box','.toolbox','.help','.achievements_box','.assignments_box'];
+  for (let box_no in boxes_to_not_handle_clicks_in){
+    let box = document.querySelector(boxes_to_not_handle_clicks_in[box_no]);
+    if (box.classList.contains('active')){
+      //See if user clicked inside download box:
+      const rect = box.getBoundingClientRect();
+      //console.log('mouseX:', mouseX);
+      //console.log('mouseY:', mouseY);
+      //console.log('Top:', rect.top);
+      //console.log('Left:', rect.left);
+      //console.log('Bottom:', rect.bottom);
+      //console.log('Right:', rect.right);
+      if ((mouseX>=rect.left)&&(mouseX<=rect.right)&&(mouseY>=rect.top)&&(mouseY<=rect.bottom)){
+        //// The code text is active. Just disable mouse clicks to prevent poles & zeros from moving:
+        console.log("inside");
+        return true; // Let system handle mouse after this
+      }
+    }
+  }
 
   // Check if we've clicked any of the pole-zero graphs:
   for(let i=0; i<bode_graphs.length; i++){
@@ -3569,12 +3578,6 @@ function mouseReleased(){
 }
 
 function mouseDragged(){
-  let toggleElement = document.querySelector('.download_script_box');
-  if (toggleElement.classList.contains('active')){
-    // The code text is active. Just disable mouse drags to prevent poles & zeros from moving:
-    return;
-  }
-
   if (clicked_on_time_response_graph_no != -1){
     let i=clicked_on_time_response_graph_no;
     // Dragging one of the graphs in the step response:
