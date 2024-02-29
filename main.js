@@ -291,7 +291,7 @@ function createRangeSlider(event){
 
   range_slider.onchange = function(){
     // Only reacts on the final value of the slider, and not continuous movements:
-    if ((range_slider_alphabet[button_id]=="T_1") && (+range_slider.value >= 1.93) && (+range_slider.value <= 2.1)){
+    if ((range_slider_alphabet[button_id]=="T_1") && (+range_slider.value >= 1.9) && (+range_slider.value <= 2.12)){
       task_done("T1=2");
     }
     if ((range_slider_alphabet[button_id]=="T_1") && (+range_slider.value < 0)){
@@ -371,7 +371,7 @@ function createRangeSlider(event){
 
   linked_span.onchange = function(){
     // Only reacts on the final value, and not while editing:
-    if ((range_slider_alphabet[button_id]=="T_1") && (+linked_span.value >= 1.93) && (+linked_span.value <= 2.1)){
+    if ((range_slider_alphabet[button_id]=="T_1") && (+linked_span.value >= 1.95) && (+linked_span.value <= 2.05)){
       task_done("T1=2");
     }
     if ((range_slider_alphabet[button_id]=="T_1") && (+linked_span.value < 0)){
