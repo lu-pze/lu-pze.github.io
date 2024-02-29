@@ -4991,25 +4991,34 @@ class bode_graph{
           }
         }
       } else if (input_formula=="1"){      // Dirac Impulse response:
-        if ((T_2 >= 0) && (T_3 >= 0)){
-          have_a_solution = true;
-          this.bode_timerep_array = []
-          for(let x=0; x<graph_step_response_width; x+=precision){
-            let t = map(x,0,graph_step_response_width,0,max_x_timerep);
-            let math_y = k_2/T_2/T_3 * (Math.exp(-t / T_2) - Math.exp(-t / T_3)) / (1/T_3 - 1/T_2);
-            if (T_2 == 0){
-              math_y = k_2 * Math.exp(-t / T_3);
-            } else if (T_3 == 0){
-              math_y = k_2 * Math.exp(-t / T_2);
-            }
-            this.bode_timerep_array.push(math_y);
+        have_a_solution = true;
+        this.bode_timerep_array = []
+        for(let x=0; x<graph_step_response_width; x+=precision){
+          let t = map(x,0,graph_step_response_width,0,max_x_timerep);
+          let math_y = k_2/T_2/T_3 * (Math.exp(-t / T_2) - Math.exp(-t / T_3)) / (1/T_3 - 1/T_2);
+          if (T_2 == 0){
+            math_y = k_2 * Math.exp(-t / T_3);
+          } else if (T_3 == 0){
+            math_y = k_2 * Math.exp(-t / T_2);
           }
+          this.bode_timerep_array.push(math_y);
+        }
+        if (((T_2 >= 0) && (T_3 >= 0))||((T_2 <= 0) && (T_3 <= 0))){
+          // Stable poles or two unstable poles:
           if (k_2 > 0){
             this.bode_max_timerep = k_2;
             this.bode_min_timerep = 0;
           } else {
             this.bode_max_timerep = 0;
             this.bode_min_timerep = k_2;
+          }
+        } else {
+          if (k_2 > 0){
+            this.bode_max_timerep = 0;
+            this.bode_min_timerep = -k_2;
+          } else {
+            this.bode_max_timerep = -k_2;
+            this.bode_min_timerep = 0;
           }
         }
       }
