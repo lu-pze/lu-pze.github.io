@@ -2654,11 +2654,14 @@ function draw_time_responses(){
   for(let i=0; i<bode_graphs.length; i++){
     if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_timeresponse_bool)){
       if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
-        let k_1 = range_slider_variables[variable_position["k_1"]];
-        let screen_y = map(k_1,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-        stroke(bode_graphs[i].bode_hue,240,360);
-        strokeWeight(0.5);
-        line(0,screen_y,graph_step_response_width,screen_y);
+        let T_1 = range_slider_variables[variable_position["T_1"]];
+        if (T_1 >= 0){
+          let k_1 = range_slider_variables[variable_position["k_1"]];
+          let screen_y = map(k_1,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
+          stroke(bode_graphs[i].bode_hue,240,360);
+          strokeWeight(0.5);
+          line(0,screen_y,graph_step_response_width,screen_y);
+        }
       } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
         let k_2 = range_slider_variables[variable_position["k_2"]];
         let screen_y = map(k_2,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
@@ -2700,16 +2703,15 @@ function draw_time_responses(){
         // Draw T_1:
         try{ // The graph may be deleted, so this might fail:
           let T_1 = range_slider_variables[variable_position["T_1"]];
-          if (T_1 >= 0){
-            // Now we know the x position. Let's find out the y position:
-            let linked_x = Math.round(T_1 / 10.0 * graph_step_response_width/precision);
-            let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
-            let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-            let screen_x = graph_step_response_width / 10 * T_1;
-            stroke(bode_graphs[i].bode_hue,240,360);
-            strokeWeight(3);
-            draw_X(screen_x,screen_y);
-          }
+          // Now we know the x position. Let's find out the y position:
+          let T_1_pos = Math.abs(T_1);
+          let linked_x = Math.round(T_1_pos / 10.0 * graph_step_response_width/precision);
+          let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
+          let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
+          let screen_x = graph_step_response_width / 10 * T_1_pos;
+          stroke(bode_graphs[i].bode_hue,240,360);
+          strokeWeight(3);
+          draw_X(screen_x,screen_y);
         } catch {}
       } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
         // Draw T_2:
