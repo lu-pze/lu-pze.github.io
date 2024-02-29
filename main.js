@@ -3938,7 +3938,6 @@ function mouseDragged(){
             if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
               achievement_done("drag_pole");
               // Change T_1
-
               range_slider_variables[variable_position["T_1"]] = -1/real;
               // Update range slider value:
               document.getElementById("variable_"+variable_position["T_1"]).value = -(1/real).toFixed(2);
@@ -3951,8 +3950,6 @@ function mouseDragged(){
 
             } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
               achievement_done("drag_pole");
-              const EPS = 0.06777777;
-              if (real > EPS) real=EPS;
               // Change T_2 or T_3
               let variable_to_change = clicked_on_time_variable;
               // ToDo. Let's select the one that is closest to our initial click.
