@@ -2605,6 +2605,13 @@ function draw_time_responses(){
     min_y_timerep = Math.round(min_y_timerep);
   }
 
+  if (max_y_timerep > 500){
+    max_y_timerep = 500;
+  }
+  if (min_y_timerep < -500){
+    min_y_timerep = -500;
+  }
+
   textAlign(CENTER);
   noStroke();
   fill(text_color);
@@ -3639,6 +3646,9 @@ function mouseDragged(){
       let variable_to_change = clicked_on_time_variable;
       let T_x = range_slider_variables[variable_position[variable_to_change]];
       T_x = T_x + mouseDiffX * 10.0;
+      if ((variable_to_change == "T_6")||(variable_to_change == "T_6")){
+        if (T_x<0) T_x = 0;
+      }
       range_slider_variables[variable_position[variable_to_change]] = T_x;
       // Update range slider value:
       document.getElementById("variable_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
