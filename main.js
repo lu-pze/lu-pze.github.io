@@ -2241,15 +2241,14 @@ function draw_bode_responses(type){
           // Draw T_1:
           try{ // The graph may be deleted, so this might fail:
             let T_1 = range_slider_variables[variable_position["T_1"]];
-            if (T_1 >= 0){
-              let frequency = 1 / T_1;
-              let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-              let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
-              let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-              stroke(bode_graphs[i].bode_hue,240,360);
-              strokeWeight(3);
-              draw_X(screen_x,screen_y);
-            }
+            let T_1_pos = Math.abs(T_1);
+            let frequency = 1 / T_1_pos;
+            let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
+            let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
+            let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
+            stroke(bode_graphs[i].bode_hue,240,360);
+            strokeWeight(3);
+            draw_X(screen_x,screen_y);
           } catch {}
         } else if(bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
           // Draw T_2 and T_3:
@@ -2438,16 +2437,15 @@ function draw_bode_responses(type){
           // Draw T_1:
           try{ // The graph may be deleted, so this might fail:
             let T_1 = range_slider_variables[variable_position["T_1"]];
-            if (T_1 >= 0){
-              let frequency = 1 / T_1;
-              // Need to map frequency to pixel:
-              let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-              // Now we know the x position. Let's find out the y position:
-              let screen_y = map(bode_graphs[i].bode_gain_array[Math.round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
-              stroke(bode_graphs[i].bode_hue,240,360);
-              strokeWeight(3);
-              draw_X(screen_x,screen_y);
-            }
+            let T_1_pos = Math.abs(T_1);
+            let frequency = 1 / T_1_pos;
+            // Need to map frequency to pixel:
+            let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
+            // Now we know the x position. Let's find out the y position:
+            let screen_y = map(bode_graphs[i].bode_gain_array[Math.round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+            stroke(bode_graphs[i].bode_hue,240,360);
+            strokeWeight(3);
+            draw_X(screen_x,screen_y);
           } catch {}
         } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
           // Draw T_2 and T_3:
@@ -3731,7 +3729,7 @@ function mouseDragged(){
       achievement_done("drag_bode_mag");
       let T_1 = range_slider_variables[variable_position["T_1"]];
       T_1 = T_1 * (1.0 - mouseDiffX*10.0);
-      if (T_1 < 0) T_1=0;
+//      if (T_1 < 0) T_1=0;
       range_slider_variables[variable_position["T_1"]] = T_1;
       // Update range slider value:
       document.getElementById("variable_"+variable_position["T_1"]).value = T_1.toFixed(2);
@@ -3878,7 +3876,6 @@ function mouseDragged(){
       achievement_done("drag_bode_phase");
       let T_1 = range_slider_variables[variable_position["T_1"]];
       T_1 = T_1 * (1.0 - mouseDiffX*10.0);
-      if (T_1 < 0) T_1=0;
       range_slider_variables[variable_position["T_1"]] = T_1;
       // Update range slider value:
       document.getElementById("variable_"+variable_position["T_1"]).value = T_1.toFixed(2);
