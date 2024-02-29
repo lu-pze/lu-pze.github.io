@@ -222,7 +222,7 @@ function createRangeSlider(event){
     range_value=0.20;
   } else if (variable_name == "T_1"){
     range_value=0.6;
-    range_min=0.0;
+    range_min=-5.0;
     range_max=10.0;
   } else if (variable_name == "T_2"){
     range_value=0.6;
@@ -3587,7 +3587,6 @@ function mouseDragged(){
     if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_ONE_REAL_POLE.formula){
       let T_1 = range_slider_variables[variable_position["T_1"]];
       T_1 = T_1 + mouseDiffX * 10.0;
-      if (T_1 < 0) T_1=0;
       range_slider_variables[variable_position["T_1"]] = T_1;
       // Update range slider value:
       document.getElementById("variable_"+variable_position["T_1"]).value = T_1.toFixed(2);
@@ -3974,11 +3973,9 @@ function mouseDragged(){
             let real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 3;
             let imaginary=2 - (mouseY-pole_zero_graph_y[i])/pole_zero_height * 4;
 
-            const EPS = 0.06666667;
             if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
               achievement_done("drag_pole");
               // Change T_1
-              if (real > EPS) real=EPS;
 
               range_slider_variables[variable_position["T_1"]] = -1/real;
               // Update range slider value:
@@ -3992,9 +3989,10 @@ function mouseDragged(){
 
             } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
               achievement_done("drag_pole");
+              const EPS = 0.06777777;
+              if (real > EPS) real=EPS;
               // Change T_2 or T_3
               let variable_to_change = clicked_on_time_variable;
-              if (real > EPS) real=EPS;
               // ToDo. Let's select the one that is closest to our initial click.
               range_slider_variables[variable_position[variable_to_change]] = -1/real;
               // Update range slider value:
@@ -4065,8 +4063,9 @@ function mouseDragged(){
                   achievement_done("drag_zero_to_right_half_plane");
                 }
               } else {
-                if (real > EPS) real=EPS;
                 achievement_done("drag_pole");
+                const EPS = 0.06777777;
+                if (real > EPS) real=EPS;
                 if (real>0){
                   achievement_done("drag_pole_to_right_half_plane");
                 }
@@ -4929,7 +4928,7 @@ class bode_graph{
         //   -------  =      -----------
         //   s + w_0          s/w_0 + 1
         // v_out(t) = V_i * (1 - e^{-\omega_{0}*t})}
-        if (T_1 >= 0){
+//        if (T_1 >= 0){
           have_a_solution = true;
           this.bode_timerep_array = []
           for(let x=0; x<graph_step_response_width; x+=precision){
@@ -4937,18 +4936,28 @@ class bode_graph{
             let math_y = k_1 * (1.0 - Math.exp(-t / T_1));
             this.bode_timerep_array.push(math_y);
           }
-          if (k_1 > 0){
-            this.bode_max_timerep = k_1;
-            this.bode_min_timerep = 0;
+          if (T_1 >= 0){
+            if (k_1 > 0){
+              this.bode_max_timerep = k_1;
+              this.bode_min_timerep = 0;
+            } else {
+              this.bode_max_timerep = 0;
+              this.bode_min_timerep = k_1;
+            }
           } else {
-            this.bode_max_timerep = 0;
-            this.bode_min_timerep = k_1;
+            if (k_1 > 0){
+              this.bode_max_timerep = 0;
+              this.bode_min_timerep = -k_1;
+            } else {
+              this.bode_max_timerep = -k_1;
+              this.bode_min_timerep = 0;
+            }
           }
-        }
+//        }
       } else if (input_formula=="1"){      // Dirac Impulse response:
+        have_a_solution = true;
+        this.bode_timerep_array = []
         if (T_1 >= 0){
-          have_a_solution = true;
-          this.bode_timerep_array = []
           for(let x=0; x<graph_step_response_width; x+=precision){
             let t = map(x,0,graph_step_response_width,0,max_x_timerep);
             let math_y = k_1 * Math.exp(-t / T_1);
@@ -4960,6 +4969,20 @@ class bode_graph{
           } else {
             this.bode_max_timerep = 0;
             this.bode_min_timerep = k_1;
+          }
+        } else {
+          // Negative T:
+          for(let x=0; x<graph_step_response_width; x+=precision){
+            let t = map(x,0,graph_step_response_width,0,max_x_timerep);
+            let math_y = -k_1/T_1 * Math.exp(-t / T_1);
+            this.bode_timerep_array.push(math_y);
+          }
+          if (k_1 > 0){
+            this.bode_max_timerep = 20;
+            this.bode_min_timerep = 0;
+          } else {
+            this.bode_max_timerep = 0;
+            this.bode_min_timerep = -20;
           }
         }
       }
