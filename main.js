@@ -1140,7 +1140,7 @@ const all_tasks={
 //"reference eq in step response(k=0.65, T1=2)"
 "T1=2":"Your task is to change T<sub>1</sub> by moving the slider or type in T<sub>1</sub>'s value to make the pole's location -1/2 in the pole-zero map. Can you explain how the pole's location and its time constant are related?",//. (T1=2)
 "k1=2.9":"Your task is to drag the <b>step input response</b> making the static gain of the system 2.9. When will the system reach its static gain?",//. (k1=2.9)
-"T1_k1_bode":"Save the pricess from the dragon by dragging the pole in the Bode plots to mimick the orange step response. The princess, as it turns out, will only leave the dragon if you can explain how she can find the <b>static gain</b> in the Bode magnitude plot. Can you save her?",// (k=0.65, T1=2)
+"T1_k1_bode":"Save the princess from the dragon by dragging the pole in the Bode plots to mimick the orange step response. The princess, as it turns out, will only leave the dragon if you can explain how she can find the <b>static gain</b> in the Bode magnitude plot. Can you save her?",// (k=0.65, T1=2)
 "T1_pole=-2":"Drag the pole in the <b>pole-zero map</b> to make the system four times faster than the orange one. What does it mean to have a faster system?",//. (pole in -2)
 "T1_unstable":"Make the pole <b>unstable</b>.", // T_1 < 0
 
@@ -1539,7 +1539,7 @@ function update_achievements(){
   for (let achievement_id in all_achievements){
     if (done_achievements.includes(achievement_id)){
       let long_name = all_achievements[achievement_id]
-      s += "<input type='checkbox' checked onclick='return false;'>&nbsp;" + long_name + "<br>";
+      s += "<input type='checkbox' checked onclick='reset_achievement(\""+achievement_id+"\");'>&nbsp;" + long_name + "<br>";
     }
   }
   s += "<br>Your Score: <b>" + achievement_score.toFixed(1) + "/100</b><br>";
@@ -1558,10 +1558,17 @@ function update_achievements(){
       }
     }
   }
-
   s += "<br>";
   achievements_box.innerHTML=s;
+}
 
+function reset_achievement(achievement_to_reset){
+  let index = done_achievements.indexOf(achievement_to_reset);
+  if (index !== -1) {
+    // We found it. Remove it:
+    done_achievements.splice(index, 1);
+  }
+  update_achievements();
 }
 
 function toggle_achievements(event){
