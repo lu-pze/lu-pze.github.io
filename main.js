@@ -216,6 +216,10 @@ function createRangeSlider(event){
     range_min=-4.0;
     range_max=20.0;
     range_value=2.5;
+  } else if (variable_name == "k_5"){
+    range_min=-4.0;
+    range_max=20.0;
+    range_value=1.0;
   } else if (variable_name == "z"){
     range_min=0.0;
     range_max=1.2;
@@ -1067,6 +1071,7 @@ function toggle_assignments(event){
 }
 
 function toggle_assignments_box(event){
+  achievement_done("view_assignments");
   let assignments_box = document.querySelector('.assignments_box');
   assignments_box.classList.toggle('active');
   update_assignments();
@@ -1184,7 +1189,7 @@ function update_assignments(){
   s += '<br><button type="button" class="close-window" onclick="toggle_assignments_box();"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>';
 
   s += "<center>";
-  s += '<i class="material-icons" style="font-size: 27px;">assignments</i>';
+  s += '<i class="material-icons" style="font-size: 27px;vertical-align: middle;">assignments</i>';
   s += "Your Assignments";
   s += "</center><br>";
 
@@ -1456,8 +1461,10 @@ function achievement_done (which_one){
 }
 
 const all_achievements={
-  "view_achievements":"Open your achievements",
-  "view_help":"Open the help section",
+  "view_achievements":"Open your <i class='material-icons' style='font-size:20px; vertical-align: middle;'>star</i> Achievements",
+  "view_assignments":"Open your <i class='material-icons' style='font-size:20px; vertical-align: middle;'>assignments</i>Assignments",
+  "view_help":"Open the <i class='material-icons' style='font-size:20px; vertical-align: middle;'>help</i> help section",
+  "go_fullscreen":"Get rid of distractions by going <i class='material-icons' style='font-size:20px; vertical-align: middle;'>fullscreen</i> fullscreen",
   "drag_pole":"Drag a pole in the s-domain",
   "drag_zero":"Drag a zero in the s-domain",
   "drag_bode_mag":"Drag a transfer function in the Bode magnitude plot",
@@ -1467,7 +1474,7 @@ const all_achievements={
   "drag_time_response":"Drag the <b>two complex poles</b> transfer function in the time domain",
   "drag_pole_to_right_half_plane":"Drag a pole in the s-domain into the right half plane",
   "drag_zero_to_right_half_plane":"Drag a zero in the s-domain into the right half plane",
-  "add_graph":"Add another graph",
+  "add_graph":"Add <i class='material-icons' style='font-size:20px; vertical-align: middle;'>add</i> another graph",
   "set_input_to_impulse":"Change the input function to a dirac impulse",
   "python_script":"Get the Python script for any transfer function",
   "matlab_script":"Get the MATLAB script for any transfer function",
@@ -1526,8 +1533,8 @@ function update_achievements(){
   s += '<br><button type="button" class="close-window" onclick="toggle_achievements();"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>';
 
   s += "<center>";
-  s += "Your Achievements ";
-  s += '<i class="material-icons" style="font-size: 27px;">star</i>';
+  s += '<i class="material-icons" style="font-size: 28px;vertical-align: middle;">star</i>';
+  s += " Your Achievements ";
   s += "</center><br>";
   for (let achievement_id in all_achievements){
     if (done_achievements.includes(achievement_id)){
@@ -2669,11 +2676,14 @@ function draw_time_responses(){
         strokeWeight(0.5);
         line(0,screen_y,graph_step_response_width,screen_y);
       } else if (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula){
-        let k_5 = range_slider_variables[variable_position["k_5"]];
-        let screen_y = map(k_5,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-        stroke(bode_graphs[i].bode_hue,240,360);
-        strokeWeight(0.5);
-        line(0,screen_y,graph_step_response_width,screen_y);
+        let T_5 = range_slider_variables[variable_position["T_5"]];
+        if (T_5 >= 0){
+          let k_5 = range_slider_variables[variable_position["k_5"]];
+          let screen_y = map(k_5,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
+          stroke(bode_graphs[i].bode_hue,240,360);
+          strokeWeight(0.5);
+          line(0,screen_y,graph_step_response_width,screen_y);
+        }
       }
     }
   }
@@ -5702,6 +5712,7 @@ let is_fullscreen = false;
 
 function toggle_fullscreen(){
   if (is_fullscreen == false){
+    achievement_done("go_fullscreen");
     openFullscreen();
   } else {
     closeFullscreen();
