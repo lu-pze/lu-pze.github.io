@@ -2930,7 +2930,8 @@ function draw_pole_zeros(){
          (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)||
          (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)||
          (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula)||
-         (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula)){
+         (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula)||
+         (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula)){
         draw_position += 1;
       }
     }
@@ -2945,7 +2946,8 @@ function draw_pole_zeros(){
          (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)||
          (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)||
          (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula)||
-         (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula)){
+         (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula)||
+         (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula)){
         pole_zero_graph_x[i] = graph_pole_zero_x;
         pole_zero_graph_y[i] = 30 + (pole_zero_height + 10) * draw_position;
         push();
@@ -4034,6 +4036,20 @@ function mouseDragged(){
               document.getElementById("variable_"+variable_position[variable_to_change]).value = -(1/real).toFixed(2);
               // Update range slider:
               document.getElementById("RANGE_"+variable_position[variable_to_change]).value = -(1/real).toFixed(2);
+              redraw_canvas_gain(bode_graphs[i].bode_id);
+            } else if (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula){
+              achievement_done("drag_pole");
+              const EPS = 0.0677777;
+              if (real > EPS) real=EPS;
+              // Change T_5
+              range_slider_variables[variable_position["T_5"]] = -1/real;
+              // Update range slider value:
+              document.getElementById("variable_"+variable_position["T_5"]).value = -(1/real).toFixed(2);
+              // Update range slider:
+              document.getElementById("RANGE_"+variable_position["T_5"]).value = -(1/real).toFixed(2);
+              if (real>0){
+                achievement_done("drag_pole_to_right_half_plane");
+              }
               redraw_canvas_gain(bode_graphs[i].bode_id);
             }
           }
@@ -5518,6 +5534,11 @@ class bode_graph{
       let T_8inv = 1/range_slider_variables[variable_position["T_8"]];
       if (T_8inv > 3.2) T_8inv=3.2;
       this.plot_zero(-T_8inv,0); // Should be T_4
+    } else if (this.bode_formula == GRAPH_FOUR_POLES.formula){
+      //pole_x = range_slider_variables[0];
+      let T_5inv = 1/range_slider_variables[variable_position["T_5"]];
+      if (T_5inv > 3.2) T_5inv=3.2;
+      this.plot_pole(-T_5inv,0); // Should be T_1
     }
 
     noStroke();
