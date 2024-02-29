@@ -1163,7 +1163,7 @@ const all_tasks={
 
 //## Time delay
 "L=3":"Drag the step input response to change the time delay to 3.0 seconds.",
-"L_gain_margin=2":"Change the <b>time delay</b> L so that the <b>Gain margin</b> becomes 2.0.",// (L=0.3)
+"L_gain_margin=2":"CURRENTLY NOT SOLVABLE (but we're working on it!): Change the <b>time delay</b> L so that the <b>Gain margin</b> becomes 2.0.",// (L=0.3)
 
 //## One zero two Poles
 //Nyquist reference (k=1,T6=2.5,T7=1,T8=6)
@@ -1175,10 +1175,10 @@ const all_tasks={
 
 //#Four poles
 // ToDo:
-"T5=0.3;k=2":"Change k<sub>5</sub> and T<sub>5</sub> by dragging the sliders or typing in a number so that the <b>Gain margin</b> is 0.5 and the <b>Phase crossover frequency</b> is 1.25 rad/s.",// (T5=0.3, k=2)
-"phase_margin=20":"Drag the Bode plot so that the <b>Phase margin</b> is 20° with a <b>Gain crossover frequency</b> of 5 rad/s.",
+"T5=0.3;k=2":"CURRENTLY NOT SOLVABLE (but we're working on it!): Change k<sub>5</sub> and T<sub>5</sub> by dragging the sliders or typing in a number so that the <b>Gain margin</b> is 0.5 and the <b>Phase crossover frequency</b> is 1.25 rad/s.",// (T5=0.3, k=2)
+"phase_margin=20":"CURRENTLY NOT SOLVABLE (but we're working on it!): Drag the Bode plot so that the <b>Phase margin</b> is 20° with a <b>Gain crossover frequency</b> of 5 rad/s.",
 };
-let done_tasks=["T5=0.3;k=2","phase_margin=20"];
+let done_tasks=[];
 //let done_tasks=["T1=2","k1=2.9","T1_k1_bode","T1_pole=-2","T1_unstable"];
 
 
