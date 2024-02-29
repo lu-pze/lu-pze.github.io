@@ -2633,11 +2633,16 @@ function draw_time_responses(){
           line(0,screen_y,graph_step_response_width,screen_y);
         }
       } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
-        let k_2 = range_slider_variables[variable_position["k_2"]];
-        let screen_y = map(k_2,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-        stroke(bode_graphs[i].bode_hue,240,360);
-        strokeWeight(0.5);
-        line(0,screen_y,graph_step_response_width,screen_y);
+        let T_2 = range_slider_variables[variable_position["T_2"]];
+        let T_3 = range_slider_variables[variable_position["T_3"]];
+        if ((T_2>=0)&&(T_3>=0)){
+          // Two stable poles. There is a stationary final value we will reach.
+          let k_2 = range_slider_variables[variable_position["k_2"]];
+          let screen_y = map(k_2,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
+          stroke(bode_graphs[i].bode_hue,240,360);
+          strokeWeight(0.5);
+          line(0,screen_y,graph_step_response_width,screen_y);
+        }
       } else if (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
         let k_3 = range_slider_variables[variable_position["k_3"]];
         let screen_y = map(k_3,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
@@ -2674,11 +2679,10 @@ function draw_time_responses(){
         try{ // The graph may be deleted, so this might fail:
           let T_1 = range_slider_variables[variable_position["T_1"]];
           // Now we know the x position. Let's find out the y position:
-          let T_1_pos = Math.abs(T_1);
-          let linked_x = Math.round(T_1_pos / 10.0 * graph_step_response_width/precision);
+          let linked_x = Math.round(Math.abs(T_1) / 10.0 * graph_step_response_width/precision);
           let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
           let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-          let screen_x = graph_step_response_width / 10 * T_1_pos;
+          let screen_x = graph_step_response_width / 10 * Math.abs(T_1);
           stroke(bode_graphs[i].bode_hue,240,360);
           strokeWeight(3);
           draw_X(screen_x,screen_y);
@@ -2687,31 +2691,27 @@ function draw_time_responses(){
         // Draw T_2:
         try{ // The graph may be deleted, so this might fail:
           let T_2 = range_slider_variables[variable_position["T_2"]];
-          if (T_2 >= 0){
-            // Now we know the x position. Let's find out the y position:
-            let linked_x = Math.round(T_2 / 10.0 * graph_step_response_width/precision);
-            let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
-            let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-            let screen_x = graph_step_response_width / 10 * T_2;
-            stroke(bode_graphs[i].bode_hue,240,360);
-            strokeWeight(3);
-            draw_X(screen_x,screen_y);
-          }
+          // Now we know the x position. Let's find out the y position:
+          let linked_x = Math.round(Math.abs(T_2) / 10.0 * graph_step_response_width/precision);
+          let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
+          let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
+          let screen_x = graph_step_response_width / 10 * Math.abs(T_2);
+          stroke(bode_graphs[i].bode_hue,240,360);
+          strokeWeight(3);
+          draw_X(screen_x,screen_y);
         } catch {}
 
         // Draw T_3:
         try{ // The graph may be deleted, so this might fail:
           let T_3 = range_slider_variables[variable_position["T_3"]];
-          if (T_3 >= 0){
-            // Now we know the x position. Let's find out the y position:
-            let linked_x = Math.round(T_3 / 10.0 * graph_step_response_width/precision);
-            let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
-            let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-            let screen_x = graph_step_response_width / 10 * T_3;
-            stroke(bode_graphs[i].bode_hue,240,360);
-            strokeWeight(3);
-            draw_X(screen_x,screen_y);
-          }
+          // Now we know the x position. Let's find out the y position:
+          let linked_x = Math.round(Math.abs(T_3) / 10.0 * graph_step_response_width/precision);
+          let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
+          let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
+          let screen_x = graph_step_response_width / 10 * Math.abs(T_3);
+          stroke(bode_graphs[i].bode_hue,240,360);
+          strokeWeight(3);
+          draw_X(screen_x,screen_y);
         } catch {}
 
       } else if (bode_graphs[i].bode_formula == GRAPH_TIME_DELAY.formula){
@@ -2775,16 +2775,14 @@ function draw_time_responses(){
         // Draw T_5:
         try{ // The graph may be deleted, so this might fail:
           let T_5 = range_slider_variables[variable_position["T_5"]];
-          if (T_5 >= 0){
-            // Now we know the x position. Let's find out the y position:
-            let linked_x = Math.round(T_5 / 10.0 * graph_step_response_width/precision);
-            let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
-            let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-            let screen_x = graph_step_response_width / 10 * T_5;
-            stroke(bode_graphs[i].bode_hue,240,360);
-            strokeWeight(3);
-            draw_X(screen_x,screen_y);
-          }
+          // Now we know the x position. Let's find out the y position:
+          let linked_x = Math.round(Math.abs(T_5) / 10.0 * graph_step_response_width/precision);
+          let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
+          let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
+          let screen_x = graph_step_response_width / 10 * Math.abs(T_5);
+          stroke(bode_graphs[i].bode_hue,240,360);
+          strokeWeight(3);
+          draw_X(screen_x,screen_y);
         } catch {}
       }
 
@@ -4951,33 +4949,45 @@ class bode_graph{
         //   -------  =      -----------
         //   s + w_0          s/w_0 + 1
         // v_out(t) = V_i * (1 - e^{-\omega_{0}*t})}
-        if ((T_2 >= 0) && (T_3 >= 0)){
-          // Y(s)=1/(s(s-1)^2) ->
-          // y(t)=1 - e^{-t} - te^{-t}
-          // To find the inverse Laplace transform of the transfer function
-          // https://lpsa.swarthmore.edu/LaplaceZTable/LaplaceZFuncTable.html
-          // "Asymptotic double exponential"
-          // 1/(s(s+a)(s+b))
-          // ab / (s(1+s/a)(1+s/b))
-          // Let a=1/T_2
-          // let b=1/T_3
-          // This solution cannot be calculated when T_2==T_3, so let's just move them a little bit apart:
-          if (T_2==T_3) T_2+=0.001;
-          let a = 1/T_2;
-          let b = 1/T_3;
-          have_a_solution = true;
-          this.bode_timerep_array = []
-          for(let x=0; x<graph_step_response_width; x+=precision){
-            let t = map(x,0,graph_step_response_width,0,max_x_timerep);
-            let math_y = k_2*(1-(b*Math.exp(-a*t) - a*Math.exp(-b*t))/(b-a));
-            this.bode_timerep_array.push(math_y);
-          }
+        // Y(s)=1/(s(s-1)^2) ->
+        // y(t)=1 - e^{-t} - te^{-t}
+        // To find the inverse Laplace transform of the transfer function
+        // https://lpsa.swarthmore.edu/LaplaceZTable/LaplaceZFuncTable.html
+        // "Asymptotic double exponential"
+        // 1/(s(s+a)(s+b))
+        // ab / (s(1+s/a)(1+s/b))
+        // Let a=1/T_2
+        // let b=1/T_3
+        // This solution cannot be calculated when T_2==T_3, so let's just move them a little bit apart:
+        if (T_2==T_3) T_2+=0.001;
+        if (T_2==0) T_2=0.0000001;
+        if (T_3==0) T_3=0.0000001;
+        let a = 1/T_2;
+        let b = 1/T_3;
+        have_a_solution = true;
+        this.bode_timerep_array = []
+        for(let x=0; x<graph_step_response_width; x+=precision){
+          let t = map(x,0,graph_step_response_width,0,max_x_timerep);
+          let math_y = k_2*(1-(b*Math.exp(-a*t) - a*Math.exp(-b*t))/(b-a));
+          this.bode_timerep_array.push(math_y);
+        }
+        if (((T_2 >= 0) && (T_3 >= 0))||((T_2 <= 0) && (T_3 <= 0))){
+          // Stable poles or two unstable poles:
           if (k_2 > 0){
             this.bode_max_timerep = k_2;
             this.bode_min_timerep = 0;
           } else {
             this.bode_max_timerep = 0;
             this.bode_min_timerep = k_2;
+          }
+        } else {
+          // One unstable pole.
+          if (k_2 > 0){
+            this.bode_max_timerep = 0;
+            this.bode_min_timerep = -k_2;
+          } else {
+            this.bode_max_timerep = -k_2;
+            this.bode_min_timerep = 0;
           }
         }
       } else if (input_formula=="1"){      // Dirac Impulse response:
