@@ -1546,6 +1546,7 @@ function update_achievements(){
   s += '<i class="material-icons" style="font-size: 28px;vertical-align: middle;">star</i>';
   s += " Your Achievements ";
   s += "</center><br>";
+  s += "Completed:<br>";
   for (let achievement_id in all_achievements){
     if (done_achievements.includes(achievement_id)){
       let long_name = all_achievements[achievement_id]
