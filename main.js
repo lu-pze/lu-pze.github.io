@@ -1122,6 +1122,15 @@ function task_done (which_one){
   }
 }
 
+function reset_task(task_to_reset){
+  let index = done_tasks.indexOf(task_to_reset);
+  if (index !== -1) {
+    // We found it. Remove it:
+    done_tasks.splice(index, 1);
+  }
+  update_tasks();
+}
+
 const all_assignments={
   "one_pole":{t:"1. Investigate a system with <b>one pole</b>",tasks:["T1=2","k1=2.9","T1_k1_bode","T1_pole=-2","T1_unstable"],info:"A system with <b>one pole</b> is one of the fundamental system responses, where high frequencies are attenuated."},
   "two_real_poles":{t:"2. Investigate a system with <b>two real poles</b>",tasks:["T2,T3=0.05_and_5","T2,T3=1;k2=0.5","T2=10;T3=0.5","phasemargin=55","gaincrossover=3"],info:"When combining <b>two real poles</b>, the Bode phase response goes all the way to -180°."},
@@ -1369,7 +1378,7 @@ function update_tasks(){
     if (all_assignments[current_assignment].tasks.includes(task_id)){
       if (done_tasks.includes(task_id)){
         let long_name = all_tasks[task_id];
-        s += "<input type='checkbox' checked onclick='return false;'>&nbsp;<span style='color:#4040b0;'>" + long_name + "</span><br>";
+        s += "<input type='checkbox' checked onclick='reset_task(\""+task_id+"\");'>&nbsp;<span style='color:#4040b0;'>" + long_name + "</span><br>";
       }
     }
   }
