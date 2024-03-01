@@ -375,7 +375,8 @@ body{
   background-color:#d0d0d0f0;
   position: absolute;
   visibility: hidden;
-  font-family: courier;
+  font-family: "Lucida Console", "Courier New", monospace;
+  font-weight: 600;
 }
 .download_script_box.active{
   visibility: visible;
@@ -393,7 +394,8 @@ body{
   z-index:5;
   position: absolute;
   visibility: hidden;
-  font-family: courier;
+  font-family: "Lucida Console", "Courier New", monospace;
+  font-weight: 600;
   border-radius: 25px;
 }
 .assignments_box.active{
@@ -432,7 +434,8 @@ body{
   z-index:5;
   position: absolute;
   visibility: hidden;
-  font-family: courier;
+  font-family: "Lucida Console", "Courier New", monospace;
+  font-weight: 600;
   border-radius: 25px;
 }
 .achievements_box.active{
@@ -511,7 +514,8 @@ body{
   z-index:50;
   color:#ffffff;
   position: absolute;
-  font-family: courier;
+  font-family: "Lucida Console", "Courier New", monospace;
+  font-weight: 600;
   font-size: 150%;
   text-align:center;
   text-shadow: 1px 1px 3px #000000;
