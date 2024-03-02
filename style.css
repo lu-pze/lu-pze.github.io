@@ -121,6 +121,27 @@ body{
   background:#292929;
 }
 
+.quiz_text{
+  position:absolute;
+  left:40%;
+  top:50%;
+  width:70%;
+  transform:translate(-50%,-50%) rotate(-3deg);
+  text-align:center;
+  text-shadow: 10px 10px 40px #000000;
+  font-size:500%;
+  font-weight:800;
+  color:#ffffffc0;
+  z-index:10;
+  opacity:1.0;
+  pointer-events:none;
+}
+@keyframes quiz_fade {
+  from {opacity:0.2;transform:translate(-50%,-50%) rotate(20deg) scale(0.3);color:#2020ffff;}
+  to {opacity:1.0;transform:translate(-50%,-50%) rotate(-3deg) scale(1);color:#ffffffc0;}
+}
+
+
 .download-script{
   position:relative;
   margin-right:36px;

@@ -1051,6 +1051,66 @@ function showInputFunction(input){
   current_tab = input;
 }
 
+// ----------------------
+// Quiz
+let quiz_enabled = false;
+let current_quiz = "none";
+let quiz_freq = 0;
+
+function toggle_quiz_enabled(event){
+  if (current_quiz!="none"){
+    stop_quiz();
+  }
+  if (quiz_enabled == false){
+    quiz_enabled = true;
+    let quiz_icon = document.getElementById("quiz_icon");
+    quiz_icon.style.display = "inline";
+  } else {
+    quiz_enabled = false;
+    let quiz_icon = document.getElementById("quiz_icon");
+    quiz_icon.style.display = "none";
+  }
+}
+
+function toggle_quiz(){
+  if (current_quiz=="none"){
+    start_quiz();
+  } else {
+    stop_quiz();
+  }
+}
+
+function start_quiz(){
+  current_assignment="none";
+  update_tasks();
+  removeAllGraphs();
+  //remove the assignments box:
+  let assignments_box = document.querySelector('.assignments_box');
+  assignments_box.classList.remove('active');
+  let assignment_icon = document.getElementById("show_assignments");
+  assignment_icon.style.color=null;
+  let quiz_icon = document.getElementById("quiz_icon");
+  quiz_icon.style.color="#5050ff";
+  //removeAllGraphs();
+  current_quiz="click_freq";
+  let decimal = Math.floor(Math.random()*4)+1;
+  let power = Math.floor(Math.random()*5)-2;
+  quiz_freq=decimal * Math.pow(10,power);
+  let quiz_text = document.getElementById("quiz_text");
+  quiz_text.innerHTML="Click on the frequency " + quiz_freq.toFixed(2) + " rad/s";
+  quiz_text.style.animation = 'none';
+  quiz_text.offsetHeight; /* trigger reflow */
+  quiz_text.style.animation="quiz_fade 1s ease-out";
+
+  let task_div=document.getElementById("task_list");
+  task_div.innerHTML = "<center><span style='font-size:200%;color:#c02020'>We're working on the QUIZ right now. There's nothing clickable yet. Come back later!</span><br> Thanks for your patience! / Pex & Frida</center>";
+
+}
+
+function stop_quiz(){
+  restart_lupze();
+}
+
 
 // ----------------------
 // Assignments
@@ -1264,7 +1324,14 @@ function update_assignments(){
 
 function restart_lupze(){
   //location.reload();
+  let quiz_text = document.getElementById("quiz_text");
+  quiz_text.innerHTML="";
+  current_quiz="none";
+  let quiz_icon = document.getElementById("quiz_icon");
+  quiz_icon.style.color=null;
   current_assignment = "none";
+  let assignment_icon = document.getElementById("show_assignments");
+  assignment_icon.style.color=null;
   update_tasks();
   removeAllGraphs();
   next_graph_no_to_add=0;
@@ -1281,7 +1348,15 @@ function select_assignment(event){
   current_assignment = event.value;
   update_tasks();
   removeAllGraphs();
-  toggle_assignments_box();
+  //stop_quiz:
+  let quiz_text = document.getElementById("quiz_text");
+  quiz_text.innerHTML="";
+  current_quiz="none";
+  let quiz_icon = document.getElementById("quiz_icon");
+  quiz_icon.style.color=null;
+  //remove the assignments box:
+  let assignments_box = document.querySelector('.assignments_box');
+  assignments_box.classList.remove('active');
   if(event.value=="none"){
     next_graph_no_to_add=0;
     id_bank=0;
@@ -5784,4 +5859,12 @@ function ready(){
   toggle_gamification();
   toggle_assignments();
   updateToolbox();
+
+  //toggle_quiz_enabled();
+  document.addEventListener('keydown', function(event) {
+    if (event.key=='q'){
+      toggle_quiz_enabled();
+    }
+  });
+
 }
