@@ -1057,6 +1057,11 @@ let quiz_enabled = false;
 let current_quiz = "none";
 let quiz_freq = 0;
 
+let quiz_nof_done = 0;
+let quiz_current_streak = 0;
+let quiz_nof_correct = 0;
+
+
 function toggle_quiz_enabled(event){
   if (current_quiz!="none"){
     stop_quiz();
@@ -1103,7 +1108,24 @@ function start_quiz(){
   quiz_text.style.animation="quiz_fade 1s ease-out";
 
   let task_div=document.getElementById("task_list");
-  task_div.innerHTML = "<center><span style='font-size:200%;color:#c02020'>We're working on the QUIZ right now. There's nothing clickable yet. Come back later!</span><br> Thanks for your patience! / Pex & Frida</center>";
+  let s = "";
+
+  let quiz_nof_done = 0;
+  let quiz_current_streak = 0;
+  let quiz_nof_correct = 0;
+
+  s += '<center><i class="material-icons" style="font-size: 27px;vertical-align: middle;">school</i>&nbsp;&nbsp;<b>Quiz time</b></center><br>';
+
+  s += "You've got " + quiz_nof_correct + " correct answers,<br>";
+  s += "with a streak of " + quiz_current_streak + " correct answers.<br>";
+  s += "You've answered " + quiz_nof_done + " questions.<br>";
+  if(quiz_nof_done > 0){
+    s += "This means " + (100*quiz_nof_correct/quiz_nof_done).toFixed(2) + "% accuracy.<br>";
+  }
+  s += "<br>";
+
+  s +="<center><span style='font-size:200%;color:#c02020'>We're working on the QUIZ right now. There's nothing clickable yet.</span><br><br>Check back later. Thanks for your patience! <br>/ Pex & Frida</center>";
+  task_div.innerHTML = s;
 
 }
 
