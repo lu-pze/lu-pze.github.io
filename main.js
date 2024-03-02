@@ -1281,6 +1281,7 @@ function select_assignment(event){
   current_assignment = event.value;
   update_tasks();
   removeAllGraphs();
+  toggle_assignments_box();
   if(event.value=="none"){
     next_graph_no_to_add=0;
     id_bank=0;
@@ -1290,8 +1291,12 @@ function select_assignment(event){
       addNewGraph(null, graph_to_add);
     }
     next_graph_no_to_add = NOF_GRAPHS_AT_STARTUP;
+    let assignment_icon = document.getElementById("show_assignments");
+    assignment_icon.style.color=null;
     return;
   }
+  let assignment_icon = document.getElementById("show_assignments");
+  assignment_icon.style.color="#5050ff";
 
   if(event.value=="one_pole"){
     next_graph_no_to_add=0;
@@ -1344,7 +1349,6 @@ function select_assignment(event){
     //Step reference (k4=1,T6=1,T7=1,T8=-1.5)
     addNewGraph(none, {name:"Ghost..T..._Match this response", mf:"\\frac{(1-1.5s)}{(1+s)(1+s)}", formula:"(1-1.5s)/(1+s)*1/(1+s)"});
   }
-  toggle_assignments_box();
 }
 
 function update_tasks(){

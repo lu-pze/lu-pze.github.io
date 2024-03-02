@@ -78,6 +78,7 @@ body{
 
 .option-button{color:#fff}
 .option-button:hover {color:#d0d0ff}
+#assignments_icon:hover {color:#d0d0ff}
 
 .add-graph{color:#fff}
 .add-graph:hover {color:#d0d0ff;}
