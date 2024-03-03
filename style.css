@@ -532,6 +532,42 @@ body{
 }
 
 
+.quiz-container {
+  position: relative;
+  width: 80%;
+  margin: 120px auto 0px;
+}
+
+.quiz-slider {
+  width: 100%;
+}
+
+.quiz-labels {
+  position: absolute;
+  top: -30px; /* Adjust as needed */
+  left: 30px;
+  width: 100%;
+  display: flex;
+/*  justify-content: space-between;*/
+  pointer-events:none;
+}
+
+.quiz-labels label {
+  transform:rotate(-45deg);
+  /*transform-origin:50% 100%;*/
+  position:relative;
+  left: 0%;
+  width: calc(100% / 8); /* Adjust for the number of labels */
+  text-align:left;
+  pointer-events:none;
+}
+
+.quiz-labels label:first-child,
+.quiz-labels label:last-child {
+  width: auto;
+}
+
+
 
 .assignment_star{
   width:10%;

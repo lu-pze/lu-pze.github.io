@@ -1102,8 +1102,8 @@ function start_quiz(){
   quiz_nof_tries = 0;
   quiz_current_streak = 0;
   quiz_nof_correct = 0;
-  update_quiz();
   next_quiz();
+  update_quiz();
 }
 
 
@@ -1139,6 +1139,16 @@ function next_quiz(){
 }
 
 function update_quiz(){
+  if (current_quiz == "none") return;
+//  let difficulty_geom=1;
+  let difficulty_mean=0;
+  for (let question_no in quiz_questions){
+//    difficulty_geom *= (100-quiz_difficulties[quiz_questions[question_no]]);
+    difficulty_mean += quiz_difficulties[quiz_questions[question_no]];
+  }
+//  quiz_difficulty = 100 - Math.pow(difficulty_geom,1.0/(quiz_questions.length));
+  quiz_difficulty = difficulty_mean/quiz_questions.length;
+
   let task_div=document.getElementById("task_list");
   let s = "";
   s += '<center><i class="material-icons" style="font-size: 27px;vertical-align: middle;">school</i>&nbsp;&nbsp;<b>Quiz time</b></center><br>';
@@ -1156,7 +1166,39 @@ function update_quiz(){
   else s+= " Keep it up, Legend!";
   s += "<br>";
 
-  s +="<center><span style='font-size:200%;color:#c02020'>We're working on the QUIZ right now. It will be longer.</span><br><br>Check back later. Thanks for your patience! <br>/ Pex & Frida</center>";
+  s +='<div class="quiz-container">';
+  s +='<input type="range" min="0" max="100" step="0.01" class="quiz-slider" id="difficulty_level" value="' + quiz_difficulty + '" style="width:100%" onchange="set_difficulty_level(this);">';
+  s +='<div class="quiz-labels">';
+
+  // * lu-pze quiz Difficulty level
+  // Kindergarten - elementary school - high school - University - PhD candidate - PhD student - Professor
+  //     12.5             25              37.5            50           62.5           75           87.5
+  //             18.75              31.25         43.75        56.25           68.75         81.25
+
+  s +='  <label for="0"></label>';
+  s +='  <label for="12.5">Kindergarten</label>';
+  s +='  <label for="25">Elementary&nbsp;school</label>';
+  s +='  <label for="37.5">High&nbsp;school</label>';
+  s +='  <label for="50">University</label>';
+  s +='  <label for="62.5">PhD&nbsp;candidate</label>';
+  s +='  <label for="75">PhD&nbsp;student</label>';
+  s +='  <label for="87.5">Professor</label>';
+  s +='  <label for="100"></label>';
+  s +='</div>';
+  s +='<center>';
+//  s +='<i>Difficulty Level</i>';
+  s +='<input type="checkbox" id="adaptive_difficulty" checked onchange="toggle_adaptive_difficulty(this);"><label for="adaptive_difficulty">Adaptive difficulty level</label>';
+  s +='</center>';
+  s +='</div>';
+
+  s += '<br><br><span style="color:#808080">Your stats:</span><br>';
+  for (let question in quiz_questions){
+    s += '<span style="color:#808080">' + quiz_questions[question] + ": " + quiz_difficulties[quiz_questions[question]].toFixed(1) + "</span><br>";
+  }
+  s += '<span style="color:#808080">Total: ' + quiz_difficulty.toFixed(1) + "</span><br>";
+
+  s +="<br><br><center><span style='font-size:200%;color:#c02020'>We're working on the QUIZ right now. It will be longer.</span><br><br>Check back later. Thanks for your patience! <br>/ Pex & Frida</center>";
+
   task_div.innerHTML = s;
 }
 
@@ -1164,25 +1206,43 @@ function stop_quiz(){
   restart_lupze();
 }
 
+const quiz_questions=['click_freq', 'click_time', 'click_nyquist_angle'];
+let quiz_difficulty=50.0; // The average difficulty, the one shown in the slider
+let quiz_difficulties={}; // The difficulties of each type of question
+let quiz_streaks={}; // The streak for this type of question.
+let quiz_last_values={}; // The last randomized value for this type of question
+let adaptive_difficulty_enabled = true;
+
+function set_difficulty_level(event){
+  quiz_difficulty = +(event.value);
+  quiz_difficulties={};
+  for (let question in quiz_questions){
+    quiz_difficulties[quiz_questions[question]] = quiz_difficulty;
+    quiz_streaks[quiz_questions[question]] = 0;
+  }
+  update_quiz();
+}
+
+
 
 function quiz_clicked_pole_zero(clicked_on_pole_zero_graph_no,real,imaginary,clicked_on_time_variable){
-  console.log("quiz_clicked_pole_zero("+clicked_on_pole_zero_graph_no+","+real+","+imaginary+","+clicked_on_time_variable);
+  //console.log("quiz_clicked_pole_zero("+clicked_on_pole_zero_graph_no+","+real+","+imaginary+","+clicked_on_time_variable);
   quiz_clicked({where:"pz",graph_no:clicked_on_pole_zero_graph_no,real:real,imaginary:imaginary,time_variable:clicked_on_time_variable});
 }
 function quiz_clicked_time_response(clicked_on_time_response_graph_no,time,amplitude,clicked_on_time_variable){
-  console.log("quiz_clicked_time_response("+clicked_on_time_response_graph_no+","+time+","+amplitude+","+clicked_on_time_variable);
+  //console.log("quiz_clicked_time_response("+clicked_on_time_response_graph_no+","+time+","+amplitude+","+clicked_on_time_variable);
   quiz_clicked({where:"time",graph_no:clicked_on_time_response_graph_no,time:time,amplitude:amplitude,time_variable:clicked_on_time_variable});
 }
 function quiz_clicked_bode_mag(clicked_on_bode_mag_graph_no,frequency,magnitude,clicked_on_time_variable){
-  console.log("quiz_clicked_bode_mag("+clicked_on_bode_mag_graph_no+","+frequency+","+magnitude+","+clicked_on_time_variable);
+  //console.log("quiz_clicked_bode_mag("+clicked_on_bode_mag_graph_no+","+frequency+","+magnitude+","+clicked_on_time_variable);
   quiz_clicked({where:"Bmag",graph_no:clicked_on_bode_mag_graph_no,frequency:frequency,magnitude:magnitude,time_variable:clicked_on_time_variable});
 }
 function quiz_clicked_bode_phase(clicked_on_bode_phase_graph_no,frequency,phase,clicked_on_time_variable){
-  console.log("quiz_clicked_bode_phase("+clicked_on_bode_phase_graph_no+","+frequency+","+phase+","+clicked_on_time_variable);
+  //console.log("quiz_clicked_bode_phase("+clicked_on_bode_phase_graph_no+","+frequency+","+phase+","+clicked_on_time_variable);
   quiz_clicked({where:"Bphase",graph_no:clicked_on_bode_phase_graph_no,frequency:frequency,phase:phase,time_variable:clicked_on_time_variable});
 }
 function quiz_clicked_nyquist(magnitude,angle){
-  console.log("quiz_clicked_nyquist("+magnitude+","+angle);
+  //console.log("quiz_clicked_nyquist("+magnitude+","+angle);
   quiz_clicked({where:"Nyq",magnitude:magnitude,phase:angle});
 }
 
@@ -1213,7 +1273,6 @@ function quiz_clicked(all){
     if (all.where=="Nyq"){
       let angle_difference = quiz_nyquist_angle_to_click - all.phase;
       if (angle_difference > 180) angle_difference -= 360;
-      console.log(angle_difference);
       if ((angle_difference >= -15)&&(angle_difference<=15)){
         quiz_correct();
       } else {
@@ -1244,6 +1303,11 @@ function quiz_correct(){
   quiz_no_div.style.animation = 'none';
   if (sound_enabled==true){
     play_jingle();
+  }
+  if (adaptive_difficulty_enabled==true){
+    quiz_difficulties[current_quiz] += 7.5 + 5*quiz_streaks[current_quiz]; // The difficulties of each type of question
+    if (quiz_difficulties[current_quiz] > 100) quiz_difficulties[current_quiz] = 100.0;
+    quiz_streaks[current_quiz] += 1; // The streak for this type of question.
   }
   next_quiz();
 }
@@ -1279,17 +1343,25 @@ function show_quiz_wrong_text(text){
 }
 
 function quiz_perhaps(why_its_almost_wrong){
-  console.log(why_its_almost_wrong);
   quiz_nof_tries += 1;
   show_quiz_wrong_text(why_its_almost_wrong);
 }
 
 function quiz_incorrect(why_its_wrong){
-  console.log(why_its_wrong);
 //  quiz_nof_done += 1;
   quiz_current_streak = 0;
+  quiz_streaks[current_quiz] = 0; // The streak for this type of question.
+  if (adaptive_difficulty_enabled==true){
+    quiz_difficulties[current_quiz] -= 12.5; // The difficulties of each type of question
+    if (quiz_difficulties[current_quiz] < 0) quiz_difficulties[current_quiz] = 0.0;
+  }
   quiz_nof_tries += 1;
   show_quiz_wrong_text(why_its_wrong);
+  update_quiz(); // Show the new difficulty level
+}
+
+function toggle_adaptive_difficulty(event){
+  adaptive_difficulty_enabled = event.checked;
 }
 
 
@@ -6104,6 +6176,7 @@ function ready(){
   // Enable gamification from start:
   toggle_gamification();
   toggle_assignments();
+  set_difficulty_level({value:50});
   toggle_quiz_enabled();
   updateToolbox();
 
