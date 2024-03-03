@@ -1059,6 +1059,7 @@ let quiz_freq = 0;
 
 let quiz_nof_done = 0;
 let quiz_current_streak = 0;
+let quiz_longest_streak = 0;
 let quiz_nof_correct = 0;
 
 
@@ -1097,6 +1098,14 @@ function start_quiz(){
   let quiz_icon = document.getElementById("quiz_icon");
   quiz_icon.style.color="#5050ff";
   //removeAllGraphs();
+  quiz_nof_done = 0;
+  quiz_current_streak = 0;
+  quiz_nof_correct = 0;
+  update_quiz();
+  next_quiz();
+}
+
+function next_quiz(){
   current_quiz="click_freq";
   let decimal = Math.floor(Math.random()*4)+1;
   let power = Math.floor(Math.random()*5)-2;
@@ -1106,14 +1115,11 @@ function start_quiz(){
   quiz_text.style.animation = 'none';
   quiz_text.offsetHeight; /* trigger reflow */
   quiz_text.style.animation="quiz_fade 1s ease-out";
+}
 
+function update_quiz(){
   let task_div=document.getElementById("task_list");
   let s = "";
-
-  let quiz_nof_done = 0;
-  let quiz_current_streak = 0;
-  let quiz_nof_correct = 0;
-
   s += '<center><i class="material-icons" style="font-size: 27px;vertical-align: middle;">school</i>&nbsp;&nbsp;<b>Quiz time</b></center><br>';
 
   s += "You've got " + quiz_nof_correct + " correct answers,<br>";
@@ -1122,15 +1128,73 @@ function start_quiz(){
   if(quiz_nof_done > 0){
     s += "This means " + (100*quiz_nof_correct/quiz_nof_done).toFixed(2) + "% accuracy.<br>";
   }
+  s += "Longest streak so far " + quiz_longest_streak + ".<br>";
   s += "<br>";
 
-  s +="<center><span style='font-size:200%;color:#c02020'>We're working on the QUIZ right now. There's nothing clickable yet.</span><br><br>Check back later. Thanks for your patience! <br>/ Pex & Frida</center>";
+  s +="<center><span style='font-size:200%;color:#c02020'>We're working on the QUIZ right now. It is very small.</span><br><br>Check back later. Thanks for your patience! <br>/ Pex & Frida</center>";
   task_div.innerHTML = s;
-
 }
 
 function stop_quiz(){
   restart_lupze();
+}
+
+
+function quiz_clicked_pole_zero(clicked_on_pole_zero_graph_no,real,imaginary,clicked_on_time_variable){
+  console.log("quiz_clicked_pole_zero("+clicked_on_pole_zero_graph_no+","+real+","+imaginary+","+clicked_on_time_variable);
+  quiz_clicked({where:"pz",graph_no:clicked_on_pole_zero_graph_no,real:real,imaginary:imaginary,time_variable:clicked_on_time_variable});
+}
+function quiz_clicked_time_response(clicked_on_time_response_graph_no,time,amplitude,clicked_on_time_variable){
+  console.log("quiz_clicked_time_response("+clicked_on_time_response_graph_no+","+time+","+amplitude+","+clicked_on_time_variable);
+  quiz_clicked({where:"time",graph_no:clicked_on_time_response_graph_no,time:time,amplitude:amplitude,time_variable:clicked_on_time_variable});
+}
+function quiz_clicked_bode_mag(clicked_on_bode_mag_graph_no,frequency,magnitude,clicked_on_time_variable){
+  console.log("quiz_clicked_bode_mag("+clicked_on_bode_mag_graph_no+","+frequency+","+magnitude+","+clicked_on_time_variable);
+  quiz_clicked({where:"Bmag",graph_no:clicked_on_bode_mag_graph_no,frequency:frequency,magnitude:magnitude,time_variable:clicked_on_time_variable});
+}
+function quiz_clicked_bode_phase(clicked_on_bode_phase_graph_no,frequency,phase,clicked_on_time_variable){
+  console.log("quiz_clicked_bode_phase("+clicked_on_bode_phase_graph_no+","+frequency+","+phase+","+clicked_on_time_variable);
+  quiz_clicked({where:"Bphase",graph_no:clicked_on_bode_phase_graph_no,frequency:frequency,phase:phase,time_variable:clicked_on_time_variable});
+}
+function quiz_clicked_nyquist(magnitude,angle){
+  console.log("quiz_clicked_nyquist("+magnitude+","+angle);
+  quiz_clicked({where:"Nyq",magnitude:magnitude,phase:angle});
+}
+
+function quiz_clicked(all){
+  console.log("quiz clicked:where="+all.where+",graph_no="+all.graph_no+",time_variable="+all.time_variable+",real="+all.real+",imaginary="+all.imaginary+",time="+all.time+",amplitude="+all.amplitude+",frequency="+all.frequency+",magnitude="+all.magnitude+",phase="+all.phase);
+
+  if (current_quiz=="click_freq"){
+    if ((all.where=="Bmag")||(all.where=="Bphase")){
+      if ((all.frequency >= quiz_freq*0.6667) && (all.frequency <= quiz_freq*1.4)) quiz_correct();
+      else quiz_incorrect("No. You did click the correct graph, but your "+all.frequency.toFixed(2)+" is too far off the correct "+quiz_freq.toFixed(2)+".");
+    }
+    else if (all.where=="Nyq") quiz_incorrect("No. The Nyquist diagram contains phases and magnitudes. The frequency information we can find is 0 rad/s and ∞ rad/s which corresponds to the start and end of the Nyquist graph. For a specific frequency, look somewhere else.");
+    else if (all.where=="time") quiz_incorrect("No. The time response of a system shows the amplitude after the input signal is applied. If you're looking for frequencies, look elsewhere.");
+    else if (all.where=="pz") quiz_perhaps("Perhaps. The pole-zero map can tell you time constants of a system through the location of the poles and zeros. However, for pinpointing a certain frequency there's an easier way.");
+  }
+
+  update_quiz();
+}
+
+function quiz_correct(){
+  quiz_nof_done += 1;
+  quiz_nof_correct += 1;
+  quiz_current_streak += 1;
+  if (quiz_longest_streak<quiz_current_streak){
+    quiz_longest_streak = quiz_current_streak;
+  }
+  next_quiz();
+}
+
+function quiz_perhaps(why_its_wrong){
+  console.log(why_its_wrong);
+}
+
+function quiz_incorrect(why_its_wrong){
+  console.log(why_its_wrong);
+//  quiz_nof_done += 1;
+  quiz_current_streak = 0;
 }
 
 
@@ -2958,32 +3022,38 @@ function draw_nyquist_responses(){
 //  //console.log("nyquist_y_squares=" + nyquist_y_squares);
 //  //console.log("nyquist_x_squares=" + nyquist_x_squares);
 
-  min_nyquist_x = -1;
-  max_nyquist_x = 1;
-  min_nyquist_y = -1;
-  max_nyquist_y = 0.2;
-
-  for(let i=0; i<bode_graphs.length; i++){
-    if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_nyquist_bool)){
-      let current_graph = bode_graphs[i];
-      if(current_graph.bode_max_nyquist_x > max_nyquist_x){
-        max_nyquist_x = current_graph.bode_max_nyquist_x;
-      }
-      if(current_graph.bode_min_nyquist_x < min_nyquist_x){
-        min_nyquist_x = current_graph.bode_min_nyquist_x;
-      }
-      if(current_graph.bode_max_nyquist_y > max_nyquist_y){
-        max_nyquist_y = current_graph.bode_max_nyquist_y;
-      }
-      if(current_graph.bode_min_nyquist_y < min_nyquist_y){
-        min_nyquist_y = current_graph.bode_min_nyquist_y;
+  if (bode_graphs.length==0){
+    min_nyquist_x = -1;
+    max_nyquist_x = 1;
+    min_nyquist_y = -1;
+    max_nyquist_y = 1;
+  } else {
+    min_nyquist_x = -1;
+    max_nyquist_x = 1;
+    min_nyquist_y = -1;
+    max_nyquist_y = 0.2;
+    for(let i=0; i<bode_graphs.length; i++){
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_nyquist_bool)){
+        let current_graph = bode_graphs[i];
+        if(current_graph.bode_max_nyquist_x > max_nyquist_x){
+          max_nyquist_x = current_graph.bode_max_nyquist_x;
+        }
+        if(current_graph.bode_min_nyquist_x < min_nyquist_x){
+          min_nyquist_x = current_graph.bode_min_nyquist_x;
+        }
+        if(current_graph.bode_max_nyquist_y > max_nyquist_y){
+          max_nyquist_y = current_graph.bode_max_nyquist_y;
+        }
+        if(current_graph.bode_min_nyquist_y < min_nyquist_y){
+          min_nyquist_y = current_graph.bode_min_nyquist_y;
+        }
       }
     }
+    if (max_nyquist_y > 5) max_nyquist_y = 5;
+    if (max_nyquist_x > 5) max_nyquist_x = 5;
+    if (min_nyquist_y < -5) min_nyquist_y = -5;
+    if (min_nyquist_x < -5) min_nyquist_x = -5;
   }
-  if (max_nyquist_y > 5) max_nyquist_y = 5;
-  if (max_nyquist_x > 5) max_nyquist_x = 5;
-  if (min_nyquist_y < -5) min_nyquist_y = -5;
-  if (min_nyquist_x < -5) min_nyquist_x = -5;
 
   // Correct max/mins so that the aspect ratio of the Nyquist diagram is 1.0:
   let mag_x = max_nyquist_x - min_nyquist_x;
@@ -3202,7 +3272,7 @@ function mousePressed(){
         if(((mouseX-pole_zero_graph_x[i]) > 0) && ((mouseX-pole_zero_graph_x[i]) < pole_zero_width)){
           if(((mouseY-pole_zero_graph_y[i]) > 0) && ((mouseY-pole_zero_graph_y[i]) < pole_zero_height)){
             let real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 3;
-            //let imaginary=2 - (mouseY-pole_zero_graph_y[i])/pole_zero_height * 4;
+            let imaginary=2 - (mouseY-pole_zero_graph_y[i])/pole_zero_height * 4;
             clicked_on_pole_zero_graph_no = i;
             if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
               // See if the user clicked on T_2 or T_3:
@@ -3232,6 +3302,10 @@ function mousePressed(){
               } else {
                 clicked_on_time_variable = "T_7";
               }
+            }
+            if (current_quiz!="none"){
+              quiz_clicked_pole_zero(clicked_on_pole_zero_graph_no,real,imaginary,clicked_on_time_variable);
+              return false; // Cancel default actions
             }
             mouseDragged(); // Handle this directly
             return false; // Cancel default actions
@@ -3309,8 +3383,15 @@ function mousePressed(){
         }
       }
     }
-    mouseDragged(); // Handle this directly
-    return false; // Cancel default actions
+    if (current_quiz!="none"){
+      let time=(mouseX - graph_step_response_x - graph_step_response_x_offset) / graph_step_response_width * 10.0;
+      let amplitude=max_y_timerep - (max_y_timerep - min_y_timerep) * (mouseY - graph_step_response_y - graph_step_response_y_offset) / graph_step_response_height;
+      quiz_clicked_time_response(clicked_on_time_response_graph_no,time,amplitude,clicked_on_time_variable);
+      return false; // Cancel default actions
+    } else {
+      mouseDragged(); // Handle this directly
+      return false; // Cancel default actions
+    }
 
 
   } else if(((mouseX-graph_bode_mag_x) > graph_bode_mag_x_offset && (mouseX-graph_bode_mag_x) < graph_bode_mag_width + graph_bode_mag_x_offset)&&
@@ -3389,12 +3470,43 @@ function mousePressed(){
         }
       }
     }
+    if (current_quiz!="none"){
+      let linked_y = mouseY - graph_bode_mag_y - graph_bode_mag_y_offset;
+      let perc_y = linked_y / graph_bode_mag_height;
+      let magnitude_in_dB = gain_upper_bound - perc_y*120;//y_case_gain; //60 - perc_y
+      let magnitude = 1.0 * Math.pow(10.0, magnitude_in_dB / 20.0);
+      quiz_clicked_bode_mag(clicked_on_bode_mag_graph_no,frequency,magnitude,clicked_on_time_variable);
+      return false; // Cancel default actions
+    }
     mouseDragged(); // Handle this directly
     return false; // Cancel default actions
 
   // Check if we're dragging the Nyquist diagram:
   } else if(((mouseX-graph_nyquist_x) > graph_nyquist_x_offset && ((mouseX-graph_nyquist_x) < graph_nyquist_width + graph_nyquist_x_offset)) &&
             ((mouseY-graph_nyquist_y-graph_nyquist_y_offset) > 0 && (mouseY-graph_nyquist_y-graph_nyquist_y_offset) < graph_nyquist_height)) {
+    if (current_quiz!="none"){
+      let origo_x = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+      let origo_y = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+      let screen_x = graph_nyquist_x + origo_x + graph_nyquist_x_offset;
+      let screen_y = graph_nyquist_y + origo_y + graph_nyquist_y_offset;
+      let perc_x = (mouseX - graph_nyquist_x - graph_nyquist_x_offset) / graph_nyquist_width;
+      let perc_y = (mouseY - graph_nyquist_y - graph_nyquist_y_offset) / graph_nyquist_height;
+      let axis_x = min_nyquist_x + (max_nyquist_x - min_nyquist_x) * perc_x;
+      let axis_y = max_nyquist_y + (min_nyquist_y - max_nyquist_y) * perc_y;
+      let angle_rad = Math.atan(axis_x / axis_y);
+      let angle=0;
+      if (mouseY > screen_y){
+        // The lower half plane: angles 0 at the right edge, 90 pointing downwards, and -180 to the left:
+        angle = -(90 + angle_rad * 180 / PI);
+      } else {
+        // The upper half plane: angles 360 at the right edge, 270 pointing upwards, and 180 to the left:
+        angle = -(270 + angle_rad * 180 / PI);
+      }
+      // Get the magnitude of the line from origo to the mouse:
+      let magnitude = Math.sqrt(axis_x * axis_x + axis_y * axis_y);
+      quiz_clicked_nyquist(magnitude,angle);
+      return false; // Cancel default actions
+    }
     mouseDragged(); // Handle this directly
     return false; // Cancel default actions
 
@@ -3475,6 +3587,11 @@ function mousePressed(){
           clicked_on_time_variable="T_7";
         }
       }
+    }
+    if (current_quiz!="none"){
+      let phase = phase_upper_bound - 45*phase_case_number*perc_y;
+      quiz_clicked_bode_phase(clicked_on_bode_phase_graph_no,frequency,phase,clicked_on_time_variable);
+      return false; // Cancel default actions
     }
     mouseDragged(); // Handle this directly
     return false; // Cancel default actions
@@ -4277,7 +4394,6 @@ function draw_hover_nyquist(){
   if ((magnitude > 0.8) && (magnitude < 1.2) && (angle < -75) && (angle > -105)){
     achievement_done("hover_nyquist_-90");
   }
-
 }
 
 
