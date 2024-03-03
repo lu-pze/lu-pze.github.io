@@ -1251,6 +1251,7 @@ function set_difficulty_level(event){
   for (let question in quiz_questions){
     quiz_difficulties[quiz_questions[question]] = quiz_difficulty;
     quiz_streaks[quiz_questions[question]] = 0;
+    quiz_last_value[quiz_questions[question]] = 0;
   }
   update_quiz();
 }
