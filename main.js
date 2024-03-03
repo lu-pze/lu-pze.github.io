@@ -2292,15 +2292,19 @@ function draw_bode_responses(type){
 
     let min_phase = 10000;
     let max_phase = -10000;
-
-    for(let i=0; i<bode_graphs.length; i++){
-      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
-        let current_graph = bode_graphs[i];
-        if(current_graph.bode_min_phase < min_phase){
-          min_phase = current_graph.bode_min_phase;
-        }
-        if(current_graph.bode_max_phase > max_phase){
-          max_phase = current_graph.bode_max_phase;
+    if (bode_graphs.length==0){
+      min_phase = -270/180*Math.PI;
+      max_phase = 90/180*Math.PI;
+    } else {
+      for(let i=0; i<bode_graphs.length; i++){
+        if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
+          let current_graph = bode_graphs[i];
+          if(current_graph.bode_min_phase < min_phase){
+            min_phase = current_graph.bode_min_phase;
+          }
+          if(current_graph.bode_max_phase > max_phase){
+            max_phase = current_graph.bode_max_phase;
+          }
         }
       }
     }
@@ -2338,9 +2342,13 @@ function draw_bode_responses(type){
 
     for(let y=0; y<=phase_case_number; y++){
       stroke(line_color);
-      strokeWeight(1);
       let pas = graph_bode_phase_height*y/phase_case_number;
       let value = phase_upper_bound - 45*y;
+      if (value!=0){
+        strokeWeight(1);
+      } else {
+        strokeWeight(3);
+      }
       line(0,pas,graph_bode_phase_width,pas);
       noStroke();
       fill(text_color);
@@ -2711,17 +2719,22 @@ function draw_O(screen_x,screen_y){
 
 function draw_time_responses(){
   if(document.getElementById("automatic-range-time").checked){
-    min_y_timerep = 100000;
-    max_y_timerep = -100000;
+    if (bode_graphs.length==0){
+      min_y_timerep = -2;
+      max_y_timerep = 2;
+    } else {
+      min_y_timerep = 100000;
+      max_y_timerep = -100000;
 
-    for(let i=0; i<bode_graphs.length; i++){
-      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_timeresponse_bool)){
-        let current_graph = bode_graphs[i];
-        if(current_graph.bode_max_timerep > max_y_timerep){
-          max_y_timerep = current_graph.bode_max_timerep;
-        }
-        if(current_graph.bode_min_timerep < min_y_timerep){
-          min_y_timerep = current_graph.bode_min_timerep;
+      for(let i=0; i<bode_graphs.length; i++){
+        if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_timeresponse_bool)){
+          let current_graph = bode_graphs[i];
+          if(current_graph.bode_max_timerep > max_y_timerep){
+            max_y_timerep = current_graph.bode_max_timerep;
+          }
+          if(current_graph.bode_min_timerep < min_y_timerep){
+            min_y_timerep = current_graph.bode_min_timerep;
+          }
         }
       }
     }
@@ -5884,8 +5897,15 @@ function ready(){
 
   //toggle_quiz_enabled();
   document.addEventListener('keydown', function(event) {
-    if (event.key=='q'){
+    console.log(event.key);
+    if (event.key=='F1'){
       toggle_quiz_enabled();
+    }
+    if (event.key=='F2'){
+      start_quiz();
+    }
+    if (event.key=='Escape'){
+      restart_lupze();
     }
   });
 
