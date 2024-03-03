@@ -1058,6 +1058,7 @@ let current_quiz = "none";
 let quiz_freq = 0;
 
 let quiz_nof_done = 0;
+let quiz_nof_tries = 0;
 let quiz_current_streak = 0;
 let quiz_longest_streak = 0;
 let quiz_nof_correct = 0;
@@ -1099,6 +1100,7 @@ function start_quiz(){
   quiz_icon.style.color="#5050ff";
   //removeAllGraphs();
   quiz_nof_done = 0;
+  quiz_nof_tries = 0;
   quiz_current_streak = 0;
   quiz_nof_correct = 0;
   update_quiz();
@@ -1122,13 +1124,17 @@ function update_quiz(){
   let s = "";
   s += '<center><i class="material-icons" style="font-size: 27px;vertical-align: middle;">school</i>&nbsp;&nbsp;<b>Quiz time</b></center><br>';
 
-  s += "You've got " + quiz_nof_correct + " correct answers,<br>";
-  s += "with a streak of " + quiz_current_streak + " correct answers.<br>";
-  s += "You've answered " + quiz_nof_done + " questions.<br>";
-  if(quiz_nof_done > 0){
-    s += "This means " + (100*quiz_nof_correct/quiz_nof_done).toFixed(2) + "% accuracy.<br>";
-  }
-  s += "Longest streak so far " + quiz_longest_streak + ".<br>";
+  s += "So far, you've got " + quiz_nof_correct + " correct answers,<br>";
+  s += "with a streak of " + quiz_current_streak + " immediately correct answers.<br>";
+  s += "You've answered " + quiz_nof_done + " questions in " + (quiz_nof_tries) + " tries";
+  if(quiz_nof_done > 0) s += ",<br>which is a " + (100*quiz_nof_done/quiz_nof_tries).toFixed(2) + "% accuracy.<br>";
+  else s += ".<br>";
+  s += "Longest streak so far " + quiz_longest_streak + ".";
+  if (quiz_longest_streak == 0) s+= " Better get started!";
+  else if (quiz_longest_streak <= 3) s+= " Nice going!";
+  else if (quiz_longest_streak <= 6) s+= " You're doing good!";
+  else if (quiz_longest_streak <= 9) s+= " You deserve a longer streak - go and make one!";
+  else s+= " Keep it up, Legend!";
   s += "<br>";
 
   s +="<center><span style='font-size:200%;color:#c02020'>We're working on the QUIZ right now. It is very small.</span><br><br>Check back later. Thanks for your patience! <br>/ Pex & Frida</center>";
@@ -1180,6 +1186,7 @@ function quiz_clicked(all){
 function quiz_correct(){
   quiz_nof_done += 1;
   quiz_nof_correct += 1;
+  quiz_nof_tries += 1;
   quiz_current_streak += 1;
   if (quiz_longest_streak<quiz_current_streak){
     quiz_longest_streak = quiz_current_streak;
@@ -1189,12 +1196,14 @@ function quiz_correct(){
 
 function quiz_perhaps(why_its_wrong){
   console.log(why_its_wrong);
+  quiz_nof_tries += 1;
 }
 
 function quiz_incorrect(why_its_wrong){
   console.log(why_its_wrong);
 //  quiz_nof_done += 1;
   quiz_current_streak = 0;
+  quiz_nof_tries += 1;
 }
 
 
@@ -6009,6 +6018,7 @@ function ready(){
   // Enable gamification from start:
   toggle_gamification();
   toggle_assignments();
+  toggle_quiz_enabled();
   updateToolbox();
 
   //toggle_quiz_enabled();
