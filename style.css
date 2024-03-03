@@ -495,6 +495,44 @@ body{
   pointer-events:none;
 }
 
+
+.quiz_no{
+  width:10%;
+  transform: translate(-50%,-50%);
+  z-index:40;
+  color:#808000;
+  position: absolute;
+  opacity:0;
+  pointer-events: none;
+}
+@keyframes QuizAnim2 {
+  0% {left:var(--left);top:var(--top);transform: translate(-50%,-50%) scale(1.0) rotate(0);opacity:1.0;color:#ffffff;}
+  10% {left:var(--left);top:var(--top);transform: translate(-50%,-50%) scale(1.0) rotate(0);opacity:1.0;color:#a00000;}
+  100% {left:var(--left);top:var(--top);transform: translate(-50%,-50%) scale(0.1) rotate(-90deg);opacity:0.0;color:#ffff00;}
+}
+
+.quiz_answer{
+  width:25%;
+  transform: translate(-50%,-50%) rotate(-5deg);
+  z-index:50;
+  color:#ffffff;
+  position: absolute;
+  font-family: "Lucida Console", "Courier New", monospace;
+  font-weight: 600;
+  font-size: 150%;
+  text-align:center;
+  text-shadow: 1px 1px 3px #000000;
+  opacity:0;
+  pointer-events: none;
+  background:#404040c0;
+}
+@keyframes QuizAnim {
+  from {left:var(--left);top:var(--top);opacity:1.0;transform:rotate(-5deg);color:#ffffff;}
+  to {left:var(--left);top:var(--top);opacity:0.0;transform:rotate(10deg);color:#ffff00;}
+}
+
+
+
 .assignment_star{
   width:10%;
   transform: translate(-50%,-50%);

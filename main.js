@@ -1055,7 +1055,6 @@ function showInputFunction(input){
 // Quiz
 let quiz_enabled = false;
 let current_quiz = "none";
-let quiz_freq = 0;
 
 let quiz_nof_done = 0;
 let quiz_nof_tries = 0;
@@ -1107,13 +1106,27 @@ function start_quiz(){
   next_quiz();
 }
 
+
+let quiz_no = 0;
+let quiz_freq = 0;
+let quiz_time_to_click = 0;
+
 function next_quiz(){
-  current_quiz="click_freq";
-  let decimal = Math.floor(Math.random()*4)+1;
-  let power = Math.floor(Math.random()*5)-2;
-  quiz_freq=decimal * Math.pow(10,power);
   let quiz_text = document.getElementById("quiz_text");
-  quiz_text.innerHTML="Click on the frequency " + quiz_freq.toFixed(2) + " rad/s";
+  if (quiz_no==0){
+    current_quiz="click_freq";
+    let decimal = Math.floor(Math.random()*4)+1;
+    let power = Math.floor(Math.random()*5)-2;
+    quiz_freq=decimal * Math.pow(10,power);
+    quiz_text.innerHTML="Click on the frequency " + quiz_freq.toFixed(2) + " rad/s";
+    quiz_no += 1;
+  } else if (quiz_no==1){
+    current_quiz="click_time";
+    quiz_time_to_click = Math.random()*10;
+    quiz_text.innerHTML="Click on the time " + quiz_time_to_click.toFixed(1) + " s";
+    quiz_no=0;
+  }
+
   quiz_text.style.animation = 'none';
   quiz_text.offsetHeight; /* trigger reflow */
   quiz_text.style.animation="quiz_fade 1s ease-out";
@@ -1178,6 +1191,16 @@ function quiz_clicked(all){
     else if (all.where=="Nyq") quiz_incorrect("No. The Nyquist diagram contains phases and magnitudes. The frequency information we can find is 0 rad/s and ∞ rad/s which corresponds to the start and end of the Nyquist graph. For a specific frequency, look somewhere else.");
     else if (all.where=="time") quiz_incorrect("No. The time response of a system shows the amplitude after the input signal is applied. If you're looking for frequencies, look elsewhere.");
     else if (all.where=="pz") quiz_perhaps("Perhaps. The pole-zero map can tell you time constants of a system through the location of the poles and zeros. However, for pinpointing a certain frequency there's an easier way.");
+
+  } else if (current_quiz=="click_time"){
+    if (all.where=="time"){
+      if ((all.time >= quiz_time_to_click-0.5)&&(all.time <= quiz_time_to_click+0.5)) quiz_correct();
+      else quiz_incorrect("No. You did click the right graph, but at the wrong position. Your " + (all.time.toFixed(1)) + " is too far away from the desired " + quiz_time_to_click.toFixed(1) + ".");
+    }
+    else if (all.where=="Bmag") quiz_incorrect("No. There is no time information in the Bode magnitude plot.");
+    else if (all.where=="Bphase") quiz_incorrect("No. There is no time information in the Bode phase plot.");
+    else if (all.where=="Nyq") quiz_incorrect("No. The Nyquist diagram contains phases and magnitudes. There is no direct time information in the Nyquist diagram.");
+    else if (all.where=="pz") quiz_perhaps("No. The pole-zero map is not the place to find " + quiz_time_to_click.toFixed(1) + " seconds.");
   }
 
   update_quiz();
@@ -1191,12 +1214,50 @@ function quiz_correct(){
   if (quiz_longest_streak<quiz_current_streak){
     quiz_longest_streak = quiz_current_streak;
   }
+  let quiz_answer_div = document.getElementById("quiz_answer");
+  let quiz_no_div = document.getElementById("quiz_no");
+  quiz_answer_div.style.animation = 'none';
+  quiz_no_div.style.animation = 'none';
+  if (sound_enabled==true){
+    play_jingle();
+  }
   next_quiz();
 }
 
-function quiz_perhaps(why_its_wrong){
-  console.log(why_its_wrong);
+function show_quiz_wrong_text(text){
+  // Trigger an animation with the text:
+  let quiz_answer_div = document.getElementById("quiz_answer");
+  quiz_answer_div.innerHTML=text;
+  let left = (100*mouseX /windowWidth);
+  if (left > 85) left = 85;
+  let top = (100*mouseY/windowHeight);
+  if (top > 90) left = 90;
+  document.querySelector('.quiz_answer').style.setProperty('--left',left+"%");
+  document.querySelector('.quiz_answer').style.setProperty('--top',top+"%");
+  document.querySelector('.quiz_no').style.setProperty('--left',left+"%");
+  document.querySelector('.quiz_no').style.setProperty('--top',top+"%");
+  let quiz_no_div = document.getElementById("quiz_no");
+  // Order of the animation parameters:
+  //div {
+  //  animation-name: example;
+  //  animation-duration: 5s;
+  //  animation-timing-function: linear;
+  //  animation-delay: 2s;
+  //  animation-iteration-count: infinite;
+  //  animation-direction: alternate;
+  //}
+  quiz_answer_div.style.animation = 'none';
+  quiz_answer_div.offsetHeight; /* trigger reflow */
+  quiz_answer_div.style.animation="QuizAnim 12s ease-in-out 0s 1";
+  quiz_no_div.style.animation = 'none';
+  quiz_no_div.offsetHeight; /* trigger reflow */
+  quiz_no_div.style.animation="QuizAnim2 12s ease-out 0s 1";
+}
+
+function quiz_perhaps(why_its_almost_wrong){
+  console.log(why_its_almost_wrong);
   quiz_nof_tries += 1;
+  show_quiz_wrong_text(why_its_almost_wrong);
 }
 
 function quiz_incorrect(why_its_wrong){
@@ -1204,6 +1265,7 @@ function quiz_incorrect(why_its_wrong){
 //  quiz_nof_done += 1;
   quiz_current_streak = 0;
   quiz_nof_tries += 1;
+  show_quiz_wrong_text(why_its_wrong);
 }
 
 
