@@ -1110,6 +1110,7 @@ function start_quiz(){
 let quiz_no = 0;
 let quiz_freq = 0;
 let quiz_time_to_click = 0;
+let quiz_nyquist_angle_to_click = 0;
 
 function next_quiz(){
   let quiz_text = document.getElementById("quiz_text");
@@ -1124,6 +1125,11 @@ function next_quiz(){
     current_quiz="click_time";
     quiz_time_to_click = Math.random()*10;
     quiz_text.innerHTML="Click on the time " + quiz_time_to_click.toFixed(1) + " s";
+    quiz_no+=1;
+  } else if (quiz_no==2){
+    current_quiz="click_nyquist_angle";
+    quiz_nyquist_angle_to_click = 90 - 45 * (Math.floor(Math.random()*9));
+    quiz_text.innerHTML="Click on the angle " + quiz_nyquist_angle_to_click.toFixed(0) + "° in the Nyquist diagram";
     quiz_no=0;
   }
 
@@ -1150,7 +1156,7 @@ function update_quiz(){
   else s+= " Keep it up, Legend!";
   s += "<br>";
 
-  s +="<center><span style='font-size:200%;color:#c02020'>We're working on the QUIZ right now. It is very small.</span><br><br>Check back later. Thanks for your patience! <br>/ Pex & Frida</center>";
+  s +="<center><span style='font-size:200%;color:#c02020'>We're working on the QUIZ right now. It will be longer.</span><br><br>Check back later. Thanks for your patience! <br>/ Pex & Frida</center>";
   task_div.innerHTML = s;
 }
 
@@ -1201,6 +1207,24 @@ function quiz_clicked(all){
     else if (all.where=="Bphase") quiz_incorrect("No. There is no time information in the Bode phase plot.");
     else if (all.where=="Nyq") quiz_incorrect("No. The Nyquist diagram contains phases and magnitudes. There is no direct time information in the Nyquist diagram.");
     else if (all.where=="pz") quiz_perhaps("No. The pole-zero map is not the place to find " + quiz_time_to_click.toFixed(1) + " seconds.");
+
+  } else if (current_quiz=="click_nyquist_angle"){
+    //console.log(all.phase); // Phase is between -0 and -359.9 degrees.
+    if (all.where=="Nyq"){
+      let angle_difference = quiz_nyquist_angle_to_click - all.phase;
+      if (angle_difference > 180) angle_difference -= 360;
+      console.log(angle_difference);
+      if ((angle_difference >= -15)&&(angle_difference<=15)){
+        quiz_correct();
+      } else {
+        let angle_to_print = all.phase;
+        if (angle_to_print < -270) angle_to_print += 360;
+        quiz_incorrect("No. You did click the right graph, but at the wrong angle. Your " + (angle_to_print.toFixed(0)) + "° is too far away from the desired " + quiz_nyquist_angle_to_click.toFixed(0) + "°.");
+      }
+    } else if (all.where=="time") quiz_incorrect("No. There are no angles in the time response graph.");
+    else if (all.where=="Bmag") quiz_incorrect("No. There are no angles in the Bode magnitude plot.");
+    else if (all.where=="Bphase") quiz_perhaps("Well, there are angles in the Bode phase plot, but this time we asked for the Nyquist angles. Try again!");
+    else if (all.where=="pz") quiz_incorrect("No, there are no angles in the pole-zero map.");
   }
 
   update_quiz();
