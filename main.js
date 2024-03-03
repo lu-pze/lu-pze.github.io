@@ -1116,10 +1116,42 @@ function next_quiz(){
   let quiz_text = document.getElementById("quiz_text");
   if (quiz_no==0){
     current_quiz="click_freq";
-    let decimal = Math.floor(Math.random()*4)+1;
-    let power = Math.floor(Math.random()*5)-2;
-    quiz_freq=decimal * Math.pow(10,power);
-    quiz_text.innerHTML="Click on the frequency " + quiz_freq.toFixed(2) + " rad/s";
+    let level=quiz_difficulties["click_freq"];
+    let last_value=quiz_last_value["click_freq"];
+    if (level < 6){
+      quiz_freq = 0;
+      quiz_text.innerHTML="Click on any of the Bode plots to the left";
+    } else if (level < 17){
+      if (last_value != -1){
+        quiz_freq = -1;
+        quiz_text.innerHTML="Click on the Bode magnitude plot";
+      } else {
+        quiz_freq = -2;
+        quiz_text.innerHTML="Click on the Bode phase plot";
+      }
+    } else if (level < 40){
+      while(quiz_freq==last_value){
+        let decimal = 1;
+        let power = Math.floor(Math.random()*5)-2;
+        quiz_freq=decimal * Math.pow(10,power);
+      }
+      quiz_text.innerHTML="Click on the frequency " + quiz_freq.toFixed(2) + " rad/s";
+    } else if (level < 75){
+      while(quiz_freq==last_value){
+        let decimal = Math.floor(Math.random()*4)+1;
+        let power = Math.floor(Math.random()*5)-2;
+        quiz_freq=decimal * Math.pow(10,power);
+      }
+      quiz_text.innerHTML="Click on the frequency " + quiz_freq.toFixed(2) + " rad/s";
+    } else {
+      while(quiz_freq==last_value){
+        let decimal = Math.floor(Math.random()*9)+1;
+        let power = Math.floor(Math.random()*5)-2;
+        quiz_freq=decimal * Math.pow(10,power);
+      }
+      quiz_text.innerHTML="Click on the frequency " + quiz_freq.toFixed(2) + " rad/s";
+    }
+    quiz_last_value["click_freq"]=quiz_freq;
     quiz_no += 1;
   } else if (quiz_no==1){
     current_quiz="click_time";
@@ -1210,7 +1242,7 @@ const quiz_questions=['click_freq', 'click_time', 'click_nyquist_angle'];
 let quiz_difficulty=50.0; // The average difficulty, the one shown in the slider
 let quiz_difficulties={}; // The difficulties of each type of question
 let quiz_streaks={}; // The streak for this type of question.
-let quiz_last_values={}; // The last randomized value for this type of question
+let quiz_last_value={}; // The last randomized value for this type of question
 let adaptive_difficulty_enabled = true;
 
 function set_difficulty_level(event){
@@ -1251,7 +1283,15 @@ function quiz_clicked(all){
 
   if (current_quiz=="click_freq"){
     if ((all.where=="Bmag")||(all.where=="Bphase")){
-      if ((all.frequency >= quiz_freq*0.6667) && (all.frequency <= quiz_freq*1.4)) quiz_correct();
+      if (quiz_freq==0) quiz_correct();
+      else if (quiz_freq==-1){
+        if (all.where=="Bmag") quiz_correct();
+        else quiz_incorrect("No. The Bode <i>magnitude</i> plot is above this one.");
+      } else if (quiz_freq==-2){
+        if (all.where=="Bphase") quiz_correct();
+        else quiz_incorrect("No. The Bode <i>phase</i> plot is below this one.");
+      }
+      else if ((all.frequency >= quiz_freq*0.6667) && (all.frequency <= quiz_freq*1.4)) quiz_correct();
       else quiz_incorrect("No. You did click the correct graph, but your "+all.frequency.toFixed(2)+" is too far off the correct "+quiz_freq.toFixed(2)+".");
     }
     else if (all.where=="Nyq") quiz_incorrect("No. The Nyquist diagram contains phases and magnitudes. The frequency information we can find is 0 rad/s and ∞ rad/s which corresponds to the start and end of the Nyquist graph. For a specific frequency, look somewhere else.");
