@@ -1116,8 +1116,8 @@ function next_quiz(){
   let quiz_text = document.getElementById("quiz_text");
   if (quiz_no==0){
     current_quiz="click_freq";
-    let level=quiz_difficulties["click_freq"];
-    let last_value=quiz_last_value["click_freq"];
+    let level=quiz_difficulties[current_quiz];
+    let last_value=quiz_last_value[current_quiz];
     if (level < 6){
       quiz_freq = 0;
       quiz_text.innerHTML="Click on any of the Bode plots to the left";
@@ -1155,13 +1155,58 @@ function next_quiz(){
     quiz_no += 1;
   } else if (quiz_no==1){
     current_quiz="click_time";
-    quiz_time_to_click = Math.random()*10;
-    quiz_text.innerHTML="Click on the time " + quiz_time_to_click.toFixed(1) + " s";
+    let level=quiz_difficulties[current_quiz];
+    let last_value=quiz_last_value[current_quiz];
+    if (level < 6){
+      quiz_time_to_click = -1;
+      quiz_text.innerHTML="Click on the Step input response graph. It has time on the horizontal axis.";
+    } else if (level < 40){
+      while(quiz_time_to_click==last_value){
+        quiz_time_to_click = Math.round(Math.random()*10);
+      }
+      quiz_text.innerHTML="Click on the time " + quiz_time_to_click.toFixed(0) + " seconds in the Step input response graph";
+    } else if (level < 70){
+      while(quiz_time_to_click==last_value){
+        quiz_time_to_click = Math.round(100*Math.random())/10.0;
+      }
+      quiz_text.innerHTML="Click on the time " + quiz_time_to_click.toFixed(1) + " s";
+    } else {
+      while(quiz_time_to_click==last_value){
+        quiz_time_to_click = Math.round(1000*Math.random())/100.0;
+      }
+      quiz_text.innerHTML="Click on the time " + quiz_time_to_click.toFixed(2) + " s";
+    }
+    quiz_last_value["click_time"]=quiz_time_to_click;
     quiz_no+=1;
   } else if (quiz_no==2){
     current_quiz="click_nyquist_angle";
-    quiz_nyquist_angle_to_click = 90 - 45 * (Math.floor(Math.random()*9));
-    quiz_text.innerHTML="Click on the angle " + quiz_nyquist_angle_to_click.toFixed(0) + "° in the Nyquist diagram";
+    let level=quiz_difficulties[current_quiz];
+    let last_value=quiz_last_value[current_quiz];
+    if (level < 6){
+      quiz_nyquist_angle_to_click = 1000;
+      quiz_text.innerHTML="Click on the Nyquist diagram. It has a unit circle, and the critical point -1 is at the left edge of the unit circle.";
+    } else if (level < 20){
+      while (quiz_nyquist_angle_to_click==last_value){
+        quiz_nyquist_angle_to_click = -90 * (Math.floor(Math.random()*3));
+      }
+      quiz_text.innerHTML="Click on the angle " + quiz_nyquist_angle_to_click.toFixed(0) + "° in the Nyquist diagram";
+    } else if (level < 40){
+      while (quiz_nyquist_angle_to_click==last_value){
+        quiz_nyquist_angle_to_click = 90 - 90 * (Math.floor(Math.random()*5));
+      }
+      quiz_text.innerHTML="Click on the angle " + quiz_nyquist_angle_to_click.toFixed(0) + "° in the Nyquist diagram";
+    } else if (level < 70){
+      while (quiz_nyquist_angle_to_click==last_value){
+        quiz_nyquist_angle_to_click = 90 - 45 * (Math.floor(Math.random()*9));
+      }
+      quiz_text.innerHTML="Click on the angle " + quiz_nyquist_angle_to_click.toFixed(0) + "° in the Nyquist diagram";
+    } else {
+      while (quiz_nyquist_angle_to_click==last_value){
+        quiz_nyquist_angle_to_click = 90 - Math.floor(Math.random()*360);
+      }
+      quiz_text.innerHTML="Click on the angle " + quiz_nyquist_angle_to_click.toFixed(0) + "° in the Nyquist diagram";
+    }
+    quiz_last_value["click_nyquist_angle"]=quiz_nyquist_angle_to_click;
     quiz_no=0;
   }
 
@@ -1199,7 +1244,7 @@ function update_quiz(){
   s += "<br>";
 
   s +='<div class="quiz-container">';
-  s +='<input type="range" min="0" max="100" step="0.01" class="quiz-slider" id="difficulty_level" value="' + quiz_difficulty + '" style="width:100%" onchange="set_difficulty_level(this);">';
+  s +='<input type="range" min="0" max="100" step="0.01" class="quiz-slider" id="difficulty_level" value="' + quiz_difficulty + '" style="width:100%" onchange="set_difficulty_level(this);next_quiz();">';
   s +='<div class="quiz-labels">';
 
   // * lu-pze quiz Difficulty level
@@ -1301,25 +1346,35 @@ function quiz_clicked(all){
 
   } else if (current_quiz=="click_time"){
     if (all.where=="time"){
-      if ((all.time >= quiz_time_to_click-0.5)&&(all.time <= quiz_time_to_click+0.5)) quiz_correct();
+      if (quiz_time_to_click==-1) quiz_correct();
+      else if ((all.time >= quiz_time_to_click-0.5)&&(all.time <= quiz_time_to_click+0.5)) quiz_correct();
       else quiz_incorrect("No. You did click the right graph, but at the wrong position. Your " + (all.time.toFixed(1)) + " is too far away from the desired " + quiz_time_to_click.toFixed(1) + ".");
     }
     else if (all.where=="Bmag") quiz_incorrect("No. There is no time information in the Bode magnitude plot.");
     else if (all.where=="Bphase") quiz_incorrect("No. There is no time information in the Bode phase plot.");
     else if (all.where=="Nyq") quiz_incorrect("No. The Nyquist diagram contains phases and magnitudes. There is no direct time information in the Nyquist diagram.");
-    else if (all.where=="pz") quiz_perhaps("No. The pole-zero map is not the place to find " + quiz_time_to_click.toFixed(1) + " seconds.");
+    else if (all.where=="pz"){
+      if (quiz_time_to_click==-1){
+        quiz_perhaps("No. The pole-zero map is not the place to find time.");
+      } else {
+        quiz_perhaps("No. The pole-zero map is not the place to find " + quiz_time_to_click.toFixed(1) + " seconds.");
+      }
+    }
 
   } else if (current_quiz=="click_nyquist_angle"){
     //console.log(all.phase); // Phase is between -0 and -359.9 degrees.
     if (all.where=="Nyq"){
-      let angle_difference = quiz_nyquist_angle_to_click - all.phase;
-      if (angle_difference > 180) angle_difference -= 360;
-      if ((angle_difference >= -15)&&(angle_difference<=15)){
-        quiz_correct();
-      } else {
-        let angle_to_print = all.phase;
-        if (angle_to_print < -270) angle_to_print += 360;
-        quiz_incorrect("No. You did click the right graph, but at the wrong angle. Your " + (angle_to_print.toFixed(0)) + "° is too far away from the desired " + quiz_nyquist_angle_to_click.toFixed(0) + "°.");
+      if (quiz_nyquist_angle_to_click==1000) quiz_correct();
+      else {
+        let angle_difference = quiz_nyquist_angle_to_click - all.phase;
+        if (angle_difference > 180) angle_difference -= 360;
+        if ((angle_difference >= -15)&&(angle_difference<=15)){
+          quiz_correct();
+        } else {
+          let angle_to_print = all.phase;
+          if (angle_to_print < -270) angle_to_print += 360;
+          quiz_incorrect("No. You did click the right graph, but at the wrong angle. Your " + (angle_to_print.toFixed(0)) + "° is too far away from the desired " + quiz_nyquist_angle_to_click.toFixed(0) + "°.");
+        }
       }
     } else if (all.where=="time") quiz_incorrect("No. There are no angles in the time response graph.");
     else if (all.where=="Bmag") quiz_incorrect("No. There are no angles in the Bode magnitude plot.");
@@ -1344,6 +1399,7 @@ function shoot_confetti() {
   confetti({
     ...confetti_defaults,
     particleCount: 30,
+    gravity: -0.2,
     scalar: 2.8,
     shapes: ['star']
   });
@@ -1353,8 +1409,19 @@ function shoot_confetti() {
     particleCount: 15,
     scalar: 1.5,
     startVelocity: 24,
-    shapes: ['star'],
+    flat:false,
+    shapes: ['square'],
     colors: ['FF0000', 'FF8000', 'c0c0c0', 'a04070']
+  });
+
+  confetti({
+    ...confetti_defaults,
+    particleCount: 10,
+    gravity: 1.0,
+    scalar: 2.5,
+    startVelocity: 14,
+    shapes: ['circle'],
+    colors: ['a0d0a0', 'a0a0d0', 'c0c0c0', 'a05050']
   });
 }
 
@@ -1426,7 +1493,7 @@ function quiz_incorrect(why_its_wrong){
   quiz_current_streak = 0;
   quiz_streaks[current_quiz] = 0; // The streak for this type of question.
   if (adaptive_difficulty_enabled==true){
-    quiz_difficulties[current_quiz] -= 12.5; // The difficulties of each type of question
+    quiz_difficulties[current_quiz] -= 20.0; // The difficulties of each type of question
     if (quiz_difficulties[current_quiz] < 0) quiz_difficulties[current_quiz] = 0.0;
   }
   quiz_nof_tries += 1;
@@ -6265,6 +6332,7 @@ function ready(){
     }
     if (event.key=='F3'){
       quiz_correct();
+      update_quiz();
     }
     if (event.key=='Escape'){
       restart_lupze();
