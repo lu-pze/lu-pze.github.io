@@ -37,7 +37,19 @@
     <script type="text/javascript" src="js/mathlive.min.js"></script>
     <script type="text/javascript" src="js/p5.js"></script>
     <script type="text/javascript" src="js/math.js"></script>
+
+    <script>
+      // this page is a demo that is not built, so fudge the module.exports support define a global `module` so that the actual source file can use it
+      window.module = {};
+    </script>
+    <script type="text/javascript" src="js/confetti.js"></script>
+    <script>
+      // define the `module.exports` as the `confetti` global, the way that the cdn distributed file would
+      window.confetti = module.exports;
+    </script>
+
     <script type="text/javascript" src="main.js"></script>
+
   </head>
   <body>
     <div class="noscrollbars">

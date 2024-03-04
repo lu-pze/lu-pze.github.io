@@ -1330,7 +1330,35 @@ function quiz_clicked(all){
   update_quiz();
 }
 
-function quiz_correct(){
+var confetti_defaults = {
+  spread: 360,
+  ticks: 55,
+  gravity: -0.8,
+  decay: 0.96,
+  startVelocity: 8,
+  origin: { x:0.2, y: 0.6 },
+  colors: ['FFFF00', 'FF8080', 'E89400', 'FFCA6C', 'FDFFB8']
+};
+
+function shoot_confetti() {
+  confetti({
+    ...confetti_defaults,
+    particleCount: 30,
+    scalar: 2.8,
+    shapes: ['star']
+  });
+
+  confetti({
+    ...confetti_defaults,
+    particleCount: 15,
+    scalar: 1.5,
+    startVelocity: 24,
+    shapes: ['star'],
+    colors: ['FF0000', 'FF8000', 'c0c0c0', 'a04070']
+  });
+}
+
+function quiz_correct (){
   quiz_nof_done += 1;
   quiz_nof_correct += 1;
   quiz_nof_tries += 1;
@@ -1350,6 +1378,11 @@ function quiz_correct(){
     if (quiz_difficulties[current_quiz] > 100) quiz_difficulties[current_quiz] = 100.0;
     quiz_streaks[current_quiz] += 1; // The streak for this type of question.
   }
+
+  confetti_defaults.origin.x = mouseX / windowWidth;
+  confetti_defaults.origin.y = mouseY / windowHeight;
+  shoot_confetti();
+
   next_quiz();
 }
 
@@ -6229,6 +6262,9 @@ function ready(){
     }
     if (event.key=='F2'){
       start_quiz();
+    }
+    if (event.key=='F3'){
+      quiz_correct();
     }
     if (event.key=='Escape'){
       restart_lupze();
