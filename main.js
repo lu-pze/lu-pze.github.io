@@ -1088,8 +1088,8 @@ function toggle_quiz(){
 
 function start_quiz(){
   current_assignment="none";
-  update_tasks();
   removeAllGraphs();
+  update_tasks();
   //remove the assignments box:
   let assignments_box = document.querySelector('.assignments_box');
   assignments_box.classList.remove('active');
@@ -1102,6 +1102,11 @@ function start_quiz(){
   quiz_nof_tries = 0;
   quiz_current_streak = 0;
   quiz_nof_correct = 0;
+  for (let question in quiz_questions){
+    quiz_streaks[quiz_questions[question]] = 0;
+    quiz_questions_nof_done[quiz_questions[question]]=0;
+  }
+  quiz_no=0;
   next_quiz();
   update_quiz();
 }
@@ -1111,13 +1116,59 @@ let quiz_no = 0;
 let quiz_freq = 0;
 let quiz_time_to_click = 0;
 let quiz_nyquist_angle_to_click = 0;
+let quiz_questions_nof_done={};
 
 function next_quiz(){
   let quiz_text = document.getElementById("quiz_text");
-  if (quiz_no==0){
-    current_quiz="click_freq";
+
+  // Randomize where we will pick assignments from.
+  // The first round should pick every type of question once.
+  // After that, let's pick questions that has lower level,
+  //  which probably is something the user needs to practice.
+
+  let quiz_possible_questions={};
+  if (quiz_no < quiz_questions.length){
+    // We shall pick "not yet used" questions:
+    for (let question_no in quiz_questions){
+      let question_id = quiz_questions[question_no];
+      if (quiz_questions_nof_done[question_id]==0){
+        quiz_possible_questions[question_id]=1; // All should be similar numbers, to make picking any of them equally likely
+      }
+    }
+  } else {
+    for (let question_no in quiz_questions){
+      let question_id = quiz_questions[question_no];
+      if (question_id != current_quiz){
+        quiz_possible_questions[question_id]= (120 - quiz_difficulties[question_id]) / 120; // Almost a "probability" for getting picked
+      }
+    }
+  }
+
+  // Now pick randomly from the quiz_possible_questions array.
+
+  // Calculate the "total probability" for all the values in the dict
+  let total_probability = 0;
+  for (let question_id in quiz_possible_questions) {
+    total_probability += quiz_possible_questions[question_id];
+  }
+  // Generate a random number between 0 and total_probability
+  let random_num = Math.random() * total_probability;
+  // Iterate through the dictionary again to find the selected item
+  let cumulative_probability = 0;
+  let next_question_id="";
+  for (let question_id in quiz_possible_questions){
+    cumulative_probability += quiz_possible_questions[question_id];
+    if (random_num <= cumulative_probability){
+      next_question_id = question_id;
+      break;
+    }
+  }
+  current_quiz = next_question_id;
+  quiz_questions_nof_done[current_quiz]+=1;
+
+  if (current_quiz=="click_freq"){
     let level=quiz_difficulties[current_quiz];
-    let last_value=quiz_last_value[current_quiz];
+    let last_value=quiz_freq;
     if (level < 6){
       quiz_freq = 0;
       quiz_text.innerHTML="Click on any of the Bode plots to the left";
@@ -1151,12 +1202,9 @@ function next_quiz(){
       }
       quiz_text.innerHTML="Click on the frequency " + quiz_freq.toFixed(2) + " rad/s";
     }
-    quiz_last_value["click_freq"]=quiz_freq;
-    quiz_no += 1;
-  } else if (quiz_no==1){
-    current_quiz="click_time";
+  } else if (current_quiz=="click_time"){
     let level=quiz_difficulties[current_quiz];
-    let last_value=quiz_last_value[current_quiz];
+    let last_value=quiz_time_to_click;
     if (level < 6){
       quiz_time_to_click = -1;
       quiz_text.innerHTML="Click on the Step input response graph. It has time on the horizontal axis.";
@@ -1176,12 +1224,9 @@ function next_quiz(){
       }
       quiz_text.innerHTML="Click on the time " + quiz_time_to_click.toFixed(2) + " s";
     }
-    quiz_last_value["click_time"]=quiz_time_to_click;
-    quiz_no+=1;
-  } else if (quiz_no==2){
-    current_quiz="click_nyquist_angle";
+  } else if (current_quiz=="click_nyquist_angle"){
     let level=quiz_difficulties[current_quiz];
-    let last_value=quiz_last_value[current_quiz];
+    let last_value=quiz_nyquist_angle_to_click;
     if (level < 6){
       quiz_nyquist_angle_to_click = 1000;
       quiz_text.innerHTML="Click on the Nyquist diagram. It has a unit circle, and the critical point -1 is at the left edge of the unit circle.";
@@ -1206,9 +1251,10 @@ function next_quiz(){
       }
       quiz_text.innerHTML="Click on the angle " + quiz_nyquist_angle_to_click.toFixed(0) + "° in the Nyquist diagram";
     }
-    quiz_last_value["click_nyquist_angle"]=quiz_nyquist_angle_to_click;
-    quiz_no=0;
+  } else {
+    console.log("ERROR, the current_quiz was a value I don't handle:" + current_quiz);
   }
+  quiz_no+=1;
 
   quiz_text.style.animation = 'none';
   quiz_text.offsetHeight; /* trigger reflow */
@@ -1264,7 +1310,11 @@ function update_quiz(){
   s +='</div>';
   s +='<center>';
 //  s +='<i>Difficulty Level</i>';
-  s +='<input type="checkbox" id="adaptive_difficulty" checked onchange="toggle_adaptive_difficulty(this);"><label for="adaptive_difficulty">Adaptive difficulty level</label>';
+  s +='<input type="checkbox" id="adaptive_difficulty" ';
+  if (adaptive_difficulty_enabled==true){
+    s +='checked ';
+  }
+  s +='onchange="toggle_adaptive_difficulty(this);"><label for="adaptive_difficulty">Adaptive difficulty level</label>';
   s +='</center>';
   s +='</div>';
 
@@ -1287,7 +1337,6 @@ const quiz_questions=['click_freq', 'click_time', 'click_nyquist_angle'];
 let quiz_difficulty=50.0; // The average difficulty, the one shown in the slider
 let quiz_difficulties={}; // The difficulties of each type of question
 let quiz_streaks={}; // The streak for this type of question.
-let quiz_last_value={}; // The last randomized value for this type of question
 let adaptive_difficulty_enabled = true;
 
 function set_difficulty_level(event){
@@ -1296,7 +1345,7 @@ function set_difficulty_level(event){
   for (let question in quiz_questions){
     quiz_difficulties[quiz_questions[question]] = quiz_difficulty;
     quiz_streaks[quiz_questions[question]] = 0;
-    quiz_last_value[quiz_questions[question]] = 0;
+    quiz_questions_nof_done[quiz_questions[question]]=0;
   }
   update_quiz();
 }
