@@ -1115,11 +1115,14 @@ function start_quiz(){
 let quiz_no = 0;
 let quiz_freq = 0;
 let quiz_time_to_click = 0;
-let quiz_nyquist_angle_to_click = 0;
+let quiz_nyquist_angle_to_click = -1;
+let quiz_system_to_click = -1;
 let quiz_questions_nof_done={};
 
 function next_quiz(){
   let quiz_text = document.getElementById("quiz_text");
+
+  removeAllGraphs();
 
   // Randomize where we will pick assignments from.
   // The first round should pick every type of question once.
@@ -1139,7 +1142,7 @@ function next_quiz(){
     for (let question_no in quiz_questions){
       let question_id = quiz_questions[question_no];
       if (question_id != current_quiz){
-        quiz_possible_questions[question_id]= (120 - quiz_difficulties[question_id]) / 120; // Almost a "probability" for getting picked
+        quiz_possible_questions[question_id]= (104 - quiz_difficulties[question_id]) / 104; // Almost a "probability" for getting picked
       }
     }
   }
@@ -1202,6 +1205,7 @@ function next_quiz(){
       }
       quiz_text.innerHTML="Click on the frequency " + quiz_freq.toFixed(2) + " rad/s";
     }
+
   } else if (current_quiz=="click_time"){
     let level=quiz_difficulties[current_quiz];
     let last_value=quiz_time_to_click;
@@ -1224,6 +1228,7 @@ function next_quiz(){
       }
       quiz_text.innerHTML="Click on the time " + quiz_time_to_click.toFixed(2) + " s";
     }
+
   } else if (current_quiz=="click_nyquist_angle"){
     let level=quiz_difficulties[current_quiz];
     let last_value=quiz_nyquist_angle_to_click;
@@ -1251,6 +1256,25 @@ function next_quiz(){
       }
       quiz_text.innerHTML="Click on the angle " + quiz_nyquist_angle_to_click.toFixed(0) + "° in the Nyquist diagram";
     }
+
+  } else if (current_quiz=="click_system"){
+    let level=quiz_difficulties[current_quiz];
+    let last_value=quiz_system_to_click;
+    // Randomize the colors of the graphs:
+    next_graph_no_to_add=Math.floor(Math.random()*5);
+    id_bank=next_graph_no_to_add;
+    // Add some graphs:
+    addNewGraph(null, GRAPH_ORDER[0]);
+    addNewGraph(null, GRAPH_ORDER[1]);
+    addNewGraph(null, GRAPH_ORDER[2]);
+    addNewGraph(null, GRAPH_ORDER[5]);
+    while (quiz_system_to_click==last_value){
+      quiz_system_to_click = Math.floor(Math.random()*3)+1;
+    }
+    if (quiz_system_to_click==1) quiz_text.innerHTML="Click on the Step input response for the first-order system";
+    else if (quiz_system_to_click==2) quiz_text.innerHTML="Click on Step input response for any second-order system";
+    else quiz_text.innerHTML="Click on the Step input response for the fourth-order system";
+
   } else {
     console.log("ERROR, the current_quiz was a value I don't handle:" + current_quiz);
   }
@@ -1260,6 +1284,8 @@ function next_quiz(){
   quiz_text.offsetHeight; /* trigger reflow */
   quiz_text.style.animation="quiz_fade 1s ease-out";
 }
+
+const quiz_questions=['click_freq', 'click_time', 'click_nyquist_angle', 'click_system'];
 
 function update_quiz(){
   if (current_quiz == "none") return;
@@ -1333,7 +1359,6 @@ function stop_quiz(){
   restart_lupze();
 }
 
-const quiz_questions=['click_freq', 'click_time', 'click_nyquist_angle'];
 let quiz_difficulty=50.0; // The average difficulty, the one shown in the slider
 let quiz_difficulties={}; // The difficulties of each type of question
 let quiz_streaks={}; // The streak for this type of question.
@@ -1429,6 +1454,27 @@ function quiz_clicked(all){
     else if (all.where=="Bmag") quiz_incorrect("No. There are no angles in the Bode magnitude plot.");
     else if (all.where=="Bphase") quiz_perhaps("Well, there are angles in the Bode phase plot, but this time we asked for the Nyquist angles. Try again!");
     else if (all.where=="pz") quiz_incorrect("No, there are no angles in the pole-zero map.");
+
+  } else if (current_quiz=="click_system"){
+    if (all.where=="time"){
+      if (quiz_system_to_click==1){ // 1st order
+        if (all.graph_no==0) quiz_correct();
+        else if(all.graph_no==3) quiz_incorrect("No. You clicked the fourth-order system.");
+        else quiz_incorrect("No. You clicked a second-order system.");
+      } else if (quiz_system_to_click==2){ //2nd order
+        if (all.graph_no==0) quiz_incorrect("No. You clicked a first-order system.");
+        else if(all.graph_no==3) quiz_incorrect("No. You clicked the fourth-order system.");
+        else quiz_correct();
+      } else { //4th order
+        if (all.graph_no==0) quiz_incorrect("No. You clicked a first-order system.");
+        else if(all.graph_no==3) quiz_correct();
+        else quiz_incorrect("No. You clicked a second-order system.");
+      }
+    } else if (all.where=="Nyq") quiz_incorrect("No. You cliced the Nyquist diagram. That's not the step input response.");
+    else if (all.where=="Bmag") quiz_incorrect("No. The Bode magnitude plot does not contain the step input response.");
+    else if (all.where=="Bphase") quiz_incorrect("No. The Bode phase plot does not contain the step input response.");
+    else if (all.where=="pz") quiz_incorrect("No. The pole-zero map is not the step input response.");
+
   }
 
   update_quiz();
