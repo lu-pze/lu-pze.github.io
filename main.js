@@ -638,6 +638,12 @@ function removeAllGraphs(){
   });
   bode_graphs = [];
   id_bank = 1;
+
+  input_formula = "1/s";
+  let input_equation = document.getElementById("input-formula");
+  input_equation.value = "\\frac{1}{s}";
+  let i2 = document.getElementById("input-choices");
+  i2.value = "Unit step";
 }
 
 
@@ -1264,16 +1270,102 @@ function next_quiz(){
     next_graph_no_to_add=Math.floor(Math.random()*5);
     id_bank=next_graph_no_to_add;
     // Add some graphs:
-    addNewGraph(null, GRAPH_ORDER[0]);
-    addNewGraph(null, GRAPH_ORDER[1]);
-    addNewGraph(null, GRAPH_ORDER[2]);
-    addNewGraph(null, GRAPH_ORDER[5]);
+
+    // Add ghost graphs:
+    // The name tells where this formula will be shown:
+    // GhostMPTNIE_Displayed name
+    //      M      = shows up in Bode magnitude plot
+    //       P     = shows up in Bode phase plot
+    //        T    = shows up in Bode time response plot
+    //         N   = shows up in Nyquist diagram
+    //          I  = shows up in information tab
+    //           E = shows up in Equations
+    let name_prefix="";
+    let name_prefix2="";
+    let name_prefix4="";
+    if (level < 30){
+      name_prefix="GhostMPTNIE_";
+      name_prefix2="GhostMPTNIE_";
+      name_prefix4="GhostMPTNIE_";
+    } else if (level < 60){
+      let r = Math.random();
+      if (r<0.33) name_prefix="GhostMP...._";
+      else if (r<0.67) name_prefix="Ghost..TN.._";
+      else name_prefix="GhostM.T..._";
+      name_prefix2=name_prefix;
+      name_prefix4=name_prefix;
+    } else if (level < 90){
+      let r = Math.random();
+      if (r<0.33) name_prefix="GhostM....._";
+      else if (r<0.67) name_prefix="Ghost.P...._";
+      else name_prefix="Ghost..T..._";
+      name_prefix2=name_prefix;
+      name_prefix4=name_prefix;
+    } else {
+      let r = Math.random();
+      if (r<0.33){
+        name_prefix="GhostM....._";
+        name_prefix2="Ghost.P...._";
+        name_prefix4="Ghost..T..._";
+      } else if (r<0.67){
+        name_prefix2="GhostM....._";
+        name_prefix4="Ghost.P...._";
+        name_prefix="Ghost..T..._";
+      } else {
+        name_prefix4="GhostM....._";
+        name_prefix="Ghost.P...._";
+        name_prefix2="Ghost..T..._";
+      }
+    }
+
+    let k = 0.5 + 3.5 * Math.random();
+    if (level > 70){
+      if (Math.random() < 0.5) k = -k;
+    }
+    let t = 1;
+    if (level > 30){
+      let decimal = Math.floor(Math.random()*9)+1;
+      let power = Math.floor(Math.random()*2)-1;
+      t = 1 / (decimal * Math.pow(10,power));
+    }
+    addNewGraph(null, {name:name_prefix+"", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+
+    let r = Math.random();
+    if (r<0.25)      addNewGraph(null, {name:name_prefix2+"", mf:"\\frac{0.5}{1+2s+s^2}", formula:"0.5/(1+2s+s^2)"});
+    else if (r<0.5)  addNewGraph(null, {name:name_prefix2+"", mf:"\\frac{1}{(1+5s)(1+0.05s)}", formula:"1/(1+5s)*1/(1+0.05s)"});
+    else if (r<0.75) addNewGraph(null, {name:name_prefix2+"", mf:"\\frac{8^2}{s^2+2*0.05*8*s+8^2}", formula:"8^2/(s^2+2*0.05*8*s+8^2)"});
+    else             addNewGraph(null, {name:name_prefix2+"", mf:"\\frac{0.7*2^2}{s^2+2*0.7*2*s+2^2}", formula:"0.7*2^2/(s^2+2*0.7*2*s+2^2)"});
+
+    let k4 = 0.5 + 3.5 * Math.random();
+    if (level > 70){
+      if (Math.random() < 0.5) k4 = -k4;
+    }
+    let t4 = 1;
+    if (level > 30){
+      let decimal = Math.floor(Math.random()*9)+1;
+      let power = Math.floor(Math.random()*2)-1;
+      t4 = 1 / (decimal * Math.pow(10,power));
+    }
+    addNewGraph(null, {name:name_prefix4+"", mf:"\\frac{"+k4+"}{(1+"+t4+"s)^4}", formula:k4+"/((1+"+t4+"s)^4)"});
+
+    if (level > 95){
+      if (Math.random() < 0.33){
+        //Select Dirac impulse for time responses
+        //updateInputFormulaFromList()
+        input_formula = "1";
+        let input_equation = document.getElementById("input-formula");
+        input_equation.value = "1";
+        let i2 = document.getElementById("input-choices");
+        i2.value = "Impulse";
+      }
+    }
+
     while (quiz_system_to_click==last_value){
       quiz_system_to_click = Math.floor(Math.random()*3)+1;
     }
-    if (quiz_system_to_click==1) quiz_text.innerHTML="Click on the Step input response for the first-order system";
-    else if (quiz_system_to_click==2) quiz_text.innerHTML="Click on Step input response for any second-order system";
-    else quiz_text.innerHTML="Click on the Step input response for the fourth-order system";
+    if (quiz_system_to_click==1) quiz_text.innerHTML="Click a first-order system";
+    else if (quiz_system_to_click==2) quiz_text.innerHTML="Click a second-order system";
+    else quiz_text.innerHTML="Click a fourth-order system";
 
   } else {
     console.log("ERROR, the current_quiz was a value I don't handle:" + current_quiz);
@@ -1283,6 +1375,7 @@ function next_quiz(){
   quiz_text.style.animation = 'none';
   quiz_text.offsetHeight; /* trigger reflow */
   quiz_text.style.animation="quiz_fade 1s ease-out";
+  redraw(); // Needed to get the title of the Dirac Impulse response correct
 }
 
 const quiz_questions=['click_freq', 'click_time', 'click_nyquist_angle', 'click_system'];
@@ -1456,25 +1549,24 @@ function quiz_clicked(all){
     else if (all.where=="pz") quiz_incorrect("No, there are no angles in the pole-zero map.");
 
   } else if (current_quiz=="click_system"){
-    if (all.where=="time"){
-      if (quiz_system_to_click==1){ // 1st order
-        if (all.graph_no==0) quiz_correct();
-        else if(all.graph_no==3) quiz_incorrect("No. You clicked the fourth-order system.");
-        else quiz_incorrect("No. You clicked a second-order system.");
-      } else if (quiz_system_to_click==2){ //2nd order
-        if (all.graph_no==0) quiz_incorrect("No. You clicked a first-order system.");
-        else if(all.graph_no==3) quiz_incorrect("No. You clicked the fourth-order system.");
-        else quiz_correct();
-      } else { //4th order
-        if (all.graph_no==0) quiz_incorrect("No. You clicked a first-order system.");
-        else if(all.graph_no==3) quiz_correct();
-        else quiz_incorrect("No. You clicked a second-order system.");
-      }
-    } else if (all.where=="Nyq") quiz_incorrect("No. You cliced the Nyquist diagram. That's not the step input response.");
-    else if (all.where=="Bmag") quiz_incorrect("No. The Bode magnitude plot does not contain the step input response.");
-    else if (all.where=="Bphase") quiz_incorrect("No. The Bode phase plot does not contain the step input response.");
-    else if (all.where=="pz") quiz_incorrect("No. The pole-zero map is not the step input response.");
-
+    if (all.graph_no==-1) quiz_perhaps("Perhaps. Please click directly on one line, not just inside a graph.");
+    else{
+      if ((all.where=="time")||(all.where=="Bmag")||(all.where=="Bphase")||(all.where=="pz")){
+        if (quiz_system_to_click==1){ // 1st order
+          if (all.graph_no==0) quiz_correct();
+          else if(all.graph_no==2) quiz_incorrect("No. You clicked the fourth-order system.");
+          else quiz_incorrect("No. You clicked a second-order system.");
+        } else if (quiz_system_to_click==2){ //2nd order
+          if (all.graph_no==0) quiz_incorrect("No. You clicked a first-order system.");
+          else if(all.graph_no==2) quiz_incorrect("No. You clicked the fourth-order system.");
+          else quiz_correct();
+        } else { //4th order
+          if (all.graph_no==0) quiz_incorrect("No. You clicked a first-order system.");
+          else if(all.graph_no==2) quiz_correct();
+          else quiz_incorrect("No. You clicked a second-order system.");
+        }
+      } else if (all.where=="Nyq") quiz_perhaps("Please click in the other graphs or plots.");
+    }
   }
 
   update_quiz();
@@ -1579,7 +1671,6 @@ function show_quiz_wrong_text(text){
 }
 
 function quiz_perhaps(why_its_almost_wrong){
-  quiz_nof_tries += 1;
   show_quiz_wrong_text(why_its_almost_wrong);
 }
 
