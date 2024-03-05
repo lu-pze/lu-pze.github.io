@@ -1123,6 +1123,7 @@ let quiz_freq = 0;
 let quiz_time_to_click = 0;
 let quiz_nyquist_angle_to_click = -1;
 let quiz_system_to_click = -1;
+let quiz_click_wrong = -1;
 let quiz_questions_nof_done={};
 
 function next_quiz (){
@@ -1390,6 +1391,248 @@ function next_quiz (){
     else if (quiz_system_to_click==2) quiz_text.innerHTML="Click a second-order system";
     else quiz_text.innerHTML="Click a fourth-order system";
 
+
+  } else if (current_quiz=="click_wrong"){
+    let level=quiz_difficulties[current_quiz];
+    let last_value=quiz_click_wrong;
+    // Control the colors of the graphs:
+    let graph_color=Math.floor(5*Math.random());
+    next_graph_no_to_add=graph_color;
+    id_bank=next_graph_no_to_add;
+    // Add ghost graphs:
+    // The name tells where this formula will be shown:
+    // GhostMPTNIE_Displayed name
+    //      M      = shows up in Bode magnitude plot
+    //       P     = shows up in Bode phase plot
+    //        T    = shows up in Bode time response plot
+    //         N   = shows up in Nyquist diagram
+    //          I  = shows up in information tab
+    //           E = shows up in Equations
+    while (quiz_click_wrong==last_value){
+      quiz_click_wrong=Math.floor(Math.random()*4);
+    }
+    // What kind of system is a correct one?
+    let correct_system_order=1;
+    let wrong_system_order=1;
+    if (level>40){
+      if (Math.random()<0.5){
+        correct_system_order=2;
+        wrong_system_order=2;
+      }
+    }
+    if (level>90){
+      if (Math.random()<0.4){
+        wrong_system_order=3-wrong_system_order;  // 2->1  and 1->2
+      }
+    }
+
+    if (quiz_click_wrong==0){
+      // Let's make the Bode magnitude plot wrong
+      let k = 0.5 + 3.5 * Math.random();
+      if (level > 70){
+        if (Math.random() < 0.5) k = -k;
+      }
+      let t = 1;
+      if (level > 30){
+        let decimal = Math.floor(Math.random()*9)+1;
+        let power = Math.floor(Math.random()*3)-1;
+        t = 1 / (decimal * Math.pow(10,power));
+      }
+      let z=2.0*Math.random();
+      let w=0.4+4.0*Math.random();
+      if (correct_system_order==1){
+        addNewGraph(null, {name:"Ghost.P...._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+        next_graph_no_to_add=graph_color;
+        id_bank=next_graph_no_to_add;
+        addNewGraph(null, {name:"Ghost..T..._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+        next_graph_no_to_add=graph_color;
+        id_bank=next_graph_no_to_add;
+        addNewGraph(null, {name:"Ghost...N.._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+      } else {
+        addNewGraph(null, {name:"Ghost.P...._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+        next_graph_no_to_add=graph_color;
+        id_bank=next_graph_no_to_add;
+        addNewGraph(null, {name:"Ghost..T..._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+        next_graph_no_to_add=graph_color;
+        id_bank=next_graph_no_to_add;
+        addNewGraph(null, {name:"Ghost...N.._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+      }
+
+      if (Math.random() < 0.5){
+        // Let's make k/w wrong:
+        if (level < 50){
+          if (Math.random() < 0.5) k=k*(8+14*Math.random());
+          else k=k/(8+14*Math.random());
+        } else {
+          if (Math.random() < 0.5) k=k*(2+40*Math.random());
+          else k=k/(2+40*Math.random());
+        }
+        if (Math.random()<0.5) w=w/(10+14*Math.random());
+        else w=w*(10+14*Math.random());
+      } else {
+        // Let's make t/z wrong:
+        if (Math.random() < 0.5) t=t*(18+14*Math.random());
+        else t=t/(18+14*Math.random());
+        if (Math.random()<0.5) z=z/(10+14*Math.random());
+        else z=z*(10+14*Math.random());
+      }
+      next_graph_no_to_add=graph_color;
+      id_bank=next_graph_no_to_add;
+      if (wrong_system_order==1){
+        addNewGraph(null, {name:"GhostM....._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+      } else {
+        addNewGraph(null, {name:"GhostM....._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+      }
+
+
+    } else if (quiz_click_wrong==1){
+      // Let's make the Bode phase plot wrong
+      let k = 0.5 + 3.5 * Math.random();
+      if (level > 70){
+        if (Math.random() < 0.5) k = -k;
+      }
+      let t = 1;
+      if (level > 30){
+        let decimal = Math.floor(Math.random()*9)+1;
+        let power = Math.floor(Math.random()*2)-1;
+        t = 1 / (decimal * Math.pow(10,power));
+      }
+      let z=2.0*Math.random();
+      let w=0.4+4.0*Math.random();
+      if (correct_system_order==1){
+        addNewGraph(null, {name:"GhostM....._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+        next_graph_no_to_add=graph_color;
+        id_bank=next_graph_no_to_add;
+        addNewGraph(null, {name:"Ghost..T..._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+        next_graph_no_to_add=graph_color;
+        id_bank=next_graph_no_to_add;
+        addNewGraph(null, {name:"Ghost...N.._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+      } else {
+        addNewGraph(null, {name:"GhostM....._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+        next_graph_no_to_add=graph_color;
+        id_bank=next_graph_no_to_add;
+        addNewGraph(null, {name:"Ghost..T..._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+        next_graph_no_to_add=graph_color;
+        id_bank=next_graph_no_to_add;
+        addNewGraph(null, {name:"Ghost...N.._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+      }
+
+      // Let's make t/w wrong:
+      if (Math.random() < 0.5) t=t*(18+14*Math.random());
+      else t=t/(18+14*Math.random());
+      if (Math.random()<0.5) w=w/(10+14*Math.random());
+      else w=w*(10+14*Math.random());
+
+      next_graph_no_to_add=graph_color;
+      id_bank=next_graph_no_to_add;
+      if (wrong_system_order==1){
+        addNewGraph(null, {name:"Ghost.P...._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+      } else {
+        addNewGraph(null, {name:"Ghost.P...._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+      }
+
+
+    } else if (quiz_click_wrong==2){
+      // Let's make the Step input response wrong
+      let k = 0.5 + 3.5 * Math.random();
+      if (level > 70){
+        if (Math.random() < 0.5) k = -k;
+      }
+      let t = 1;
+      if (level > 30){
+        let decimal = Math.floor(Math.random()*9)+1;
+        let power = Math.floor(Math.random()*2)-1;
+        t = 1 / (decimal * Math.pow(10,power));
+      }
+      let z=2.0*Math.random();
+      let w=0.4+4.0*Math.random();
+      if (correct_system_order==1){
+        addNewGraph(null, {name:"Ghost.P...._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+        next_graph_no_to_add=graph_color;
+        id_bank=next_graph_no_to_add;
+        addNewGraph(null, {name:"GhostM....._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+        next_graph_no_to_add=graph_color;
+        id_bank=next_graph_no_to_add;
+        addNewGraph(null, {name:"Ghost...N.._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+      } else {
+        addNewGraph(null, {name:"Ghost.P...._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+        next_graph_no_to_add=graph_color;
+        id_bank=next_graph_no_to_add;
+        addNewGraph(null, {name:"GhostM....._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+        next_graph_no_to_add=graph_color;
+        id_bank=next_graph_no_to_add;
+        addNewGraph(null, {name:"Ghost...N.._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+      }
+
+      // Let's make k and z and w wrong:
+      if (level < 50){
+        if (Math.random() < 0.5) k=k*(8+14*Math.random());
+        else k=k/(8+14*Math.random());
+      } else {
+        if (Math.random() < 0.5) k=k*(2+40*Math.random());
+        else k=k/(2+40*Math.random());
+      }
+      if ((level > 80) && (Math.random()<0.5)) k=-k;
+      if (Math.random()<0.5) w=w/(10+14*Math.random());
+      else w=w*(10+14*Math.random());
+      if (Math.random()<0.5) z=z/(10+14*Math.random());
+      else z=z*(10+14*Math.random());
+      next_graph_no_to_add=graph_color;
+      id_bank=next_graph_no_to_add;
+      if (wrong_system_order==1){
+        addNewGraph(null, {name:"Ghost..T..._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+      } else {
+        addNewGraph(null, {name:"Ghost..T..._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+      }
+
+    } else {
+      // Let's make the Nyquist diagram wrong
+      let k = 0.5 + 3.5 * Math.random();
+      if (level > 70){
+        if (Math.random() < 0.5) k = -k;
+      }
+      let t = 1;
+      if (level > 30){
+        let decimal = Math.floor(Math.random()*9)+1;
+        let power = Math.floor(Math.random()*2)-1;
+        t = 1 / (decimal * Math.pow(10,power));
+      }
+      let z=2.0*Math.random();
+      let w=0.4+4.0*Math.random();
+      if (correct_system_order==1){
+        addNewGraph(null, {name:"Ghost.P...._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+        next_graph_no_to_add=graph_color;
+        id_bank=next_graph_no_to_add;
+        addNewGraph(null, {name:"Ghost..T..._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+        next_graph_no_to_add=graph_color;
+        id_bank=next_graph_no_to_add;
+        addNewGraph(null, {name:"GhostM....._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+      } else {
+        addNewGraph(null, {name:"Ghost.P...._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+        next_graph_no_to_add=graph_color;
+        id_bank=next_graph_no_to_add;
+        addNewGraph(null, {name:"Ghost..T..._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+        next_graph_no_to_add=graph_color;
+        id_bank=next_graph_no_to_add;
+        addNewGraph(null, {name:"GhostM....._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+      }
+
+      // Let's make k/z wrong:
+      if (Math.random() < 0.5) k=k*(3+6*Math.random());
+      else k=k/(3+6*Math.random());
+      if (Math.random()<0.5) z=z/(10+14*Math.random());
+      else z=z*(10+14*Math.random());
+      next_graph_no_to_add=graph_color;
+      id_bank=next_graph_no_to_add;
+      if (wrong_system_order==1){
+        addNewGraph(null, {name:"Ghost...N.._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+      } else {
+        addNewGraph(null, {name:"Ghost...N.._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+      }
+    }
+    quiz_text.innerHTML="Click on the wrong graph";
+
+
   } else {
     console.log("ERROR, the current_quiz was a value I don't handle:" + current_quiz);
   }
@@ -1401,7 +1644,7 @@ function next_quiz (){
   redraw(); // Needed to get the title of the Dirac Impulse response correct
 }
 
-const quiz_questions=['click_freq', 'click_time', 'click_nyquist_angle', 'click_system'];
+const quiz_questions=['click_freq', 'click_time', 'click_nyquist_angle', 'click_system', 'click_wrong'];
 
 function update_quiz(){
   if (current_quiz == "none") return;
@@ -1601,6 +1844,21 @@ function quiz_clicked(all){
         }
       } else if (all.where=="Nyq") quiz_perhaps("Please click in the other graphs or plots.");
     }
+
+  } else if (current_quiz=="click_wrong"){
+    if (all.where=="Bmag"){
+      if (quiz_click_wrong==0) quiz_correct();
+      else quiz_incorrect("No. There's nothing wrong with this Bode magnitude plot.");
+    } else if (all.where=="Bphase"){
+      if (quiz_click_wrong==1) quiz_correct();
+      else quiz_incorrect("No. There's nothing wrong with this Bode phase plot.");
+    } else if (all.where=="time"){
+      if (quiz_click_wrong==2) quiz_correct();
+      else quiz_incorrect("No. There's nothing wrong with this step input response.");
+    } else if (all.where=="Nyq"){
+      if (quiz_click_wrong==3) quiz_correct();
+      else quiz_incorrect("No. There's nothing wrong with this Nyquist diagram.");
+    }
   }
 
   update_quiz();
@@ -1671,7 +1929,8 @@ function quiz_correct (){
   confetti_defaults.origin.y = mouseY / windowHeight;
   shoot_confetti();
 
-  next_quiz();
+  //next_quiz();
+  setTimeout(next_quiz, 50); // Make sure that the star animation starts rolling before updating graphs for the next quiz question.
 }
 
 function show_quiz_wrong_text(text){
