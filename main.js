@@ -2847,10 +2847,13 @@ function textPowerOfTen(input_power,x_pos,y_pos){
 //Drawing functions
 function draw_bode_responses(type){
   if(type == "phase"){
-
+    let nof_shown=0;
+    for(let i=0; i<bode_graphs.length; i++){
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)) nof_shown+=1;
+    }
     let min_phase = 10000;
     let max_phase = -10000;
-    if (bode_graphs.length==0){
+    if (nof_shown==0){
       min_phase = -270/180*Math.PI;
       max_phase = 90/180*Math.PI;
     } else {
@@ -3277,7 +3280,11 @@ function draw_O(screen_x,screen_y){
 
 function draw_time_responses(){
   if(document.getElementById("automatic-range-time").checked){
-    if (bode_graphs.length==0){
+    let nof_shown=0;
+    for(let i=0; i<bode_graphs.length; i++){
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_timeresponse_bool)) nof_shown+=1;
+    }
+    if (nof_shown==0){
       min_y_timerep = -2;
       max_y_timerep = 2;
     } else {
@@ -3515,8 +3522,11 @@ function draw_nyquist_responses(){
 //  }
 //  //console.log("nyquist_y_squares=" + nyquist_y_squares);
 //  //console.log("nyquist_x_squares=" + nyquist_x_squares);
-
-  if (bode_graphs.length==0){
+  let nof_shown=0;
+  for(let i=0; i<bode_graphs.length; i++){
+    if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_nyquist_bool)) nof_shown+=1;
+  }
+  if (nof_shown==0){
     min_nyquist_x = -1;
     max_nyquist_x = 1;
     min_nyquist_y = -1;
