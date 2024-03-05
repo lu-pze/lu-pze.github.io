@@ -1125,54 +1125,77 @@ let quiz_nyquist_angle_to_click = -1;
 let quiz_system_to_click = -1;
 let quiz_questions_nof_done={};
 
-function next_quiz(){
+function next_quiz (){
   let quiz_text = document.getElementById("quiz_text");
 
   removeAllGraphs();
 
-  // Randomize where we will pick assignments from.
-  // The first round should pick every type of question once.
-  // After that, let's pick questions that has lower level,
-  //  which probably is something the user needs to practice.
-
-  let quiz_possible_questions={};
-  if (quiz_no < quiz_questions.length){
-    // We shall pick "not yet used" questions:
-    for (let question_no in quiz_questions){
-      let question_id = quiz_questions[question_no];
-      if (quiz_questions_nof_done[question_id]==0){
-        quiz_possible_questions[question_id]=1; // All should be similar numbers, to make picking any of them equally likely
-      }
+  // First count the enabled quiz_types. If there are fewer than two, simply select the only chosen quiz_type.
+  let nof_enabled=0;
+  let the_only_enabled_quiz_type="";
+  for (let question_no in quiz_questions){
+    if (enabled_quiz_types[quiz_questions[question_no]]){
+      nof_enabled+=1;
+      the_only_enabled_quiz_type=quiz_questions[question_no];
     }
+  }
+  if (nof_enabled == 1){
+    current_quiz = the_only_enabled_quiz_type;
   } else {
-    for (let question_no in quiz_questions){
-      let question_id = quiz_questions[question_no];
-      if (question_id != current_quiz){
-        quiz_possible_questions[question_id]= (104 - quiz_difficulties[question_id]) / 104; // Almost a "probability" for getting picked
+    // If there are no enabled quiz_types, all quiz_types should be enabled:
+    let quiz_type_enabled_should_be=true;
+    if (nof_enabled==0){
+      quiz_type_enabled_should_be=false;
+    }
+
+    // Randomize where we will pick assignments from.
+    // The first round should pick every type of question once.
+    // After that, let's pick questions that has lower level,
+    //  which probably is something the user needs to practice.
+
+    let quiz_possible_questions={};
+    if (quiz_no < nof_enabled){
+      // We shall pick "not yet used" questions:
+      for (let question_no in quiz_questions){
+        let question_id = quiz_questions[question_no];
+        if (enabled_quiz_types[question_id]==quiz_type_enabled_should_be){
+          if (quiz_questions_nof_done[question_id]==0){
+            quiz_possible_questions[question_id]=1; // All should be similar numbers, to make picking any of them equally likely
+          }
+        }
+      }
+    } else {
+      for (let question_no in quiz_questions){
+        let question_id = quiz_questions[question_no];
+        if (enabled_quiz_types[question_id]==quiz_type_enabled_should_be){
+          if (question_id != current_quiz){
+            quiz_possible_questions[question_id]= (104 - quiz_difficulties[question_id]) / 104; // Almost a "probability" for getting picked
+          }
+        }
       }
     }
-  }
 
-  // Now pick randomly from the quiz_possible_questions array.
+    // Now pick randomly from the quiz_possible_questions array.
 
-  // Calculate the "total probability" for all the values in the dict
-  let total_probability = 0;
-  for (let question_id in quiz_possible_questions) {
-    total_probability += quiz_possible_questions[question_id];
-  }
-  // Generate a random number between 0 and total_probability
-  let random_num = Math.random() * total_probability;
-  // Iterate through the dictionary again to find the selected item
-  let cumulative_probability = 0;
-  let next_question_id="";
-  for (let question_id in quiz_possible_questions){
-    cumulative_probability += quiz_possible_questions[question_id];
-    if (random_num <= cumulative_probability){
-      next_question_id = question_id;
-      break;
+    // Calculate the "total probability" for all the values in the dict
+    let total_probability = 0;
+    for (let question_id in quiz_possible_questions) {
+      total_probability += quiz_possible_questions[question_id];
     }
+    // Generate a random number between 0 and total_probability
+    let random_num = Math.random() * total_probability;
+    // Iterate through the dictionary again to find the selected item
+    let cumulative_probability = 0;
+    let next_question_id="";
+    for (let question_id in quiz_possible_questions){
+      cumulative_probability += quiz_possible_questions[question_id];
+      if (random_num <= cumulative_probability){
+        next_question_id = question_id;
+        break;
+      }
+    }
+    current_quiz = next_question_id;
   }
-  current_quiz = next_question_id;
   quiz_questions_nof_done[current_quiz]+=1;
 
   if (current_quiz=="click_freq"){
@@ -1439,7 +1462,15 @@ function update_quiz(){
 
   s += '<br><br><span style="color:#808080">Your stats:</span><br>';
   for (let question in quiz_questions){
+    s += "<input type='checkbox' name='quiz_type' id='"+quiz_questions[question]+"' value='"+quiz_questions[question]+"' onchange='select_quiz_type(event);'";
+    if (enabled_quiz_types[quiz_questions[question]]==true){
+      s+=" checked";
+    }
+    s+="><label for='"+quiz_questions[question]+"'>";
+
     s += '<span style="color:#808080">' + quiz_questions[question] + ": " + quiz_difficulties[quiz_questions[question]].toFixed(1) + "</span><br>";
+    s += "</label>";
+
   }
   s += '<span style="color:#808080">Total: ' + quiz_difficulty.toFixed(1) + "</span><br>";
 
@@ -1456,6 +1487,7 @@ let quiz_difficulty=50.0; // The average difficulty, the one shown in the slider
 let quiz_difficulties={}; // The difficulties of each type of question
 let quiz_streaks={}; // The streak for this type of question.
 let adaptive_difficulty_enabled = true;
+let enabled_quiz_types={};
 
 function set_difficulty_level(event){
   quiz_difficulty = +(event.value);
@@ -1464,10 +1496,12 @@ function set_difficulty_level(event){
     quiz_difficulties[quiz_questions[question]] = quiz_difficulty;
     quiz_streaks[quiz_questions[question]] = 0;
     quiz_questions_nof_done[quiz_questions[question]]=0;
+    if (enabled_quiz_types[quiz_questions[question]] == undefined){
+      enabled_quiz_types[quiz_questions[question]]=false;
+    }
   }
   update_quiz();
 }
-
 
 
 function quiz_clicked_pole_zero(clicked_on_pole_zero_graph_no,real,imaginary,clicked_on_time_variable){
@@ -1689,6 +1723,18 @@ function quiz_incorrect(why_its_wrong){
 
 function toggle_adaptive_difficulty(event){
   adaptive_difficulty_enabled = event.checked;
+}
+
+
+function select_quiz_type(event){
+  let quiz_type = event.target.id;
+  if (event.target.checked){
+    enabled_quiz_types[quiz_type]=true;
+  } else {
+    enabled_quiz_types[quiz_type]=false;
+  }
+  next_quiz();
+  update_quiz();
 }
 
 
