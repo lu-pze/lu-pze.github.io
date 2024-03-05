@@ -1365,10 +1365,14 @@ function next_quiz (){
       if (Math.random() < 0.5) k4 = -k4;
     }
     let t4 = 1;
-    if (level > 30){
+    if (level > 80){
       let decimal = Math.floor(Math.random()*9)+1;
-      let power = Math.floor(Math.random()*2)-1;
-      t4 = 1 / (decimal * Math.pow(10,power));
+      let power = Math.floor(Math.random()*2);
+      t4 = 3 / (decimal * Math.pow(10,power));
+    } else if (level > 30){
+      let decimal = Math.floor(Math.random()*9)+1;
+      let power = 0;
+      t4 = 3 / (decimal * Math.pow(10,power));
     }
     addNewGraph(null, {name:name_prefix4+"", mf:"\\frac{"+k4+"}{(1+"+t4+"s)^4}", formula:k4+"/((1+"+t4+"s)^4)"});
 
