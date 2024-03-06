@@ -1759,6 +1759,10 @@ function quiz_clicked_time_response(clicked_on_time_response_graph_no,time,ampli
   //console.log("quiz_clicked_time_response("+clicked_on_time_response_graph_no+","+time+","+amplitude+","+clicked_on_time_variable);
   quiz_clicked({where:"time",graph_no:clicked_on_time_response_graph_no,time:time,amplitude:amplitude,time_variable:clicked_on_time_variable});
 }
+function quiz_clicked_time_response_xaxis(time){
+  //console.log("quiz_clicked_time_response("+clicked_on_time_response_graph_no+","+time+","+amplitude+","+clicked_on_time_variable);
+  quiz_clicked({where:"time_xaxis",time:time});
+}
 function quiz_clicked_bode_mag(clicked_on_bode_mag_graph_no,frequency,magnitude,clicked_on_time_variable){
   //console.log("quiz_clicked_bode_mag("+clicked_on_bode_mag_graph_no+","+frequency+","+magnitude+","+clicked_on_time_variable);
   quiz_clicked({where:"Bmag",graph_no:clicked_on_bode_mag_graph_no,frequency:frequency,magnitude:magnitude,time_variable:clicked_on_time_variable});
@@ -1790,10 +1794,11 @@ function quiz_clicked(all){
     }
     else if (all.where=="Nyq") quiz_incorrect("No. The Nyquist diagram contains phases and magnitudes. The frequency information we can find is 0 rad/s and ∞ rad/s which corresponds to the start and end of the Nyquist graph. For a specific frequency, look somewhere else.");
     else if (all.where=="time") quiz_incorrect("No. The time response of a system shows the amplitude after the input signal is applied. If you're looking for frequencies, look elsewhere.");
+    else if (all.where=="time_xaxis") quiz_incorrect("No. This axis is about time and seconds.If you're looking for frequencies, look elsewhere.");
     else if (all.where=="pz") quiz_perhaps("Perhaps. The pole-zero map can tell you time constants of a system through the location of the poles and zeros. However, for pinpointing a certain frequency there's an easier way.");
 
   } else if (current_quiz=="click_time"){
-    if (all.where=="time"){
+    if ((all.where=="time")||("time_xaxis")){
       if (quiz_time_to_click==-1) quiz_correct();
       else if ((all.time >= quiz_time_to_click-0.5)&&(all.time <= quiz_time_to_click+0.5)) quiz_correct();
       else quiz_incorrect("No. You did click the right graph, but at the wrong position. Your " + (all.time.toFixed(1)) + " is too far away from the desired " + quiz_time_to_click.toFixed(1) + ".");
@@ -4128,6 +4133,18 @@ function mousePressed(){
     }
   }
 
+
+  const graph_step_response_timeaxis_height=35;
+  // Check if we've clicked the time axis of the step response graph:
+  if(((mouseX-graph_step_response_x) > graph_step_response_x_offset && (mouseX-graph_step_response_x) < graph_step_response_width + graph_step_response_x_offset)&&
+    (((mouseY-graph_step_response_y) >= graph_step_response_height + graph_step_response_y_offset) && ((mouseY-graph_step_response_y) <= graph_step_response_height + graph_step_response_y_offset + graph_step_response_timeaxis_height))){
+    console.log("clicked time axis");
+    if (current_quiz!="none"){
+      let time=(mouseX - graph_step_response_x - graph_step_response_x_offset) / graph_step_response_width * 10.0;
+      quiz_clicked_time_response_xaxis(time);
+      return false; // Cancel default actions
+    }
+  }
 
   // Check if we've clicked the step response graph:
   let queue = [];
