@@ -5428,7 +5428,9 @@ function mouseMoved(){
           let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
           let screen_xw = map(2*magnitude,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
           let screen_yw = map(-2*magnitude,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-          ellipse(graph_nyquist_x+graph_nyquist_x_offset+screen_x0,graph_nyquist_y+graph_nyquist_y_offset+screen_y0,12,12);
+          if ((screen_x0>=0)&&(screen_x0<=graph_nyquist_width)){
+            ellipse(graph_nyquist_x+graph_nyquist_x_offset+screen_x0,graph_nyquist_y+graph_nyquist_y_offset+screen_y0,12,12);
+          }
           noStroke();
           fill(linked_bode_graph.bode_hue,360,360);
           ellipse(mouseX,screen_y + graph_step_response_y_offset + graph_step_response_y,12,12);
@@ -5467,8 +5469,9 @@ function mouseMoved(){
           let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
           let screen_xw = map(2*magnitude,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
           let screen_yw = map(-2*magnitude,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-          ellipse(graph_nyquist_x+graph_nyquist_x_offset+screen_x0,graph_nyquist_y+graph_nyquist_y_offset+screen_y0,12,12);
-
+          if ((screen_x0>=0)&&(screen_x0<=graph_nyquist_width)){
+            ellipse(graph_nyquist_x+graph_nyquist_x_offset+screen_x0,graph_nyquist_y+graph_nyquist_y_offset+screen_y0,12,12);
+          }
           translate(mouseX,mouseY);
           fill(box_background_color,200);
           stroke(150);
