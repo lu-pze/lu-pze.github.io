@@ -5420,6 +5420,13 @@ function mouseMoved(){
       if(((mouseY-graph_bode_mag_y) >= graph_bode_mag_height + graph_bode_mag_y_offset) && (mouseY-graph_bode_mag_y < (graph_bode_mag_height + graph_bode_mag_y_offset + graph_bode_phase_axis_height))) {
         let linked_x = mouseX - graph_bode_phase_x - graph_bode_phase_x_offset;
         let perc_x = linked_x / graph_bode_phase_width;
+        for(let i=0; i<bode_graphs.length; i++){
+          if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodemag_bool)){
+            if (bode_graphs[i].bode_display_nyquist_bool){
+              bode_graphs[i].draw_nyquist_value(perc_x);
+            }
+          }
+        }
         // 0.0   equals hovering over frequency 10^min_10power (= -2);
         // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
         let exponent = perc_x*x_case_gain + min_10power;
@@ -5592,6 +5599,13 @@ function mouseMoved(){
       // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
       let exponent = perc_x*x_case_gain + min_10power;
       let frequency = Math.pow(10,exponent);
+      for(let i=0; i<bode_graphs.length; i++){
+        if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodemag_bool)){
+          if (bode_graphs[i].bode_display_nyquist_bool){
+            bode_graphs[i].draw_nyquist_value(perc_x);
+          }
+        }
+      }
       push();
       noStroke();
       translate(mouseX,mouseY);
