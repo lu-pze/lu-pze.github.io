@@ -1771,6 +1771,10 @@ function quiz_clicked_bode_phase(clicked_on_bode_phase_graph_no,frequency,phase,
   //console.log("quiz_clicked_bode_phase("+clicked_on_bode_phase_graph_no+","+frequency+","+phase+","+clicked_on_time_variable);
   quiz_clicked({where:"Bphase",graph_no:clicked_on_bode_phase_graph_no,frequency:frequency,phase:phase,time_variable:clicked_on_time_variable});
 }
+function quiz_clicked_bode_phase_xaxis(frequency){
+  //console.log("quiz_clicked_bode_phase("+clicked_on_bode_phase_graph_no+","+frequency+","+phase+","+clicked_on_time_variable);
+  quiz_clicked({where:"Bphase_xaxis",frequency:frequency});
+}
 function quiz_clicked_nyquist(magnitude,angle){
   //console.log("quiz_clicked_nyquist("+magnitude+","+angle);
   quiz_clicked({where:"Nyq",magnitude:magnitude,phase:angle});
@@ -1780,13 +1784,13 @@ function quiz_clicked(all){
   console.log("quiz clicked:where="+all.where+",graph_no="+all.graph_no+",time_variable="+all.time_variable+",real="+all.real+",imaginary="+all.imaginary+",time="+all.time+",amplitude="+all.amplitude+",frequency="+all.frequency+",magnitude="+all.magnitude+",phase="+all.phase);
 
   if (current_quiz=="click_freq"){
-    if ((all.where=="Bmag")||(all.where=="Bphase")){
+    if ((all.where=="Bmag")||(all.where=="Bmag_xaxis")||(all.where=="Bphase")||(all.where=="Bphase_xaxis")){
       if (quiz_freq==0) quiz_correct();
       else if (quiz_freq==-1){
-        if (all.where=="Bmag") quiz_correct();
+        if ((all.where=="Bmag")||(all.where=="Bmag_xaxis")) quiz_correct();
         else quiz_incorrect("No. The Bode <i>magnitude</i> plot is above this one.");
       } else if (quiz_freq==-2){
-        if (all.where=="Bphase") quiz_correct();
+        if ((all.where=="Bphase")||(all.where=="Bphase_xaxis")) quiz_correct();
         else quiz_incorrect("No. The Bode <i>phase</i> plot is below this one.");
       }
       else if ((all.frequency >= quiz_freq*0.6667) && (all.frequency <= quiz_freq*1.4)) quiz_correct();
@@ -1798,7 +1802,7 @@ function quiz_clicked(all){
     else if (all.where=="pz") quiz_perhaps("Perhaps. The pole-zero map can tell you time constants of a system through the location of the poles and zeros. However, for pinpointing a certain frequency there's an easier way.");
 
   } else if (current_quiz=="click_time"){
-    if ((all.where=="time")||("time_xaxis")){
+    if ((all.where=="time")||(all.where=="time_xaxis")){
       if (quiz_time_to_click==-1) quiz_correct();
       else if ((all.time >= quiz_time_to_click-0.5)&&(all.time <= quiz_time_to_click+0.5)) quiz_correct();
       else quiz_incorrect("No. You did click the right graph, but at the wrong position. Your " + (all.time.toFixed(1)) + " is too far away from the desired " + quiz_time_to_click.toFixed(1) + ".");
@@ -3017,6 +3021,7 @@ function updateGraphInformation(){
 }
 
 const graph_step_response_timeaxis_height=35;
+const graph_bode_phase_axis_height=35;
 
 function setGraphDimensions(){
   let this_window_width=max(1295,windowWidth);  // Also present in style.css  "body{min-width: 1280px;}
@@ -4139,7 +4144,6 @@ function mousePressed(){
   // Check if we've clicked the time axis of the step response graph:
   if(((mouseX-graph_step_response_x) > graph_step_response_x_offset && (mouseX-graph_step_response_x) < graph_step_response_width + graph_step_response_x_offset)&&
     (((mouseY-graph_step_response_y) >= graph_step_response_height + graph_step_response_y_offset) && ((mouseY-graph_step_response_y) <= graph_step_response_height + graph_step_response_y_offset + graph_step_response_timeaxis_height))){
-    console.log("clicked time axis");
     if (current_quiz!="none"){
       let time=(mouseX - graph_step_response_x - graph_step_response_x_offset) / graph_step_response_width * 10.0;
       quiz_clicked_time_response_xaxis(time);
@@ -4340,6 +4344,21 @@ function mousePressed(){
     }
     mouseDragged(); // Handle this directly
     return false; // Cancel default actions
+
+
+  // Check if we've clicked the frequency axis of the Bode phase plot:
+  } else if(((mouseX-graph_bode_phase_x) > graph_bode_phase_x_offset) && ((mouseX-graph_bode_phase_x) < graph_bode_phase_width + graph_bode_phase_x_offset) && 
+    ((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) >= graph_bode_phase_height) && ((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) < (graph_bode_phase_height + graph_bode_phase_axis_height))) {
+    if (current_quiz!="none"){
+      let linked_x = mouseX - graph_bode_phase_x - graph_bode_phase_x_offset;
+      let perc_x = linked_x / graph_bode_phase_width;
+      // 0.0   equals hovering over frequency 10^min_10power (= -2);
+      // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
+      let exponent = perc_x*x_case_gain + min_10power;
+      let frequency = Math.pow(10,exponent);
+      quiz_clicked_bode_phase_xaxis(frequency);
+      return false; // Cancel default actions
+    }
 
 
   } else if(((mouseX-graph_bode_phase_x) > graph_bode_phase_x_offset) && ((mouseX-graph_bode_phase_x) < graph_bode_phase_width + graph_bode_phase_x_offset) && 
