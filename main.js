@@ -4797,7 +4797,7 @@ function mouseDragged(){
       let w = range_slider_variables[variable_position["w"]];
       let T=1/w;
       T = T + mouseDiffX * 10.0;
-      if (T < 0.01) T=0.01;
+      if (T < 0.001) T=0.001;
       w = 1/T;
       range_slider_variables[variable_position["w"]] = w;
       // Update range slider value:
@@ -4940,7 +4940,7 @@ function mouseDragged(){
       let w = range_slider_variables[variable_position["w"]];
       let T=1/w;
       T = T * (1.0 - mouseDiffX*10.0);
-      if (T < 0.01) T=0.01;
+      if (T < 0.0001) T=0.0001;
       w = 1/T;
       range_slider_variables[variable_position["w"]] = w;
       // Update range slider value:
@@ -5059,7 +5059,7 @@ function mouseDragged(){
       let w = range_slider_variables[variable_position["w"]];
       let T=1/w;
       T = T * (1.0 - mouseDiffX*10.0);
-      if (T < 0.01) T=0.01;
+      if (T < 0.0001) T=0.0001;
       w = 1/T;
       range_slider_variables[variable_position["w"]] = w;
       // Update range slider value:
