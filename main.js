@@ -5903,12 +5903,14 @@ function mouseMoved(){
           let current_graph = bode_graphs[hovered_graph_no];
           let linked_y8 = current_graph.bode_gain_array[linked_x];
           let screen_y = graph_bode_mag_y_offset + map(linked_y8,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
-          push();
-          noStroke();
-          fill(bode_graphs[output[1]].bode_hue,360,360);
-          ellipse(mouseX,screen_y + graph_bode_mag_y,12,12);
-          pop();
-          line(mouseX,graph_bode_mag_y+screen_y,mouseX,graph_bode_mag_y + graph_bode_mag_y_offset + graph_bode_mag_height);
+          if (screen_y < graph_bode_mag_height + graph_bode_mag_y_offset){ // Only draw this line inside the Bode mag plot
+            push();
+            noStroke();
+            fill(bode_graphs[output[1]].bode_hue,360,360);
+            ellipse(mouseX,screen_y + graph_bode_mag_y,12,12);
+            pop();
+            line(mouseX,graph_bode_mag_y+screen_y,mouseX,graph_bode_mag_y + graph_bode_mag_y_offset + graph_bode_mag_height);
+          }
           pop();
 
         } else {
