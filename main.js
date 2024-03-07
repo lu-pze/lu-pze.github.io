@@ -6733,19 +6733,19 @@ class bode_graph{
     //    let log_pow = map(x,0,graph_bode_mag_width,min_10power,min_10power+x_case_gain);
     //    let freq = Math.pow(10,log_pow);
     //    let bode_value = getComplexValues(freq);
-
     let sample_no = Math.floor(graph_bode_mag_width * percentage);
 //    let sample_no = Math.floor(new_complex_array.length * percentage);
-
     let current_complex = new_complex_array[sample_no];
     let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
     let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-    push();
-    noStroke();
-    translate(graph_nyquist_x_offset+graph_nyquist_x,graph_nyquist_y_offset+graph_nyquist_y);
-    fill(this.bode_hue,360,360);
-    ellipse(screen_x,screen_y,12,12);
-    pop();
+    if ((screen_x>=0)&&(screen_x<=graph_nyquist_width)&&(screen_y>=0)&&(screen_y<=graph_nyquist_height)){
+      push();
+      noStroke();
+      translate(graph_nyquist_x_offset+graph_nyquist_x,graph_nyquist_y_offset+graph_nyquist_y);
+      fill(this.bode_hue,360,360);
+      ellipse(screen_x,screen_y,12,12);
+      pop();
+    }
   }
 
   get_nyquist_value(percentage){
