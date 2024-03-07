@@ -121,7 +121,7 @@ body{
   background:#292929;
 }
 
-.quiz_text{
+.quiz_text_norepeat{
   position:absolute;
   left:40%;
   top:50%;
@@ -139,6 +139,18 @@ body{
 @keyframes quiz_fade {
   from {opacity:0.2;transform:translate(-50%,-50%) rotate(20deg) scale(0.3);color:#2020ffff;}
   to {opacity:1.0;transform:translate(-50%,-50%) rotate(-3deg) scale(1);color:#bfbfffc0;}
+}
+
+.quiz_text{
+}
+@keyframes quiz_fade_repeat {
+  0% {opacity:1.0;transform:rotate(2deg)}
+  10% {opacity:1.0;transform:rotate(0deg)}
+  45% {opacity:1.0;transform:rotate(0deg)}
+  50% {opacity:1.0;transform:rotate(-2deg)}
+  60% {opacity:1.0;transform:rotate(0deg)}
+  95% {opacity:1.0;transform:rotate(0deg)}
+  100% {opacity:1.0;transform:rotate(2deg)}
 }
 
 

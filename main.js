@@ -1644,7 +1644,13 @@ function next_quiz (){
 
   quiz_text.style.animation = 'none';
   quiz_text.offsetHeight; /* trigger reflow */
-  quiz_text.style.animation="quiz_fade 1s ease-out";
+  quiz_text.style.animation="quiz_fade_repeat 7s ease-out infinite";
+
+  let quiz_text_norepeat = document.getElementById("quiz_text_norepeat");
+  quiz_text_norepeat.style.animation = 'none';
+  quiz_text_norepeat.offsetHeight; /* trigger reflow */
+  quiz_text_norepeat.style.animation="quiz_fade 1s ease-out 1";
+
   redraw(); // Needed to get the title of the Dirac Impulse response correct
 }
 
