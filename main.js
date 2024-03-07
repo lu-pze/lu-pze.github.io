@@ -3016,6 +3016,8 @@ function updateGraphInformation(){
   }
 }
 
+const graph_step_response_timeaxis_height=35;
+
 function setGraphDimensions(){
   let this_window_width=max(1295,windowWidth);  // Also present in style.css  "body{min-width: 1280px;}
   canvas_width = this_window_width - 395;
@@ -4134,7 +4136,6 @@ function mousePressed(){
   }
 
 
-  const graph_step_response_timeaxis_height=35;
   // Check if we've clicked the time axis of the step response graph:
   if(((mouseX-graph_step_response_x) > graph_step_response_x_offset && (mouseX-graph_step_response_x) < graph_step_response_width + graph_step_response_x_offset)&&
     (((mouseY-graph_step_response_y) >= graph_step_response_height + graph_step_response_y_offset) && ((mouseY-graph_step_response_y) <= graph_step_response_height + graph_step_response_y_offset + graph_step_response_timeaxis_height))){
@@ -5262,6 +5263,22 @@ function mouseMoved(){
       }
     }
 
+    // Check if we're hovering the time axis of the step response graph:
+    if(((mouseX-graph_step_response_x) > graph_step_response_x_offset && (mouseX-graph_step_response_x) < graph_step_response_width + graph_step_response_x_offset)&&
+      (((mouseY-graph_step_response_y) >= graph_step_response_height + graph_step_response_y_offset) && ((mouseY-graph_step_response_y) <= graph_step_response_height + graph_step_response_y_offset + graph_step_response_timeaxis_height))){
+      let time=(mouseX - graph_step_response_x - graph_step_response_x_offset) / graph_step_response_width * 10.0;
+      push();
+      translate(mouseX,mouseY);
+      fill(box_background_color,200);
+      stroke(150);
+      rect(0,0,200,90);
+      noStroke();
+      fill(text_color);
+      textSize(15);
+      text("time=" + time.toFixed(3) + "s",13,53);
+      pop();
+    }
+
     // Check if we're hovering the step response graph:
     let queue = [];
     let yes_close_enough = false;
@@ -5361,7 +5378,6 @@ function mouseMoved(){
           text("time=" + time.toFixed(3) + "s",13,53);
           text("output=" + output.toFixed(3),13,77);
           pop();
-
         }
       }
     }
