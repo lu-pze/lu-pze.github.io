@@ -5606,7 +5606,13 @@ function mouseMoved(){
           }
         }
       }
+      // And draw a vertical white line in the bode phase plot.
+      // And draw a vertical line in the bode mag plot:
       push();
+      strokeWeight(2);
+      stroke("#808080");
+      line(mouseX,graph_bode_phase_y+graph_bode_phase_y_offset,mouseX,graph_bode_phase_y + graph_bode_phase_y_offset + graph_bode_phase_height);
+      line(mouseX,graph_bode_mag_y+graph_bode_mag_y_offset,mouseX,graph_bode_mag_y + graph_bode_mag_y_offset + graph_bode_mag_height);
       noStroke();
       translate(mouseX,mouseY);
       fill(box_background_color,200);
