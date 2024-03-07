@@ -3226,7 +3226,7 @@ function draw_bode_responses(type){
     }
 
     // Limiting the phase axis into something sane:
-    min_phase = Math.max(-5,min_phase);
+    min_phase = Math.max(-360 / 180 * PI,min_phase);
     //max_phase = math.min(5,max_phase);
 
     min_phase = min_phase*180/PI;
