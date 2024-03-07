@@ -5364,6 +5364,11 @@ function mouseMoved(){
       (((mouseY-graph_step_response_y) >= graph_step_response_height + graph_step_response_y_offset) && ((mouseY-graph_step_response_y) <= graph_step_response_height + graph_step_response_y_offset + graph_step_response_timeaxis_height))){
       let time=(mouseX - graph_step_response_x - graph_step_response_x_offset) / graph_step_response_width * 10.0;
       push();
+      stroke("#808080");
+      strokeWeight(2);
+      line(mouseX,graph_step_response_y+graph_step_response_y_offset,mouseX,graph_step_response_y + graph_step_response_y_offset + graph_step_response_height);
+      pop();
+      push();
       translate(mouseX,mouseY);
       fill(box_background_color,200);
       stroke(150);
