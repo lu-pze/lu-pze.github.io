@@ -1766,6 +1766,9 @@ function quiz_clicked_bode_mag(clicked_on_bode_mag_graph_no,frequency,magnitude,
 function quiz_clicked_bode_mag_xaxis(frequency){
   quiz_clicked({where:"Bmag_xaxis",frequency:frequency});
 }
+function quiz_clicked_bode_mag_yaxis(magnitude){
+  quiz_clicked({where:"Bmag_yaxis",magnitude:magnitude});
+}
 function quiz_clicked_bode_phase(clicked_on_bode_phase_graph_no,frequency,phase,clicked_on_time_variable){
   quiz_clicked({where:"Bphase",graph_no:clicked_on_bode_phase_graph_no,frequency:frequency,phase:phase,time_variable:clicked_on_time_variable});
 }
@@ -1783,16 +1786,18 @@ function quiz_clicked(all){
   console.log("quiz clicked:where="+all.where+",graph_no="+all.graph_no+",time_variable="+all.time_variable+",real="+all.real+",imaginary="+all.imaginary+",time="+all.time+",amplitude="+all.amplitude+",frequency="+all.frequency+",magnitude="+all.magnitude+",phase="+all.phase);
 
   if (current_quiz=="click_freq"){
-    if ((all.where=="Bmag")||(all.where=="Bmag_xaxis")||(all.where=="Bphase")||(all.where=="Bphase_xaxis")){
+    if ((all.where=="Bmag")||(all.where=="Bmag_xaxis")||(all.where=="Bmag_yaxis")||(all.where=="Bphase")||(all.where=="Bphase_xaxis")||(all.where=="Bphase_yaxis")){
       if (quiz_freq==0) quiz_correct();
       else if (quiz_freq==-1){
-        if ((all.where=="Bmag")||(all.where=="Bmag_xaxis")) quiz_correct();
+        if ((all.where=="Bmag")||(all.where=="Bmag_xaxis")||(all.where=="Bmag_yaxis")) quiz_correct();
         else quiz_incorrect("No. The Bode <i>magnitude</i> plot is above this one.");
       } else if (quiz_freq==-2){
-        if ((all.where=="Bphase")||(all.where=="Bphase_xaxis")) quiz_correct();
+        if ((all.where=="Bphase")||(all.where=="Bphase_xaxis")||(all.where=="Bphase_yaxis")) quiz_correct();
         else quiz_incorrect("No. The Bode <i>phase</i> plot is below this one.");
       }
       else if ((all.frequency >= quiz_freq*0.6667) && (all.frequency <= quiz_freq*1.4)) quiz_correct();
+      else if (all.where=="Bmag_yaxis") quiz_incorrect("No, the Bode magnitude is not a frequency. Try again!");
+      else if (all.where=="Bphase_yaxis") quiz_incorrect("No, the Bode phase is not a frequency. Try again!");
       else quiz_incorrect("No. You did click the correct graph, but your "+all.frequency.toFixed(2)+" is too far off the correct "+quiz_freq.toFixed(2)+".");
     }
     else if (all.where=="Nyq") quiz_incorrect("No. The Nyquist diagram contains phases and magnitudes. The frequency information we can find is 0 rad/s and ∞ rad/s which corresponds to the start and end of the Nyquist graph. For a specific frequency, look somewhere else.");
@@ -1810,6 +1815,8 @@ function quiz_clicked(all){
     else if (all.where=="Bphase") quiz_incorrect("No. There is no time information in the Bode phase plot.");
     else if (all.where=="Bmag_xaxis") quiz_incorrect("No. There is no time information in the Bode magnitude frequency axis.");
     else if (all.where=="Bphase_xaxis") quiz_incorrect("No. There is no time information in the Bode phase frequency axis.");
+    else if (all.where=="Bmag_yaxis") quiz_incorrect("No. There is no time information in the Bode magnitude y-axis.");
+    else if (all.where=="Bphase_yaxis") quiz_incorrect("No. There is no time information in the Bode phase y-axis.");
     else if (all.where=="Nyq") quiz_incorrect("No. The Nyquist diagram contains phases and magnitudes. There is no direct time information in the Nyquist diagram.");
     else if (all.where=="pz"){
       if (quiz_time_to_click==-1){
@@ -1836,7 +1843,10 @@ function quiz_clicked(all){
       }
     } else if (all.where=="time") quiz_incorrect("No. There are no angles in the time response graph.");
     else if (all.where=="Bmag") quiz_incorrect("No. There are no angles in the Bode magnitude plot.");
+    else if (all.where=="Bmag_xaxis") quiz_incorrect("No. There are no angles in the Bode magnitude frequency axis.");
+    else if (all.where=="Bmag_yaxis") quiz_incorrect("No. There are no angles in the Bode magnitude y-axis.");
     else if (all.where=="Bphase") quiz_perhaps("Well, there are angles in the Bode phase plot, but this time we asked for the Nyquist angles. Try again!");
+    else if (all.where=="Bphase_xaxis") quiz_incorrect("No. There are no angles in the Bode phase frequency axis.");
     else if (all.where=="Bphase_yaxis") quiz_perhaps("Well, there are angles in the Bode phase plot, but this time we asked for the Nyquist angles. Try again!");
     else if (all.where=="pz") quiz_incorrect("No, there are no angles in the pole-zero map.");
 
@@ -4235,15 +4245,29 @@ function mousePressed(){
   // Check if we've clicked the frequency axis of the Bode magnitude plot:
   } else if(((mouseX-graph_bode_mag_x) > graph_bode_mag_x_offset && (mouseX-graph_bode_mag_x) < graph_bode_mag_width + graph_bode_mag_x_offset) &&
            (((mouseY-graph_bode_mag_y) >= graph_bode_mag_height + graph_bode_mag_y_offset) && (mouseY-graph_bode_mag_y < (graph_bode_mag_height + graph_bode_mag_y_offset + graph_bode_phase_axis_height)))) {
-    let linked_x = mouseX - graph_bode_phase_x - graph_bode_phase_x_offset;
-    let perc_x = linked_x / graph_bode_phase_width;
-    // 0.0   equals hovering over frequency 10^min_10power (= -2);
-    // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
-    let exponent = perc_x*x_case_gain + min_10power;
-    let frequency = Math.pow(10,exponent);
-    console.log("CLIII");
-    quiz_clicked_bode_mag_xaxis(frequency);
-    return false; // Cancel default actions
+    if (current_quiz!="none"){
+      let linked_x = mouseX - graph_bode_phase_x - graph_bode_phase_x_offset;
+      let perc_x = linked_x / graph_bode_phase_width;
+      // 0.0   equals hovering over frequency 10^min_10power (= -2);
+      // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
+      let exponent = perc_x*x_case_gain + min_10power;
+      let frequency = Math.pow(10,exponent);
+      quiz_clicked_bode_mag_xaxis(frequency);
+      return false; // Cancel default actions
+    }
+
+
+  // Check if we've clicked the yaxis axis of the Bode magnitude plot:
+  } else if(((mouseX-graph_bode_mag_x) > 0 && (mouseX-graph_bode_mag_x) <= graph_bode_mag_x_offset)&&
+    ((mouseY-graph_bode_mag_y) > graph_bode_mag_y_offset && (mouseY-graph_bode_mag_y) < graph_bode_mag_height + graph_bode_mag_y_offset)){
+    if (current_quiz!="none"){
+      let linked_y = mouseY - graph_bode_mag_y - graph_bode_mag_y_offset;
+      let perc_y = linked_y / graph_bode_mag_height;
+      let magnitude_in_dB = gain_upper_bound - perc_y*120;//y_case_gain; //60 - perc_y
+      let magnitude = 1.0 * Math.pow(10.0, magnitude_in_dB / 20.0);
+      quiz_clicked_bode_mag_yaxis(magnitude);
+      return false; // Cancel default actions
+    }
 
 
   } else if(((mouseX-graph_bode_mag_x) > graph_bode_mag_x_offset && (mouseX-graph_bode_mag_x) < graph_bode_mag_width + graph_bode_mag_x_offset)&&
