@@ -1752,31 +1752,27 @@ function set_difficulty_level(event){
 
 
 function quiz_clicked_pole_zero(clicked_on_pole_zero_graph_no,real,imaginary,clicked_on_time_variable){
-  //console.log("quiz_clicked_pole_zero("+clicked_on_pole_zero_graph_no+","+real+","+imaginary+","+clicked_on_time_variable);
   quiz_clicked({where:"pz",graph_no:clicked_on_pole_zero_graph_no,real:real,imaginary:imaginary,time_variable:clicked_on_time_variable});
 }
 function quiz_clicked_time_response(clicked_on_time_response_graph_no,time,amplitude,clicked_on_time_variable){
-  //console.log("quiz_clicked_time_response("+clicked_on_time_response_graph_no+","+time+","+amplitude+","+clicked_on_time_variable);
   quiz_clicked({where:"time",graph_no:clicked_on_time_response_graph_no,time:time,amplitude:amplitude,time_variable:clicked_on_time_variable});
 }
 function quiz_clicked_time_response_xaxis(time){
-  //console.log("quiz_clicked_time_response("+clicked_on_time_response_graph_no+","+time+","+amplitude+","+clicked_on_time_variable);
   quiz_clicked({where:"time_xaxis",time:time});
 }
 function quiz_clicked_bode_mag(clicked_on_bode_mag_graph_no,frequency,magnitude,clicked_on_time_variable){
-  //console.log("quiz_clicked_bode_mag("+clicked_on_bode_mag_graph_no+","+frequency+","+magnitude+","+clicked_on_time_variable);
   quiz_clicked({where:"Bmag",graph_no:clicked_on_bode_mag_graph_no,frequency:frequency,magnitude:magnitude,time_variable:clicked_on_time_variable});
 }
+function quiz_clicked_bode_mag_xaxis(frequency){
+  quiz_clicked({where:"Bmag_xaxis",frequency:frequency});
+}
 function quiz_clicked_bode_phase(clicked_on_bode_phase_graph_no,frequency,phase,clicked_on_time_variable){
-  //console.log("quiz_clicked_bode_phase("+clicked_on_bode_phase_graph_no+","+frequency+","+phase+","+clicked_on_time_variable);
   quiz_clicked({where:"Bphase",graph_no:clicked_on_bode_phase_graph_no,frequency:frequency,phase:phase,time_variable:clicked_on_time_variable});
 }
 function quiz_clicked_bode_phase_xaxis(frequency){
-  //console.log("quiz_clicked_bode_phase("+clicked_on_bode_phase_graph_no+","+frequency+","+phase+","+clicked_on_time_variable);
   quiz_clicked({where:"Bphase_xaxis",frequency:frequency});
 }
 function quiz_clicked_nyquist(magnitude,angle){
-  //console.log("quiz_clicked_nyquist("+magnitude+","+angle);
   quiz_clicked({where:"Nyq",magnitude:magnitude,phase:angle});
 }
 
@@ -1809,6 +1805,8 @@ function quiz_clicked(all){
     }
     else if (all.where=="Bmag") quiz_incorrect("No. There is no time information in the Bode magnitude plot.");
     else if (all.where=="Bphase") quiz_incorrect("No. There is no time information in the Bode phase plot.");
+    else if (all.where=="Bmag_xaxis") quiz_incorrect("No. There is no time information in the Bode magnitude frequency axis.");
+    else if (all.where=="Bphase_xaxis") quiz_incorrect("No. There is no time information in the Bode phase frequency axis.");
     else if (all.where=="Nyq") quiz_incorrect("No. The Nyquist diagram contains phases and magnitudes. There is no direct time information in the Nyquist diagram.");
     else if (all.where=="pz"){
       if (quiz_time_to_click==-1){
@@ -4227,6 +4225,21 @@ function mousePressed(){
       mouseDragged(); // Handle this directly
       return false; // Cancel default actions
     }
+
+
+
+  // Check if we've clicked the frequency axis of the Bode magnitude plot:
+  } else if(((mouseX-graph_bode_mag_x) > graph_bode_mag_x_offset && (mouseX-graph_bode_mag_x) < graph_bode_mag_width + graph_bode_mag_x_offset) &&
+           (((mouseY-graph_bode_mag_y) >= graph_bode_mag_height + graph_bode_mag_y_offset) && (mouseY-graph_bode_mag_y < (graph_bode_mag_height + graph_bode_mag_y_offset + graph_bode_phase_axis_height)))) {
+    let linked_x = mouseX - graph_bode_phase_x - graph_bode_phase_x_offset;
+    let perc_x = linked_x / graph_bode_phase_width;
+    // 0.0   equals hovering over frequency 10^min_10power (= -2);
+    // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
+    let exponent = perc_x*x_case_gain + min_10power;
+    let frequency = Math.pow(10,exponent);
+    console.log("CLIII");
+    quiz_clicked_bode_mag_xaxis(frequency);
+    return false; // Cancel default actions
 
 
   } else if(((mouseX-graph_bode_mag_x) > graph_bode_mag_x_offset && (mouseX-graph_bode_mag_x) < graph_bode_mag_width + graph_bode_mag_x_offset)&&
