@@ -5547,6 +5547,29 @@ function mouseMoved(){
     }
 
 
+    // Check if we're hovering the frequency axis of the Bode phase plot:
+    if(((mouseX-graph_bode_phase_x) > graph_bode_phase_x_offset) && ((mouseX-graph_bode_phase_x) < graph_bode_phase_width + graph_bode_phase_x_offset) && 
+      ((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) >= graph_bode_phase_height) && ((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) < (graph_bode_phase_height + graph_bode_phase_axis_height))) {
+      let linked_x = mouseX - graph_bode_phase_x - graph_bode_phase_x_offset;
+      let perc_x = linked_x / graph_bode_phase_width;
+      // 0.0   equals hovering over frequency 10^min_10power (= -2);
+      // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
+      let exponent = perc_x*x_case_gain + min_10power;
+      let frequency = Math.pow(10,exponent);
+      push();
+      noStroke();
+      translate(mouseX,mouseY);
+      fill(box_background_color,200);
+      stroke(150);
+      rect(0,0,160,90);
+      noStroke();
+      fill(text_color);
+      textSize(15);
+      text("freq=" + frequency.toFixed(3) + "rad/s",13,33);
+      pop();
+    }
+
+
     // Check if we're hovering the bode phase plot:
     if((mouseX-graph_bode_phase_x) > graph_bode_mag_x_offset && (mouseX-graph_bode_phase_x) < graph_bode_phase_width + graph_bode_mag_x_offset){
       if((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) > 0 && (mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) < graph_bode_phase_height){
