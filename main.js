@@ -650,6 +650,22 @@ function removeAllGraphs(){
 function removeGraph(event){
   let clicked_button = event.target;
   let linked_equation = clicked_button.parentElement.parentElement;
+  if (event.target.type=="button"){
+    // This is a bugged click that would remove all graphs, somehow.
+    //If event.target is:
+    //<i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i>
+    //...the removeGraph function below is ok.
+    //If event.target is:
+    //<button type="button" class="delete-graph"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>
+    //...the function below will remove all graphs.
+
+    // Only clicks on the actual material-icon will be correct, so go to the correct level in the DOM:
+    //console.log("removeGraph");
+    //console.log(event);
+    //console.log(event.target);
+    //console.log(event.target.type);
+    linked_equation = clicked_button.parentElement;
+  }
   let linked_id = linked_equation.getElementsByClassName("formula")[0].id;
   removeInformationTab(+linked_id);
   let equation_to_remove = "";
