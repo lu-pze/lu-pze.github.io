@@ -6694,18 +6694,20 @@ class bode_graph{
 //    let sample_no = Math.floor(new_complex_array.length * percentage);
     let current_complex = new_complex_array[sample_no];
 //    console.log("current_complex="+current_complex);
-    try {
-      let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-      let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-      push();
-  //    translate(graph_nyquist_x_offset+graph_nyquist_x,45+graph_nyquist_y);
-      //console.log("screen_x="+screen_x);
-      //console.log("screen_y="+screen_y);
-      stroke(this.bode_hue,240,360);
-      strokeWeight(3);
-      draw_X(screen_x, screen_y);
-      pop();
-    } catch {};
+    let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+    let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+    if ((screen_x>=0)&&(screen_x<=graph_nyquist_width)&&(screen_y>=0)&&(screen_y<=graph_nyquist_height)){
+      try {
+        push();
+    //    translate(graph_nyquist_x_offset+graph_nyquist_x,45+graph_nyquist_y);
+        //console.log("screen_x="+screen_x);
+        //console.log("screen_y="+screen_y);
+        stroke(this.bode_hue,240,360);
+        strokeWeight(3);
+        draw_X(screen_x, screen_y);
+        pop();
+      } catch {};
+    }
   }
 
   draw_nyquist_O(frequency){
@@ -6714,15 +6716,17 @@ class bode_graph{
     let screen_x1 = (Math.log(Math.abs(frequency))/Math.log(10) + 2) * graph_bode_mag_width/5;
     let sample_no = Math.round(screen_x1);
     let current_complex = new_complex_array[sample_no];
-    try {
-      let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-      let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-      push();
-      stroke(this.bode_hue,240,360);
-      strokeWeight(3);
-      draw_O(screen_x, screen_y);
-      pop();
-    } catch {};
+    let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+    let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+    if ((screen_x>=0)&&(screen_x<=graph_nyquist_width)&&(screen_y>=0)&&(screen_y<=graph_nyquist_height)){
+      try {
+        push();
+        stroke(this.bode_hue,240,360);
+        strokeWeight(3);
+        draw_O(screen_x, screen_y);
+        pop();
+      } catch {};
+    }
   }
 
   draw_nyquist_value(percentage){
