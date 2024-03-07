@@ -1772,6 +1772,9 @@ function quiz_clicked_bode_phase(clicked_on_bode_phase_graph_no,frequency,phase,
 function quiz_clicked_bode_phase_xaxis(frequency){
   quiz_clicked({where:"Bphase_xaxis",frequency:frequency});
 }
+function quiz_clicked_bode_phase_yaxis(phase){
+  quiz_clicked({where:"Bphase_yaxis",phase:phase});
+}
 function quiz_clicked_nyquist(magnitude,angle){
   quiz_clicked({where:"Nyq",magnitude:magnitude,phase:angle});
 }
@@ -1834,6 +1837,7 @@ function quiz_clicked(all){
     } else if (all.where=="time") quiz_incorrect("No. There are no angles in the time response graph.");
     else if (all.where=="Bmag") quiz_incorrect("No. There are no angles in the Bode magnitude plot.");
     else if (all.where=="Bphase") quiz_perhaps("Well, there are angles in the Bode phase plot, but this time we asked for the Nyquist angles. Try again!");
+    else if (all.where=="Bphase_yaxis") quiz_perhaps("Well, there are angles in the Bode phase plot, but this time we asked for the Nyquist angles. Try again!");
     else if (all.where=="pz") quiz_incorrect("No, there are no angles in the pole-zero map.");
 
   } else if (current_quiz=="click_system"){
@@ -4329,6 +4333,7 @@ function mousePressed(){
     mouseDragged(); // Handle this directly
     return false; // Cancel default actions
 
+
   // Check if we're dragging the Nyquist diagram:
   } else if(((mouseX-graph_nyquist_x) > graph_nyquist_x_offset && ((mouseX-graph_nyquist_x) < graph_nyquist_width + graph_nyquist_x_offset)) &&
             ((mouseY-graph_nyquist_y-graph_nyquist_y_offset) > 0 && (mouseY-graph_nyquist_y-graph_nyquist_y_offset) < graph_nyquist_height)) {
@@ -4372,6 +4377,19 @@ function mousePressed(){
       quiz_clicked_bode_phase_xaxis(frequency);
       return false; // Cancel default actions
     }
+
+
+  // Check if we've clicked the Bode phase plot yaxis, the phase:
+  } else if(((mouseX-graph_bode_phase_x) > 0 && (mouseX-graph_bode_phase_x) <= graph_bode_mag_x_offset)&&
+     ((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) > 0 && (mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) < graph_bode_phase_height)) {
+    if (current_quiz!="none"){
+      let linked_y = mouseY - graph_bode_phase_y - graph_bode_phase_y_offset;
+      let perc_y = linked_y / graph_bode_phase_height;
+      let phase = phase_upper_bound - 45*phase_case_number*perc_y;
+      quiz_clicked_bode_phase_yaxis(phase);
+      return false; // Cancel default actions
+    }
+
 
 
   } else if(((mouseX-graph_bode_phase_x) > graph_bode_phase_x_offset) && ((mouseX-graph_bode_phase_x) < graph_bode_phase_width + graph_bode_phase_x_offset) && 
