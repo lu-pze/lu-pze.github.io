@@ -5449,7 +5449,7 @@ function mouseMoved(){
       }
     }
 
-    // Check if we're hovering the bode magnitude yaxis:
+    // Check if we're hovering the bode magnitude yaxis, the magnitude:
     if((mouseX-graph_bode_mag_x) > 0 && (mouseX-graph_bode_mag_x) <= graph_bode_mag_x_offset){
       if((mouseY-graph_bode_mag_y) > graph_bode_mag_y_offset && (mouseY-graph_bode_mag_y) < graph_bode_mag_height + graph_bode_mag_y_offset){
         let linked_y = mouseY - graph_bode_mag_y - graph_bode_mag_y_offset;
@@ -5664,6 +5664,59 @@ function mouseMoved(){
       textSize(15);
       text("freq=" + frequency.toFixed(3) + "rad/s",13,33);
       pop();
+    }
+
+    // Check if we're hovering the bode phase plot yaxis, the phase:
+    if((mouseX-graph_bode_phase_x) > 0 && (mouseX-graph_bode_phase_x) <= graph_bode_mag_x_offset){
+      if((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) > 0 && (mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) < graph_bode_phase_height){
+        let linked_y2 = mouseY - graph_bode_phase_y - graph_bode_phase_y_offset;
+        let perc_y = linked_y2 / graph_bode_phase_height;
+        noStroke();
+        push();
+        translate(mouseX,mouseY);
+        fill(box_background_color,200);
+        stroke(150);
+        rect(0,0,160,90);
+        noStroke();
+        fill(text_color);
+        textSize(15);
+        let phase = phase_upper_bound - 45*phase_case_number*perc_y;
+        text("phase=" + phase.toFixed(0) + "°",13,53);
+        pop();
+
+        // Paint an arc in the nyquist diagram over the unit circle:
+        let angle = phase;
+        push();
+        let screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+        let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+        let screen_xw = map(2,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+        let screen_yw = map(-2,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+        stroke(angle_color);
+        strokeWeight(2);
+        noFill();
+
+        let screen_x2 = map(1.2*cos(angle/180*PI),min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+        let screen_y2 = map(1.2*sin(angle/180*PI),max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+
+        if (angle < 0){
+          arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
+        } else {
+          arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, -angle/180*PI, 0);
+        }
+        line(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,graph_nyquist_x + graph_nyquist_x_offset + screen_x2, graph_nyquist_y + graph_nyquist_y_offset + screen_y2);
+        pop();
+
+        // Now paint a horizontal line on the Bode phase plot, at the right height:
+        let linked_y = phase;
+        if ((angle >= phase_lower_bound) && (angle <= phase_upper_bound)){
+          let screen_y = map(linked_y,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
+          push();
+          stroke(angle_color);
+          strokeWeight(2);
+          line(graph_bode_phase_x + graph_bode_phase_x_offset,graph_bode_phase_y + screen_y + graph_bode_phase_y_offset,graph_bode_phase_x + graph_bode_phase_x_offset + graph_bode_phase_width,graph_bode_phase_y + screen_y + graph_bode_phase_y_offset);
+          pop();
+        }
+      }
     }
 
 
