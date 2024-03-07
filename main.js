@@ -5449,6 +5449,43 @@ function mouseMoved(){
       }
     }
 
+    // Check if we're hovering the bode magnitude yaxis:
+    if((mouseX-graph_bode_mag_x) > 0 && (mouseX-graph_bode_mag_x) <= graph_bode_mag_x_offset){
+      if((mouseY-graph_bode_mag_y) > graph_bode_mag_y_offset && (mouseY-graph_bode_mag_y) < graph_bode_mag_height + graph_bode_mag_y_offset){
+        let linked_y = mouseY - graph_bode_mag_y - graph_bode_mag_y_offset;
+        let perc_y = linked_y / graph_bode_mag_height;
+        let magnitude_in_dB = gain_upper_bound - perc_y*120;//y_case_gain; //60 - perc_y
+        let magnitude = 1.0 * Math.pow(10.0, magnitude_in_dB / 20.0);
+        push();
+        noStroke();
+        translate(mouseX,mouseY);
+        fill(box_background_color,200);
+        stroke(150);
+        rect(0,0,160,90);
+        noStroke();
+        fill(text_color);
+        textSize(15);
+        text("magnitude=" + magnitude.toFixed(3),13,53);
+        pop();
+        // Draw a magnitude circle in the Nyquist graph:
+        push();
+        let screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+        let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+        let screen_xw = map(2*magnitude,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+        let screen_yw = map(-2*magnitude,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+        stroke(text_color);
+        strokeWeight(2);
+        noFill();
+        ellipse(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0);
+        pop();
+        // Draw a horizontal line for the magnitude in the bode mag plot:
+        push();
+        stroke(text_color);
+        strokeWeight(2);
+        line(graph_bode_mag_x+graph_bode_mag_x_offset,mouseY,graph_bode_mag_x + graph_bode_mag_x_offset + graph_bode_mag_width, mouseY);
+        pop();
+      }
+    }
 
     // Check if we're hovering the bode magnitude plot:
     if((mouseX-graph_bode_mag_x) > graph_bode_mag_x_offset && (mouseX-graph_bode_mag_x) < graph_bode_mag_width + graph_bode_mag_x_offset){
