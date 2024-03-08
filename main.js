@@ -2888,6 +2888,12 @@ function updateGraphInformation(){
 }
 
 
+function windowResized(){
+  setGraphDimensions();
+  resizeCanvas(canvas_width,canvas_height);
+  redraw_canvas_gain("all");
+}
+
 function setGraphDimensions(){
   let this_window_width=max(1295,windowWidth);  // Also present in style.css  "body{min-width: 1280px;}
   canvas_width = this_window_width - 395;
@@ -3311,6 +3317,21 @@ function draw_static_gain(k,i){
   line(0,screen_y,graph_step_response_width,screen_y);
 }
 
+function draw_time_response_T(T,i,pole_zero="pole"){
+  let linked_x = Math.round(Math.abs(T) / 10.0 * graph_step_response_width/precision);
+  let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
+  let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
+  let screen_x = graph_step_response_width / 10 * Math.abs(T);
+  stroke(bode_graphs[i].bode_hue,240,360);
+  strokeWeight(3);
+  if (pole_zero=="pole"){
+    draw_X(screen_x,screen_y);
+  } else {
+    noFill();
+    draw_O(screen_x,screen_y);
+  }
+}
+
 function draw_time_responses(){
   if(document.getElementById("automatic-range-time").checked){
     let nof_shown=0;
@@ -3392,41 +3413,16 @@ function draw_time_responses(){
       if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
         // Draw T_1:
         try{ // The graph may be deleted, so this might fail:
-          let T_1 = range_slider_variables[variable_position["T_1"]];
-          // Now we know the x position. Let's find out the y position:
-          let linked_x = Math.round(Math.abs(T_1) / 10.0 * graph_step_response_width/precision);
-          let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
-          let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-          let screen_x = graph_step_response_width / 10 * Math.abs(T_1);
-          stroke(bode_graphs[i].bode_hue,240,360);
-          strokeWeight(3);
-          draw_X(screen_x,screen_y);
+          draw_time_response_T(range_slider_variables[variable_position["T_1"]],i);
         } catch {}
       } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
         // Draw T_2:
         try{ // The graph may be deleted, so this might fail:
+          draw_time_response_T(range_slider_variables[variable_position["T_2"]],i);
           let T_2 = range_slider_variables[variable_position["T_2"]];
-          // Now we know the x position. Let's find out the y position:
-          let linked_x = Math.round(Math.abs(T_2) / 10.0 * graph_step_response_width/precision);
-          let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
-          let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-          let screen_x = graph_step_response_width / 10 * Math.abs(T_2);
-          stroke(bode_graphs[i].bode_hue,240,360);
-          strokeWeight(3);
-          draw_X(screen_x,screen_y);
         } catch {}
-
-        // Draw T_3:
         try{ // The graph may be deleted, so this might fail:
-          let T_3 = range_slider_variables[variable_position["T_3"]];
-          // Now we know the x position. Let's find out the y position:
-          let linked_x = Math.round(Math.abs(T_3) / 10.0 * graph_step_response_width/precision);
-          let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
-          let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-          let screen_x = graph_step_response_width / 10 * Math.abs(T_3);
-          stroke(bode_graphs[i].bode_hue,240,360);
-          strokeWeight(3);
-          draw_X(screen_x,screen_y);
+          draw_time_response_T(range_slider_variables[variable_position["T_3"]],i);
         } catch {}
 
       } else if (bode_graphs[i].bode_formula == GRAPH_TIME_DELAY.formula){
@@ -3435,69 +3431,26 @@ function draw_time_responses(){
           let L = range_slider_variables[variable_position["L"]];
           if (L >= 0){
             // Now we know the x position. Let's find out the y position:
-            let T_1 = 1;
-            let linked_x = Math.round((T_1+L) / 10.0 * graph_step_response_width/precision);
-            let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
-            let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-            let screen_x = graph_step_response_width / 10 * (T_1 + L);
-            stroke(bode_graphs[i].bode_hue,240,360);
-            strokeWeight(3);
-            draw_X(screen_x,screen_y);
+            draw_time_response_T(range_slider_variables[variable_position["L"]]+1,i);
           }
         } catch {}
 
       } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
         // Draw T_6:
         try{ // The graph may be deleted, so this might fail:
-          let T_6 = range_slider_variables[variable_position["T_6"]];
-          // Now we know the x position. Let's find out the y position:
-          let linked_x = Math.round(Math.abs(T_6) / 10.0 * graph_step_response_width/precision);
-          let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
-          let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-          let screen_x = graph_step_response_width / 10 * Math.abs(T_6);
-          stroke(bode_graphs[i].bode_hue,240,360);
-          strokeWeight(3);
-          draw_X(screen_x,screen_y);
-        } catch {}
-
-        // Draw T_7:
-        try{ // The graph may be deleted, so this might fail:
-          let T_7 = range_slider_variables[variable_position["T_7"]];
-          // Now we know the x position. Let's find out the y position:
-          let linked_x = Math.round(Math.abs(T_7) / 10.0 * graph_step_response_width/precision);
-          let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
-          let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-          let screen_x = graph_step_response_width / 10 * Math.abs(T_7);
-          stroke(bode_graphs[i].bode_hue,240,360);
-          strokeWeight(3);
-          draw_X(screen_x,screen_y);
+          draw_time_response_T(range_slider_variables[variable_position["T_6"]],i);
+          draw_time_response_T(range_slider_variables[variable_position["T_7"]],i);
         } catch {}
 
         // Draw T_8:
         try{ // The graph may be deleted, so this might fail:
+          draw_time_response_T(range_slider_variables[variable_position["T_8"]],i,"zero");
           let T_8 = range_slider_variables[variable_position["T_8"]];
-          // Now we know the x position. Let's find out the y position:
-          let linked_x = Math.round(Math.abs(T_8) / 10.0 * graph_step_response_width/precision);
-          let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
-          let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-          let screen_x = graph_step_response_width / 10 * Math.abs(T_8);
-          stroke(bode_graphs[i].bode_hue,240,360);
-          strokeWeight(3);
-          noFill();
-          draw_O(screen_x,screen_y);
         } catch {}
       } else if (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula){
         // Draw T_5:
         try{ // The graph may be deleted, so this might fail:
-          let T_5 = range_slider_variables[variable_position["T_5"]];
-          // Now we know the x position. Let's find out the y position:
-          let linked_x = Math.round(Math.abs(T_5) / 10.0 * graph_step_response_width/precision);
-          let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
-          let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-          let screen_x = graph_step_response_width / 10 * Math.abs(T_5);
-          stroke(bode_graphs[i].bode_hue,240,360);
-          strokeWeight(3);
-          draw_X(screen_x,screen_y);
+          draw_time_response_T(range_slider_variables[variable_position["T_5"]],i);
         } catch {}
       }
 
@@ -3655,7 +3608,6 @@ function draw_pole_zeros(){
   }
   let last_graph = draw_position;
 
-
   draw_position = 0;
   for(let i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_displaybool){
@@ -3704,12 +3656,9 @@ function redraw_canvas_gain(input_id){
   redraw();
 }
 
-//Update function
-function windowResized(){
-  setGraphDimensions();
-  resizeCanvas(canvas_width,canvas_height);
-  redraw_canvas_gain("all");
-}
+
+// --------------------------------
+// Mouse functions
 
 let bode_3_real = -1.0;
 let bode_3_imaginary = 0.5;
