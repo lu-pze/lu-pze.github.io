@@ -3154,13 +3154,7 @@ function draw_bode_responses(type){
             if (z <= 1){
               // One single frequency, so only one X in the graph:
               if (w >= 0){
-                let frequency = w;
-                let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-                let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
-                let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-                stroke(bode_graphs[i].bode_hue,240,360);
-                strokeWeight(3);
-                draw_X(screen_x,screen_y);
+                draw_bode_phase_T(1/w,i);
               }
             } else {
               //If Math.sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
@@ -3169,23 +3163,11 @@ function draw_bode_responses(type){
               let bode_3_real_2 = z*w - w * Math.sqrt(z*z-1);
               w = bode_3_real_1;
               if (w >= 0){
-                let frequency = w;
-                let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-                let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
-                let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-                stroke(bode_graphs[i].bode_hue,240,360);
-                strokeWeight(3);
-                draw_X(screen_x,screen_y);
+                draw_bode_phase_T(1/w,i);
               }
               w = bode_3_real_2;
               if (w >= 0){
-                let frequency = w;
-                let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-                let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
-                let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-                stroke(bode_graphs[i].bode_hue,240,360);
-                strokeWeight(3);
-                draw_X(screen_x,screen_y);
+                draw_bode_phase_T(1/w,i);
               }
             }
           } catch {}
@@ -3322,6 +3304,13 @@ function draw_O(screen_x,screen_y){
   ellipse(screen_x,screen_y,15,15);
 }
 
+function draw_static_gain(k,i){
+  let screen_y = map(k,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
+  stroke(bode_graphs[i].bode_hue,240,360);
+  strokeWeight(0.5);
+  line(0,screen_y,graph_step_response_width,screen_y);
+}
+
 function draw_time_responses(){
   if(document.getElementById("automatic-range-time").checked){
     let nof_shown=0;
@@ -3334,7 +3323,6 @@ function draw_time_responses(){
     } else {
       min_y_timerep = 100000;
       max_y_timerep = -100000;
-
       for(let i=0; i<bode_graphs.length; i++){
         if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_timeresponse_bool)){
           let current_graph = bode_graphs[i];
@@ -3352,13 +3340,8 @@ function draw_time_responses(){
   if (Math.abs(min_y_timerep) < 0.1){
     min_y_timerep = Math.round(min_y_timerep);
   }
-
-  if (max_y_timerep > 500){
-    max_y_timerep = 500;
-  }
-  if (min_y_timerep < -500){
-    min_y_timerep = -500;
-  }
+  if (max_y_timerep > 500) max_y_timerep = 500;
+  if (min_y_timerep < -500) min_y_timerep = -500;
 
   textAlign(CENTER);
   noStroke();
@@ -3380,50 +3363,24 @@ function draw_time_responses(){
     if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_timeresponse_bool)){
       if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
         let T_1 = range_slider_variables[variable_position["T_1"]];
-        if (T_1 >= 0){
-          let k_1 = range_slider_variables[variable_position["k_1"]];
-          let screen_y = map(k_1,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-          stroke(bode_graphs[i].bode_hue,240,360);
-          strokeWeight(0.5);
-          line(0,screen_y,graph_step_response_width,screen_y);
-        }
+        if (T_1 >= 0) draw_static_gain(range_slider_variables[variable_position["k_1"]],i);
       } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
         let T_2 = range_slider_variables[variable_position["T_2"]];
         let T_3 = range_slider_variables[variable_position["T_3"]];
         if ((T_2>=0)&&(T_3>=0)){
           // Two stable poles. There is a stationary final value we will reach.
-          let k_2 = range_slider_variables[variable_position["k_2"]];
-          let screen_y = map(k_2,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-          stroke(bode_graphs[i].bode_hue,240,360);
-          strokeWeight(0.5);
-          line(0,screen_y,graph_step_response_width,screen_y);
+          draw_static_gain(range_slider_variables[variable_position["k_2"]],i);
         }
       } else if (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
-        let k_3 = range_slider_variables[variable_position["k_3"]];
-        let screen_y = map(k_3,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-        stroke(bode_graphs[i].bode_hue,240,360);
-        strokeWeight(0.5);
-        line(0,screen_y,graph_step_response_width,screen_y);
+        draw_static_gain(range_slider_variables[variable_position["k_3"]],i);
       } else if (bode_graphs[i].bode_formula == GRAPH_TIME_DELAY.formula){
-        let k_4 = 3;
-        let screen_y = map(k_4,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-        stroke(bode_graphs[i].bode_hue,240,360);
-        strokeWeight(0.5);
-        line(0,screen_y,graph_step_response_width,screen_y);
+        draw_static_gain(3,i);
       } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
-        let k_4 = range_slider_variables[variable_position["k_4"]];
-        let screen_y = map(k_4,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-        stroke(bode_graphs[i].bode_hue,240,360);
-        strokeWeight(0.5);
-        line(0,screen_y,graph_step_response_width,screen_y);
+        draw_static_gain(range_slider_variables[variable_position["k_4"]],i);
       } else if (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula){
         let T_5 = range_slider_variables[variable_position["T_5"]];
         if (T_5 >= 0){
-          let k_5 = range_slider_variables[variable_position["k_5"]];
-          let screen_y = map(k_5,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-          stroke(bode_graphs[i].bode_hue,240,360);
-          strokeWeight(0.5);
-          line(0,screen_y,graph_step_response_width,screen_y);
+          draw_static_gain(range_slider_variables[variable_position["k_5"]],i);
         }
       }
     }
