@@ -6128,7 +6128,6 @@ class bode_graph{
       }
       line(x*pole_zero_width/4,0,x*pole_zero_width/4,pole_zero_height);
     }
-
     for(let y=0; y<=4; y++){
       if (y==2){
         strokeWeight(3);
@@ -6143,18 +6142,13 @@ class bode_graph{
       }
       line(0,y*pole_zero_height/4,pole_zero_width,y*pole_zero_height/4);
     }
-
     stroke(this.bode_hue,360,360);
     strokeWeight(line_stroke_weight / 2);
     line(0,0,0,pole_zero_height);
     line(pole_zero_width,0,pole_zero_width,pole_zero_height);
-
     noFill();
-    //let blob_color = color('hsb(0, 0%, 20%)');
     strokeWeight(line_stroke_weight);
     stroke(this.bode_hue,360,360);
-//    ellipse(pole_zero_width/2,pole_zero_height/2,12,12);
-
     if (draw_axis == true){
       push();
       noStroke();
@@ -6167,12 +6161,12 @@ class bode_graph{
       text("Real axis [1/s]",graph_pole_zero_width/2,pole_zero_height+35);
       pop();
     }
-
     if (this.bode_formula == GRAPH_ONE_REAL_POLE.formula){
       //pole_x = range_slider_variables[0];
       let T_1inv = 1/range_slider_variables[variable_position["T_1"]];
       if (T_1inv > 3.2) T_1inv=3.2;
       this.plot_pole(-T_1inv,0); // Should be T_1
+
     } else if (this.bode_formula == GRAPH_TWO_REAL_POLES.formula){
       //pole_x = range_slider_variables[0];
       let T_2inv = 1/range_slider_variables[variable_position["T_2"]];
@@ -6181,6 +6175,7 @@ class bode_graph{
       let T_3inv = 1/range_slider_variables[variable_position["T_3"]];
       if (T_3inv > 3.2) T_3inv=3.2;
       this.plot_pole(-T_3inv,0); // Should be T_3
+
     } else if (this.bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
       // Calculate bode_3_real and imaginary from z and w:
       // s = −ζω_n ± jω_n * Math.sqrt(1−ζ^2)
@@ -6221,7 +6216,6 @@ class bode_graph{
              pole_zero_height/2 - tmp_y * pole_zero_height/4,
              pole_zero_width/2 + (0+1) * pole_zero_width/4,
              pole_zero_height/2 + 0 * pole_zero_height/4);
-
         noFill();
         strokeWeight(line_stroke_weight);
         stroke(this.bode_hue,360,360);
@@ -6232,7 +6226,6 @@ class bode_graph{
         let bode_3_real_1 = -z*w + w * Math.sqrt(z*z-1);
         let bode_3_real_2 = -z*w - w * Math.sqrt(z*z-1);
         bode_3_imaginary = 0;
-
         let tmp_x = bode_3_real_1;
         if (tmp_x < -3.2) tmp_x=-3.2;
         if (tmp_x > 1.2) tmp_x=1.2;
@@ -6242,15 +6235,13 @@ class bode_graph{
         if (tmp_x > 1.2) tmp_x=1.2;
         this.plot_pole(tmp_x,0); // complex
       }
-// Skipping graph 4 "Time delay", since nothing is movable:
-//    } else if (this.bode_formula == GRAPH_TIME_DELAY.formula){
-//      //pole_x = range_slider_variables[0];
-//      this.plot_pole(-1.0,0);
+
     } else if (this.bode_formula == GRAPH_ONE_ZERO.formula){
       //pole_x = range_slider_variables[0];
       let T_4inv = 1/range_slider_variables[variable_position["T_4"]];
       if (T_4inv > 3.2) T_4inv=3.2;
       this.plot_zero(-T_4inv,0); // Should be T_4
+
     } else if (this.bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
       //pole_x = range_slider_variables[0];
       let T_6inv = 1/range_slider_variables[variable_position["T_6"]];
@@ -6262,6 +6253,7 @@ class bode_graph{
       let T_8inv = 1/range_slider_variables[variable_position["T_8"]];
       if (T_8inv > 3.2) T_8inv=3.2;
       this.plot_zero(-T_8inv,0); // Should be T_4
+
     } else if (this.bode_formula == GRAPH_FOUR_POLES.formula){
       //pole_x = range_slider_variables[0];
       let T_5inv = 1/range_slider_variables[variable_position["T_5"]];
@@ -6297,7 +6289,6 @@ let range_slider_variables = [2.718281828459045,18012001,18012001,18012001,18012
 let range_slider_alphabet = ['e','a','b','c','d','f','g','h','i','j','l','L','m','n','o','p','q','r','t','u','v','x','y','k_1','k_2','k_3','k_4','k_5','k_6','w','z','T_1','T_2','T_3','T_4','T_5','T_6','T_7','T_8'];
 // To go from "T_1" to the index in range_slider_variables:
 let variable_position = {};
-
 let buffer_formula = 0;
 let input_formula = "1/s";
 
@@ -6347,7 +6338,6 @@ function getTimeValues(time,time_delay){
   }
   return ln2 * sum/time_to_use;
 }
-
 
 function findOmegaZero(input_array){
   let a_bound = min_10power;
@@ -6424,10 +6414,7 @@ function fivePercentTimeResponse(input_array){
 }
 
 
-/* Get the documentElement (<html>) to display the page in fullscreen */
-let elem = document.documentElement;
 let is_fullscreen = false;
-
 function toggle_fullscreen(){
   if (is_fullscreen == false){
     achievement_done("go_fullscreen");
@@ -6437,8 +6424,8 @@ function toggle_fullscreen(){
   }
 }
 
-/* View in fullscreen */
 function openFullscreen() {
+  let elem = document.documentElement;
   if (elem.requestFullscreen) {
     elem.requestFullscreen();
     is_fullscreen = true;
@@ -6451,7 +6438,6 @@ function openFullscreen() {
   }
 }
 
-/* Close fullscreen */
 function closeFullscreen() {
   if (document.exitFullscreen) {
     document.exitFullscreen();
@@ -6483,7 +6469,6 @@ function ready(){
   toggle_quiz_enabled();
   updateToolbox();
 
-  //toggle_quiz_enabled();
   document.addEventListener('keydown', function(event) {
     console.log(event.key);
     if (event.key=='F1'){
@@ -6500,5 +6485,4 @@ function ready(){
       restart_lupze();
     }
   });
-
 }
