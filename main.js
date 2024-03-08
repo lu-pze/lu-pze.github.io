@@ -190,9 +190,9 @@ const default_variable_values={
   "T_3":{min:  0.0,max:10.0,value:2.0},
   "T_4":{min:  0.0,max:10.0,value:1.0},
   "T_5":{min:  0.0,max:10.0,value:1.0},
-  "T_6":{min:  0.0,max:10.0,value:1.0},
-  "T_7":{min:  0.0,max:10.0,value:1.0},
-  "T_8":{min:-10.0,max:10.0,value:1.0},
+  "T_6":{min:  0.0,max:10.0,value:1.1},
+  "T_7":{min:  0.0,max:10.0,value:0.9},
+  "T_8":{min:-10.0,max:10.0,value:0.8},
   "q"  :{min:  0.01,max:1.0,value:0.1},
   "v"  :{min:  0.1,max:20.0,value:4.5}};
 
@@ -1966,15 +1966,6 @@ function task_done (which_one){
         document.querySelector('.achievement_text').style.setProperty('--top',top+"%");
         document.querySelector('.assignment_star').style.setProperty('--left',left+"%");
         document.querySelector('.assignment_star').style.setProperty('--top',top+"%");
-        // Order of the animation parameters:
-        //div {
-        //  animation-name: example;
-        //  animation-duration: 5s;
-        //  animation-timing-function: linear;
-        //  animation-delay: 2s;
-        //  animation-iteration-count: infinite;
-        //  animation-direction: alternate;
-        //}
         achievement_text_div.style.animation = 'none';
         achievement_text_div.offsetHeight; /* trigger reflow */
         achievement_text_div.style.animation="MoveToStar4 7s ease-in-out 0s 1";
@@ -2011,7 +2002,6 @@ const all_assignments={
 //  "nyquist":{t:"Check out the <b>Nyquist diagram</b>",tasks:["k_above_or_equal_100","set_input_to_ramp"],info:"Named after Harry Nyquist 1889-1976, a Swedish-American physicist and electronic engineer."}
 };
 let done_assignments={};
-
 
 const all_tasks={
 //## One pole
@@ -2057,8 +2047,6 @@ const all_tasks={
 "phase_margin=20":"CURRENTLY NOT SOLVABLE (but we're working on it!): Drag the Bode plot so that the <b>Phase margin</b> is 20° with a <b>Gain crossover frequency</b> of 5 rad/s.",
 };
 let done_tasks=[];
-//let done_tasks=["T1=2","k1=2.9","T1_k1_bode","T1_pole=-2","T1_unstable"];
-
 
 
 function update_assignments(){
@@ -2226,7 +2214,6 @@ function select_assignment(event){
     addNewGraph(none, {name:"Ghost..T..._Match this response", mf:"\\frac{0.7*2^2}{s^2+2*0.7*2*s+2^2}", formula:"0.7*2^2/(s^2+2*0.7*2*s+2^2)"});
   } else if(event.value=="one_zero_two_poles"){
     //Nyquist reference (k=1,T6=2.5,T7=1,T8=6)
-//    addNewGraph(none, {name:"Ghost...N.._Match this Nyquist", mf:"\\frac{(1+6s)}{(1+2.5s)(1+s)}", formula:"(1+6s)/(1+2.5s)*1/(1+s)"});
     addNewGraph(none, {name:"Ghost...N.._Match this Nyquist", mf:"\\frac{(1+6s)}{(1+2.5s)(1+s)}", formula:"(1+6s)/(1+2.5s)*1/(1+s)"});
     //Bode reference (k4=0.75,T6=9.25,T7=0.5,T8=2)
     addNewGraph(none, {name:"GhostMP...._Match this Bode", mf:"\\frac{0.75(1+2s)}{(1+9.25s)(1+0.5s)}", formula:"0.75(1+2s)/(1+9.25s)*1/(1+0.5s)"});
@@ -2243,9 +2230,9 @@ function update_tasks(){
   }
 
   let s="";
-  // List all tasks not yet done:
   s += "<center><b>"+all_assignments[current_assignment].t+"</b></center><br>";
 
+  // List all tasks not yet done:
   let todo = "Your tasks in this assignment:<br>";
   let nof_done_subtasks = 0;
   for (let task_id in all_tasks){
@@ -2262,7 +2249,6 @@ function update_tasks(){
     s += todo;
     s += "Completed tasks:<br>";
   }
-
   for (let task_id in all_tasks){
     if (all_assignments[current_assignment].tasks.includes(task_id)){
       if (done_tasks.includes(task_id)){
@@ -2271,23 +2257,28 @@ function update_tasks(){
       }
     }
   }
-
   if (nof_done_subtasks != Object.keys(all_assignments[current_assignment].tasks).length){
     s += "<br><b>" + (nof_done_subtasks) + "/"+Object.keys(all_assignments[current_assignment].tasks).length+"</b> done so far.";
   } else {
     s+="<br><span onclick='toggle_assignments_box()' class='clickable-link'>You're done with this assignment! Click <b>here</b> to choose the next assignment.</span>";
   }
-
   s += "<br><br><br><center><i><div style='width:70%;border-radius:20px;padding:5%;background:#e0e0e0;'>"+all_assignments[current_assignment].info+"</span></i></center>";
+
   task_div.innerHTML=s;
 }
 
+
+
 // ----------------------
-// Gamification
+// Achievements
 
 let gamification_enabled = false;
 let sound_enabled=0; // 1 means "audio context needs to be initialized". true means "everything works"
                      // 0 means "audio context needs to be initialized". false means "everything works but don't play anything"
+let done_achievements=[];
+let achievement_score=0;
+let achievement_rank="";
+let achievement_score_to_next_rank=0;
 
 function toggle_gamification(event){
   if (gamification_enabled == false){
@@ -2331,30 +2322,20 @@ function achievement_done (which_one){
       document.querySelector('.achievement_star').style.setProperty('--left',left+"%");
       document.querySelector('.achievement_star').style.setProperty('--top',top+"%");
       let achievement_star_div = document.getElementById("achievement_star");
-      // Order of the animation parameters:
-      //div {
-      //  animation-name: example;
-      //  animation-duration: 5s;
-      //  animation-timing-function: linear;
-      //  animation-delay: 2s;
-      //  animation-iteration-count: infinite;
-      //  animation-direction: alternate;
-      //}
       achievement_text_div.style.animation = 'none';
       achievement_text_div.offsetHeight; /* trigger reflow */
       achievement_text_div.style.animation="MoveToStar 7s ease-in-out 0s 1";
       achievement_star_div.style.animation = 'none';
       achievement_star_div.offsetHeight; /* trigger reflow */
       achievement_star_div.style.animation="MoveToStar2 8s ease-out 0s 1";
-
       if (sound_enabled==true){
         play_jingle();
       }
     }
 
     update_achievements();
-  } else {
-    // This has already been done. No need to do anything.
+  //} else {
+  //   This achievement has already been completed. No need to do anything.
   }
 }
 
@@ -2401,11 +2382,6 @@ const achievement_ranks={
   0:"Automatic Control Newbie"
 }
 
-let done_achievements=[];
-let achievement_score=0;
-let achievement_rank="";
-let achievement_score_to_next_rank=0;
-
 function update_achievements(){
   achievement_score = 100.0 * done_achievements.length / Object.keys(all_achievements).length;
   achievement_rank="";
@@ -2414,7 +2390,6 @@ function update_achievements(){
   const entries = Object.entries(achievement_ranks);
   // Sort the array based on integer keys in descending order
   entries.sort(([keyA], [keyB]) => keyB - keyA);
-
   // Iterate over the sorted array
   for (const [threshold, rank] of entries) {
     if (achievement_score>=threshold){
@@ -2424,7 +2399,6 @@ function update_achievements(){
       achievement_score_to_next_rank=threshold-achievement_score;
     }
   }
-
 
   let achievements_box = document.querySelector('.achievements_box');
   let s = "";
@@ -2448,8 +2422,6 @@ function update_achievements(){
     s += "<center>Well done! You're one in a million, Legend.</center><br>";
   } else {
     s += "Level up with another " + achievement_score_to_next_rank.toFixed(1) + " points:<br>";
-
-//    s+="<center>Raise your score:</center><br>";
     for (let achievement_id in all_achievements){
       if (!(done_achievements.includes(achievement_id))){
         let long_name = all_achievements[achievement_id]
@@ -2458,6 +2430,7 @@ function update_achievements(){
     }
   }
   s += "<br>";
+
   achievements_box.innerHTML=s;
 }
 
@@ -2536,7 +2509,7 @@ var current_jingle = 0;// Jingle_positions.length-2;
 var last_jingle_play = 0;
 var jingle_buffer;
 var jingle_source;
-function init_jingle () {
+function init_jingle (){
 //  var audioSource = "audio/pling_v01.mp3";
 //  var audioSource = "audio/seed_jingle1.mp3";
   var audioSource = "audio/bonus_pling7.wav";
@@ -2552,7 +2525,7 @@ function init_jingle () {
   };
   request.send();
 }
-function play_jingle () {
+function play_jingle (){
   //console.log("Play jingle");
   try {
     // This is how non-iOS stops a sound:
@@ -2614,17 +2587,13 @@ function changeColorMode(event){
     graph_space.setAttribute("style","grid-column: 2;grid-row: 2;background:#292929;")
     graph_information_tabs.style.background="#202020";
     graph_information.style.background="#484848";
-
     const checkedRadio = document.querySelector('.graph-information-tabs input[type="radio"]:checked');
-    // Check if the element is found
     if (checkedRadio) {
       // Select the corresponding label using the adjacent sibling selector
       const labelElement = checkedRadio.nextElementSibling;
-      // Set the CSS values as needed
       labelElement.style.background="#484848";
     }
-  }
-  else{
+  } else {
     // Set to light mode:
     background_color = color('hsb(0, 0%, 100%)');
     line_color = color('hsb(0, 0%, 64%)');
@@ -2632,17 +2601,12 @@ function changeColorMode(event){
     angle_color = "#ff40ff";
     box_background_color = 255;  // The tooltip hover box
     graph_space.setAttribute("style","grid-column: 2;grid-row: 2;background:#fff;")
-
-//    graph_information_tabs.setAttribute("style","background:#fff")
     graph_information_tabs.style.background="#fff";
     graph_information.style.background="#ddd";
-
     const checkedRadio = document.querySelector('.graph-information-tabs input[type="radio"]:checked');
-    // Check if the element is found
     if (checkedRadio) {
       // Select the corresponding label using the adjacent sibling selector
       const labelElement = checkedRadio.nextElementSibling;
-      // Set the CSS values as needed
       labelElement.style.background="#ddd";
     }
   }
@@ -2676,8 +2640,6 @@ function updateToolbox(){
     </div>
     `
     let x_inputs = math_preferences.getElementsByClassName("range-wrapper-bode")[0].getElementsByTagName("input");
-//    console.log("x_inputs=");
-//    console.log(x_inputs);
     let x_min = x_inputs[0];
     let x_max = x_inputs[1];
     x_min.oninput = function(){
@@ -2685,7 +2647,6 @@ function updateToolbox(){
       let max_tenth_power_value = roundup_decimal(x_max.value);
       min_10power = min_tenth_power_value;
       x_case_gain = max_tenth_power_value - min_tenth_power_value;
-//      console.log("xmin=" + x_case_gain);
       redraw_canvas_gain("all");
     }
     x_max.oninput = function(){
@@ -2695,8 +2656,6 @@ function updateToolbox(){
       redraw_canvas_gain("all");
     }
     let y_inputs = math_preferences.getElementsByClassName("range-wrapper-bode2")[0].getElementsByTagName("input");
-//    console.log("y_inputs=");
-//    console.log(y_inputs);
     let y_min = y_inputs[0];
     let y_max = y_inputs[1];
     y_max.oninput = function(){
@@ -2756,7 +2715,6 @@ function updateToolbox(){
     precision_range.onchange = function(){
       precision = 7 - precision_range.value;
       redraw_canvas_gain("all");
-      //console.log(precision);
     }
 
     auto_range_checkbox.onchange = function(){
@@ -2787,7 +2745,6 @@ function updateToolbox(){
         redraw_canvas_gain("all");
       }
     }
-
 
     math_preferences.innerHTML +=
     `
@@ -2853,7 +2810,6 @@ function updateToolbox(){
 }
 
 
-
 function updateInputFormulaFromList(event){
   let selected_input = document.getElementById("input-choices").value;
   let input_equation = document.getElementById("input-formula");
@@ -2879,10 +2835,10 @@ function updateInputFormulaFromList(event){
       input_formula = "100/(1 + 20s + 100s^2)"
       input_equation.value = "\\frac{100}{1 + 20s + 100s^2}";
       break;
-
   }
   redraw_canvas_gain("all");
 }
+
 function updateGraphInformation(){
   let tabs_wrapper = document.getElementsByClassName("graph-information-tabs")[0];
   let inputs = tabs_wrapper.getElementsByTagName('input');
@@ -2972,12 +2928,10 @@ function setup(){
   line_color = color('hsb(0, 0%, 22%)');  // Grey graph lines
   text_color = color('hsb(0, 0%, 100%)');
   angle_color = "#ff40ff";
-
   // To go from "T_1" to the index in range_slider_variables:
   for(let i=0; i<range_slider_alphabet.length; i++){
     variable_position[range_slider_alphabet[i]] = i;
   }
-
   id_bank=0;
   // Add the initial startup graphs:
   for(let graph_no=0; graph_no<NOF_GRAPHS_AT_STARTUP; graph_no++){
@@ -3022,7 +2976,6 @@ function draw(){
   pop();
 }
 
-//Toolbox
 function roundup_decimal(input){
   let sign = Math.sign(input);
   input = Math.abs(input);
@@ -3074,6 +3027,25 @@ function textPowerOfTen(input_power,x_pos,y_pos){
   pop();
 }
 
+let rad_phase_lower_bound;
+let rad_phase_upper_bound;
+function draw_bode_phase_T(T,i,pole_zero="pole"){
+  console.log("draw_bode_phase_T, T=" + T);
+  let frequency = 1/Math.abs(T);
+  let screen_x = (Math.log(frequency)/Math.log(10)+2) * graph_bode_phase_width/5;
+  let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
+  console.log("linked_y=" + linked_y);
+  let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
+  console.log("screen_y=" + screen_y);
+  stroke(bode_graphs[i].bode_hue,240,360);
+  strokeWeight(3);
+  if (pole_zero=="pole") draw_X(screen_x,screen_y);
+  else {
+    noFill();
+    draw_O(screen_x,screen_y);
+  }
+}
+
 //Drawing functions
 function draw_bode_responses(type){
   if(type == "phase"){
@@ -3099,25 +3071,18 @@ function draw_bode_responses(type){
         }
       }
     }
-
     // Limiting the phase axis into something sane:
     min_phase = Math.max(-360/180*Math.PI,min_phase);
-    //max_phase = math.min(5,max_phase);
-
     min_phase = min_phase*180/Math.PI;
     max_phase = max_phase*180/Math.PI;
-
     phase_lower_bound = get_bestMultiple(min_phase,45,"lower");
     phase_upper_bound = get_bestMultiple(max_phase,45,"upper");
-
     phase_case_number = (phase_upper_bound - phase_lower_bound)/45;
-
     if(phase_case_number == 0){
       phase_upper_bound += 45;
       phase_lower_bound -= 45;
       phase_case_number = 2;
     }
-
     textAlign(CENTER);
     noStroke();
     fill(text_color);
@@ -3127,10 +3092,8 @@ function draw_bode_responses(type){
     text("[degrees]",0,-15);
     draw_loglines(x_case_gain,y_case_gain);
     text("angular freq [rad/s]",graph_bode_phase_width,graph_bode_phase_height+35);
-
     textAlign(RIGHT);
     textSize(15);
-
     for(let y=0; y<=phase_case_number; y++){
       stroke(line_color);
       let pas = graph_bode_phase_height*y/phase_case_number;
@@ -3145,7 +3108,6 @@ function draw_bode_responses(type){
       fill(text_color);
       text(value,-7,pas+5);
     }
-
     for(let i=0; i<bode_graphs.length; i++){
       if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
         let stop_on_overflow=false;
@@ -3156,45 +3118,21 @@ function draw_bode_responses(type){
         bode_graphs[i].draw_phase(stop_on_overflow);
       }
     }
-
     // Draw X for T_1, T_2, T_3 and w:
-    let rad_phase_lower_bound = phase_lower_bound*Math.PI/180;
-    let rad_phase_upper_bound = phase_upper_bound*Math.PI/180;
+    rad_phase_lower_bound = phase_lower_bound*Math.PI/180;
+    rad_phase_upper_bound = phase_upper_bound*Math.PI/180;
     for(let i=0; i<bode_graphs.length; i++){
       if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
         if(bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
           // Draw T_1:
           try{ // The graph may be deleted, so this might fail:
-            let T_1 = range_slider_variables[variable_position["T_1"]];
-            let frequency = 1 / Math.abs(T_1);
-            let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-            let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
-            let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-            stroke(bode_graphs[i].bode_hue,240,360);
-            strokeWeight(3);
-            draw_X(screen_x,screen_y);
+            draw_bode_phase_T(range_slider_variables[variable_position["T_1"]],i);
           } catch {}
         } else if(bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
           // Draw T_2 and T_3:
           try{ // The graph may be deleted, so this might fail:
-            let T_2 = range_slider_variables[variable_position["T_2"]];
-            // Now we know the x position. Let's find out the y position:
-            let frequency = 1 / Math.abs(T_2);
-            let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-            let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
-            let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-            stroke(bode_graphs[i].bode_hue,240,360);
-            strokeWeight(3);
-            draw_X(screen_x,screen_y);
-            let T_3 = range_slider_variables[variable_position["T_3"]];
-            // Now we know the x position. Let's find out the y position:
-            frequency = 1 / Math.abs(T_3);
-            screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-            linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
-            screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-            stroke(bode_graphs[i].bode_hue,240,360);
-            strokeWeight(3);
-            draw_X(screen_x,screen_y);
+            draw_bode_phase_T(range_slider_variables[variable_position["T_2"]],i);
+            draw_bode_phase_T(range_slider_variables[variable_position["T_3"]],i);
           } catch {}
         } else if(bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
           // Draw w:
@@ -3242,59 +3180,19 @@ function draw_bode_responses(type){
         } else if(bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula){
           // Draw T_4:
           try{ // The graph may be deleted, so this might fail:
-            let T_4 = range_slider_variables[variable_position["T_4"]];
-            let frequency = 1 / Math.abs(T_4);
-            let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-            let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
-            let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-            stroke(bode_graphs[i].bode_hue,240,360);
-            strokeWeight(3);
-            draw_X(screen_x,screen_y);
+            draw_bode_phase_T(range_slider_variables[variable_position["T_4"]],i);
           } catch {}
         } else if(bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
           // Draw T_8, T_6 and T_7:
           try{ // The graph may be deleted, so this might fail:
-            let T_6 = range_slider_variables[variable_position["T_6"]];
-            // Now we know the x position. Let's find out the y position:
-            let frequency = 1 / Math.abs(T_6);
-            let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-            let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
-            let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-            stroke(bode_graphs[i].bode_hue,240,360);
-            strokeWeight(3);
-            draw_X(screen_x,screen_y);
-            let T_7 = range_slider_variables[variable_position["T_7"]];
-            // Now we know the x position. Let's find out the y position:
-            frequency = 1 / Math.abs(T_7);
-            screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-            linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
-            screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-            stroke(bode_graphs[i].bode_hue,240,360);
-            strokeWeight(3);
-            draw_X(screen_x,screen_y);
-            let T_8 = range_slider_variables[variable_position["T_8"]];
-            let T_8_pos = Math.abs(T_8);
-            // Now we know the x position. Let's find out the y position:
-            frequency = 1 / T_8_pos;
-            screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-            linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
-            screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-            stroke(bode_graphs[i].bode_hue,240,360);
-            strokeWeight(3);
-            noFill();
-            draw_O(screen_x,screen_y);
+            draw_bode_phase_T(range_slider_variables[variable_position["T_6"]],i);
+            draw_bode_phase_T(range_slider_variables[variable_position["T_7"]],i);
+            draw_bode_phase_T(range_slider_variables[variable_position["T_8"]],i,"zero");
           } catch {}
         } else if(bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula){
           // Draw T_5:
           try{ // The graph may be deleted, so this might fail:
-            let T_5 = range_slider_variables[variable_position["T_5"]];
-            let frequency = 1 / Math.abs(T_5);
-            let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-            let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
-            let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-            stroke(bode_graphs[i].bode_hue,240,360);
-            strokeWeight(3);
-            draw_X(screen_x,screen_y);
+            draw_bode_phase_T(range_slider_variables[variable_position["T_5"]],i);
           } catch {}
         }
       }
