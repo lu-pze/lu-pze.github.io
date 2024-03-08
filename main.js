@@ -1983,6 +1983,11 @@ function task_done (which_one){
         if (sound_enabled==true){
           play_jingle();
         }
+        // Let the menu star wiggle a little:
+        let menu_assignment_div = document.getElementById("show_assignments");
+        menu_assignment_div.style.animation = 'none';
+        menu_assignment_div.offsetHeight; /* trigger reflow */
+        menu_assignment_div.style.animation="MenuAssignment 4s ease-out 0s 1";
         update_assignments();
         update_tasks();
       }
