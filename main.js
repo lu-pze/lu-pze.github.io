@@ -190,9 +190,9 @@ const default_variable_values={
   "T_3":{min:  0.0,max:10.0,value:2.0},
   "T_4":{min:  0.0,max:10.0,value:1.0},
   "T_5":{min:  0.0,max:10.0,value:1.0},
-  "T_6":{min:  0.0,max:10.0,value:1.1},
-  "T_7":{min:  0.0,max:10.0,value:0.9},
-  "T_8":{min:-10.0,max:10.0,value:0.8},
+  "T_6":{min:  0.0,max:10.0,value:1.5},
+  "T_7":{min:  0.0,max:10.0,value:1.1},
+  "T_8":{min:-10.0,max:10.0,value:0.7},
   "q"  :{min:  0.01,max:1.0,value:0.1},
   "v"  :{min:  0.1,max:20.0,value:4.5}};
 
@@ -392,6 +392,13 @@ function removeSlider(event){
 
 
 function addNewGraphClicked(event, graph_to_add){
+  if (current_quiz!="none"){
+    quiz_perhaps("Sorry, you cannot add new graphs during the quiz.");
+    return;
+  } else if (current_assignment!="none"){
+    quiz_perhaps("Sorry, you cannot add new graphs during an assignment.");
+    return;
+  }
   achievement_done("add_graph");
   addNewGraph(event, graph_to_add);
 }
@@ -3129,10 +3136,10 @@ function draw_bode_responses(type){
     for(let i=0; i<bode_graphs.length; i++){
       if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
         let stop_on_overflow=false;
-        if (bode_graphs[i].bode_formula == GRAPH_TIME_DELAY.formula){
-          // A workaround to not plot the high frequency way-off phase in the bode phase plot of GRAPH_TIME_DELAY with L > 1:
-          stop_on_overflow=true;
-        }
+//        if (bode_graphs[i].bode_formula == GRAPH_TIME_DELAY.formula){
+//          // A workaround to not plot the high frequency way-off phase in the bode phase plot of GRAPH_TIME_DELAY with L > 1:
+//          stop_on_overflow=true;
+//        }
         bode_graphs[i].draw_phase(stop_on_overflow);
       }
     }
@@ -5579,8 +5586,6 @@ class bode_graph{
       this.bode_complex_array = [];
 
       let phase_bias = 0;
-      let corrector_bool = true;
-      corrector_bool = document.getElementById("phase_correction_checkbox").checked;
       buffer_formula = buffer_formula.replace('⋅','');
       for(let x=0; x<graph_bode_mag_width; x++){
         let log_pow = map(x,0,graph_bode_mag_width,min_10power,min_10power+x_case_gain);
@@ -5605,7 +5610,8 @@ class bode_graph{
         let bode_phase = bode_value.phi;
         bode_phase += phase_bias;
 
-        if(x > 0 && Math.abs(bode_phase - this.bode_phase_array[x-1]) > 5.23 && corrector_bool){
+        // Compensate the phase when it has crossed the 2*PI wrap-around:
+        if(x>=1 && (Math.abs(bode_phase - this.bode_phase_array[x-1]) > 0.1*2*Math.PI)) {
           let sign = Math.sign(this.bode_phase_array[x-1]);
           phase_bias = sign * Math.PI * 2;
           bode_phase += phase_bias;
@@ -6072,17 +6078,21 @@ class bode_graph{
     let new_complex_array = this.bode_complex_array;
     let screen_x1 = (Math.log(Math.abs(frequency))/Math.log(10) + 2) * graph_bode_mag_width/5;
     let sample_no = Math.round(screen_x1);
-    let current_complex = new_complex_array[sample_no];
-    let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-    let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-    if ((screen_x>=0)&&(screen_x<=graph_nyquist_width)&&(screen_y>=0)&&(screen_y<=graph_nyquist_height)){
-      try {
-        push();
-        stroke(this.bode_hue,240,360);
-        strokeWeight(3);
-        draw_O(screen_x, screen_y);
-        pop();
-      } catch {};
+    // This may fail, if the frequency is "outside" of the calculated frequencies.
+    // So let's add a safety measure:
+    if ((sample_no >= 0)&&(sample_no <new_complex_array.length)){
+      let current_complex = new_complex_array[sample_no];
+      let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+      let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+      if ((screen_x>=0)&&(screen_x<=graph_nyquist_width)&&(screen_y>=0)&&(screen_y<=graph_nyquist_height)){
+        try {
+          push();
+          stroke(this.bode_hue,240,360);
+          strokeWeight(3);
+          draw_O(screen_x, screen_y);
+          pop();
+        } catch {};
+      }
     }
   }
 
