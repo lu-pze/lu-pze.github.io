@@ -1024,6 +1024,7 @@ function toggle_quiz(){
 }
 
 function start_quiz(){
+  achievement_done("start_quiz");
   current_assignment="none";
   removeAllGraphs();
   update_tasks();
@@ -2338,6 +2339,12 @@ function achievement_done (which_one){
       if (sound_enabled==true){
         play_jingle();
       }
+
+      // Let the menu star wiggle a little:
+      let menu_star_div = document.getElementById("show_achievements");
+      menu_star_div.style.animation = 'none';
+      menu_star_div.offsetHeight; /* trigger reflow */
+      menu_star_div.style.animation="MenuStar 7s ease-in-out 0s 1";
     }
 
     update_achievements();
@@ -2360,6 +2367,7 @@ const all_achievements={
   "drag_time_response":"Drag the <b>two complex poles</b> transfer function in the time domain",
   "drag_pole_to_right_half_plane":"Drag a pole in the pole-zero map into the right half plane",
   "drag_zero_to_right_half_plane":"Drag a zero in the pole-zero map into the right half plane",
+  "start_quiz":"Start a <i class='material-icons' style='font-size:20px; vertical-align: middle;'>school</i> quiz",
   "add_graph":"Add <i class='material-icons' style='font-size:20px; vertical-align: middle;'>add</i> another graph",
   "set_input_to_impulse":"Change the input function to a dirac impulse",
   "python_script":"Get the Python script for any transfer function",
