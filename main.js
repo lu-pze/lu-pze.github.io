@@ -2015,24 +2015,24 @@ const all_tasks={
 //"reference eq in step response(k=0.65, T1=2)"
 "T1=2":"Your task is to change T<sub>1</sub> by moving the slider or type in T<sub>1</sub>'s value to make the pole's location -1/2 in the pole-zero map. Can you explain how the pole's location and its time constant are related?",//. (T1=2)
 "k1=2.9":"Your task is to drag the <b>step input response</b> making the static gain of the system 2.9. When will the system reach its static gain?",//. (k1=2.9)
-"T1_k1_bode":"Save the princess from the dragon by dragging the pole in the Bode plots to mimick the orange step response. The princess, as it turns out, will only leave the dragon if you can explain how she can find the <b>static gain</b> in the Bode magnitude plot. Can you save her?",// (k=0.65, T1=2)
-"T1_pole=-2":"Drag the pole in the <b>pole-zero map</b> to make the system four times faster than the orange one. What does it mean to have a faster system?",//. (pole in -2)
+"T1_k1_bode":"Save the princess from the dragon by dragging the pole marker in the Bode plots to mimick the orange step response. The princess, as it turns out, will only leave the dragon if you can explain how she can find the <b>static gain</b> in the Bode magnitude plot. Can you save her?",// (k=0.65, T1=2)
+"T1_pole=-2":"Drag the pole marker in the <b>pole-zero map</b> to make the system four times faster than the orange one. What does it mean to have a faster system?",//. (pole in -2)
 "T1_unstable":"Make the pole <b>unstable</b>.", // T_1 < 0
 
 //## Two real poles
 //reference in step (T2=T3=1, k2=0.5)
 //reference in bode phase (T2=5, T3=0.05, k2=1)
 "T2,T3=0.05_and_5":"Your task is to change T<sub>2</sub> and T<sub>3</sub> to make your Bode phase plot mimick the blue curve in the Bode phase plot. Feel free to change these time constants in whatever way you find suitable.",//. (T2=0.05, T3=5.0)
-"T2,T3=1;k2=0.5":"Your first subtask is to set k<sub>2</sub>=0.5 exactly, then drag the two poles in the <b>pole-zero map</b> to make the step response follow the cyan line. Can you explain how this second-order step response differs from a first-order system?",//. (T2=T3=1, k2=1)
-"T2=10;T3=0.5":"Your task is to drag the poles in the Bode plots making the <b>cutoff frequencies</b> in the Bode plot become 0.1 rad/s and 2.0 rad/s. Now, tell me how the cutoff frequencies as seen in the Bode plots are related to the poles' locations in the pole-zero map.",// (T2=10, T3=0.5 or vice versa)
-"phasemargin=55":"Please drag the two poles in the Bode diagram to ensure that the <b>Phase margin</b> for the system is 55°. Can you explain how the phase margin can be found in the Nyquist diagram?",// (T2=T3=0.5-1.5k k2=7-8 approximately
-"gaincrossover=3":"Finally, drag the two poles in the Bode diagram to ensure that the <b>gain crossover frequency</b> becomes 3.0 rad/s. But before you go, call your friend and tell them how you can get the gain crossover frequency from a Bode magnitude plot.",// (T2=T3=0.5-1.5k k2=7-8 approximately)
+"T2,T3=1;k2=0.5":"Your first subtask is to set k<sub>2</sub>=0.5 exactly, then drag the two pole markers in the <b>pole-zero map</b> to make the step response follow the cyan line. Can you explain how this second-order step response differs from a first-order system?",//. (T2=T3=1, k2=1)
+"T2=10;T3=0.5":"Your task is to drag the pole markers in the Bode plots making the <b>cutoff frequencies</b> in the Bode plot become 0.1 rad/s and 2.0 rad/s. Now, tell me how the cutoff frequencies as seen in the Bode plots are related to the poles' locations in the pole-zero map.",// (T2=10, T3=0.5 or vice versa)
+"phasemargin=55":"Please drag the two pole markers in the Bode diagram to ensure that the <b>Phase margin</b> for the system is 55°. Can you explain how the phase margin can be found in the Nyquist diagram?",// (T2=T3=0.5-1.5k k2=7-8 approximately
+"gaincrossover=3":"Finally, drag the two pole markers in the Bode diagram to ensure that the <b>gain crossover frequency</b> becomes 3.0 rad/s. But before you go, call your friend and tell them how you can get the gain crossover frequency from a Bode magnitude plot.",// (T2=T3=0.5-1.5k k2=7-8 approximately)
 
 //## Two complex poles
 //Step reference (w=2,z=0.7,k=0.7)
 //Bode reference (w=8, z=0.05)
-"w=0.9;z=0.0":"Move the poles in the <b>pole-zero map</b> in such way that the resonance frequency w becomes 0.9 and the damping factor z becomes 0.0.",
-"w=1.6;z=0.2":"Drag the poles in the <b>pole-zero map</b> so that the resonance frequency w=1.6 and damping factor z=0.2.",
+"w=0.9;z=0.0":"Move the pole markers in the <b>pole-zero map</b> in such way that the resonance frequency w becomes 0.9 and the damping factor z becomes 0.0.",
+"w=1.6;z=0.2":"Drag the pole markers in the <b>pole-zero map</b> so that the resonance frequency w=1.6 and damping factor z=0.2.",
 "w=8;z=0.05;k_3=1":"Change the <b>resonance frequency</b> w, <b>damping factor</b> z and <b>static gain</b> k<sub>3</sub> to make the Bode plots mimick the blue lines.",
 "w=2;z=0.7;k3=0.7":"Your task is to match the pink step input response. First, set your <b>static gain</b> k<sub>3</sub>. Then, drag the <b>Bode plot</b> to align your system response with the pink step input response.",
 
@@ -2044,9 +2044,9 @@ const all_tasks={
 //Nyquist reference (k=1,T6=2.5,T7=1,T8=6)
 //Bode reference (k4=0.75,T6=9.25,T7=0.5,T8=2)
 //Step reference (k4=1,T6=1,T7=1,T8=-1.5)
-"k4=1;T6=2.5;T7=1;T8=6":"Your task is to make your Nyquist diagram match up with the orange one. <b>Drag the poles and zero in the Bode plots</b>, and change k<sub>4</sub> to make the Nyquist curve follow the orange line. Note that there are many combinations of T<sub>6</sub>, T<sub>7</sub>, and T<sub>8</sub> that gives identical Nyquist diagrams but non-similar Bode diagrams. Can you explain why?",// (k=1,T6=2.5,T7=1,T8=6)
+"k4=1;T6=2.5;T7=1;T8=6":"Your task is to make your Nyquist diagram match up with the orange one. <b>Drag the pole and zero markers in the Bode plots</b>, and change k<sub>4</sub> to make the Nyquist curve follow the orange line. Note that there are many combinations of T<sub>6</sub>, T<sub>7</sub>, and T<sub>8</sub> that gives identical Nyquist diagrams but non-similar Bode diagrams. Can you explain why?",// (k=1,T6=2.5,T7=1,T8=6)
 "k4=0.75;T6=9.25;T7=0.5;T8=2":"Change the parameters so that your Bode plots align with the green lines.",//. (k4=0.75,T6=9.25,T7=0.5,T8=2)
-"k4,T6,T7=1,T8=1.5_poles":"With k<sub>4</sub>=1, drag the poles and zeros in the <b>pole-zero map</b> so that the step response follows the blue line.",
+"k4,T6,T7=1,T8=1.5_poles":"With k<sub>4</sub>=1, drag the pole and zero markers in the <b>pole-zero map</b> so that the step response follows the blue line.",
 
 //#Four poles
 // ToDo:
@@ -2351,15 +2351,15 @@ const all_achievements={
   "view_assignments":"Open your <i class='material-icons' style='font-size:20px; vertical-align: middle;'>assignments</i>Assignments",
   "view_help":"Open the <i class='material-icons' style='font-size:20px; vertical-align: middle;'>help</i> help section",
   "go_fullscreen":"Get rid of distractions by going <i class='material-icons' style='font-size:20px; vertical-align: middle;'>fullscreen</i> fullscreen",
-  "drag_pole":"Drag a pole in the s-domain",
-  "drag_zero":"Drag a zero in the s-domain",
+  "drag_pole":"Drag a pole in the pole-zero map",
+  "drag_zero":"Drag a zero in the pole-zero map",
   "drag_bode_mag":"Drag a transfer function in the Bode magnitude plot",
   "drag_bode_phase":"Drag a transfer function in the Bode phase plot",
-  "drag_complex_pole":"Drag <b>two complex poles</b> in the s-domain",
+  "drag_complex_pole":"Drag <b>two complex poles</b> in the pole-zero map",
   "hover_nyquist_-90":"Hover or click the Nyquist diagram at -90° on the unit circle",
   "drag_time_response":"Drag the <b>two complex poles</b> transfer function in the time domain",
-  "drag_pole_to_right_half_plane":"Drag a pole in the s-domain into the right half plane",
-  "drag_zero_to_right_half_plane":"Drag a zero in the s-domain into the right half plane",
+  "drag_pole_to_right_half_plane":"Drag a pole in the pole-zero map into the right half plane",
+  "drag_zero_to_right_half_plane":"Drag a zero in the pole-zero map into the right half plane",
   "add_graph":"Add <i class='material-icons' style='font-size:20px; vertical-align: middle;'>add</i> another graph",
   "set_input_to_impulse":"Change the input function to a dirac impulse",
   "python_script":"Get the Python script for any transfer function",
@@ -4658,6 +4658,9 @@ function mouseDragged(){
               document.getElementById("variable_"+variable_position["z"]).value = z.toFixed(2);
               // Update range slider:
               document.getElementById("RANGE_"+variable_position["z"]).value = z.toFixed(2);
+              if (z <= 0.1){
+                achievement_done("low_z");
+              }
               redraw_canvas_gain(bode_graphs[i].bode_id);
 
             } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula){
