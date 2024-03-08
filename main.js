@@ -3273,14 +3273,7 @@ function draw_bode_responses(type){
             if (z <= 1){
               // One single frequency, so only one X in the graph:
               if (w >= 0){
-                let frequency = w;
-                // Need to map frequency to pixel:
-                let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-                // Now we know the x position. Let's find out the y position:
-                let screen_y = map(bode_graphs[i].bode_gain_array[Math.round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
-                stroke(bode_graphs[i].bode_hue,240,360);
-                strokeWeight(3);
-                draw_X(screen_x,screen_y);
+                draw_bode_mag_T(1/w,i);
               }
             } else {
               //If Math.sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
@@ -3289,25 +3282,11 @@ function draw_bode_responses(type){
               let bode_3_real_2 = z*w - w * Math.sqrt(z*z-1);
               w = bode_3_real_1;
               if (w >= 0){
-                let frequency = w;
-                // Need to map frequency to pixel:
-                let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-                // Now we know the x position. Let's find out the y position:
-                let screen_y = map(bode_graphs[i].bode_gain_array[Math.round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
-                stroke(bode_graphs[i].bode_hue,240,360);
-                strokeWeight(3);
-                draw_X(screen_x,screen_y);
+                draw_bode_mag_T(1/w,i);
               }
               w = bode_3_real_2;
               if (w >= 0){
-                let frequency = w;
-                // Need to map frequency to pixel:
-                let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
-                // Now we know the x position. Let's find out the y position:
-                let screen_y = map(bode_graphs[i].bode_gain_array[Math.round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
-                stroke(bode_graphs[i].bode_hue,240,360);
-                strokeWeight(3);
-                draw_X(screen_x,screen_y);
+                draw_bode_mag_T(1/w,i);
               }
             }
           } catch {}
@@ -6406,21 +6385,26 @@ class bode_graph{
     //console.log("screen_x1="+screen_x1);
     let sample_no = Math.round(screen_x1);
 //    let sample_no = Math.floor(new_complex_array.length * percentage);
-    let current_complex = new_complex_array[sample_no];
-//    console.log("current_complex="+current_complex);
-    let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-    let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-    if ((screen_x>=0)&&(screen_x<=graph_nyquist_width)&&(screen_y>=0)&&(screen_y<=graph_nyquist_height)){
-      try {
-        push();
-    //    translate(graph_nyquist_x_offset+graph_nyquist_x,45+graph_nyquist_y);
-        //console.log("screen_x="+screen_x);
-        //console.log("screen_y="+screen_y);
-        stroke(this.bode_hue,240,360);
-        strokeWeight(3);
-        draw_X(screen_x, screen_y);
-        pop();
-      } catch {};
+
+    // This may fail, if the frequency is "outside" of the calculated frequencies.
+    // So let's add a safety measure:
+    if ((sample_no >= 0)&&(sample_no <new_complex_array.length)){
+      let current_complex = new_complex_array[sample_no];
+  //    console.log("current_complex="+current_complex);
+      let screen_x = map(current_complex.re,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+      let screen_y = map(current_complex.im,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+      if ((screen_x>=0)&&(screen_x<=graph_nyquist_width)&&(screen_y>=0)&&(screen_y<=graph_nyquist_height)){
+        try {
+          push();
+      //    translate(graph_nyquist_x_offset+graph_nyquist_x,45+graph_nyquist_y);
+          //console.log("screen_x="+screen_x);
+          //console.log("screen_y="+screen_y);
+          stroke(this.bode_hue,240,360);
+          strokeWeight(3);
+          draw_X(screen_x, screen_y);
+          pop();
+        } catch {};
+      }
     }
   }
 
