@@ -4305,9 +4305,29 @@ function drag_T_in_step_response(T_to_change,mouseDiffX){
   document.getElementById("RANGE_"+variable_position[T_to_change]).value = T_x.toFixed(2);
 }
 
+function drag_T_in_Bode(T_to_change,mouseDiffX){
+  let T_x = range_slider_variables[variable_position[T_to_change]];
+  T_x = T_x * (1.0 - mouseDiffX*10.0);
+  range_slider_variables[variable_position[T_to_change]] = T_x;
+  // Update range slider value:
+  document.getElementById("variable_"+variable_position[T_to_change]).value = T_x.toFixed(2);
+  // Update range slider:
+  document.getElementById("RANGE_"+variable_position[T_to_change]).value = T_x.toFixed(2);
+}
+
 function drag_k_in_step_response(k_to_change,mouseDiffY,y_range){
   let k = range_slider_variables[variable_position[k_to_change]];
   k = k - mouseDiffY * y_range;
+  range_slider_variables[variable_position[k_to_change]] = k;
+  // Update range slider value:
+  document.getElementById("variable_"+variable_position[k_to_change]).value = k.toFixed(2);
+  // Update range slider:
+  document.getElementById("RANGE_"+variable_position[k_to_change]).value = k.toFixed(2);
+}
+
+function drag_k_in_Bode(k_to_change,mouseDiffY){
+  let k = range_slider_variables[variable_position[k_to_change]];
+  k = k * (1.0 - mouseDiffY*12.0);
   range_slider_variables[variable_position[k_to_change]] = k;
   // Update range slider value:
   document.getElementById("variable_"+variable_position[k_to_change]).value = k.toFixed(2);
@@ -4388,7 +4408,7 @@ function mouseDragged(){
       let variable_to_change = clicked_on_time_variable;
       let T_x = range_slider_variables[variable_position[variable_to_change]];
       T_x = T_x + mouseDiffX * 10.0;
-      if ((variable_to_change == "T_6")||(variable_to_change == "T_6")){
+      if ((variable_to_change == "T_6")||(variable_to_change == "T_7")){
         if (T_x<0) T_x = 0;
       }
       range_slider_variables[variable_position[variable_to_change]] = T_x;
@@ -4426,21 +4446,9 @@ function mouseDragged(){
 
     if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_ONE_REAL_POLE.formula){
       achievement_done("drag_bode_mag");
-      let T_1 = range_slider_variables[variable_position["T_1"]];
-      T_1 = T_1 * (1.0 - mouseDiffX*10.0);
-      range_slider_variables[variable_position["T_1"]] = T_1;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position["T_1"]).value = T_1.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position["T_1"]).value = T_1.toFixed(2);
-
+      drag_T_in_Bode("T_1",mouseDiffX);
+      drag_k_in_Bode("k_1",mouseDiffY);
       let k_1 = range_slider_variables[variable_position["k_1"]];
-      k_1 = k_1 * (1.0 - mouseDiffY*12.0);
-      range_slider_variables[variable_position["k_1"]] = k_1;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position["k_1"]).value = k_1.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position["k_1"]).value = k_1.toFixed(2);
       if (k_1>=100){
         // We dragged a slider to a k-value above or equal 100:
         achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
@@ -4449,26 +4457,13 @@ function mouseDragged(){
 
     } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
       achievement_done("drag_bode_mag");
-      let variable_to_change = clicked_on_time_variable;
-      let T_x = range_slider_variables[variable_position[variable_to_change]];
-      T_x = T_x * (1.0 - mouseDiffX*10.0);
-      range_slider_variables[variable_position[variable_to_change]] = T_x;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
+      drag_T_in_Bode(clicked_on_time_variable,mouseDiffX);
       let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
       if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
         achievement_done("T2_T3_far_apart");
       }
-
+      drag_k_in_Bode("k_2",mouseDiffY);
       let k_2 = range_slider_variables[variable_position["k_2"]];
-      k_2 = k_2 * (1.0 - mouseDiffY*12.0);
-      range_slider_variables[variable_position["k_2"]] = k_2;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position["k_2"]).value = k_2.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position["k_2"]).value = k_2.toFixed(2);
       if (k_2>=100){
         // We dragged a slider to a k-value above or equal 100:
         achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
@@ -4504,33 +4499,14 @@ function mouseDragged(){
 
     } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_ONE_ZERO.formula){
       achievement_done("drag_bode_mag");
-      let T_4 = range_slider_variables[variable_position["T_4"]];
-      T_4 = T_4 * (1.0 - mouseDiffX*10.0);
-      range_slider_variables[variable_position["T_4"]] = T_4;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position["T_4"]).value = T_4.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position["T_4"]).value = T_4.toFixed(2);
+      drag_T_in_Bode("T_4",mouseDiffX);
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
     } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
       achievement_done("drag_bode_mag");
-      let variable_to_change = clicked_on_time_variable;
-      let T_x = range_slider_variables[variable_position[variable_to_change]];
-      T_x = T_x * (1.0 - mouseDiffX*10.0);
-      range_slider_variables[variable_position[variable_to_change]] = T_x;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
-
+      drag_T_in_Bode(clicked_on_time_variable,mouseDiffX);
+      drag_k_in_Bode("k_4",mouseDiffY);
       let k_4 = range_slider_variables[variable_position["k_4"]];
-      k_4 = k_4 * (1.0 - mouseDiffY*12.0);
-      range_slider_variables[variable_position["k_4"]] = k_4;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position["k_4"]).value = k_4.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position["k_4"]).value = k_4.toFixed(2);
       if (k_4>=100){
         // We dragged a slider to a k-value above or equal 100:
         achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
@@ -4539,24 +4515,10 @@ function mouseDragged(){
 
     } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_FOUR_POLES.formula){
       achievement_done("drag_bode_mag");
-      let T_5 = range_slider_variables[variable_position["T_5"]];
-      T_5 = T_5 * (1.0 - mouseDiffX*10.0);
-      range_slider_variables[variable_position["T_5"]] = T_5;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position["T_5"]).value = T_5.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position["T_5"]).value = T_5.toFixed(2);
-
-      let k_5 = range_slider_variables[variable_position["k_5"]];
-      k_5 = k_5 * (1.0 - mouseDiffY*12.0);
-      range_slider_variables[variable_position["k_5"]] = k_5;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position["k_5"]).value = k_5.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position["k_5"]).value = k_5.toFixed(2);
+      drag_T_in_Bode("T_5",mouseDiffX);
+      drag_k_in_Bode("k_5",mouseDiffY);
       redraw_canvas_gain(bode_graphs[i].bode_id);
     }
-
     initial_mouseX = mouseX;
     initial_mouseY = mouseY;
 
