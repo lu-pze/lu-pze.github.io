@@ -272,37 +272,30 @@ function createRangeSlider(event){
       }
     }
 
+    // Make the relevant information bar active when a slider is changed:
     let variable_name = range_slider_alphabet[button_id];
     if ((variable_name == "k_1")||(variable_name == "T_1")){
-      // Make information bar "1" active:
       let info_tab = document.getElementById("graph_1_info");
       info_tab.checked = "true";
     } else if ((variable_name == "k_2")||(variable_name == "T_2")||(variable_name=="T_3")){
-      // Make information bar "2" active:
       let info_tab = document.getElementById("graph_2_info");
       info_tab.checked = "true";
     } else if ((variable_name == "w")||(variable_name == "z")||(variable_name=="k_3")){
-      // Make information bar "2" active:
       let info_tab = document.getElementById("graph_3_info");
       info_tab.checked = "true";
     } else if (variable_name == "L"){
-      // Make information bar "3" active:
       let info_tab = document.getElementById("graph_4_info");
       info_tab.checked = "true";
     } else if ((variable_name == "k_4")||(variable_name == "T_6")||(variable_name == "T_7")||(variable_name == "T_8")){
-      // Make information bar "4" active:
       let info_tab = document.getElementById("graph_5_info");
       info_tab.checked = "true";
     } else if ((variable_name == "k_5")||(variable_name == "T_5")){
-      // Make information bar "5" active:
       let info_tab = document.getElementById("graph_6_info");
       info_tab.checked = "true";
     } else if (variable_name == "T_4"){
-      // Make information bar "6" active:
       let info_tab = document.getElementById("graph_7_info");
       info_tab.checked = "true";
     }
-
     redraw_canvas_gain("all");
   }
   range_slider_variables[button_id] = range_value; // Initial value of variable
@@ -367,7 +360,6 @@ function createRangeSlider(event){
         achievement_done("T2_T3_far_apart");
       }
     }
-
     range_slider.value = +linked_span.value;
     redraw_canvas_gain("all");
   }
@@ -435,7 +427,6 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   }
   s +=">";
 
-
   s +=`<input type="checkbox" class="show-graph" style="background: hsl(${linked_color},100%,50%)" title="${graph_name}">`;
   s += "<math-field ";
   // These are the GRAPHS that should be not changeable. "read only":
@@ -474,8 +465,6 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   new_equation.getElementsByClassName("delete-graph")[0].addEventListener('click',removeGraph);
   new_equation.getElementsByClassName("show-graph")[0].addEventListener('change',changeGraphDisplayStatus);
 
-//  let new_bode_graph = new bode_graph(id_bank,'1/(10+p)');
-//  let new_bode_graph = new bode_graph(id_bank,'2/(10+0.5*p^2+p)');
   let new_bode_graph = new bode_graph(id_bank,equation_string);
   bode_graphs.push(new_bode_graph);
   new_bode_graph.graph_name = graph_name;
@@ -499,26 +488,18 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
     new_bode_graph.graph_name = graph_name.substr(12);
   }
 
-
-
   let input_element_id = id_bank;
   for(let i=0; i<bode_graphs.length; i++){
     let current_bode_graph = bode_graphs[i];
     if(parseInt(input_element_id) == current_bode_graph.bode_id){
-//      current_bode_graph.bode_formula = "k_1/(s+1)";
-//      checkSlider(input_element_id);
-
       // Create sliders for all included variables directly:
       let event={};
       event.target={};
       let equation_id=input_element_id; // The DOM number of the equation
       // Search for all variables in the equation_string:
-
       for(let i=NOF_CONSTANT_VARIABLES; i<range_slider_alphabet.length; i++){
-        //let letter_id=i; // The variable position in the variable array.
         let current_letter = range_slider_alphabet[i];
         if(equation_string.includes(current_letter)){
-//          console.log("# found variable " + current_letter);
           //let linked_button = document.getElementById("BTNS_" + equation_id.toString() + "_" + i.toString());
           range_slider_variables[i] = 1.0;  // Initial value
           event.target.id="BTNS_" + equation_id.toString() + "_" + i.toString();
@@ -582,14 +563,12 @@ function removeAllGraphs(){
   });
   bode_graphs = [];
   id_bank = 1;
-
   input_formula = "1/s";
   let input_equation = document.getElementById("input-formula");
   input_equation.value = "\\frac{1}{s}";
   let i2 = document.getElementById("input-choices");
   i2.value = "Unit step";
 }
-
 
 function removeGraph(event){
   let clicked_button = event.target;
@@ -646,7 +625,6 @@ function removeGraph(event){
     let slider = button.parentElement.parentElement.parentElement;
     slider.remove();
   }
-
   linked_equation.parentElement.remove();
 
   for(let b=0; b<bode_graphs.length; b++){
@@ -813,32 +791,6 @@ plt.axis('equal')
 plt.show(block=False)
 
 `.replace(/(?:\r\n|\r|\n)/g, "<br>");
-
-
-//# Time discrete version:
-//time, response = ctrl.step_response(system)
-//plt.plot(time, response)
-//plt.title('Step Response')
-//plt.xlabel('Time')
-//plt.ylabel('Amplitude')
-//plt.grid(True)
-//plt.show()
-//# Convert to discrete-time transfer function with zero-order hold (zoh):
-//time_resolution = 0.05
-//discrete_transfer_function = ctrl.sample_system(transfer_function, time_resolution, method='zoh')
-//# Plot discrete-time pole-zero map
-//plt.figure(4)
-//ctrl.pzmap(discrete_transfer_function)
-//plt.title('Discrete-Time Pole-Zero Map')
-//# Plot step response of discrete-time system
-//time_discrete, response_discrete = ctrl.step_response(discrete_transfer_function)
-//plt.figure(5)
-//plt.plot(time_discrete, response_discrete)
-//plt.title('Discrete-Time Step Response')
-//plt.xlabel('Time')
-//plt.ylabel('Amplitude')
-//plt.grid(True)
-//plt.show()
   return html;
 }
 
@@ -991,15 +943,6 @@ set(findall(gcf,'-property','FontSize'),'FontSize',fontsize)
 
 
 `.replace(/(?:\r\n|\r|\n)/g, "<br>");
-
-//% Time discrete version:
-//time_resolution = 0.05;
-//discrete_transfer_function = c2d(transfer_function, time_resolution, 'zoh')
-//figure(4)
-//pzmap(discrete_transfer_function)
-//figure(5)
-//step(discrete_transfer_function, 1)
-
   return html;
 }
 
@@ -1007,6 +950,7 @@ function hide_script(id){
   let toggleElement = document.querySelector('.download_script_box');
   toggleElement.classList.toggle('active');
 }
+
 
 function showInputFunction(input){
 //  if((input == 1 || current_tab == 1) && current_tab != input){
@@ -1020,6 +964,8 @@ function showInputFunction(input){
 // ----------------------
 // Quiz
 let quiz_enabled = false;
+
+const quiz_questions=['click_freq', 'click_time', 'click_nyquist_angle', 'click_system', 'click_wrong'];
 let current_quiz = "none";
 
 let quiz_nof_done = 0;
@@ -1027,6 +973,24 @@ let quiz_nof_tries = 0;
 let quiz_current_streak = 0;
 let quiz_longest_streak = 0;
 let quiz_nof_correct = 0;
+
+let quiz_no = 0;
+let quiz_freq = 0;
+let quiz_time_to_click = 0;
+let quiz_nyquist_angle_to_click = -1;
+let quiz_system_to_click = -1;
+let quiz_click_wrong = -1;
+let quiz_questions_nof_done={};
+
+// lu-pze quiz Difficulty level:
+// Kindergarten - elementary school - high school - University - PhD candidate - PhD student - Professor
+//     12.5             25              37.5            50           62.5           75           87.5
+//             18.75              31.25         43.75        56.25           68.75         81.25
+let quiz_difficulty=50.0; // The average difficulty, the one shown in the slider
+let quiz_difficulties={}; // The difficulties of each type of question
+let quiz_streaks={}; // The streak for this type of question.
+let adaptive_difficulty_enabled = true;
+let enabled_quiz_types={};
 
 
 function toggle_quiz_enabled(event){
@@ -1077,14 +1041,6 @@ function start_quiz(){
   update_quiz();
 }
 
-
-let quiz_no = 0;
-let quiz_freq = 0;
-let quiz_time_to_click = 0;
-let quiz_nyquist_angle_to_click = -1;
-let quiz_system_to_click = -1;
-let quiz_click_wrong = -1;
-let quiz_questions_nof_done={};
 
 function next_quiz (){
   let quiz_text = document.getElementById("quiz_text");
@@ -1614,17 +1570,19 @@ function next_quiz (){
   redraw(); // Needed to get the title of the Dirac Impulse response correct
 }
 
-const quiz_questions=['click_freq', 'click_time', 'click_nyquist_angle', 'click_system', 'click_wrong'];
 
 function update_quiz(){
   if (current_quiz == "none") return;
 //  let difficulty_geom=1;
+//  for (let question_no in quiz_questions){
+//    difficulty_geom *= (100-quiz_difficulties[quiz_questions[question_no]]);
+//  }
+//  quiz_difficulty = 100 - Math.pow(difficulty_geom,1.0/(quiz_questions.length));
+
   let difficulty_mean=0;
   for (let question_no in quiz_questions){
-//    difficulty_geom *= (100-quiz_difficulties[quiz_questions[question_no]]);
     difficulty_mean += quiz_difficulties[quiz_questions[question_no]];
   }
-//  quiz_difficulty = 100 - Math.pow(difficulty_geom,1.0/(quiz_questions.length));
   quiz_difficulty = difficulty_mean/quiz_questions.length;
 
   let task_div=document.getElementById("task_list");
@@ -1647,24 +1605,17 @@ function update_quiz(){
   s +='<div class="quiz-container">';
   s +='<input type="range" min="0" max="100" step="0.01" class="quiz-slider" id="difficulty_level" value="' + quiz_difficulty + '" style="width:100%" onchange="set_difficulty_level(this);next_quiz();">';
   s +='<div class="quiz-labels">';
-
-  // * lu-pze quiz Difficulty level
-  // Kindergarten - elementary school - high school - University - PhD candidate - PhD student - Professor
-  //     12.5             25              37.5            50           62.5           75           87.5
-  //             18.75              31.25         43.75        56.25           68.75         81.25
-
-  s +='  <label for="0"></label>';
-  s +='  <label for="12.5">Kindergarten</label>';
-  s +='  <label for="25">Elementary&nbsp;school</label>';
-  s +='  <label for="37.5">High&nbsp;school</label>';
-  s +='  <label for="50">University</label>';
-  s +='  <label for="62.5">PhD&nbsp;candidate</label>';
-  s +='  <label for="75">PhD&nbsp;student</label>';
-  s +='  <label for="87.5">Professor</label>';
-  s +='  <label for="100"></label>';
+  s +='<label for="0"></label>';
+  s +='<label for="12.5">Kindergarten</label>';
+  s +='<label for="25">Elementary&nbsp;school</label>';
+  s +='<label for="37.5">High&nbsp;school</label>';
+  s +='<label for="50">University</label>';
+  s +='<label for="62.5">PhD&nbsp;candidate</label>';
+  s +='<label for="75">PhD&nbsp;student</label>';
+  s +='<label for="87.5">Professor</label>';
+  s +='<label for="100"></label>';
   s +='</div>';
   s +='<center>';
-//  s +='<i>Difficulty Level</i>';
   s +='<input type="checkbox" id="adaptive_difficulty" ';
   if (adaptive_difficulty_enabled==true){
     s +='checked ';
@@ -1683,10 +1634,8 @@ function update_quiz(){
 
     s += '<span style="color:#808080">' + quiz_questions[question] + ": " + quiz_difficulties[quiz_questions[question]].toFixed(1) + "</span><br>";
     s += "</label>";
-
   }
   s += '<span style="color:#808080">Total: ' + quiz_difficulty.toFixed(1) + "</span><br>";
-
   s +="<br><br><center><span style='font-size:200%;color:#c02020'>We're working on the QUIZ right now. It will be longer.</span><br><br>Check back later. Thanks for your patience! <br>/ Pex & Frida</center>";
 
   task_div.innerHTML = s;
@@ -1695,12 +1644,6 @@ function update_quiz(){
 function stop_quiz(){
   restart_lupze();
 }
-
-let quiz_difficulty=50.0; // The average difficulty, the one shown in the slider
-let quiz_difficulties={}; // The difficulties of each type of question
-let quiz_streaks={}; // The streak for this type of question.
-let adaptive_difficulty_enabled = true;
-let enabled_quiz_types={};
 
 function set_difficulty_level(event){
   quiz_difficulty = +(event.value);
@@ -1747,7 +1690,6 @@ function quiz_clicked_bode_phase_yaxis(phase){
 function quiz_clicked_nyquist(magnitude,angle){
   quiz_clicked({where:"Nyq",magnitude:magnitude,phase:angle});
 }
-
 function quiz_clicked(all){
   console.log("quiz clicked:where="+all.where+",graph_no="+all.graph_no+",time_variable="+all.time_variable+",real="+all.real+",imaginary="+all.imaginary+",time="+all.time+",amplitude="+all.amplitude+",frequency="+all.frequency+",magnitude="+all.magnitude+",phase="+all.phase);
 
@@ -1873,7 +1815,6 @@ function shoot_confetti() {
     scalar: 2.8,
     shapes: ['star']
   });
-
   confetti({
     ...confetti_defaults,
     particleCount: 15,
@@ -1883,7 +1824,6 @@ function shoot_confetti() {
     shapes: ['square'],
     colors: ['FF0000', 'FF8000', 'c0c0c0', 'a04070']
   });
-
   confetti({
     ...confetti_defaults,
     particleCount: 10,
@@ -1915,12 +1855,9 @@ function quiz_correct (){
     if (quiz_difficulties[current_quiz] > 100) quiz_difficulties[current_quiz] = 100.0;
     quiz_streaks[current_quiz] += 1; // The streak for this type of question.
   }
-
   confetti_defaults.origin.x = mouseX / windowWidth;
   confetti_defaults.origin.y = mouseY / windowHeight;
   shoot_confetti();
-
-  //next_quiz();
   setTimeout(next_quiz, 50); // Make sure that the star animation starts rolling before updating graphs for the next quiz question.
 }
 
@@ -1938,14 +1875,12 @@ function show_quiz_wrong_text(text){
   document.querySelector('.quiz_no').style.setProperty('--top',top+"%");
   let quiz_no_div = document.getElementById("quiz_no");
   // Order of the animation parameters:
-  //div {
   //  animation-name: example;
   //  animation-duration: 5s;
   //  animation-timing-function: linear;
   //  animation-delay: 2s;
   //  animation-iteration-count: infinite;
   //  animation-direction: alternate;
-  //}
   quiz_answer_div.style.animation = 'none';
   quiz_answer_div.offsetHeight; /* trigger reflow */
   quiz_answer_div.style.animation="QuizAnim 12s ease-in-out 0s 1";
@@ -1959,7 +1894,6 @@ function quiz_perhaps(why_its_almost_wrong){
 }
 
 function quiz_incorrect(why_its_wrong){
-//  quiz_nof_done += 1;
   quiz_current_streak = 0;
   quiz_streaks[current_quiz] = 0; // The streak for this type of question.
   if (adaptive_difficulty_enabled==true){
@@ -1975,7 +1909,6 @@ function toggle_adaptive_difficulty(event){
   adaptive_difficulty_enabled = event.checked;
 }
 
-
 function select_quiz_type(event){
   let quiz_type = event.target.id;
   if (event.target.checked){
@@ -1986,6 +1919,7 @@ function select_quiz_type(event){
   next_quiz();
   update_quiz();
 }
+
 
 
 // ----------------------
@@ -2012,7 +1946,6 @@ function toggle_assignments_box(event){
   assignments_box.classList.toggle('active');
   update_assignments();
 }
-
 
 function task_done (which_one){
   if (assignments_enabled==true){
