@@ -55,16 +55,7 @@ const GRAPH_ORDER = [
 ];
 const NOF_GRAPHS_AT_STARTUP = 4;
 let next_graph_no_to_add = 0;
-
-// Bad, because the Nyquist diagram gets very wide:
-//  addNewGraph(null, mathfield_string="\\frac{4}{s^2+1}", equation_string="4/(s^2+1)","Oscillator");
-//  addNewGraph(null, mathfield_string="\\frac{4(s+1)}{s^2+s+1}", equation_string="4(s+1)/(s^2+s+1)","2poles+1zero");
-//  addNewGraph(null, mathfield_string="\\frac{5(s+1)*6}{s^2+2s+6}", equation_string="5(s+1)*6/(s^2+2s+6)","Complex");
-// Some day, make a pole-zero plot that can handle this case:
-//  addNewGraph(null, mathfield_string="\\frac{0.9s+1}{(s+1)^2}\\frac{w^2}{s^2+2zws+w^2}", equation_string="(0.9s+1)/((s+1)^4)","4 poles + 1 zero");
-
-
-let graph_width = 1200;
+let id_bank = 1;
 
 let min_10power = -2;
 let rate = 1.4;
@@ -74,6 +65,7 @@ let x_case_gain = 5;
 let y_case_gain = 6;
 
 let bode_graphs = [];
+let current_tab = 0;
 
 let phase_lower_bound = 0;
 let phase_upper_bound = 0;
@@ -82,7 +74,6 @@ let phase_case_number;
 
 //                              red   yellow    green     blue  magenta       orange        green
 let color_table = [     270,    350,      32,     170,     202,-90+5*81,-90-360+6*81,-90-360+7*81,-90-360+8*81,-90-360+9*81,-90-360+10*81,-90-360+11*81,-90-360+12*81,-90-360+13*81,-90-360+14*81,-90-360+15*81];
-let screenshot_number = 0;
 
 let max_y_timerep = 100;
 let min_y_timerep = 0;
@@ -102,7 +93,7 @@ let box_background_color;
 
 let canvas_width;
 let canvas_height;
-
+let graph_width = 1200;
 let graph_bode_mag_width;
 let graph_bode_mag_height;
 let graph_bode_mag_x;
@@ -115,12 +106,14 @@ let graph_bode_phase_x;
 let graph_bode_phase_y;
 const graph_bode_phase_x_offset = 68;
 const graph_bode_phase_y_offset = 110;
+const graph_bode_phase_axis_height = 35;
 let graph_step_response_width;
 let graph_step_response_height;
 let graph_step_response_x;
 let graph_step_response_y;
 const graph_step_response_x_offset = 65;
 const graph_step_response_y_offset = 40;
+const graph_step_response_timeaxis_height = 35;
 let graph_nyquist_width;
 let graph_nyquist_height;
 let graph_nyquist_x;
@@ -133,10 +126,6 @@ let graph_pole_zero_y;
 let pole_zero_width;
 let pole_zero_height;
 
-const PI = 3.141592653589793238;
-
-let id_bank = 1;
-let current_tab = 0;
 
 function getGraphById(input_id){
   for(let i=0; i<bode_graphs.length; i++){
@@ -157,7 +146,6 @@ function updateInputFormula(event){
       (input_formula.includes("/(s*s)"))){
     achievement_done("set_input_to_ramp");
   }
-
   redraw_canvas_gain("all");
 }
 
@@ -188,6 +176,26 @@ function createSliderButton(equation_id,letter_id){
   button_wrapper.append(slider_button);
 }
 
+
+const default_variable_values={
+  "L"  :{min:  0.0,max: 3.0,value:0.0},
+  "k_1":{min: -4.0,max:20.0,value:4.0},
+  "k_2":{min: -4.0,max:20.0,value:2.0},
+  "k_3":{min: -4.0,max:20.0,value:0.7},
+  "k_4":{min: -4.0,max:20.0,value:2.5},
+  "k_5":{min: -4.0,max:20.0,value:1.0},
+  "z"  :{min:  0.0,max: 1.2,value:0.2},
+  "T_1":{min: -5.0,max:10.0,value:0.6},
+  "T_2":{min:  0.0,max:10.0,value:0.6},
+  "T_3":{min:  0.0,max:10.0,value:2.0},
+  "T_4":{min:  0.0,max:10.0,value:1.0},
+  "T_5":{min:  0.0,max:10.0,value:1.0},
+  "T_6":{min:  0.0,max:10.0,value:1.0},
+  "T_7":{min:  0.0,max:10.0,value:1.0},
+  "T_8":{min:-10.0,max:10.0,value:1.0},
+  "q"  :{min:  0.01,max:1.0,value:0.1},
+  "v"  :{min:  0.1,max:20.0,value:4.5}};
+
 function createRangeSlider(event){
   let slider = document.createElement('div');
   let button = event.target;
@@ -196,74 +204,10 @@ function createRangeSlider(event){
   let range_min=0.1;
   let range_max=20;
   let range_value=1.0;
-  if (variable_name == "L"){
-    range_min=0.0;
-    range_max=3.0;
-    range_value=0.0;
-  } else if (variable_name == "k_1"){
-    range_min=-4.0;
-    range_max=20.0;
-    range_value=4.0;
-  } else if (variable_name == "k_2"){
-    range_min=-4.0;
-    range_max=20.0;
-    range_value=2.0;
-  } else if (variable_name == "k_3"){
-    range_min=-4.0;
-    range_max=20.0;
-    range_value=0.7;
-  } else if (variable_name == "k_4"){
-    range_min=-4.0;
-    range_max=20.0;
-    range_value=2.5;
-  } else if (variable_name == "k_5"){
-    range_min=-4.0;
-    range_max=20.0;
-    range_value=1.0;
-  } else if (variable_name == "z"){
-    range_min=0.0;
-    range_max=1.2;
-    range_value=0.20;
-  } else if (variable_name == "T_1"){
-    range_value=0.6;
-    range_min=-5.0;
-    range_max=10.0;
-  } else if (variable_name == "T_2"){
-    range_value=0.6;
-    range_min=0.0;
-    range_max=10.0;
-  } else if (variable_name == "T_3"){
-    range_value=2.0;
-    range_min=0.0;
-    range_max=10.0;
-  } else if (variable_name == "T_4"){
-    range_value=1.0;
-    range_min=0.0;
-    range_max=10.0;
-  } else if (variable_name == "T_5"){
-    range_value=1.0;
-    range_min=0.0;
-    range_max=10.0;
-  } else if (variable_name == "T_6"){
-    range_value=1.0;
-    range_min=0.0;
-    range_max=10.0;
-  } else if (variable_name == "T_7"){
-    range_value=1.0;
-    range_min=0.0;
-    range_max=10.0;
-  } else if (variable_name == "T_8"){
-    range_value=1.0;
-    range_min=-10.0;
-    range_max=10.0;
-  } else if (variable_name == "q"){
-    range_min=0.01;
-    range_max=1.0;
-    range_value=0.1;
-  } else if (variable_name == "v"){
-    range_min=0.1;
-    range_max=20.0;
-    range_value=4.5;
+  if (variable_name in default_variable_values){
+    range_min=default_variable_values[variable_name]["min"];
+    range_max=default_variable_values[variable_name]["max"];
+    range_value=default_variable_values[variable_name]["value"];
   }
 
   slider.classList.add("slider-wrapper");
@@ -3054,8 +2998,6 @@ function updateGraphInformation(){
   }
 }
 
-const graph_step_response_timeaxis_height=35;
-const graph_bode_phase_axis_height=35;
 
 function setGraphDimensions(){
   let this_window_width=max(1295,windowWidth);  // Also present in style.css  "body{min-width: 1280px;}
@@ -3226,11 +3168,11 @@ function draw_bode_responses(type){
     }
 
     // Limiting the phase axis into something sane:
-    min_phase = Math.max(-360 / 180 * PI,min_phase);
+    min_phase = Math.max(-360/180*Math.PI,min_phase);
     //max_phase = math.min(5,max_phase);
 
-    min_phase = min_phase*180/PI;
-    max_phase = max_phase*180/PI;
+    min_phase = min_phase*180/Math.PI;
+    max_phase = max_phase*180/Math.PI;
 
     phase_lower_bound = get_bestMultiple(min_phase,45,"lower");
     phase_upper_bound = get_bestMultiple(max_phase,45,"upper");
@@ -3283,8 +3225,8 @@ function draw_bode_responses(type){
     }
 
     // Draw X for T_1, T_2, T_3 and w:
-    let rad_phase_lower_bound = phase_lower_bound*PI/180;
-    let rad_phase_upper_bound = phase_upper_bound*PI/180;
+    let rad_phase_lower_bound = phase_lower_bound*Math.PI/180;
+    let rad_phase_upper_bound = phase_upper_bound*Math.PI/180;
     for(let i=0; i<bode_graphs.length; i++){
       if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
         if(bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
@@ -3974,7 +3916,7 @@ function draw_nyquist_responses(){
   // text("im",-60,graph_nyquist_height/2 + 4);
   push();
   translate(-55,graph_nyquist_height/2 + 4);
-  rotate(-PI/2);
+  rotate(-Math.PI/2);
   text("Imaginary axis",0,0);
   pop();
 
@@ -4396,10 +4338,10 @@ function mousePressed(){
       let angle=0;
       if (mouseY > screen_y){
         // The lower half plane: angles 0 at the right edge, 90 pointing downwards, and -180 to the left:
-        angle = -(90 + angle_rad * 180 / PI);
+        angle = -(90 + angle_rad * 180 / Math.PI);
       } else {
         // The upper half plane: angles 360 at the right edge, 270 pointing upwards, and 180 to the left:
-        angle = -(270 + angle_rad * 180 / PI);
+        angle = -(270 + angle_rad * 180 / Math.PI);
       }
       // Get the magnitude of the line from origo to the mouse:
       let magnitude = Math.sqrt(axis_x * axis_x + axis_y * axis_y);
@@ -4450,8 +4392,8 @@ function mousePressed(){
     // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
     let exponent = perc_x*x_case_gain + min_10power;
     let frequency = Math.pow(10,exponent);
-    let rad_phase_lower_bound = phase_lower_bound*PI/180;
-    let rad_phase_upper_bound = phase_upper_bound*PI/180;
+    let rad_phase_lower_bound = phase_lower_bound*Math.PI/180;
+    let rad_phase_upper_bound = phase_upper_bound*Math.PI/180;
     let queue = [];
     let yes_close_enough = false;
     for(let i=0; i<bode_graphs.length; i++){
@@ -5268,10 +5210,10 @@ function draw_hover_nyquist(){
   let angle=0;
   if (mouseY > screen_y){
     // The lower half plane: angles 0 at the right edge, 90 pointing downwards, and -180 to the left:
-    angle = -(90 + angle_rad * 180 / PI);
+    angle = -(90 + angle_rad * 180 / Math.PI);
   } else {
     // The upper half plane: angles 360 at the right edge, 270 pointing upwards, and 180 to the left:
-    angle = -(270 + angle_rad * 180 / PI);
+    angle = -(270 + angle_rad * 180 / Math.PI);
   }
 
   // Paint an arc in the nyquist diagram over the unit circle:
@@ -5283,7 +5225,7 @@ function draw_hover_nyquist(){
   stroke(angle_color);
   strokeWeight(2);
   noFill();
-  arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
+  arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*Math.PI);
   pop();
 
   // Now paint a horizontal line on the Bode phase plot, at the right height:
@@ -5767,13 +5709,13 @@ function mouseMoved(){
         strokeWeight(2);
         noFill();
 
-        let screen_x2 = map(1.2*cos(angle/180*PI),min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-        let screen_y2 = map(1.2*sin(angle/180*PI),max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+        let screen_x2 = map(1.2*cos(angle/180*Math.PI),min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+        let screen_y2 = map(1.2*sin(angle/180*Math.PI),max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
 
         if (angle < 0){
-          arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
+          arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*Math.PI);
         } else {
-          arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, -angle/180*PI, 0);
+          arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, -angle/180*Math.PI, 0);
         }
         line(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,graph_nyquist_x + graph_nyquist_x_offset + screen_x2, graph_nyquist_y + graph_nyquist_y_offset + screen_y2);
         pop();
@@ -5808,8 +5750,8 @@ function mouseMoved(){
         let frequency = Math.pow(10,exponent);
 //        console.log("# inside bode_phase graph, x="+perc_x+", y="+perc_y+", freq="+frequency);
 
-        let rad_phase_lower_bound = phase_lower_bound*PI/180;
-        let rad_phase_upper_bound = phase_upper_bound*PI/180;
+        let rad_phase_lower_bound = phase_lower_bound*Math.PI/180;
+        let rad_phase_upper_bound = phase_upper_bound*Math.PI/180;
         let queue = [];
         let yes_close_enough = false;
         for(let i=0; i<bode_graphs.length; i++){
@@ -5867,7 +5809,7 @@ function mouseMoved(){
 //          text("time=" + linked_x.toFixed(3) + "s",13,53);
 //          text("output=" + output[2].toFixed(3),13,77);
           text("freq=" + frequency.toFixed(3) + "rad/s",13,53);
-          let phase = output[3] * 180/PI;
+          let phase = output[3] * 180/Math.PI;
           text("phase=" + phase.toFixed(1) + "°",13,77);
           pop();
 
@@ -5883,9 +5825,9 @@ function mouseMoved(){
             strokeWeight(2);
             noFill();
             if (angle < 0){
-              arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
+              arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*Math.PI);
             } else {
-              arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, -angle/180*PI, 0);
+              arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, -angle/180*Math.PI, 0);
             }
             pop();
           }
@@ -5969,13 +5911,13 @@ function mouseMoved(){
           strokeWeight(2);
           noFill();
 
-          let screen_x2 = map(1.2*cos(angle/180*PI),min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-          let screen_y2 = map(1.2*sin(angle/180*PI),max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+          let screen_x2 = map(1.2*cos(angle/180*Math.PI),min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+          let screen_y2 = map(1.2*sin(angle/180*Math.PI),max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
 
           if (angle < 0){
-            arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*PI);
+            arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*Math.PI);
           } else {
-            arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, -angle/180*PI, 0);
+            arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, -angle/180*Math.PI, 0);
           }
           line(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,graph_nyquist_x + graph_nyquist_x_offset + screen_x2, graph_nyquist_y + graph_nyquist_y_offset + screen_y2);
           pop();
@@ -5996,6 +5938,7 @@ function mouseMoved(){
   }
 }
 
+let screenshot_number = 0;
 function capture_screen(){
   saveCanvas(canvas,"Pexperiment_screenshot_" + screenshot_number.toString(),'png');
   screenshot_number++;
@@ -6226,7 +6169,7 @@ class bode_graph{
 
         if(x > 0 && Math.abs(bode_phase - this.bode_phase_array[x-1]) > 5.23 && corrector_bool){
           let sign = Math.sign(this.bode_phase_array[x-1]);
-          phase_bias = sign * PI * 2;
+          phase_bias = sign * Math.PI * 2;
           bode_phase += phase_bias;
         }
 
@@ -6554,8 +6497,8 @@ class bode_graph{
     strokeWeight(line_stroke_weight);
     stroke(this.bode_hue,360,360);
 
-    let rad_phase_lower_bound = phase_lower_bound*PI/180;
-    let rad_phase_upper_bound = phase_upper_bound*PI/180;
+    let rad_phase_lower_bound = phase_lower_bound*Math.PI/180;
+    let rad_phase_upper_bound = phase_upper_bound*Math.PI/180;
 
     beginShape();
     for(let x=0; x<graph_bode_phase_width; x++){
@@ -7019,7 +6962,7 @@ function findOmegaZero(input_array){
     //output = math.evaluate(output).toPolar().phi;
     let linked_array_pos = map(a_bound,min_10power,min_10power + x_case_gain,0,graph_width-1);
     let output = input_array[Math.ceil(linked_array_pos)];
-    return [output*180/PI + 180, Math.pow(10,a_bound)];
+    return [output*180/Math.PI + 180, Math.pow(10,a_bound)];
   }
   else{
     return NaN
@@ -7029,12 +6972,12 @@ function findOmegaZero(input_array){
 function findOmega180(input_array){
   let a_bound = min_10power;
   let b_bound = min_10power + x_case_gain;
-  let f_a = input_array[Math.ceil(map(a_bound,min_10power,min_10power + x_case_gain,0,graph_width-1))] + PI;
-  let f_b = input_array[Math.ceil(map(b_bound,min_10power,min_10power + x_case_gain,0,graph_width-1))] + PI;
+  let f_a = input_array[Math.ceil(map(a_bound,min_10power,min_10power + x_case_gain,0,graph_width-1))] + Math.PI;
+  let f_b = input_array[Math.ceil(map(b_bound,min_10power,min_10power + x_case_gain,0,graph_width-1))] + Math.PI;
   if(f_a * f_b < 0 && Math.abs(f_a) > 0.005 && Math.abs(f_b) > 0.005){
     for(let h=0; h<20; h++){
       let mid_point = (a_bound + b_bound)/2;
-      let f_mid = input_array[Math.ceil(map(mid_point,min_10power,min_10power + x_case_gain,0,graph_width-1))] + PI;
+      let f_mid = input_array[Math.ceil(map(mid_point,min_10power,min_10power + x_case_gain,0,graph_width-1))] + Math.PI;
       if(f_mid * f_a < 0){
         b_bound = mid_point;
       }
