@@ -475,6 +475,7 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   let new_bode_graph = new bode_graph(id_bank,equation_string);
   bode_graphs.push(new_bode_graph);
   new_bode_graph.graph_name = graph_name;
+  new_bode_graph.full_name = graph_name;
 
   // Let's set the displaybools:
   // The name tells where this formula will be shown:
@@ -3799,7 +3800,7 @@ function mousePressed(){
     let yes_close_enough = false;
     let linked_x = Math.ceil((mouseX - graph_step_response_x - graph_step_response_x_offset)/precision);
     for(let h=0; h<bode_graphs.length; h++){
-      if((bode_graphs[h].bode_displaybool)&&(bode_graphs[h].bode_display_timeresponse_bool)){
+      if((bode_graphs[h].bode_displaybool)&&(bode_graphs[h].bode_display_timeresponse_bool)&&(!(bode_graphs[h].full_name.startsWith("Ghost")))) {
         let current_graph = bode_graphs[h];
         let linked_y = current_graph.bode_timerep_array[linked_x];
         let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true) + graph_step_response_y_offset;
@@ -3912,7 +3913,7 @@ function mousePressed(){
     let queue = [];
     let yes_close_enough = false;
     for(let i=0; i<bode_graphs.length; i++){
-      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodemag_bool)){
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodemag_bool)&&(!(bode_graphs[i].full_name.startsWith("Ghost")))){
         let current_graph = bode_graphs[i];
         let linked_y = current_graph.bode_gain_array[math.round(linked_x)];
         let screen_y = graph_bode_mag_y_offset + map(linked_y,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
@@ -4058,7 +4059,7 @@ function mousePressed(){
     let queue = [];
     let yes_close_enough = false;
     for(let i=0; i<bode_graphs.length; i++){
-      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)&&(!(bode_graphs[i].full_name.startsWith("Ghost")))){
         let current_graph = bode_graphs[i];
         let linked_y = current_graph.bode_phase_array[math.round(linked_x)];
         let screen_y = graph_bode_phase_y_offset + map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
@@ -5588,6 +5589,7 @@ class bode_graph{
     this.bode_phase_crossover_freq = 0;
     this.bode_settling_time = 0;
     this.graph_name = "Graph";
+    this.full_name = "";
   }
 
   get_complex_p5(){
