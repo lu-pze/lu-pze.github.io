@@ -5410,7 +5410,7 @@ function capture_screen(){
   screenshot_number++;
 }
 
-//Line functions
+
 function draw_loglines(x_case,y_case,type){
   stroke(line_color);
   let sum = (1 - Math.pow(1/rate,9))/(1 - 1/rate);
@@ -5420,8 +5420,7 @@ function draw_loglines(x_case,y_case,type){
     for(let i=0; i<=9; i++){
       if(i == 0){
         strokeWeight(2);
-      }
-      else{
+      } else {
         strokeWeight(1);
       }
       line(pas,0,pas,graph_bode_mag_height);
@@ -5433,34 +5432,24 @@ function draw_loglines(x_case,y_case,type){
 function draw_timelines(){
   min_y_timerep = Math.floor(min_y_timerep*1) / 1;
   max_y_timerep = Math.ceil(max_y_timerep*1) / 1;
-//  min_y_timerep = 0;
-
   let x_step = +(Math.abs(max_x_timerep)/10).toPrecision(1);
   let y_step = +(Math.abs(max_y_timerep - min_y_timerep)/10).toPrecision(1);
-
   if(document.getElementById("automatic-range-time").checked){
     max_y_timerep = +(get_bestMultiple(max_y_timerep, y_step, "upper") + y_step).toFixed(2);
   }
   else{
     max_y_timerep = +(get_bestMultiple(max_y_timerep, y_step, "upper")).toFixed(2);
   }
-
   min_y_timerep = +(get_bestMultiple(min_y_timerep, y_step, "lower")).toFixed(2);
-
   // Since max_y and min_y might have changed - recalculate this:
   y_step = +(Math.abs(max_y_timerep - min_y_timerep)/10).toPrecision(1);
-
   let x_case_number = Math.ceil(max_x_timerep/x_step);
   let y_case_number = Math.ceil(Math.abs(max_y_timerep - min_y_timerep)/y_step);
-
   // Since max_y and min_y might have changed - recalculate this:
   y_step = Math.abs(max_y_timerep - min_y_timerep)/y_case_number;
-
   let x_tile_length = graph_step_response_width/x_case_number;
   let y_tile_length = graph_step_response_height/y_case_number;
-
   textAlign(CENTER);
-
   for(let x=0; x<=x_case_number; x++){
     stroke(line_color);
     if (x==0){
@@ -5470,25 +5459,21 @@ function draw_timelines(){
     }
     line(x*x_tile_length,0,x*x_tile_length,graph_step_response_height);
     let text_value = x_step*x;
-
     noStroke();
     fill(text_color);
     textSize(15);
     text(text_value.toFixed(0),x*x_tile_length,graph_step_response_height + 25);
   }
-
   for(let y=0; y<=y_case_number; y++){
     stroke(line_color);
     strokeWeight(1);
     line(0,y*y_tile_length,graph_step_response_width,y*y_tile_length);
     let text_value = max_y_timerep - y_step*y;
-
     noStroke();
     fill(text_color);
     textSize(15);
     text(text_value.toFixed(2),-30,y*y_tile_length+5);
   }
-
   // Draw a thicker line at y=0:
   let screen_y = map(0,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
   stroke(line_color);
@@ -5496,27 +5481,19 @@ function draw_timelines(){
   line(0,screen_y,graph_step_response_width,screen_y);
 }
 
+
 function draw_nyquist_lines(){
   let x_step = +(Math.abs(max_nyquist_x - min_nyquist_x)/10).toPrecision(1);
   let y_step = +(Math.abs(max_nyquist_y - min_nyquist_y)/10).toPrecision(1);
-
-//  max_nyquist_y = Math.max(Math.abs(max_nyquist_y),Math.abs(min_nyquist_y));
-//  let tmp = max_nyquist_y;
-//  max_nyquist_y = -min_nyquist_y;
-//  min_nyquist_y = -tmp;
-
   min_nyquist_y = +(value_magnet(min_nyquist_y,y_step) - y_step).toFixed(2);
   max_nyquist_y = +(value_magnet(max_nyquist_y,y_step) + y_step).toFixed(2);
   min_nyquist_x = +(value_magnet(min_nyquist_x,x_step) - x_step).toFixed(2);
   max_nyquist_x = +(value_magnet(max_nyquist_x,x_step) + x_step).toFixed(2);
-
   let x_case_number = roundup_decimal(Math.abs(max_nyquist_x - min_nyquist_x)/x_step);
   let y_case_number = roundup_decimal(Math.abs(max_nyquist_y - min_nyquist_y)/y_step);
-
   let x_tile_length = graph_nyquist_width/x_case_number;
   let y_tile_length = graph_nyquist_height/y_case_number;
   textAlign(CENTER);
-
   for(let x=0; x<=x_case_number; x++){
     stroke(line_color);
     strokeWeight(1);
@@ -5527,7 +5504,6 @@ function draw_nyquist_lines(){
     textSize(15);
     text(text_value.toFixed(1),x*x_tile_length,graph_nyquist_height + 25);
   }
-
   for(let y=0; y<=y_case_number; y++){
     stroke(line_color);
     strokeWeight(1);
@@ -5538,7 +5514,6 @@ function draw_nyquist_lines(){
     textSize(15);
     text(text_value.toFixed(1),-30,y*y_tile_length+4);
   }
-
   // Thicker line at real=0, and im=0:
   stroke(line_color);
   strokeWeight(3);
@@ -5548,6 +5523,7 @@ function draw_nyquist_lines(){
   line(0,screen_y,graph_nyquist_width,screen_y);
 }
 
+
 function x_axis_steps_text(){
   let screen_step = graph_bode_mag_width / x_case_gain;
   for(let h=0; h<=x_case_gain; h++){
@@ -5555,6 +5531,7 @@ function x_axis_steps_text(){
     textPowerOfTen(min_10power + h,h * screen_step,graph_bode_mag_height+80 -25);
   }
 }
+
 
 class bode_graph{
   constructor(a,b){
@@ -5597,23 +5574,18 @@ class bode_graph{
       this.bode_max_nyquist_x = -10000;
       this.bode_min_nyquist_y = 10000;
       this.bode_max_nyquist_y = -10000;
-
       this.bode_phase_array = [];
       this.bode_gain_array = [];
       this.bode_complex_array = [];
 
       let phase_bias = 0;
       let corrector_bool = true;
-//      if(document.getElementById('bodetab').checked){
-        corrector_bool = document.getElementById("phase_correction_checkbox").checked;
-//      }
-
+      corrector_bool = document.getElementById("phase_correction_checkbox").checked;
       buffer_formula = buffer_formula.replace('⋅','');
       for(let x=0; x<graph_bode_mag_width; x++){
         let log_pow = map(x,0,graph_bode_mag_width,min_10power,min_10power+x_case_gain);
         let math_x = Math.pow(10,log_pow);
         let bode_value = getComplexValues(math_x);
-
         if(bode_value.re > this.bode_max_nyquist_x){
           this.bode_max_nyquist_x = bode_value.re;
         }
@@ -5658,21 +5630,12 @@ class bode_graph{
     this.bode_phase_crossover_freq = omega180[1];
   }
 
+
   get_timevalues_p5(){
-    //Reset Values
     let formula_to_use = this.bode_formula;
 
-
-    //console.log(input_formula);
-    //console.log(this.bode_formula);
     // Take care of "known good" formulas that we know an exact answer to:
-
     let have_a_solution = false;
-    // Make analytic solutions for:
-    // k_1/(T_1*s+1)
-    // k_2/(T_2s+1)*1/(T_3s+1)
-    // k_3*w^2/(s^2+2*z*w*s+w^2)
-    // 3/(s+1)*e^(-L*s)
     if (this.bode_formula == GRAPH_ONE_REAL_POLE.formula){ //  "k_1/(T_1*s+1)"
       let k_1 = range_slider_variables[variable_position["k_1"]];
       let T_1 = range_slider_variables[variable_position["T_1"]];
@@ -5683,31 +5646,30 @@ class bode_graph{
         //   s + w_0          s/w_0 + 1
         // v_out(t) = V_i * (1 - e^{-\omega_{0}*t})}
 //        if (T_1 >= 0){
-          have_a_solution = true;
-          this.bode_timerep_array = []
-          for(let x=0; x<graph_step_response_width; x+=precision){
-            let t = map(x,0,graph_step_response_width,0,max_x_timerep);
-            let math_y = k_1 * (1.0 - Math.exp(-t / T_1));
-            this.bode_timerep_array.push(math_y);
-          }
-          if (T_1 >= 0){
-            if (k_1 > 0){
-              this.bode_max_timerep = k_1;
-              this.bode_min_timerep = 0;
-            } else {
-              this.bode_max_timerep = 0;
-              this.bode_min_timerep = k_1;
-            }
+        have_a_solution = true;
+        this.bode_timerep_array = []
+        for(let x=0; x<graph_step_response_width; x+=precision){
+          let t = map(x,0,graph_step_response_width,0,max_x_timerep);
+          let math_y = k_1 * (1.0 - Math.exp(-t / T_1));
+          this.bode_timerep_array.push(math_y);
+        }
+        if (T_1 >= 0){
+          if (k_1 > 0){
+            this.bode_max_timerep = k_1;
+            this.bode_min_timerep = 0;
           } else {
-            if (k_1 > 0){
-              this.bode_max_timerep = 0;
-              this.bode_min_timerep = -k_1;
-            } else {
-              this.bode_max_timerep = -k_1;
-              this.bode_min_timerep = 0;
-            }
+            this.bode_max_timerep = 0;
+            this.bode_min_timerep = k_1;
           }
-//        }
+        } else {
+          if (k_1 > 0){
+            this.bode_max_timerep = 0;
+            this.bode_min_timerep = -k_1;
+          } else {
+            this.bode_max_timerep = -k_1;
+            this.bode_min_timerep = 0;
+          }
+        }
       } else if (input_formula=="1"){      // Dirac Impulse response:
         have_a_solution = true;
         this.bode_timerep_array = []
@@ -5740,6 +5702,7 @@ class bode_graph{
           }
         }
       }
+
     } else if (this.bode_formula == GRAPH_TWO_REAL_POLES.formula){ // "k_2/(T_2s+1)*1/(T_3s+1)"
       let k_2 = range_slider_variables[variable_position["k_2"]];
       let T_2 = range_slider_variables[variable_position["T_2"]];
@@ -5824,6 +5787,7 @@ class bode_graph{
           }
         }
       }
+
     } else if (this.bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){ // "k_3*w^2/(s^2+2*z*w*s+w^2)"
       let k_3 = range_slider_variables[variable_position["k_3"]];
       let z = range_slider_variables[variable_position["z"]];
@@ -5918,18 +5882,15 @@ class bode_graph{
         this.bode_max_timerep = -100000;
         this.bode_min_timerep = 100000;
         this.bode_timerep_array = []
-
         for(let x=0; x<graph_step_response_width; x+=precision){
           let math_x = map(x,0,graph_step_response_width,0,max_x_timerep);
           let math_y;
-
           if(x != 0){
             math_y = getTimeValues(math_x,time_delay);
           }
           else{
             math_y = getTimeValues(0.00001,time_delay);
           }
-
           if(math_y > this.bode_max_timerep){
             this.bode_max_timerep = math_y;
           }
@@ -5943,6 +5904,7 @@ class bode_graph{
     let fivePercent = fivePercentTimeResponse(this.bode_timerep_array);
     this.bode_settling_time = fivePercent;
   }
+
 
   draw_gain(){
     noFill();
@@ -5958,14 +5920,13 @@ class bode_graph{
     endShape();
   }
 
+
   draw_phase(stop_on_overflow=false){
     noFill();
     strokeWeight(line_stroke_weight);
     stroke(this.bode_hue,360,360);
-
     let rad_phase_lower_bound = phase_lower_bound*Math.PI/180;
     let rad_phase_upper_bound = phase_upper_bound*Math.PI/180;
-
     beginShape();
     for(let x=0; x<graph_bode_phase_width; x++){
       let screen_y = map(this.bode_phase_array[x],rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
@@ -5981,6 +5942,7 @@ class bode_graph{
     endShape();
   }
 
+
   draw_timeresponse(){
     noFill();
     strokeWeight(line_stroke_weight);
@@ -5993,18 +5955,23 @@ class bode_graph{
     endShape();
   }
 
+  draw_T_in_Nyquist(T_to_draw,pole_zero="pole"){
+    let T = range_slider_variables[variable_position[T_to_draw]];
+    if (T != 0){
+      let frequency = 1 / T;
+      if (pole_zero=="pole"){
+        this.draw_nyquist_X(frequency);
+      } else {
+        this.draw_nyquist_O(frequency);
+      }
+    }
+  }
+
   draw_nyquist_response(){
     noFill();
     strokeWeight(line_stroke_weight);
     stroke(this.bode_hue,360,360);
-//    let reversed_conj_complex_array = this.bode_complex_array.map(x => x.conjugate()).reverse();
-//    let new_complex_array = this.bode_complex_array.concat(reversed_conj_complex_array);
-
-//    let reversed_conj_complex_array = this.bode_complex_array.map(x => x.conjugate()).reverse();
-//    let new_complex_array = this.bode_complex_array.map(x => x.conjugate()).reverse();
-//    let new_complex_array = this.bode_complex_array.map(x => x.conjugate()).reverse();
     let new_complex_array = this.bode_complex_array;
-
     beginShape();
     for(let x=0; x<new_complex_array.length; x++){
       let current_complex = this.bode_complex_array[x];
@@ -6021,30 +5988,15 @@ class bode_graph{
       }
     }
     endShape();
-
-
     // Draw a red X for T_1 in the Nyquist diagram:
     if(this.bode_displaybool){
       if(this.bode_formula == GRAPH_ONE_REAL_POLE.formula){
-        // Draw a red X for T_1 in the Nyquist diagram:
-        let T_1 = range_slider_variables[variable_position["T_1"]];
-        if (T_1 != 0){
-          let frequency = 1 / T_1;
-          this.draw_nyquist_X(frequency);
-        }
+        this.draw_T_in_Nyquist("T_1");
+
       } else if(this.bode_formula == GRAPH_TWO_REAL_POLES.formula){
-        // Draw a X for T_2 in the Nyquist diagram:
-        let T_2 = range_slider_variables[variable_position["T_2"]];
-        if (T_2 != 0){
-          let frequency = 1 / T_2;
-          this.draw_nyquist_X(frequency);
-        }
-        // Draw a X for T_3 in the Nyquist diagram:
-        let T_3 = range_slider_variables[variable_position["T_3"]];
-        if (T_3 != 0){
-          let frequency = 1 / T_3;
-          this.draw_nyquist_X(frequency);
-        }
+        this.draw_T_in_Nyquist("T_2");
+        this.draw_T_in_Nyquist("T_3");
+
       } else if(this.bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
         // Draw a X for w in the Nyquist diagram:
         let w = range_slider_variables[variable_position["w"]];
@@ -6072,21 +6024,9 @@ class bode_graph{
           }
         }
       } else if(this.bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
-        let T_8 = range_slider_variables[variable_position["T_8"]];
-        if (T_8 != 0){
-          let frequency = 1 / T_8;
-          this.draw_nyquist_O(frequency);
-        }
-        let T_6 = range_slider_variables[variable_position["T_6"]];
-        if (T_6 != 0){
-          let frequency = 1 / T_6;
-          this.draw_nyquist_X(frequency);
-        }
-        let T_7 = range_slider_variables[variable_position["T_7"]];
-        if (T_7 != 0){
-          let frequency = 1 / T_7;
-          this.draw_nyquist_X(frequency);
-        }
+        this.draw_T_in_Nyquist("T_8","zero");
+        this.draw_T_in_Nyquist("T_6");
+        this.draw_T_in_Nyquist("T_7");
       }
     }
   }
