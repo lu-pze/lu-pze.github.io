@@ -2044,7 +2044,7 @@ const all_tasks={
 
 //## Time delay
 "L=3":"Drag the step input response to change the time delay to 3.0 seconds.",
-"L_gain_margin=2":"CURRENTLY NOT SOLVABLE (but we're working on it!): Change the <b>time delay</b> L so that the <b>Gain margin</b> becomes 2.0.",// (L=0.3)
+"L_gain_margin=2":"Change the <b>time delay</b> L so that the <b>Gain margin</b> becomes 2.0.",// (L=0.3)
 
 //## One zero two Poles
 //Nyquist reference (k=1,T6=2.5,T7=1,T8=6)
@@ -4144,7 +4144,9 @@ function mouseReleased(){
       }
     }
     if (bode_graphs[v].bode_formula == GRAPH_TIME_DELAY.formula){
-      if ((bode_graphs[v].bode_gain_margin >= 1.91)&&(bode_graphs[v].bode_gain_margin <= 2.1)){
+      let value_dB = bode_graphs[v].bode_gain_margin;
+      let value = Math.pow(10.0, value_dB / 20.0);
+      if ((value >= 1.91)&&(value <= 2.1)){
         task_done("L_gain_margin=2");
       }
     }
