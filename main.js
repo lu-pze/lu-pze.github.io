@@ -3674,10 +3674,8 @@ let initial_mouseY = 0;
 
 //function mouseClicked(){
 function mousePressed(){
-  // Decide what we clicked on initially, to know what to move.
-
+  // Audio API stuff. Can only initialize and play sound at user action, and clicking is one such action:
   if (sound_enabled==1){
-    // Audio API stuff:
     // https://webaudio.github.io/web-audio-api/#AudioBufferSourceNode
     try {
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -3689,6 +3687,7 @@ function mousePressed(){
     init_jingle();
   }
 
+  // Decide what we clicked on initially, to know what to move.
   // Reset what we've clicked on:
   clicked_on_time_response_graph_no = -1;
   clicked_on_bode_mag_graph_no = -1;
@@ -3700,17 +3699,10 @@ function mousePressed(){
   for (let box_no in boxes_to_not_handle_clicks_in){
     let box = document.querySelector(boxes_to_not_handle_clicks_in[box_no]);
     if (box.classList.contains('active')){
-      //See if user clicked inside download box:
+      //See if user clicked inside one of these boxes:
       const rect = box.getBoundingClientRect();
-      //console.log('mouseX:', mouseX);
-      //console.log('mouseY:', mouseY);
-      //console.log('Top:', rect.top);
-      //console.log('Left:', rect.left);
-      //console.log('Bottom:', rect.bottom);
-      //console.log('Right:', rect.right);
       if ((mouseX>=rect.left)&&(mouseX<=rect.right)&&(mouseY>=rect.top)&&(mouseY<=rect.bottom)){
-        //// The code text is active. Just disable mouse clicks to prevent poles & zeros from moving:
-        console.log("inside");
+        //// Disable mouse clicks to prevent poles & zeros from moving "underneath" this box:
         return true; // Let system handle mouse after this
       }
     }
@@ -3778,13 +3770,13 @@ function mousePressed(){
       quiz_clicked_time_response_xaxis(time);
       return false; // Cancel default actions
     }
-  }
+
 
   // Check if we've clicked the step response graph:
-  let queue = [];
-  let yes_close_enough = false;
-  if(((mouseX-graph_step_response_x) > graph_step_response_x_offset && (mouseX-graph_step_response_x) < graph_step_response_width + graph_step_response_x_offset)&&
+  } else if(((mouseX-graph_step_response_x) > graph_step_response_x_offset && (mouseX-graph_step_response_x) < graph_step_response_width + graph_step_response_x_offset)&&
     ((mouseY-graph_step_response_y) > graph_step_response_y_offset && (mouseY-graph_step_response_y) < graph_step_response_height + graph_step_response_y_offset)){
+    let queue = [];
+    let yes_close_enough = false;
     let linked_x = Math.ceil((mouseX - graph_step_response_x - graph_step_response_x_offset)/precision);
     for(let h=0; h<bode_graphs.length; h++){
       if((bode_graphs[h].bode_displaybool)&&(bode_graphs[h].bode_display_timeresponse_bool)){
@@ -3858,7 +3850,6 @@ function mousePressed(){
     }
 
 
-
   // Check if we've clicked the frequency axis of the Bode magnitude plot:
   } else if(((mouseX-graph_bode_mag_x) > graph_bode_mag_x_offset && (mouseX-graph_bode_mag_x) < graph_bode_mag_width + graph_bode_mag_x_offset) &&
            (((mouseY-graph_bode_mag_y) >= graph_bode_mag_height + graph_bode_mag_y_offset) && (mouseY-graph_bode_mag_y < (graph_bode_mag_height + graph_bode_mag_y_offset + graph_bode_phase_axis_height)))) {
@@ -3887,9 +3878,9 @@ function mousePressed(){
     }
 
 
+  // Check if we've clicked the Bode magnitude plot. Let's find out which graph we clicked:
   } else if(((mouseX-graph_bode_mag_x) > graph_bode_mag_x_offset && (mouseX-graph_bode_mag_x) < graph_bode_mag_width + graph_bode_mag_x_offset)&&
     ((mouseY-graph_bode_mag_y) > graph_bode_mag_y_offset && (mouseY-graph_bode_mag_y) < graph_bode_mag_height + graph_bode_mag_y_offset)){
-    // we clicked the bode magnitude plot. Let's find out which graph we clicked:
     let linked_x = mouseX - graph_bode_mag_x - graph_bode_mag_x_offset;
     let linked_y = mouseY - graph_bode_mag_y - graph_bode_mag_y_offset;
     let perc_x = linked_x / graph_bode_mag_width;
@@ -3927,7 +3918,6 @@ function mousePressed(){
       clicked_on_bode_mag_graph_no=output[1];
       initial_mouseX = mouseX;
       initial_mouseY = mouseY;
-
       if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
         // If user clicked on TWO_REAL_POLES, let's find out if closest to T_2 or T_3:
         let T_2 = range_slider_variables[variable_position["T_2"]];
@@ -4032,13 +4022,11 @@ function mousePressed(){
     }
 
 
-
+  // Check if we've clicked the bode phase plot:
   } else if(((mouseX-graph_bode_phase_x) > graph_bode_phase_x_offset) && ((mouseX-graph_bode_phase_x) < graph_bode_phase_width + graph_bode_phase_x_offset) && 
     ((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) > 0) && ((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) < graph_bode_phase_height)){
-    // Check if we've clicked the bode phase plot:
     let linked_x = mouseX - graph_bode_phase_x - graph_bode_phase_x_offset;
     let linked_y = mouseY - graph_bode_phase_y - graph_bode_phase_y_offset;
-//        console.log("# inside bode_phase graph, x="+linked_x+", y="+linked_y);
     let perc_x = linked_x / graph_bode_phase_width;
     let perc_y = linked_y / graph_bode_phase_height;
     // 0.0   equals hovering over frequency 10^min_10power (= -2);
@@ -4119,9 +4107,11 @@ function mousePressed(){
     return false; // Cancel default actions
   }
 
-  // Let the system handle this click. It didn't touch anything we handle:
+  // Let the system handle this click. It didn't touch anything we handle.
+  // For tablets, this is used to scroll the page vertically, for instance.
   return true;
 }
+
 
 function mouseReleased(){
   for(let v=0; v<bode_graphs.length; v++){
@@ -4133,7 +4123,6 @@ function mouseReleased(){
         task_done("gaincrossover=3");
       }
     }
-
     if (bode_graphs[v].bode_formula == GRAPH_TIME_DELAY.formula){
       if ((bode_graphs[v].bode_gain_margin >= 1.91)&&(bode_graphs[v].bode_gain_margin <= 2.1)){
         task_done("L_gain_margin=2");
@@ -4166,7 +4155,6 @@ function mouseReleased(){
     if ((k_1 > 2.8) && (k_1 <= 2.99)){
       task_done("k1=2.9");
     }
-
     let T_2 = range_slider_variables[variable_position["T_2"]];
     let T_3 = range_slider_variables[variable_position["T_3"]];
     let max_T = Math.max(T_2,T_3);
@@ -4175,7 +4163,6 @@ function mouseReleased(){
         (max_T >= 4.0) && (max_T <= 5.8)){
       task_done("T2,T3=0.05_and_5");
     }
-
     let L = range_slider_variables[variable_position["L"]];
     if ((L>=2.93)&&(L<3.1)){
       task_done("L=3");
@@ -4188,7 +4175,6 @@ function mouseReleased(){
     if ((k_1 >= 0.55) && (k_1 <= 0.75) && (T_1 >= 1.82) && (T_1 <= 2.25)){
       task_done("T1_k1_bode");
     }
-
     let T_2 = range_slider_variables[variable_position["T_2"]];
     let T_3 = range_slider_variables[variable_position["T_3"]];
     let max_T = Math.max(T_2,T_3);
@@ -4197,18 +4183,12 @@ function mouseReleased(){
         (max_T >= 4.0) && (max_T <= 5.8)){
       task_done("T2,T3=0.05_and_5");
     }
-    //let T_2 = range_slider_variables[variable_position["T_2"]];
-    //let T_3 = range_slider_variables[variable_position["T_3"]];
-    //let min_T = Math.min(T_2,T_3);
-    //let max_T = Math.max(T_2,T_3);
     if ((min_T>=0.45)&&(min_T<=0.55)&&(max_T>=9.0)&&(max_T<=11.0)){
       task_done("T2=10;T3=0.5");
     }
-
     // See if two Nyquist diagrams are equal:
     let k_4 = range_slider_variables[variable_position["k_4"]];
     if ((k_4>=0.95)&&(k_4<=1.05)){
-      //console.log("k_4 ok");
       // This is kind of difficult to check using ranges for T_6, T_7 and T_8.
       // Depending on T_8 (the zero), T_6 and T_7 can vary a lot.
       // So let's find a couple of angles in the Nyquist diagram, and 
@@ -4219,10 +4199,7 @@ function mouseReleased(){
       // This is not allowed to differ too much.
       let max_gain_user = Math.max(...bode_graphs[0].bode_gain_array);
       let max_gain_ghost = Math.max(...bode_graphs[1].bode_gain_array);
-      //console.log("max_gain_user=" + max_gain_user);
-      //console.log("max_gain_ghost=" + max_gain_ghost);
       if ((max_gain_ghost >= max_gain_user*0.92)&&(max_gain_ghost <= max_gain_user*1.07)){
-        //console.log("max gain ok");
         // Find the maximum amplitude in the s-plane real axis
         // for both Ghost...N.._Match this Nyquist and One_zero_two_poles.
         // This is not allowed to differ too much.
@@ -4236,10 +4213,7 @@ function mouseReleased(){
           let this_re=bode_graphs[1].bode_complex_array[complex_no].re;
           if (this_re > max_real_ghost) max_real_ghost=this_re;
         }
-        //console.log("max_real_user=" + max_real_user);
-        //console.log("max_real_ghost=" + max_real_ghost);
         if ((max_real_ghost >= max_real_user*0.92)&&(max_real_ghost <= max_real_user*1.07)){
-          //console.log("max real ok");
           // Find the maximum amplitude in the s-plane imaginary axis
           // for both Ghost...N.._Match this Nyquist and One_zero_two_poles.
           // This is not allowed to differ too much.
@@ -4257,21 +4231,14 @@ function mouseReleased(){
             if (this_im > max_imaginary_ghost) max_imaginary_ghost=this_im;
             if (this_im < min_imaginary_ghost) min_imaginary_ghost=this_im;
           }
-          //console.log("max_imaginary_user=" + max_imaginary_user);
-          //console.log("max_imaginary_ghost=" + max_imaginary_ghost);
-          //console.log("min_imaginary_user=" + min_imaginary_user);
-          //console.log("min_imaginary_ghost=" + min_imaginary_ghost);
           if ((max_imaginary_ghost >= max_imaginary_user*0.92)&&(max_imaginary_ghost <= max_imaginary_user*1.07)){
-            //console.log("max imaginary ok");
             if ((-min_imaginary_ghost >= -min_imaginary_user*0.92)&&(-min_imaginary_ghost <= -min_imaginary_user*1.07)){
-              //console.log("min imaginary ok");
               task_done("k4=1;T6=2.5;T7=1;T8=6");
             }
           }
         }
       }
     }
-
   }
 
   if (clicked_on_pole_zero_graph_no==0){
@@ -4282,7 +4249,6 @@ function mouseReleased(){
     if (T_1 < 0){
       task_done("T1_unstable");
     }
-
     let T_2 = range_slider_variables[variable_position["T_2"]];
     let T_3 = range_slider_variables[variable_position["T_3"]];
     let max_T = Math.max(T_2,T_3);
@@ -4291,7 +4257,6 @@ function mouseReleased(){
         (max_T >= 4.0) && (max_T <= 5.8)){
       task_done("T2,T3=0.05_and_5");
     }
-
     let k_2 = range_slider_variables[variable_position["k_2"]];
     if ((k_2 >=0.49)&&(k_2<=0.51)){
       let T_2 = range_slider_variables[variable_position["T_2"]];
@@ -4302,7 +4267,6 @@ function mouseReleased(){
         task_done("T2,T3=1;k2=0.5");
       }
     }
-
     let w = range_slider_variables[variable_position["w"]];
     let z = range_slider_variables[variable_position["z"]];
     if ((w>=0.85)&&(w<=0.95)&&(z<=0.05)){
@@ -4311,7 +4275,6 @@ function mouseReleased(){
     if ((w>=1.55)&&(w<=1.65)&&(z>=0.15)&&(z<=0.25)){
       task_done("w=1.6;z=0.2");
     }
-
     //"k4,T6,T7=1,T8=1.5_poles":"With k<sub>4</sub>=1, drag the poles and zeros in the <b>pole-zero map</b> so that the step response follows the blue line.",
     let k_4 = range_slider_variables[variable_position["k_4"]];
     let T_6 = range_slider_variables[variable_position["T_6"]];
@@ -4331,29 +4294,38 @@ function mouseReleased(){
   clicked_on_pole_zero_graph_no = -1;
 }
 
+
+function drag_T_in_step_response(T_to_change,mouseDiffX){
+  let T_x = range_slider_variables[variable_position[T_to_change]];
+  T_x = T_x + mouseDiffX * 10.0;
+  range_slider_variables[variable_position[T_to_change]] = T_x;
+  // Update range slider value:
+  document.getElementById("variable_"+variable_position[T_to_change]).value = T_x.toFixed(2);
+  // Update range slider:
+  document.getElementById("RANGE_"+variable_position[T_to_change]).value = T_x.toFixed(2);
+}
+
+function drag_k_in_step_response(k_to_change,mouseDiffY,y_range){
+  let k = range_slider_variables[variable_position[k_to_change]];
+  k = k - mouseDiffY * y_range;
+  range_slider_variables[variable_position[k_to_change]] = k;
+  // Update range slider value:
+  document.getElementById("variable_"+variable_position[k_to_change]).value = k.toFixed(2);
+  // Update range slider:
+  document.getElementById("RANGE_"+variable_position[k_to_change]).value = k.toFixed(2);
+}
+
 function mouseDragged(){
+  // Dragging one of the graphs in the step response:
   if (clicked_on_time_response_graph_no != -1){
     let i=clicked_on_time_response_graph_no;
-    // Dragging one of the graphs in the step response:
     let mouseDiffX = (mouseX - initial_mouseX) / graph_step_response_width;
     let mouseDiffY = (mouseY - initial_mouseY) / graph_step_response_height;
     let y_range = max_y_timerep - min_y_timerep;
     if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_ONE_REAL_POLE.formula){
-      let T_1 = range_slider_variables[variable_position["T_1"]];
-      T_1 = T_1 + mouseDiffX * 10.0;
-      range_slider_variables[variable_position["T_1"]] = T_1;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position["T_1"]).value = T_1.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position["T_1"]).value = T_1.toFixed(2);
-
+      drag_T_in_step_response("T_1",mouseDiffX);
+      drag_k_in_step_response("k_1",mouseDiffY,y_range);
       let k_1 = range_slider_variables[variable_position["k_1"]];
-      k_1 = k_1 - mouseDiffY * y_range;
-      range_slider_variables[variable_position["k_1"]] = k_1;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position["k_1"]).value = k_1.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position["k_1"]).value = k_1.toFixed(2);
       if (k_1>=100){
         // We dragged a slider to a k-value above or equal 100:
         achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
@@ -4361,26 +4333,13 @@ function mouseDragged(){
       redraw_canvas_gain(bode_graphs[i].bode_id);
 
     } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
-      let variable_to_change = clicked_on_time_variable;
-      let T_x = range_slider_variables[variable_position[variable_to_change]];
-      T_x = T_x + mouseDiffX * 10.0;
-      range_slider_variables[variable_position[variable_to_change]] = T_x;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
+      drag_T_in_step_response(clicked_on_time_variable,mouseDiffX);
       let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
       if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
         achievement_done("T2_T3_far_apart");
       }
-
+      drag_k_in_step_response("k_2",mouseDiffY,y_range);
       let k_2 = range_slider_variables[variable_position["k_2"]];
-      k_2 = k_2 - mouseDiffY * y_range;
-      range_slider_variables[variable_position["k_2"]] = k_2;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position["k_2"]).value = k_2.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position["k_2"]).value = k_2.toFixed(2);
       if (k_2>=100){
         // We dragged a slider to a k-value above or equal 100:
         achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
@@ -4399,7 +4358,6 @@ function mouseDragged(){
       document.getElementById("variable_"+variable_position["w"]).value = w.toFixed(2);
       // Update range slider:
       document.getElementById("RANGE_"+variable_position["w"]).value = w.toFixed(2);
-
       let z = range_slider_variables[variable_position["z"]];
       z = z + mouseDiffY * 1.7;
       if (z<0) z=0;
@@ -4413,6 +4371,7 @@ function mouseDragged(){
         achievement_done("low_z");
       }
       redraw_canvas_gain(bode_graphs[i].bode_id);
+
     } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_TIME_DELAY.formula){
       achievement_done("change_L");
       let L = range_slider_variables[variable_position["L"]];
@@ -4438,44 +4397,30 @@ function mouseDragged(){
       // Update range slider:
       document.getElementById("RANGE_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
 
+      drag_k_in_step_response("k_4",mouseDiffY,y_range);
       let k_4 = range_slider_variables[variable_position["k_4"]];
-      k_4 = k_4 - mouseDiffY * y_range;
-      range_slider_variables[variable_position["k_4"]] = k_4;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position["k_4"]).value = k_4.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position["k_4"]).value = k_4.toFixed(2);
       if (k_4>=100){
         // We dragged a slider to a k-value above or equal 100:
         achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
       }
       redraw_canvas_gain(bode_graphs[i].bode_id);
     } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_FOUR_POLES.formula){
-      let T_5 = range_slider_variables[variable_position["T_5"]];
-      T_5 = T_5 + mouseDiffX * 10.0;
-      range_slider_variables[variable_position["T_5"]] = T_5;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position["T_5"]).value = T_5.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position["T_5"]).value = T_5.toFixed(2);
-
+      drag_T_in_step_response("T_5",mouseDiffX);
+      drag_k_in_step_response("k_5",mouseDiffY,y_range);
       let k_5 = range_slider_variables[variable_position["k_5"]];
-      k_5 = k_5 - mouseDiffY * y_range;
-      range_slider_variables[variable_position["k_5"]] = k_5;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position["k_5"]).value = k_5.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position["k_5"]).value = k_5.toFixed(2);
+      if (k_5>=100){
+        // We dragged a slider to a k-value above or equal 100:
+        achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
+      }
       redraw_canvas_gain(bode_graphs[i].bode_id);
     }
-
     initial_mouseX = mouseX;
     initial_mouseY = mouseY;
 
 
+  // Dragging one of the graphs in the bode magnitude plot:
   } else if (clicked_on_bode_mag_graph_no != -1){
     let i=clicked_on_bode_mag_graph_no;
-    // Dragging one of the graphs in the bode magnitude plot:
     let mouseDiffX = (mouseX - initial_mouseX) / graph_step_response_width;
     let mouseDiffY = (mouseY - initial_mouseY) / graph_step_response_height;
 
@@ -4616,9 +4561,9 @@ function mouseDragged(){
     initial_mouseY = mouseY;
 
 
+  // Dragging one of the graphs in the bode phase plot:
   } else if (clicked_on_bode_phase_graph_no != -1){
     let i=clicked_on_bode_phase_graph_no;
-    // Dragging one of the graphs in the bode phase plot:
     let mouseDiffX = (mouseX - initial_mouseX) / graph_step_response_width;
     let mouseDiffY = (mouseY - initial_mouseY) / graph_step_response_height;
 
@@ -4701,6 +4646,7 @@ function mouseDragged(){
     initial_mouseX = mouseX;
     initial_mouseY = mouseY;
 
+
   } else {
     // Check if we're dragging the Nyquist diagram:
     if((mouseX-graph_nyquist_x) > graph_nyquist_x_offset && (mouseX-graph_nyquist_x) < graph_nyquist_width + graph_nyquist_x_offset){
@@ -4709,6 +4655,7 @@ function mouseDragged(){
         draw_hover_nyquist();
       }
     }
+
 
     // Check if we've dragged in any of the pole-zero graphs:
     for(let i=0; i<bode_graphs.length; i++){
