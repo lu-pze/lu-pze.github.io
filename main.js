@@ -29,7 +29,7 @@
 
 'use strict';
 
-if (document.readyState == 'loading') {
+if (document.readyState == 'loading'){
   document.addEventListener('DOMContentLoaded', ready)
 } else {
   ready();
@@ -2942,31 +2942,6 @@ function setGraphDimensions(){
   graph_pole_zero_width = (canvas_width - 100)*1/6 - 40;
   graph_pole_zero_x = canvas_width - graph_pole_zero_width - 20;
   graph_pole_zero_y = 0;
-}
-
-
-function setup(){
-  setGraphDimensions();
-  let canvas = createCanvas(canvas_width,canvas_height);
-  canvas.parent('sketch_holder');
-  colorMode(HSB,360);
-  background_color = color('hsb(0, 0%, 4%)');
-  box_background_color = 120;
-  line_color = color('hsb(0, 0%, 22%)');  // Grey graph lines
-  text_color = color('hsb(0, 0%, 100%)');
-  angle_color = "#ff40ff";
-  // To go from "T_1" to the index in range_slider_variables:
-  for(let i=0; i<range_slider_alphabet.length; i++){
-    variable_position[range_slider_alphabet[i]] = i;
-  }
-  id_bank=0;
-  // Add the initial startup graphs:
-  for(let graph_no=0; graph_no<NOF_GRAPHS_AT_STARTUP; graph_no++){
-    let graph_to_add = GRAPH_ORDER[graph_no];
-    addNewGraph(null, graph_to_add);
-  }
-  next_graph_no_to_add = NOF_GRAPHS_AT_STARTUP;
-  noLoop();
 }
 
 
@@ -6481,8 +6456,52 @@ function closeFullscreen() {
   }
 }
 
+let graph_no=0;
+function initial_graph(){
+  bode_graphs[graph_no].bode_displaybool=true;
+  redraw();
+  graph_no +=1;
+}
 
-function ready(){
+// Called by p5:
+function setup(){
+  setGraphDimensions();
+  let canvas = createCanvas(canvas_width,canvas_height);
+  canvas.parent('sketch_holder');
+  colorMode(HSB,360);
+  background_color = color('hsb(0, 0%, 4%)');
+  box_background_color = 120;
+  line_color = color('hsb(0, 0%, 22%)');  // Grey graph lines
+  text_color = color('hsb(0, 0%, 100%)');
+  angle_color = "#ff40ff";
+  // To go from "T_1" to the index in range_slider_variables:
+  for(let i=0; i<range_slider_alphabet.length; i++){
+    variable_position[range_slider_alphabet[i]] = i;
+  }
+  id_bank=0;
+  // Add the initial startup graphs:
+
+  const first_time=1500;
+  const delay=300;
+  setTimeout(initial_graph, first_time + 0*delay);
+  setTimeout(initial_graph, first_time + 1*delay);
+  setTimeout(initial_graph, first_time + 2*delay);
+  setTimeout(initial_graph, first_time + 3*delay);
+  for(let graph_no=0; graph_no<NOF_GRAPHS_AT_STARTUP; graph_no++){
+    let graph_to_add = GRAPH_ORDER[graph_no];
+    addNewGraph(null, graph_to_add);
+    bode_graphs[graph_no].bode_displaybool=false;
+  }
+  next_graph_no_to_add = NOF_GRAPHS_AT_STARTUP;
+  noLoop();
+
+  let footer_div=document.getElementsByClassName("footer")[0];
+  footer_div.style.display="inline";
+  let graph_information_div=document.getElementsByClassName("graph-information")[0];
+  graph_information_div.style.display="inline";
+}
+
+function ready (){
   let add_button = document.getElementsByClassName("add-graph")[0];
   add_button.addEventListener('click',addNewGraphClicked);
   let setting_button = document.getElementsByClassName("option-button")[0];

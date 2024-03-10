@@ -1,6 +1,7 @@
 body{
   margin:0;
   min-width: 1280px;
+  background-color: #000;
 }
 
 .page{
@@ -11,7 +12,6 @@ body{
 .header{
   grid-column: 2 / span 3;
   grid-row-start: 1;
-  background-color: #1c1c1c;
 }
 .navbar{
   grid-column-start: 1;
@@ -29,6 +29,7 @@ body{
   grid-column: 1 / span 3;
   grid-row: 4;
   background: linear-gradient(180deg, rgba(178,181,193,1) 0%, rgba(153,154,157,1) 100%);
+  display:none; /* When javascript is done loading, this is set to display:inline;*/
 }
 .math-bar{
   grid-row:2;
@@ -41,6 +42,7 @@ body{
   background: #484848;
   display:flex;
   flex-direction: column;
+  display:none; /* When javascript is done loading, this is set to display:inline;*/
 }
 .graph-information-tabs input[type="radio"]:checked + label{
   background: #484848;
@@ -87,7 +89,6 @@ body{
 .graph-tabs{
   width: 100%;
   height: 35px;
-  background: #242426;
   display: flex;
   flex-wrap: wrap;
 }
@@ -118,7 +119,6 @@ body{
 .graph-space{
   grid-column: 2;
   grid-row: 2;
-  background:#292929;
 }
 
 .quiz_text_norepeat{
@@ -358,6 +358,101 @@ body{
   flex-direction:column;
   margin-top: 15px;
   margin-left: 15px;
+}
+
+
+
+.pze_logo{
+  left:42%;
+  top:66%;
+  z-index:22;
+  position: absolute;
+  opacity:0.0;
+  font-family: "Roboto", "Courier New", monospace;
+  font-size:900%;
+  font-weight:800;
+  text-align: center;
+  line-height:80%;
+  color:#fff;
+  text-shadow: 
+    -2px -2px 0 #000,  
+     2px -2px 0 #000,
+    -2px  2px 0 #000,
+     2px  2px 0 #000;
+  pointer-events:none;
+  animation: pze_logo_anim 3.5s ease-out 1s 1;
+  overflow: hidden;
+}
+@keyframes pze_logo_anim {
+  0% {opacity:0.0;top:70%}
+  20% {opacity:1.0;}
+  100% {opacity:0.0;top:66%;display:hidden;}
+}
+
+
+.cropped {
+  margin:0;
+  padding:0;
+  position:absolute;
+  left:0;
+  top:0;
+  height:100%;
+  width:100%;
+  overflow:hidden;
+}
+.lu_logo{
+  left:50%;
+  top:10%;
+  height:80%;
+  z-index:20;
+  position:absolute;
+  opacity:0.0;
+  animation: lu_logo_anim 3.0s ease-out 1;
+  pointer-events:none;
+  overflow: hidden;
+}
+@keyframes lu_logo_anim {
+  0% {left:50%;top:50%;transform: translate(-50%,-50%) scale(8.0);opacity:0.0;}
+  10% {opacity:1.0;}
+  50% {left:55%;top:40%;transform: translate(-50%,-50%) scale(1.4);}
+  80% {opacity:1.0;}
+  100% {left:55%;top:38%;transform: translate(-50%,-50%) scale(1.4);opacity:0.0;display:hidden;}
+}
+
+.explorer_1{
+  left:20%;
+  top:80%;
+  height:100%;
+  z-index:20;
+  position: absolute;
+  opacity:0.0;
+  animation: explorer_1_anim 4.0s ease-out 1;
+  pointer-events:none;
+  overflow: hidden;
+}
+@keyframes explorer_1_anim {
+  0% {left:-20%;top:150%;transform: translate(-50%,-50%) scale(3.0);opacity:1.0;}
+  20% {left:30%;top:160%;transform: translate(-50%,-50%) scale(3.0);opacity:1.0;}
+  70% {left:7%;top:80%;transform: translate(-50%,-50%) scale(1.4);opacity:1.0;}
+  100% {left:7%;top:80%;transform: translate(-50%,-50%) scale(1.4);opacity:0.0;display:hidden;}
+}
+
+.explorer_2{
+  left:240px;
+  top:320px;
+  height:100%;
+  z-index:21;
+  position: absolute;
+  opacity:0.0;
+  animation: explorer_2_anim 4.0s ease-out 1;
+  pointer-events:none;
+  overflow: hidden;
+}
+@keyframes explorer_2_anim {
+  0% {left:120%;top:150%;transform: translate(-50%,-50%) scale(3.1);opacity:1.0;}
+  20% {left:50%;top:150%;transform: translate(-50%,-50%) scale(3.1);opacity:1.0;}
+  70% {left:30%;top:80%;transform: translate(-50%,-50%) scale(1.5);opacity:1.0;}
+  100% {left:30%;top:80%;transform: translate(-50%,-50%) scale(1.5);opacity:0.0;display:hidden;}
 }
 
 .toolbox{
