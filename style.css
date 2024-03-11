@@ -365,28 +365,33 @@ body{
 .pze_logo{
   left:42%;
   top:66%;
-  z-index:22;
+  z-index:19;
   position: absolute;
-  opacity:0.0;
+  opacity:1.0;
   font-family: "Roboto", "Courier New", monospace;
   font-size:900%;
   font-weight:800;
   text-align: center;
   line-height:80%;
-  color:#fff;
-  text-shadow: 
-    -2px -2px 0 #000,  
+  color:#ff8;
+  text-shadow:
+    -2px -2px 0 #000,
      2px -2px 0 #000,
     -2px  2px 0 #000,
      2px  2px 0 #000;
   pointer-events:none;
-  animation: pze_logo_anim 3.5s ease-out 1s 1;
+  animation: pze_logo_anim_in 3.5s ease-out 0s 1;
   overflow: hidden;
 }
-@keyframes pze_logo_anim {
+@keyframes pze_logo_anim_in {
   0% {opacity:0.0;top:70%}
-  20% {opacity:1.0;}
-  100% {opacity:0.0;top:66%;display:hidden;}
+  30% {opacity:0.0;top:70%}
+  50% {opacity:1.0;}
+  100% {top:66%;}
+}
+@keyframes pze_logo_anim_out {
+  0% {opacity:1.0}
+  100% {opacity:0.0}
 }
 
 
@@ -402,58 +407,70 @@ body{
   pointer-events:none;
 }
 .lu_logo{
-  left:50%;
-  top:10%;
+  left:55%;
+  top:40%;
   height:80%;
-  z-index:20;
+  z-index:19;
   position:absolute;
-  opacity:0.0;
-  animation: lu_logo_anim 3.0s ease-out 1;
+  transform: translate(-50%,-50%) scale(1.4);
+  opacity:1.0;
+  animation: lu_logo_anim_in 3.0s ease-out 1;
   pointer-events:none;
   overflow: hidden;
 }
-@keyframes lu_logo_anim {
-  0% {left:50%;top:50%;transform: translate(-50%,-50%) scale(8.0);opacity:0.0;}
+@keyframes lu_logo_anim_in {
+  0% {left:50%;top:50%;transform: translate(-50%,-50%) scale(12.0);opacity:0.0;}
   10% {opacity:1.0;}
   50% {left:55%;top:40%;transform: translate(-50%,-50%) scale(1.4);}
-  80% {opacity:1.0;}
-  100% {left:55%;top:38%;transform: translate(-50%,-50%) scale(1.4);opacity:0.0;display:hidden;}
+  50% {left:55%;top:40%;opacity:1.0;}
+}
+@keyframes lu_logo_anim_out {
+  0% {opacity:1.0}
+  100% {left:55%;top:38%;opacity:0.0}
 }
 
 .explorer_1{
-  left:20%;
+  left:9%;
   top:80%;
   height:100%;
   z-index:20;
-  position: absolute;
-  opacity:0.0;
-  animation: explorer_1_anim 4.0s ease-out 1;
+  position:absolute;
+  opacity:1.0;
+  transform: translate(-50%,-50%) scale(1.4);
+  animation: explorer_1_anim_in 4.0s ease-out 1;
   pointer-events:none;
   overflow: hidden;
 }
-@keyframes explorer_1_anim {
+@keyframes explorer_1_anim_in {
   0% {left:-20%;top:150%;transform: translate(-50%,-50%) scale(3.0);opacity:1.0;}
   20% {left:30%;top:160%;transform: translate(-50%,-50%) scale(3.0);opacity:1.0;}
-  70% {left:7%;top:80%;transform: translate(-50%,-50%) scale(1.4);opacity:1.0;}
-  100% {left:7%;top:80%;transform: translate(-50%,-50%) scale(1.4);opacity:0.0;display:hidden;}
+  100% {left:9%;top:80%;transform: translate(-50%,-50%) scale(1.4);opacity:1.0;}
+}
+@keyframes explorer_1_anim_out {
+  0% {opacity:1.0}
+  100% {opacity:0.0}
 }
 
 .explorer_2{
-  left:240px;
-  top:320px;
+  left:30%;
+  top:80%;
   height:100%;
   z-index:21;
   position: absolute;
-  opacity:0.0;
-  animation: explorer_2_anim 4.0s ease-out 1;
+  opacity:1.0;
+  transform: translate(-50%,-50%) scale(1.5);
+  animation: explorer_2_anim_in 4.0s ease-out 1;
   pointer-events:none;
   overflow: hidden;
 }
-@keyframes explorer_2_anim {
+@keyframes explorer_2_anim_in {
   0% {left:120%;top:150%;transform: translate(-50%,-50%) scale(3.1);opacity:1.0;}
   20% {left:50%;top:150%;transform: translate(-50%,-50%) scale(3.1);opacity:1.0;}
-  70% {left:30%;top:80%;transform: translate(-50%,-50%) scale(1.5);opacity:1.0;}
-  100% {left:30%;top:80%;transform: translate(-50%,-50%) scale(1.5);opacity:0.0;display:hidden;}
+  100% {left:30%;top:80%;transform: translate(-50%,-50%) scale(1.5);opacity:1.0;}
+}
+@keyframes explorer_2_anim_out {
+  0% {opacity:1.0}
+  100% {opacity:0.0}
 }
 
 .toolbox{

@@ -3668,6 +3668,8 @@ let clicked_on_pole_zero_graph_no = -1;
 let initial_mouseX = 0;
 let initial_mouseY = 0;
 
+let splash_screen_active=true;
+
 //function mouseClicked(){
 function mousePressed(){
   // Audio API stuff. Can only initialize and play sound at user action, and clicking is one such action:
@@ -3681,6 +3683,44 @@ function mousePressed(){
       console.log("No Web Audio API support");
     }
     init_jingle();
+  }
+
+  if (splash_screen_active){
+    // This first click is to get rid of the splash screen:
+
+    let pze_logo=document.getElementById("pze_logo");
+    pze_logo.style.animation = 'none';
+    pze_logo.offsetHeight; /* trigger reflow */
+    pze_logo.style.animation="pze_logo_anim_out 1s ease-out 1";
+    pze_logo.style.opacity=0;
+
+    let lu_logo=document.getElementById("lu_logo");
+    lu_logo.style.animation = 'none';
+    lu_logo.offsetHeight; /* trigger reflow */
+    lu_logo.style.animation="lu_logo_anim_out 1s ease-out 1";
+    lu_logo.style.opacity=0;
+
+    let explorer_1=document.getElementById("explorer_1");
+    explorer_1.style.animation = 'none';
+    explorer_1.offsetHeight; /* trigger reflow */
+    explorer_1.style.animation="explorer_1_anim_out 1s ease-out 1";
+    explorer_1.style.opacity=0;
+
+    let explorer_2=document.getElementById("explorer_2");
+    explorer_2.style.animation = 'none';
+    explorer_2.offsetHeight; /* trigger reflow */
+    explorer_2.style.animation="explorer_2_anim_out 1s ease-out 1";
+    explorer_2.style.opacity=0;
+
+    const first_time=500;
+    const delay=300;
+    setTimeout(initial_graph, first_time + 0*delay);
+    setTimeout(initial_graph, first_time + 1*delay);
+    setTimeout(initial_graph, first_time + 2*delay);
+    setTimeout(initial_graph, first_time + 3*delay);
+
+    splash_screen_active=false;
+    return false;
   }
 
   // Decide what we clicked on initially, to know what to move.
@@ -6535,13 +6575,6 @@ function setup(){
   }
   id_bank=0;
   // Add the initial startup graphs:
-
-  const first_time=1500;
-  const delay=300;
-  setTimeout(initial_graph, first_time + 0*delay);
-  setTimeout(initial_graph, first_time + 1*delay);
-  setTimeout(initial_graph, first_time + 2*delay);
-  setTimeout(initial_graph, first_time + 3*delay);
   for(let graph_no=0; graph_no<NOF_GRAPHS_AT_STARTUP; graph_no++){
     let graph_to_add = GRAPH_ORDER[graph_no];
     addNewGraph(null, graph_to_add);
