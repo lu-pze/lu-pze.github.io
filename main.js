@@ -3903,17 +3903,23 @@ function mousePressed(){
     // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
     let exponent = perc_x*x_case_gain + min_10power;
     let frequency = Math.pow(10,exponent);
+    let queue_with_ghosts = [];
+    let yes_close_enough_with_ghosts = false;
     let queue = [];
     let yes_close_enough = false;
     for(let i=0; i<bode_graphs.length; i++){
-      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodemag_bool)&&(!(bode_graphs[i].full_name.startsWith("Ghost")))){
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodemag_bool)){
         let current_graph = bode_graphs[i];
         let linked_y = current_graph.bode_gain_array[math.round(linked_x)];
         let screen_y = graph_bode_mag_y_offset + map(linked_y,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
         let distance = Math.abs(mouseY - graph_step_response_y - screen_y);
         if(distance < 70){
-          yes_close_enough = true;
-          queue.push([distance,i,screen_y,linked_y]);
+          yes_close_enough_with_ghosts = true;
+          queue_with_ghosts.push([distance,i,screen_y,linked_y]);
+          if (!(bode_graphs[i].full_name.startsWith("Ghost"))){
+            yes_close_enough = true;
+            queue.push([distance,i,screen_y,linked_y]);
+          }
         }
       }
     }
@@ -3968,11 +3974,23 @@ function mousePressed(){
       }
     }
     if (current_quiz!="none"){
+      let clicked_on_bode_mag_graph_no_with_ghosts = -1;
+      if (yes_close_enough_with_ghosts){
+        let output_with_ghosts;
+        let distance = 10000;
+        for(let h=0; h<queue_with_ghosts.length; h++){
+          if(queue_with_ghosts[h][0] < distance){
+            distance = queue_with_ghosts[h][0];
+            output_with_ghosts = queue_with_ghosts[h];
+          }
+        }
+        clicked_on_bode_mag_graph_no_with_ghosts = output_with_ghosts[1];
+      }
       let linked_y = mouseY - graph_bode_mag_y - graph_bode_mag_y_offset;
       let perc_y = linked_y / graph_bode_mag_height;
       let magnitude_in_dB = gain_upper_bound - perc_y*120;//y_case_gain; //60 - perc_y
       let magnitude = 1.0 * Math.pow(10.0, magnitude_in_dB / 20.0);
-      quiz_clicked_bode_mag(clicked_on_bode_mag_graph_no,frequency,magnitude,clicked_on_time_variable);
+      quiz_clicked_bode_mag(clicked_on_bode_mag_graph_no_with_ghosts,frequency,magnitude,clicked_on_time_variable);
       return false; // Cancel default actions
     }
     mouseDragged(); // Handle this directly
