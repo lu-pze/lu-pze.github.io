@@ -399,6 +399,7 @@ body{
   height:100%;
   width:100%;
   overflow:hidden;
+  pointer-events:none;
 }
 .lu_logo{
   left:50%;
