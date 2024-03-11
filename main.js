@@ -3771,18 +3771,24 @@ function mousePressed(){
   // Check if we've clicked the step response graph:
   } else if(((mouseX-graph_step_response_x) > graph_step_response_x_offset && (mouseX-graph_step_response_x) < graph_step_response_width + graph_step_response_x_offset)&&
     ((mouseY-graph_step_response_y) > graph_step_response_y_offset && (mouseY-graph_step_response_y) < graph_step_response_height + graph_step_response_y_offset)){
+    let queue_with_ghosts = [];
     let queue = [];
     let yes_close_enough = false;
+    let yes_close_enough_with_ghosts = false;
     let linked_x = Math.ceil((mouseX - graph_step_response_x - graph_step_response_x_offset)/precision);
     for(let h=0; h<bode_graphs.length; h++){
-      if((bode_graphs[h].bode_displaybool)&&(bode_graphs[h].bode_display_timeresponse_bool)&&(!(bode_graphs[h].full_name.startsWith("Ghost")))) {
+      if((bode_graphs[h].bode_displaybool)&&(bode_graphs[h].bode_display_timeresponse_bool)){
         let current_graph = bode_graphs[h];
         let linked_y = current_graph.bode_timerep_array[linked_x];
         let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true) + graph_step_response_y_offset;
         let distance = Math.abs(mouseY - graph_step_response_y - screen_y);
         if(distance < 70){
-          yes_close_enough = true;
-          queue.push([distance,h,linked_y]);
+          yes_close_enough_with_ghosts = true;
+          queue_with_ghosts.push([distance,h,linked_y]);
+          if (!(bode_graphs[h].full_name.startsWith("Ghost"))){
+            yes_close_enough = true;
+            queue.push([distance,h,linked_y]);
+          }
         }
       }
     }
@@ -3836,9 +3842,21 @@ function mousePressed(){
       }
     }
     if (current_quiz!="none"){
+      let clicked_on_time_response_graph_no_with_ghosts = -1;
+      if(yes_close_enough_with_ghosts){
+        let output_with_ghosts;
+        let distance = 10000;
+        for(let h=0; h<queue_with_ghosts.length; h++){
+          if(queue_with_ghosts[h][0] < distance){
+            distance = queue_with_ghosts[h][0];
+            output_with_ghosts = queue_with_ghosts[h];
+          }
+        }
+        clicked_on_time_response_graph_no_with_ghosts = output_with_ghosts[1];
+      }
       let time=(mouseX - graph_step_response_x - graph_step_response_x_offset) / graph_step_response_width * 10.0;
       let amplitude=max_y_timerep - (max_y_timerep - min_y_timerep) * (mouseY - graph_step_response_y - graph_step_response_y_offset) / graph_step_response_height;
-      quiz_clicked_time_response(clicked_on_time_response_graph_no,time,amplitude,clicked_on_time_variable);
+      quiz_clicked_time_response(clicked_on_time_response_graph_no_with_ghosts,time,amplitude,clicked_on_time_variable);
       return false; // Cancel default actions
     } else {
       mouseDragged(); // Handle this directly
