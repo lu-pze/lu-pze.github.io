@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>LU-PZE: Lund University Pole-Zero Explorer</title>
-    <script type="text/javascript" src="js/mathlive.min.js"></script>
-    <script type="text/javascript" src="js/p5.js"></script>
-    <script type="text/javascript" src="js/math.js"></script>
+    <script defer type="text/javascript" src="js/mathlive.min.js"></script>
+    <script defer type="text/javascript" src="js/p5.js"></script>
+    <script defer type="text/javascript" src="js/math.js"></script>
     <script>
       // this page is not built, so fudge the module.exports support define a global `module` so that the actual source file can use it
       window.module = {};
     </script>
-    <script type="text/javascript" src="js/confetti.js"></script>
+    <script defer type="text/javascript" src="js/confetti.js"></script>
     <script>
       // define the `module.exports` as the `confetti` global, the way that the cdn distributed file would
       window.confetti = module.exports;
@@ -23,10 +23,13 @@ body{margin:0;min-width:1280px;background-color:#000;}
 .header{grid-column:2/span 3;grid-row-start:1;}
 .navbar{grid-column-start:1;grid-row:1/span 3;background:rgb(150,210,88);background:linear-gradient(0deg,rgba(88,210,100,1) 0%,rgba(160,255,80,1) 49%,rgba(69,252,179,1) 100%);display:flex;flex-direction:column;}
 .nav-button{background:none;border:none;}
-.footer{grid-column: 1 / span 3;grid-row: 4;background: linear-gradient(180deg, rgba(178,181,193,1) 0%, rgba(153,154,157,1) 100%);display:none; /* When javascript is done loading, this is set to display:inline;*/}
+.footer{grid-column:1/span 3;grid-row:4;background:linear-gradient(180deg,rgba(178,181,193,1) 0%,rgba(153,154,157,1) 100%);display:none; /* When javascript is done loading, this is set to display:inline;*/}
+math-field{border:0}
+math-field:focus-within{outline:2px solid #808080;border-radius:4px;background:rgba(200,200,200,.3);}
+math-field::part(virtual-keyboard-toggle){display:none;}
+math-field::part(menu-toggle){display:none;}
 .math-bar{grid-row:2;grid-column:3;background-color:#fff;}
-.graph-information{grid-row:3;grid-column:2 / span 2;background: #484848;display:flex;flex-direction:column;
-display:none;} /* When javascript is done loading, this is set to display:inline;*/
+.graph-information{grid-row:3;grid-column:2 / span 2;background: #484848;display:flex;flex-direction:column;display:none;} /* When javascript is done loading, this is set to display:inline;*/
 .graph-information-tabs input[type="radio"]:checked + label{background: #484848;}
 .graph-information-tabs{width:100%;height:33px;background-color:#202020;display:flex;flex-wrap: wrap;}
 .graph-information-tabs input[type="radio"]{display:none;}
@@ -225,6 +228,28 @@ display:none;} /* When javascript is done loading, this is set to display:inline
   100% {opacity:1;}
 }
 </style>
+<!--
+<link rel="preload" as="font" href="js/fonts/KaTeX_AMS-Regular.woff2"/>
+<link rel="preload" as="font" href="js/fonts/KaTeX_Caligraphic-Bold.woff2"/>
+<link rel="preload" as="font" href="js/fonts/KaTeX_Caligraphic-Regular.woff2" />
+<link rel="preload" as="font" href="js/fonts/KaTeX_Fraktur-Bold.woff2"/>
+<link rel="preload" as="font" href="js/fonts/KaTeX_Fraktur-Regular.woff2"/>
+<link rel="preload" as="font" href="js/fonts/KaTeX_Main-BoldItalic.woff2"/>
+<link rel="preload" as="font" href="js/fonts/KaTeX_Main-Bold.woff2"/>
+<link rel="preload" as="font" href="js/fonts/KaTeX_Main-Italic.woff2"/>
+<link rel="preload" as="font" href="js/fonts/KaTeX_Main-Regular.woff2"/>
+<link rel="preload" as="font" href="js/fonts/KaTeX_Math-BoldItalic.woff2"/>
+<link rel="preload" as="font" href="js/fonts/KaTeX_Math-Italic.woff2"/>
+<link rel="preload" as="font" href="js/fonts/KaTeX_SansSerif-Bold.woff2"/>
+<link rel="preload" as="font" href="js/fonts/KaTeX_SansSerif-Italic.woff2"/>
+<link rel="preload" as="font" href="js/fonts/KaTeX_SansSerif-Regular.woff2"/>
+<link rel="preload" as="font" href="js/fonts/KaTeX_Script-Regular.woff2"/>
+<link rel="preload" as="font" href="js/fonts/KaTeX_Size1-Regular.woff2"/>
+<link rel="preload" as="font" href="js/fonts/KaTeX_Size2-Regular.woff2"/>
+<link rel="preload" as="font" href="js/fonts/KaTeX_Size3-Regular.woff2"/>
+<link rel="preload" as="font" href="js/fonts/KaTeX_Size4-Regular.woff2"/>
+<link rel="preload" as="font" href="js/fonts/KaTeX_Typewriter-Regular.woff2"/>
+-->
   </head>
   <body>
 <!-- https://fonts.google.com/icons?selected=Material+Icons:school:&icon.query=school&icon.set=Material+Icons&icon.style=Filled -->
