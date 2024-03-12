@@ -225,7 +225,7 @@ function createRangeSlider(event){
       </div>
     </div>
   `
-//      <button type="button" class="delete-graph"><i class="material-icons" style="font-size: 30px; color: #b0b0b0">clear</i></button>
+//      <button type="button" class="delete-graph"><svg width="30" height="30" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
 //  let delete_button = slider.getElementsByClassName("delete-graph")[0];
 //  delete_button.addEventListener('click',removeSlider);
 
@@ -456,9 +456,9 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   if ((equation_string == GRAPH_ONE_REAL_POLE.formula) ||
       (equation_string == GRAPH_TWO_REAL_POLES.formula) ||
       (equation_string == GRAPH_TWO_COMPLEX_POLES.formula)){
-    s += `<button type="button" class="download-script" id="${id_bank}" onclick="download_script(${id_bank})"><i class="material-icons" style="font-size:28px;color:#b0b0b0">ios_share</i></button>`;
+    s += `<button type="button" class="download-script" id="${id_bank}" onclick="download_script(${id_bank})"><svg width="28" height="28" viewBox="0 0 24 24" fill="#b0b0b0" style="vertical-align:top"><use href="#icon_ios_share"/></svg></button>`;
   }
-  s += `<button type="button" class="delete-graph"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>
+  s += `<button type="button" class="delete-graph"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
   </div>
   <div class="slider-buttons">
   </div>
@@ -565,7 +565,7 @@ function removeInformationTab(input_id){
 
 
 function removeAllGraphs(){
-  const equations = document.querySelectorAll(".equation-wrapper .equation .delete-graph .material-icons");
+  const equations = document.querySelectorAll(".equation-wrapper .equation .delete-graph");
   equations.forEach((equation) => {
     equation.click();
   });
@@ -708,8 +708,8 @@ function download_script(id){
   <option value="MATLAB">MATLAB script</option>
   <option value="Julia">Julia code</option>
 </select> for plotting your transfer function.<br>Copy to clipboard:
-<button type="button" onclick="copy_code()" class="copy-button"><i class="material-icons" style="font-size:24px;color:#404040">content_copy</i></button>
-<button type="button" class="close-window" onclick="hide_script()"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>
+<button type="button" onclick="copy_code()" class="copy-button"><svg width="28" height="28" viewBox="0 0 24 24" fill="#404040" style="vertical-align:middle"><use href="#icon_content_copy"/></svg></button>
+<button type="button" class="close-window" onclick="hide_script()"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
 <br><br><div id="the_code"></div>`;
 
   let toggleElement = document.querySelector('.download_script_box');
@@ -1615,7 +1615,7 @@ function update_quiz(){
 
   let task_div=document.getElementById("task_list");
   let s = "";
-  s += '<center><i class="material-icons" style="font-size: 27px;vertical-align: middle;">school</i>&nbsp;&nbsp;<b>Quiz time</b></center><br>';
+  s += '<center><svg width="34" height="34" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_school"/></svg>&nbsp;&nbsp;<b>Quiz time!</b></center><br>';
 
   s += "So far, you've got " + quiz_nof_correct + " correct answers,<br>";
   s += "with a streak of " + quiz_current_streak + " immediately correct answers.<br>";
@@ -2085,11 +2085,11 @@ let done_tasks=[];
 function update_assignments(){
   let assignments_box = document.querySelector('.assignments_box');
   let s = "";
-  s += '<br><button type="button" class="close-window" onclick="toggle_assignments_box();"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>';
+  s += '<br><button type="button" class="close-window" onclick="toggle_assignments_box();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>';
 
   s += "<center>";
-  s += '<i class="material-icons" style="font-size: 27px;vertical-align: middle;">assignments</i>';
-  s += "Your Assignments";
+  s += '<svg width="34" height="34" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_assignment"/></svg>';
+  s += "&nbsp;Your Assignments";
   s += "</center><br>";
 
   // Let's see which assignments are done:
@@ -2259,7 +2259,7 @@ let assignment_grade=0;
 function update_tasks (){
   let task_div=document.getElementById("task_list");
   if (current_assignment=="none"){
-    task_div.innerHTML = '<div class="yellow_hover"><center><span onclick="addNewGraph();" style="color:#b0b0b0">Click <i class="material-icons" style="font-size:28px; vertical-align: middle;">add</i> or here to add next graph</span></center></div>';
+    task_div.innerHTML = '<div class="yellow_hover"><center><span onclick="addNewGraph();" style="color:#b0b0b0;vertical-align:middle">Click <svg width="20" height="20" viewBox="0 0 24 24" fill="#b0b0b0" style="vertical-align:top"><use href="#icon_add"/></svg> or here to add next graph</span></center></div>';
     return;
   }
 
@@ -2400,10 +2400,10 @@ function achievement_done (which_one){
 }
 
 const all_achievements={
-  "view_achievements":"Open your <i class='material-icons' style='font-size:20px; vertical-align: middle;'>star</i> Achievements",
-  "view_assignments":"Open your <i class='material-icons' style='font-size:20px; vertical-align: middle;'>assignments</i>Assignments",
-  "view_help":"Open the <i class='material-icons' style='font-size:20px; vertical-align: middle;'>help</i> help section",
-  "go_fullscreen":"Get rid of distractions by going <i class='material-icons' style='font-size:20px; vertical-align: middle;'>fullscreen</i> fullscreen",
+  "view_achievements":"Open your <svg width='20' height='20' viewBox='0 0 24 24' style='vertical-align:middle'><use href='#icon_star'/></svg> Achievements",
+  "view_assignments":"Open your <svg width='20' height='20' viewBox='0 0 24 24' style='vertical-align:middle'><use href='#icon_assignment'/></svg> Assignments",
+  "view_help":"Open the <svg width='20' height='20' viewBox='0 0 24 24' style='vertical-align:middle'><use href='#icon_help'/></svg> help section",
+  "go_fullscreen":"Get rid of distractions by going <svg width='20' height='20' viewBox='0 0 24 24' style='vertical-align:middle'><use href='#icon_fullscreen'/></svg> fullscreen",
   "drag_pole":"Drag a pole in the pole-zero map",
   "drag_zero":"Drag a zero in the pole-zero map",
   "drag_bode_mag":"Drag a transfer function in the Bode magnitude plot",
@@ -2413,8 +2413,8 @@ const all_achievements={
   "drag_time_response":"Drag the <b>two complex poles</b> transfer function in the time domain",
   "drag_pole_to_right_half_plane":"Drag a pole in the pole-zero map into the right half plane",
   "drag_zero_to_right_half_plane":"Drag a zero in the pole-zero map into the right half plane",
-  "start_quiz":"Start a <i class='material-icons' style='font-size:20px; vertical-align: middle;'>school</i> quiz",
-  "add_graph":"Add <i class='material-icons' style='font-size:20px; vertical-align: middle;'>add</i> another graph",
+  "start_quiz":"Start a <svg width='20' height='20' viewBox='0 0 24 24' style='vertical-align:middle'><use href='#icon_school'/></svg> quiz",
+  "add_graph":"Add <svg width='20' height='20' viewBox='0 0 24 24' style='vertical-align:middle'><use href='#icon_add'/></svg> another graph",
   "set_input_to_impulse":"Change the input function to a dirac impulse",
   "python_script":"Get the Python script for any transfer function",
   "matlab_script":"Get the MATLAB script for any transfer function",
@@ -2481,10 +2481,10 @@ function update_achievements (){
 
   let achievements_box = document.querySelector('.achievements_box');
   let s = "";
-  s += '<br><button type="button" class="close-window" onclick="toggle_achievements();"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>';
+  s += '<br><button type="button" class="close-window" onclick="toggle_achievements();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>';
 
   s += "<center>";
-  s += '<i class="material-icons" style="font-size: 28px;vertical-align: middle;">star</i>';
+  s += "<svg width='28' height='28' viewBox='0 0 24 24' style='vertical-align:middle'><use href='#icon_star'/></svg>";
   s += " Your Achievements ";
   s += "</center><br>";
   s += "Completed:<br>";
