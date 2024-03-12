@@ -1607,8 +1607,8 @@ function update_quiz(){
   }
   if (new_cap_grade != cap_grade){
     let cap_0 = document.getElementById("cap_0");
-    cap_0.src = "images/cap_"+cap_grade+".png";
     cap_grade=new_cap_grade;
+    cap_0.src = "images/cap_"+new_cap_grade+".png";
   }
   let cap_0_text = document.getElementById("cap_0_text");
   cap_0_text.innerHTML = quiz_difficulty.toFixed(0) + "/100&nbsp";
@@ -2460,8 +2460,8 @@ function update_achievements (){
   }
   if (new_star_grade != star_grade){
     let star_0 = document.getElementById("star_0");
-    star_0.src = "images/star_"+star_grade+".png";
     star_grade=new_star_grade;
+    star_0.src = "images/star_"+new_star_grade+".png";
   }
   let star_0_text = document.getElementById("star_0_text");
   star_0_text.innerHTML = done_achievements.length + "/" + Object.keys(all_achievements).length + "&nbsp";
