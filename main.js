@@ -458,7 +458,7 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
       (equation_string == GRAPH_TWO_COMPLEX_POLES.formula)){
     s += `<button type="button" class="download-script" id="${id_bank}" onclick="download_script(${id_bank})"><svg width="28" height="28" viewBox="0 0 24 24" fill="#b0b0b0" style="vertical-align:top"><use href="#icon_ios_share"/></svg></button>`;
   }
-  s += `<button type="button" class="delete-graph"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
+  s += `<button type="button" class="delete-graph" id="delete-graph_${id_bank}" onclick="removeGraph(${id_bank})"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
   </div>
   <div class="slider-buttons">
   </div>
@@ -469,7 +469,6 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   equations_div.append(new_equation_wrapper);
 
   let new_equation = new_equation_wrapper.getElementsByClassName("equation")[0];
-  new_equation.getElementsByClassName("delete-graph")[0].addEventListener('click',removeGraph);
   new_equation.getElementsByClassName("show-graph")[0].addEventListener('change',changeGraphDisplayStatus);
 
   let new_bode_graph = new bode_graph(id_bank,equation_string);
@@ -564,7 +563,7 @@ function removeInformationTab(input_id){
 }
 
 
-function removeAllGraphs(){
+function removeAllGraphs (){
   const equations = document.querySelectorAll(".equation-wrapper .equation .delete-graph");
   equations.forEach((equation) => {
     equation.click();
@@ -578,26 +577,9 @@ function removeAllGraphs(){
   i2.value = "Unit step";
 }
 
-function removeGraph(event){
-  let clicked_button = event.target;
-  let linked_equation = clicked_button.parentElement.parentElement;
-  if (event.target.type=="button"){
-    // This is a bugged click that would remove all graphs, somehow.
-    //If event.target is:
-    //<i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i>
-    //...the removeGraph function below is ok.
-    //If event.target is:
-    //<button type="button" class="delete-graph"><i class="material-icons" style="font-size: 34px; color: #b0b0b0">clear</i></button>
-    //...the function below will remove all graphs.
-
-    // Only clicks on the actual material-icon will be correct, so go to the correct level in the DOM:
-    //console.log("removeGraph");
-    //console.log(event);
-    //console.log(event.target);
-    //console.log(event.target.type);
-    linked_equation = clicked_button.parentElement;
-  }
-  let linked_id = linked_equation.getElementsByClassName("formula")[0].id;
+function removeGraph (linked_id){
+  let linked_button = document.getElementById("delete-graph_"+linked_id);
+  let linked_equation = linked_button.parentElement;
   removeInformationTab(+linked_id);
   let equation_to_remove = "";
   for(let i=0; i<bode_graphs.length; i++){
@@ -3770,8 +3752,8 @@ function mousePressed(){
     explorer_2.style.animation="explorer_2_anim_out 1s ease-out 1";
     explorer_2.style.opacity=0;
 
-    const first_time=500;
-    const delay=300;
+    const first_time=200;
+    const delay=150;
     setTimeout(initial_graph, first_time + 0*delay);
     setTimeout(initial_graph, first_time + 1*delay);
     setTimeout(initial_graph, first_time + 2*delay);
@@ -6611,9 +6593,11 @@ function closeFullscreen() {
 
 let graph_no=0;
 function initial_graph(){
-  bode_graphs[graph_no].bode_displaybool=true;
-  redraw();
+  // Add the initial startup graphs, with a little delay to make it look good:
+  let graph_to_add = GRAPH_ORDER[graph_no];
+  addNewGraph(null, graph_to_add);
   graph_no +=1;
+  next_graph_no_to_add = graph_no;
 }
 
 // Called by p5:
@@ -6632,13 +6616,6 @@ function setup(){
     variable_position[range_slider_alphabet[i]] = i;
   }
   id_bank=0;
-  // Add the initial startup graphs:
-  for(let graph_no=0; graph_no<NOF_GRAPHS_AT_STARTUP; graph_no++){
-    let graph_to_add = GRAPH_ORDER[graph_no];
-    addNewGraph(null, graph_to_add);
-    bode_graphs[graph_no].bode_displaybool=false;
-  }
-  next_graph_no_to_add = NOF_GRAPHS_AT_STARTUP;
   noLoop();
 
   let footer_div=document.getElementsByClassName("footer")[0];
