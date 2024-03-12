@@ -1032,10 +1032,10 @@ function start_quiz(){
   //remove the assignments box:
   let assignments_box = document.querySelector('.assignments_box');
   assignments_box.classList.remove('active');
-  let assignment_icon = document.getElementById("show_assignments");
-  assignment_icon.style.color=null;
-  let quiz_icon = document.getElementById("quiz_icon");
-  quiz_icon.style.color="#5050ff";
+  let assignment_icon_svg = document.getElementById("assignment_icon_svg");
+  assignment_icon_svg.style.fill=null;
+  let quiz_icon_svg = document.getElementById("quiz_icon_svg");
+  quiz_icon_svg.style.fill="#5050ff";
   //removeAllGraphs();
   quiz_nof_done = 0;
   quiz_nof_tries = 0;
@@ -2157,11 +2157,11 @@ function restart_lupze(){
   let quiz_text = document.getElementById("quiz_text");
   quiz_text.innerHTML="";
   current_quiz="none";
-  let quiz_icon = document.getElementById("quiz_icon");
-  quiz_icon.style.color=null;
+  let quiz_icon_svg = document.getElementById("quiz_icon_svg");
+  quiz_icon_svg.style.fill=null;
   current_assignment = "none";
-  let assignment_icon = document.getElementById("show_assignments");
-  assignment_icon.style.color=null;
+  let assignment_icon_svg = document.getElementById("assignment_icon_svg");
+  assignment_icon_svg.style.fill=null;
   update_tasks();
   removeAllGraphs();
   next_graph_no_to_add=0;
@@ -2182,8 +2182,8 @@ function select_assignment(event){
   let quiz_text = document.getElementById("quiz_text");
   quiz_text.innerHTML="";
   current_quiz="none";
-  let quiz_icon = document.getElementById("quiz_icon");
-  quiz_icon.style.color=null;
+  let quiz_icon_svg = document.getElementById("quiz_icon_svg");
+  quiz_icon_svg.style.fill=null;
   //remove the assignments box:
   let assignments_box = document.querySelector('.assignments_box');
   assignments_box.classList.remove('active');
@@ -2196,12 +2196,12 @@ function select_assignment(event){
       addNewGraph(null, graph_to_add);
     }
     next_graph_no_to_add = NOF_GRAPHS_AT_STARTUP;
-    let assignment_icon = document.getElementById("show_assignments");
-    assignment_icon.style.color=null;
+    let assignment_icon_svg = document.getElementById("assignment_icon_svg");
+    assignment_icon_svg.style.fill=null;
     return;
   }
-  let assignment_icon = document.getElementById("show_assignments");
-  assignment_icon.style.color="#5050ff";
+  let assignment_icon_svg = document.getElementById("assignment_icon_svg");
+  assignment_icon_svg.style.fill="#5050ff";
 
   if(event.value=="one_pole"){
     next_graph_no_to_add=0;
