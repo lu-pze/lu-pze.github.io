@@ -1594,6 +1594,21 @@ function update_quiz(){
   }
   quiz_difficulty = difficulty_mean/quiz_questions.length;
 
+  let cap_grade=0;
+  if (quiz_difficulty<70){
+    cap_grade=0; // Black
+  } else if (quiz_difficulty<80){
+    cap_grade=1; // Bronze
+  } else if (quiz_difficulty<98){
+    cap_grade=2; // Silver
+  } else {
+    cap_grade=3; // Gold
+  }
+  let cap_0 = document.getElementById("cap_0");
+  cap_0.src = "images/cap_"+cap_grade+".png";
+  let cap_0_text = document.getElementById("cap_0_text");
+  cap_0_text.innerHTML = quiz_difficulty.toFixed(0) + "/100&nbsp";
+
   let task_div=document.getElementById("task_list");
   let s = "";
   s += '<center><i class="material-icons" style="font-size: 27px;vertical-align: middle;">school</i>&nbsp;&nbsp;<b>Quiz time</b></center><br>';
@@ -2236,12 +2251,29 @@ function select_assignment(event){
   }
 }
 
-function update_tasks(){
+function update_tasks (){
   let task_div=document.getElementById("task_list");
   if (current_assignment=="none"){
     task_div.innerHTML = '<div class="yellow_hover"><center><span onclick="addNewGraph();" style="color:#b0b0b0">Click <i class="material-icons" style="font-size:28px; vertical-align: middle;">add</i> or here to add next graph</span></center></div>';
     return;
   }
+
+  let assignment_score = 100.0 * done_tasks.length / Object.keys(all_tasks).length;
+  let assignment_grade=0;
+  if (assignment_score<15){
+    assignment_grade=0; // Black
+  } else if (assignment_score<50){
+    assignment_grade=1; // Bronze
+  } else if (assignment_score<98){
+    assignment_grade=2; // Silver
+  } else {
+    assignment_grade=3; // Gold
+  }
+  let assignment_0 = document.getElementById("assignment_0");
+  assignment_0.src = "images/assignment_"+assignment_grade+".png";
+  let assignment_0_text = document.getElementById("assignment_0_text");
+  assignment_0_text.innerHTML = done_tasks.length + "/" + Object.keys(all_tasks).length + "&nbsp";
+
 
   let s="";
   s += "<center><b>"+all_assignments[current_assignment].t+"</b></center><br>";
@@ -2403,10 +2435,24 @@ const achievement_ranks={
   0:"Automatic Control Newbie"
 }
 
-function update_achievements(){
+function update_achievements (){
   achievement_score = 100.0 * done_achievements.length / Object.keys(all_achievements).length;
   achievement_rank="";
   achievement_score_to_next_rank=-1;
+  let star_grade=0;
+  if (achievement_score<15){
+    star_grade=0; // Black
+  } else if (achievement_score<50){
+    star_grade=1; // Bronze
+  } else if (achievement_score<98){
+    star_grade=2; // Silver
+  } else {
+    star_grade=3; // Gold
+  }
+  let star_0 = document.getElementById("star_0");
+  star_0.src = "images/star_"+star_grade+".png";
+  let star_0_text = document.getElementById("star_0_text");
+  star_0_text.innerHTML = done_achievements.length + "/" + Object.keys(all_achievements).length + "&nbsp";
 
   const entries = Object.entries(achievement_ranks);
   // Sort the array based on integer keys in descending order

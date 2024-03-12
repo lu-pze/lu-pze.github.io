@@ -362,6 +362,56 @@ body{
 
 
 
+.star_0{
+  right:1%;
+  bottom:1%;
+  height:8%;
+  width:auto;
+  z-index:15;
+  position:absolute;
+  opacity:1.0;
+  text-align:center;
+  text-shadow: 1px 1px 0 #fff;
+  font-family: "Roboto", "Courier New", monospace;
+  font-size:100%;
+  font-weight:800;
+  border-radius: 20%;
+  overflow: hidden;
+}
+.assignment_0{
+  right:7%;
+  bottom:1%;
+  height:8%;
+  width:auto;
+  z-index:15;
+  position:absolute;
+  opacity:1.0;
+  text-align:center;
+  text-shadow: 1px 1px 0 #fff;
+  font-family: "Roboto", "Courier New", monospace;
+  font-size:100%;
+  font-weight:800;
+  border-radius: 20%;
+  overflow: hidden;
+}
+.cap_0{
+  right:13%;
+  bottom:1%;
+  height:8%;
+  width:auto;
+  z-index:15;
+  position:absolute;
+  opacity:1.0;
+  text-align:center;
+  text-shadow: 1px 1px 0 #fff;
+  font-family: "Roboto", "Courier New", monospace;
+  font-size:100%;
+  font-weight:800;
+  border-radius: 20%;
+  overflow: hidden;
+}
+
+
 .pze_logo{
   left:42%;
   top:66%;
