@@ -4,31 +4,6 @@
     <meta charset="utf-8">
     <title>LU-PZE: Lund University Pole-Zero Explorer</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@200;300;400&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap" rel="stylesheet">
-<!--
-// Mathlive changelog:  https://cortexjs.io/mathlive/changelog/
-// OK:
-    <script src="https://unpkg.com/mathlive@0.89.4/dist/mathlive.min.js"></script>
-// Broken mathfield view.   becomes \frac{1}{1+p} instead of nice formatted formula:
-    <script src="https://unpkg.com/mathlive@0.90.0/dist/mathlive.min.js"></script>
-    <script src="https://unpkg.com/mathlive@0.91.0/dist/mathlive.min.js"></script>
-    <script src="https://unpkg.com/mathlive@0.92.0/dist/mathlive.min.js"></script>
-    <script src="https://unpkg.com/mathlive@0.93.0/dist/mathlive.min.js"></script>
-    <script src="https://unpkg.com/mathlive@0.94.0/dist/mathlive.min.js"></script>
-// Broken mathfield view. No formula shown at all:
-    <script src="https://unpkg.com/mathlive@0.95.0/dist/mathlive.min.js"></script>
-    <script src="https://unpkg.com/mathlive@0.96.0/dist/mathlive.min.js"></script>
-    <script src="https://unpkg.com/mathlive@0.97.0/dist/mathlive.min.js"></script>
-// Broken mathfield view.   becomes \frac{1}{1+p} instead of nice formatted formula:
-// Broken mathfield view. No formula shown at all:
-    <script src="https://unpkg.com/mathlive@0.98.0/dist/mathlive.min.js"></script>
-    <script src="https://unpkg.com/mathlive@0.98.5/dist/mathlive.min.js"></script>
-// So... OK:
-    <script src="https://unpkg.com/mathlive@0.89.4/dist/mathlive.min.js"></script>
-//Access to fetch at 'file:///Users/pex/phd/git/pexperiment/js/mathlive.min.js' from origin 'null' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, isolated-app, chrome-extension, chrome, https, chrome-untrusted.
-    <script type="text/javascript" src="js/mathlive.min.js"></script>
--->
     <script type="text/javascript" src="js/mathlive.min.js"></script>
     <script type="text/javascript" src="js/p5.js"></script>
     <script type="text/javascript" src="js/math.js"></script>
@@ -43,10 +18,10 @@
     </script>
     <script type="text/javascript" src="main.js"></script>
 <style>
-body{margin:0;min-width: 1280px;background-color:#000;}
-.page{display:grid;grid-template-columns: 0px 1fr 380px;grid-template-rows: 0px 1fr 110px 40px;}
-.header{grid-column: 2 / span 3;grid-row-start: 1;}
-.navbar{grid-column-start: 1;grid-row: 1 / span 3;background: rgb(150,210,88);background: linear-gradient(0deg, rgba(88,210,100,1) 0%, rgba(160,255,80,1) 49%, rgba(69,252,179,1) 100%);display:flex;flex-direction:column;}
+body{margin:0;min-width:1280px;background-color:#000;}
+.page{display:grid;grid-template-columns: 0px 1fr 380px;grid-template-rows:0px 1fr 110px 40px;}
+.header{grid-column:2/span 3;grid-row-start:1;}
+.navbar{grid-column-start:1;grid-row:1/span 3;background:rgb(150,210,88);background:linear-gradient(0deg,rgba(88,210,100,1) 0%,rgba(160,255,80,1) 49%,rgba(69,252,179,1) 100%);display:flex;flex-direction:column;}
 .nav-button{background:none;border:none;}
 .footer{grid-column: 1 / span 3;grid-row: 4;background: linear-gradient(180deg, rgba(178,181,193,1) 0%, rgba(153,154,157,1) 100%);display:none; /* When javascript is done loading, this is set to display:inline;*/}
 .math-bar{grid-row:2;grid-column:3;background-color:#fff;}
@@ -55,7 +30,7 @@ display:none;} /* When javascript is done loading, this is set to display:inline
 .graph-information-tabs input[type="radio"]:checked + label{background: #484848;}
 .graph-information-tabs{width:100%;height:33px;background-color:#202020;display:flex;flex-wrap: wrap;}
 .graph-information-tabs input[type="radio"]{display:none;}
-.graph-information-tabs label{font-family: "Roboto";font-size: 16px;font-weight: 500;display:flex;flex-direction: row;color: #999;padding: 7px 15px 0 15px;}
+.graph-information-tabs label{font-family:Arial,sans-serif;font-size: 16px;font-weight: 500;display:flex;flex-direction: row;color: #999;padding: 7px 15px 0 15px;}
 .info-radio-buttons{position: relative;}
 .option-bar{background: linear-gradient(180deg, rgba(178,181,193,1) 0%, rgba(153,154,157,1) 100%);width:100%;height:50px;}
 .option-button{color:#fff}
@@ -65,7 +40,7 @@ display:none;} /* When javascript is done loading, this is set to display:inline
 .add-graph:hover {color:#d0d0ff;}
 .graph-tabs{width: 100%;height: 35px;display: flex;flex-wrap: wrap;}
 .graph-tabs input[type="radio"]{display: none;}
-.graph-tabs label{color: #fff;font-family: Roboto;font-size: 17px;font-weight: 400;padding: 7px 20px 0 20px;}
+.graph-tabs label{color: #fff;font-family:Arial,sans-serif;;font-size: 17px;font-weight: 400;padding: 7px 20px 0 20px;}
 .graph-tabs input[type="radio"]:checked + label{text-shadow: 0 0 5px #7c7c7c;background: linear-gradient(-90deg, rgba(193,255,116,1) 0%, rgba(21,255,178,1) 100%);box-shadow: inset 0 0 10px rgba(115, 113, 113, 0.42);}
 .graph-tabs .vl {border-left: 2px solid #fff;height:100%;}
 .graph-space{grid-column: 2;grid-row: 2;}
@@ -83,52 +58,52 @@ display:none;} /* When javascript is done loading, this is set to display:inline
   95% {opacity:1.0;transform:rotate(0deg)}
   100% {opacity:1.0;transform:rotate(2deg)}}
 .download-script{position:relative;margin-right:36px;background:none;border:none;transition: all .4s ease-in;}
-.download-script:hover {background-color: #f8f890;transition:0s;}
-.copy-button{background:none;border:none;transition: all .4s ease-in;}
-.copy-button:hover{background-color: #f8f890;transition:0s;}
-.footer h1{text-align: center;font-weight: 300;font-size: 15px;margin: 0;padding: 10px 0 10px 0;color: #e7e6e6;}
-.footer{font-family: "Roboto";}
-.footer-info{padding: 0px 0px 0px 0px;}
-.footer-link{text-align: center;}
-.footer-link a{font-family: Calibri;font-size: 15px;padding: 0 20px 0 0px;color: #e7e6e6;}
-.footer-link a:hover{font-family: Calibri;font-size: 15px;padding: 0 20px 0 20px;color: #31fb56;}
-.clickable-link{transition: all .4s ease-in;}
-.clickable-link:hover {background-color: #f8f890;transition:0s}
-.equation{display:flex;flex-direction:row;justify-content: start;position:relative;padding: 6px 0 6px;width:100%;animation-duration:0.3s;animation-name: slidein;}
+.download-script:hover{background-color:#f8f890;transition:0s;}
+.copy-button{background:none;border:none;transition:all .4s ease-in;}
+.copy-button:hover{background-color:#f8f890;transition:0s;}
+.footer h1{text-align: center;font-weight:300;font-size:15px;margin:0;padding:10px 0 10px 0;color:#e7e6e6;}
+.footer{font-family:Arial,sans-serif;}
+.footer-info{padding:0px 0px 0px 0px;}
+.footer-link{text-align:center;}
+.footer-link a{font-family:Arial,sans-serif;font-size:15px;padding:0 20px 0 0px;color:#e7e6e6;}
+.footer-link a:hover{font-family:Arial,sans-serif;font-size:15px;padding:0 20px 0 20px;color:#31fb56;}
+.clickable-link{transition:all .4s ease-in;}
+.clickable-link:hover{background-color:#f8f890;transition:0s}
+.equation{display:flex;flex-direction:row;justify-content:start;position:relative;padding:6px 0 6px;width:100%;animation-duration:0.3s;animation-name:slidein;}
 .equations{display:flex;flex-direction:column;}
 .formula{width:73%;transition: all .4s ease-in;}
-.formula:hover {background-color: #f8f890;transition:0s}
-.eq-info{margin:10px;font-family: "Roboto";font-size: 15px;transition: all .4s ease-in;}
-.yellow_hover:hover {background-color: #f8f890;transition:0s}
-.show-graph{-webkit-appearance: none;border-radius:20px;margin-top:7px;margin-right:10px;margin-left:12px;width:40px;height:36px;}
-.show-graph:hover {opacity:0.60}
+.formula:hover{background-color: #f8f890;transition:0s}
+.eq-info{margin:10px;font-family:Arial,sans-serif;font-size:15px;transition:all .4s ease-in;}
+.yellow_hover:hover{background-color:#f8f890;transition:0s}
+.show-graph{-webkit-appearance:none;border-radius:20px;margin-top:7px;margin-right:10px;margin-left:12px;width:40px;height:36px;}
+.show-graph:hover{opacity:0.60}
 .show-graph:checked{opacity:0.33}
-.delete-graph{float:inline-end;right: 0px;top:6px;transition: all .4s ease-in;position:absolute;background:none;border:none;}
-.delete-graph:hover {background-color: #f8f890;transition:0s}
-.close-window{float:inline-end;right: 0px;top:6px;transition: all .4s ease-in;position:absolute;background:none;border:none;}
-.close-window:hover {background-color: #f8f890;transition:0s}
-.slider-bound{width:30px;font-family: "Source Serif Pro",serif;font-size:14 px;border:none;transition: all .4s ease-in;}
-.slider-bound:hover {background-color: #f8f890;transition:0s}
+.delete-graph{float:inline-end;right:0px;top:6px;transition:all .4s ease-in;position:absolute;background:none;border:none;}
+.delete-graph:hover{background-color:#f8f890;transition:0s}
+.close-window{float:inline-end;right:0px;top:6px;transition:all .4s ease-in;position:absolute;background:none;border:none;}
+.close-window:hover{background-color:#f8f890;transition:0s}
+.slider-bound{width:30px;font-family:Garamond,'Times New Roman',Times,serif;font-size:14 px;border:none;transition:all .4s ease-in;}
+.slider-bound:hover{background-color: #f8f890;transition:0s}
 .slider-subwrapper{display:flex;flex-direction:row;position:relative;animation-duration:0.3s;animation-name: slidein;}
 .slider-wrapper hr{width:97%;margin-top:0;margin-bottom:0;}
 .slider{display:flex;flex-direction:row;margin:2px 0 2px 0;}
 .equation-wrapper hr{width:97%;margin-top:0;margin-bottom:0;}
 .input-equation hr{width:97%;}
 .slider-buttons{display:flex;flex-direction:row;}
-.slider-subwrapper span{font-family: "Source Serif Pro",serif;font-size:19px;margin-left:15px;margin-right:20px;margin-top:22px;}
+.slider-subwrapper span{font-family:Garamond,'Times New Roman',Times,serif;font-size:19px;margin-left:15px;margin-right:20px;margin-top:22px;}
 .value-wrapper{margin: 10px 14px 10px;}
-.value-wrapper input{font-family: "Source Serif Pro",serif;font-size: 24px;border: none;width:60px;height:30px;transition: all .4s ease-in;}
+.value-wrapper input{font-family:Garamond,'Times New Roman',Times,serif;font-size: 24px;border: none;width:60px;height:30px;transition: all .4s ease-in;}
 .value-wrapper:hover input{background-color: #f8f890;transition:0s}
 .functions-informations{display:flex;flex-direction:row;}
 .bode-information{display:flex;flex-direction:column;margin-top: 15px;margin-left: 15px;}
 .timerep-information{display:flex;flex-direction:column;margin-top: 15px;margin-left: 15px;}
-.star_0{right:1%;bottom:1%;height:8%;width:auto;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family: "Roboto", "Courier New", monospace;font-size:100%;font-weight:800;border-radius: 20%;border:2px solid #fff;box-shadow:4px 4px 10px #00000080;overflow: hidden;}
-.star_0_text{right:1%;bottom:1%;height:8%;width:auto;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family: "Roboto", "Courier New", monospace;font-size:100%;font-weight:800;overflow: hidden;}
-.assignment_0{right:7%;bottom:1%;height:8%;width:auto;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family: "Roboto", "Courier New", monospace;font-size:100%;font-weight:800;border-radius: 20%;border:2px solid #fff;box-shadow:4px 4px 10px #00000080;overflow: hidden;}
-.assignment_0_text{right:7%;bottom:1%;height:8%;width:auto;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family: "Roboto", "Courier New", monospace;font-size:100%;font-weight:800;overflow: hidden;}
-.cap_0{right:13%;bottom:1%;height:8%;width:auto;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family: "Roboto", "Courier New", monospace;font-size:100%;font-weight:800;border-radius: 20%;border:2px solid #fff;box-shadow:4px 4px 10px #00000080;overflow: hidden;}
-.cap_0_text{right:13%;bottom:1%;height:8%;width:auto;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family: "Roboto", "Courier New", monospace;font-size:100%;font-weight:800;overflow: hidden;}
-.pze_logo{left:42%;top:66%;z-index:19;position: absolute;opacity:1.0;font-family: "Roboto", "Courier New", monospace;font-size:900%;font-weight:800;text-align: center;line-height:80%;color:#ff8;text-shadow:  -2px -2px 0 #000,   2px -2px 0 #000,  -2px  2px 0 #000,   2px  2px 0 #000;pointer-events:none;animation: pze_logo_anim_in 3.5s ease-out 0s 1;overflow: hidden;}
+.star_0{right:1%;bottom:1%;height:8%;width:auto;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;border-radius: 20%;border:2px solid #fff;box-shadow:4px 4px 10px #00000080;overflow: hidden;}
+.star_0_text{right:1%;bottom:1%;height:8%;width:auto;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;overflow: hidden;}
+.assignment_0{right:7%;bottom:1%;height:8%;width:auto;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;border-radius: 20%;border:2px solid #fff;box-shadow:4px 4px 10px #00000080;overflow: hidden;}
+.assignment_0_text{right:7%;bottom:1%;height:8%;width:auto;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;overflow: hidden;}
+.cap_0{right:13%;bottom:1%;height:8%;width:auto;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;border-radius: 20%;border:2px solid #fff;box-shadow:4px 4px 10px #00000080;overflow: hidden;}
+.cap_0_text{right:13%;bottom:1%;height:8%;width:auto;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;overflow: hidden;}
+.pze_logo{left:42%;top:66%;z-index:19;position:absolute;opacity:1.0;font-family:Arial,sans-serif;font-size:900%;font-weight:800;text-align: center;line-height:80%;color:#ff8;text-shadow:  -2px -2px 0 #000,   2px -2px 0 #000,  -2px  2px 0 #000,   2px  2px 0 #000;pointer-events:none;animation: pze_logo_anim_in 3.5s ease-out 0s 1;overflow: hidden;}
 @keyframes pze_logo_anim_in {
   0% {opacity:0.0;top:70%}
   30% {opacity:0.0;top:70%}
@@ -167,29 +142,23 @@ display:none;} /* When javascript is done loading, this is set to display:inline
 .toolbox.active{visibility: visible;opacity: 1;}
 .help{padding:20px 20px 10px 20px;right:10px;top:120px;z-index:1;box-shadow: 0 0 15px #cccccc;background-color:#d0d0d0f0;position: absolute;visibility: hidden;}
 .help.active{visibility:visible;opacity:1;}
-.download_script_box{padding:20px 20px 10px 20px;right:10px;top:120px;z-index:1;box-shadow: 0 0 15px #cccccc;background-color:#d0d0d0f0;position: absolute;visibility: hidden;font-family: "Lucida Console", "Courier New", monospace;font-weight: 600;}
+.download_script_box{padding:20px 20px 10px 20px;right:10px;top:120px;z-index:1;box-shadow: 0 0 15px #cccccc;background-color:#d0d0d0f0;position: absolute;visibility: hidden;font-family:"Lucida Console","Courier New",monospace;font-weight:600;}
 .download_script_box.active{visibility: visible;opacity: 1;}
-.assignments_box{--d:700px;--angle:135deg; --w:100%;padding:0px 20px 10px 20px;left:50%;top:40%;transform: translate(-50%,-50%);z-index:5;position: absolute;visibility: hidden;font-family: "Lucida Console", "Courier New", monospace;font-weight: 600;border-radius: 25px;}
+.assignments_box{--d:700px;--angle:135deg; --w:100%;padding:0px 20px 10px 20px;left:50%;top:40%;transform: translate(-50%,-50%);z-index:5;position: absolute;visibility: hidden;font-family:"Lucida Console","Courier New",monospace;font-weight:600;border-radius: 25px;}
 .assignments_box.active{visibility: visible;opacity: 1;}
 .assignments_box:before{border-radius: 25px;margin:0;padding:0;content:"";height:100%;left:0;width:var(--w);position: absolute;box-shadow: 0 0 30px #d0d0b0;z-index:-1;background: repeating-linear-gradient(var(--angle), #f0f0f0e8, #c0c0e0f4, #f0f0f0e8 var(--d));background-size: calc(var(--d)/sin(var(--angle))) 100%;animation: AnimationName 8s linear infinite;}
-@keyframes AnimationName{
-  0% {
-    background-position: calc(var(--d)/sin(var(--angle))) 0;
-  }}
-.achievements_box{--d:700px;--angle:135deg; --w:100%;padding:0px 20px 10px 20px;left:50%;top:40%;transform: translate(-50%,-50%);z-index:5;position: absolute;visibility: hidden;font-family: "Lucida Console", "Courier New", monospace;font-weight: 600;border-radius: 25px;}
+@keyframes AnimationName{0% {background-position: calc(var(--d)/sin(var(--angle))) 0;}}
+.achievements_box{--d:700px;--angle:135deg; --w:100%;padding:0px 20px 10px 20px;left:50%;top:40%;transform: translate(-50%,-50%);z-index:5;position: absolute;visibility: hidden;font-family:"Lucida Console","Courier New",monospace;font-weight:600;border-radius: 25px;}
 .achievements_box.active{visibility: visible;opacity: 1;}
-.achievements_box:before{border-radius: 25px;margin:0;padding:0;content:"";height:100%;left:0;width:var(--w);position: absolute;box-shadow: 0 0 30px #d0d0b0;z-index:-1;background: repeating-linear-gradient(var(--angle), #f0f0f0e8, #d0d0b0f4, #f0f0f0e8 var(--d));background-size: calc(var(--d)/sin(var(--angle))) 100%;animation: AnimationName 8s linear infinite;}
-@keyframes AnimationName{
-  0% {
-    background-position: calc(var(--d)/sin(var(--angle))) 0;
-  }}
+.achievements_box:before{border-radius:25px;margin:0;padding:0;content:"";height:100%;left:0;width:var(--w);position: absolute;box-shadow: 0 0 30px #d0d0b0;z-index:-1;background: repeating-linear-gradient(var(--angle), #f0f0f0e8, #d0d0b0f4, #f0f0f0e8 var(--d));background-size: calc(var(--d)/sin(var(--angle))) 100%;animation: AnimationName 8s linear infinite;}
+@keyframes AnimationName{0% {background-position: calc(var(--d)/sin(var(--angle))) 0;}}
 .noscrollbars{overflow:hidden;position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;}
 .quiz_no{width:10%;transform: translate(-50%,-50%);z-index:40;color:#808000;position: absolute;opacity:0;pointer-events: none;}
 @keyframes QuizAnim2 {
   0% {left:var(--left);top:var(--top);transform: translate(-50%,-50%) scale(1.0) rotate(0);opacity:1.0;color:#ffffff;}
   10% {left:var(--left);top:var(--top);transform: translate(-50%,-50%) scale(1.0) rotate(0);opacity:1.0;color:#a00000;}
   100% {left:var(--left);top:var(--top);transform: translate(-50%,-50%) scale(0.1) rotate(-90deg);opacity:0.0;color:#ffff00;}}
-.quiz_answer{width:25%;transform: translate(-50%,-50%) rotate(-5deg);z-index:50;color:#ffffff;position: absolute;font-family: "Lucida Console", "Courier New", monospace;font-weight: 600;font-size: 150%;text-align:center;text-shadow: 1px 1px 3px #000000;opacity:0;pointer-events: none;background:#404040c0;}
+.quiz_answer{width:25%;transform:translate(-50%,-50%) rotate(-5deg);z-index:50;color:#ffffff;position: absolute;font-family:"Lucida Console","Courier New",monospace;font-weight:600;font-size:150%;text-align:center;text-shadow: 1px 1px 3px #000000;opacity:0;pointer-events: none;background:#404040c0;}
 @keyframes QuizAnim{
   from {left:var(--left);top:var(--top);opacity:1.0;transform:rotate(-5deg);color:#ffffff;}
   to {left:var(--left);top:var(--top);opacity:0.0;transform:rotate(10deg);color:#ffff00;}}
@@ -198,21 +167,21 @@ display:none;} /* When javascript is done loading, this is set to display:inline
 .quiz-labels {position:absolute;top:-30px;left:30px;width:100%;display:flex;pointer-events:none;}
 .quiz-labels label {transform:rotate(-45deg);position:relative;left: 0%;width: calc(100% / 8);text-align:left;pointer-events:none;}
 .quiz-labels label:first-child,
-.quiz-labels label:last-child {width: auto;}
-.assignment_star{width:10%;transform: translate(-50%,-50%);z-index:40;color:#7070f0;position: absolute;opacity:0;pointer-events: none;}
+.quiz-labels label:last-child {width:auto;}
+.assignment_star{width:10%;transform:translate(-50%,-50%);z-index:40;color:#7070f0;position: absolute;opacity:0;pointer-events: none;}
 @keyframes MoveToStar3{
-  0% {left:var(--left);top:var(--top);transform: translate(-50%,-50%) scale(0.0) rotate(0);opacity: 1.0;color:#7070e0;}
-  10% {left:var(--left);top:var(--top);transform: translate(-50%,-50%) scale(1.0) rotate(0);opacity: 1.0;color:#a0a0f0;}
-  100% {left:85%;top:3%;transform: translate(-50%,-50%) scale(0.1) rotate(360deg);opacity: 0.0;  color:#0000ff;}}
+  0% {left:var(--left);top:var(--top);transform:translate(-50%,-50%) scale(0.0) rotate(0);opacity:1.0;color:#7070e0;}
+  10% {left:var(--left);top:var(--top);transform:translate(-50%,-50%) scale(1.0) rotate(0);opacity:1.0;color:#a0a0f0;}
+  100% {left:85%;top:3%;transform:translate(-50%,-50%) scale(0.1) rotate(360deg);opacity:0.0;color:#0000ff;}}
 @keyframes MoveToStar4{
   from {left:var(--left);top:var(--top);opacity:1.0;transform:rotate(-5deg);color:#ffffff;}
   to {left:85%;top:3%;opacity:0.0;transform:rotate(10deg);color:#2020ff;}}
-.achievement_star{width:10%;transform: translate(-50%,-50%);z-index:40;color:#808000;position: absolute;opacity:0;pointer-events: none;}
+.achievement_star{width:10%;transform:translate(-50%,-50%);z-index:40;color:#808000;position:absolute;opacity:0;pointer-events:none;}
 @keyframes MoveToStar2{
-  0% {left:var(--left);top:var(--top);transform: translate(-50%,-50%) scale(0.0) rotate(0);opacity: 1.0;color:#808000;}
-  10% {left:var(--left);top:var(--top);transform: translate(-50%,-50%) scale(1.0) rotate(0);opacity: 1.0;color:#a0a000;}
-  100% {left:85%;top:3%;transform: translate(-50%,-50%) scale(0.1) rotate(360deg);opacity: 0.0;  color:#ffff00;}}
-.achievement_text{width:15%;transform: translate(-50%,-50%) rotate(-5deg);z-index:50;color:#ffffff;position: absolute;font-family: "Lucida Console", "Courier New", monospace;font-weight: 600;font-size: 150%;text-align:center;text-shadow: 1px 1px 3px #000000;opacity:0;pointer-events: none;}
+  0% {left:var(--left);top:var(--top);transform:translate(-50%,-50%) scale(0.0) rotate(0);opacity:1.0;color:#808000;}
+  10% {left:var(--left);top:var(--top);transform:translate(-50%,-50%) scale(1.0) rotate(0);opacity:1.0;color:#a0a000;}
+  100% {left:85%;top:3%;transform: translate(-50%,-50%) scale(0.1) rotate(360deg);opacity:0.0;color:#ffff00;}}
+.achievement_text{width:15%;transform: translate(-50%,-50%) rotate(-5deg);z-index:50;color:#ffffff;position:absolute;font-family:"Lucida Console","Courier New",monospace;font-weight: 600;font-size: 150%;text-align:center;text-shadow: 1px 1px 3px #000000;opacity:0;pointer-events: none;}
 @keyframes MoveToStar{
   from {left:var(--left);top:var(--top);opacity:1.0;transform:rotate(-5deg);color:#ffffff;}
   to {left:85%;top:3%;opacity:0.0;transform:rotate(10deg);color:#ffff00;}}
@@ -225,14 +194,14 @@ display:none;} /* When javascript is done loading, this is set to display:inline
 .expression-wrapper{display:flex;flex-direction: column;margin-bottom: 4px;}
 .range-wrapper{display:flex;flex-direction:row;}
 .range-wrapper input{width:30px;}
-.toolbox{font-family:"Roboto";font-weight:400;color:#8b8b8b;}
+.toolbox{font-family:Arial,sans-serif;font-weight:400;color:#8b8b8b;}
 .range-wrapper span{color:#282828;font-weight: 400;}
 .input-equation{visibility: hidden;height: 0px;margin-top:0px}
 .input-equation.active{visibility: visible;height: 60px;margin-top:10px}
-.input-span{font-family: "Source Serif Pro",serif;font-size: 17px;}
+.input-span{font-family:Garamond,'Times New Roman',Times,serif;font-size: 17px;}
 .sub-information{padding: 10px 0 10px 0;}
-.sub-information .value{font-family: "Roboto";font-size:20px;font-weight:500;color:#fff;}
-.sub-information .text{font-family: "Roboto";font-size: 17px;font-weight: 400;color:#999;}
+.sub-information .value{font-family:Arial,sans-serif;font-size:20px;font-weight:500;color:#fff;}
+.sub-information .text{font-family:Arial,sans-serif;font-size: 17px;font-weight: 400;color:#999;}
 @keyframes slidein {
   from {transform: scale(0);opacity: 0;}
   to   {transform: scale(1);opacity: 1;}}
