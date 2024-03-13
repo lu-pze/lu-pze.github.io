@@ -4707,9 +4707,19 @@ function draw_hover_nyquist(){
   }
 }
 
-
+let nof_redraws_in_math_bar=0;
 function mouseMoved(){
-  redraw();
+  // If we are in the math-bar, no need to redraw.
+  // Or, more correctly, if previous redraw was in the math-bar area, we don't need to redraw again:
+  if ((mouseX > canvas_width)||(mouseY>canvas_height)){
+    if (nof_redraws_in_math_bar < 1){
+      redraw();
+    }
+    nof_redraws_in_math_bar += 1;
+  } else {
+    redraw();
+    nof_redraws_in_math_bar = 0;
+  }
 
   // Check if we're hovering any of the pole-zero graphs:
   for(let i=0; i<bode_graphs.length; i++){
