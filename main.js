@@ -1491,6 +1491,7 @@ function next_quiz (){
       else z=z*(10+14*Math.random());
       next_graph_no_to_add=graph_color;
       id_bank=next_graph_no_to_add;
+
       if (wrong_system_order==1){
         addNewGraph(null, {name:"Ghost..T..._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
       } else {
@@ -3194,10 +3195,6 @@ function draw_time_responses(){
         }
       }
     }
-  }
-  // Make sure that "0" is kind of stable if we have 'almost zero':
-  if (Math.abs(min_y_timerep) < 0.1){
-    min_y_timerep = Math.round(min_y_timerep);
   }
   if (max_y_timerep > 500) max_y_timerep = 500;
   if (min_y_timerep < -500) min_y_timerep = -500;
