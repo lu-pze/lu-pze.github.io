@@ -6395,15 +6395,15 @@ function initial_graph(){
 }
 
 // Called by p5:
-function setup(){
+function setup (){
   setGraphDimensions();
   let canvas = createCanvas(canvas_width,canvas_height);
   canvas.parent('sketch_holder');
   colorMode(HSB,360);
-  background_color = color('hsb(0, 0%, 4%)');
+  background_color = color('hsb(0,0%,4%)');
   box_background_color = 120;
-  line_color = color('hsb(0, 0%, 22%)');  // Grey graph lines
-  text_color = color('hsb(0, 0%, 100%)');
+  line_color = color('hsb(0,0%,22%)');  // Grey graph lines
+  text_color = color('hsb(0,0%,100%)');
   angle_color = "#ff40ff";
   // To go from "T_1" to the index in range_slider_variables:
   for(let i=0; i<range_slider_alphabet.length; i++){
