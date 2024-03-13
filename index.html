@@ -162,7 +162,7 @@ math-field::part(menu-toggle){display:none;}
 @keyframes explorer_2_anim_out {
   0% {opacity:1.0}
   100% {opacity:0.0}}
-.toolbox{padding:20px 20px 10px 20px;right:10px;top:120px;z-index:1;box-shadow: 0 0 15px #cccccc;background-color:#ddd;position: absolute;visibility: hidden;background-image: url("images/LundUniversity_C2line_RGB.png");background-size: contain;background-repeat: no-repeat;}
+.toolbox{padding:20px 20px 10px 20px;right:10px;top:120px;z-index:1;box-shadow:0 0 15px #cccccc;background-color:#ddd;position:absolute;visibility:hidden;}
 .toolbox.active{visibility: visible;opacity: 1;}
 .help{padding:20px 20px 10px 20px;right:10px;top:120px;z-index:1;box-shadow: 0 0 15px #cccccc;background-color:#d0d0d0f0;position: absolute;visibility: hidden;}
 .help.active{visibility:visible;opacity:1;}
@@ -230,8 +230,8 @@ math-field::part(menu-toggle){display:none;}
   from {transform: scale(0);opacity: 0;}
   to   {transform: scale(1);opacity: 1;}}
 @-webkit-keyframes fadeIn {
-  0% {opacity:0;}
-  100% {opacity:1;}
+  0% {opacity:0}
+  100% {opacity:1}
 }
 </style>
 <!--
@@ -286,53 +286,26 @@ math-field::part(menu-toggle){display:none;}
     <div class="page">
       <div class="toolbox">
         <button type="button" class="close-window" onclick="toolboxMenuToggle();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
-        <div class="math-preferences">
-          <span style="font-weight:500;color:#777777">Math preferences:</span>
-          <div class="expression-wrapper">
-            <span>x-axis from:</span>
-            <div class="range-wrapper">
-              <input type="text" value="1">
-              <span style="margin: 0 6px 0 6px">to </span>
-              <input type="text" value="2">
-            </div>
-          </div>
-          <div class="expression-wrapper">
-            <span>y-axis from:</span>
-            <div class="range-wrapper">
-              <input type="text" value="1">
-              <span style="margin: 0 6px 0 6px">to </span>
-              <input type="text" value="2">
-            </div>
-          </div>
-          <div class="expression-wrapper">
-            <span>Automatic range:</span>
-            <input type="checkbox" name="" value="" style="width:15px;height:15px;" checked="checked">
-          </div>
-          <div class="expression-wrapper" style="margin-bottom:15px">
-            <span>Phase correction:</span>
-            <input type="checkbox" name="" value="" style="width:15px;height:15px;">
-          </div>
-        </div>
         <div class="graphic-preferences">
-          <span style="font-weight:500;color:#777777">Preferences:</span>
+          <span style="font-weight:500;color:#777777"><b>Preferences</b></span><br><br>
           <div class="expression-wrapper">
             <span>Line stroke weight:</span>
-            <input type="range" id="stroke-range" name="" value="2" step="0.1" min="1" max="7" onchange="changeStrokeWeight()" oninput="changeStrokeWeight()">
+            <input type="range" id="stroke-range" name="" value="2" step="0.1" min="1" max="12" onchange="changeStrokeWeight()" oninput="changeStrokeWeight()">
           </div>
           <div class="expression-wrapper">
             <label><input type="checkbox" id="color-mode-checkbox" value="" style="width:15px;height:15px;" onclick="changeColorMode()">Light mode</label>
           </div>
           <div class="expression-wrapper">
-            <label><input type="checkbox" id="color-mode-checkbox" value="" style="width:15px;height:15px;" onclick="toggle_gamification()" checked>Enable gamification</label>
-          </div>
-          <div class="expression-wrapper">
-            <label><input type="checkbox" id="color-mode-checkbox" value="" style="width:15px;height:15px;" onclick="toggle_sound()">Enable sound</label>
+            <label><input type="checkbox" id="color-mode-checkbox" value="" style="width:15px;height:15px;" onclick="toggle_gamification()" checked>Enable achievements</label>
           </div>
           <div class="expression-wrapper">
             <label><input type="checkbox" id="color-mode-checkbox" value="" style="width:15px;height:15px;" onclick="toggle_assignments()" checked>Enable assignments</label>
           </div>
           <div class="expression-wrapper">
             <label><input type="checkbox" id="color-mode-checkbox" value="" style="width:15px;height:15px;" onclick="toggle_quiz_enabled()" checked>Enable quiz</label>
+          </div>
+          <div class="expression-wrapper">
+            <label><input type="checkbox" id="color-mode-checkbox" value="" style="width:15px;height:15px;" onclick="toggle_sound()">Enable sound</label>
           </div>
         </div>
       </div>

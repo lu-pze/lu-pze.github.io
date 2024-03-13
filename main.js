@@ -1645,7 +1645,6 @@ function update_quiz(){
     s += "</label>";
   }
   s += '<span style="color:#808080">Total: ' + quiz_difficulty.toFixed(1) + "</span><br>";
-  s +="<br><br><center><span style='font-size:200%;color:#c02020'>We're working on the QUIZ right now. It will be longer.</span><br><br>Check back later. Thanks for your patience! <br>/ Pex & Frida</center>";
 
   task_div.innerHTML = s;
 }
@@ -2673,202 +2672,6 @@ function changeColorMode(event){
   redraw();
 }
 
-function updateToolbox(){
-    let math_preferences = document.getElementsByClassName("math-preferences")[0];
-    math_preferences.innerHTML =
-    `
-    <span style="font-weight:500;color:#777777;visibility:hidden">Bode plot preferences:</span>
-    <div class="expression-wrapper" style="visibility:hidden">
-      <span>x-axis | tenth power from:</span>
-      <div class="range-wrapper-bode">
-        <input type="text" value="-2">
-        <span style="margin: 0 6px 0 6px">to </span>
-        <input type="text" value="4">
-      </div>
-    </div>
-    <div class="expression-wrapper" style="visibility:hidden">
-      <span>y-axis | dB from:</span>
-      <div class="range-wrapper-bode2">
-        <input type="text" value="-60">
-        <span style="margin: 0 6px 0 6px">to </span>
-        <input type="text" value="60">
-      </div>
-    </div>
-    <div class="expression-wrapper" style="margin-bottom:15px;visibility:hidden">
-      <span>Phase correction:</span>
-      <input type="checkbox" id="phase_correction_checkbox" style="width:15px;height:15px;" checked="checked" onchange="redraw_canvas_gain('all')">
-    </div>
-    `
-    let x_inputs = math_preferences.getElementsByClassName("range-wrapper-bode")[0].getElementsByTagName("input");
-    let x_min = x_inputs[0];
-    let x_max = x_inputs[1];
-    x_min.oninput = function(){
-      let min_tenth_power_value = roundup_decimal(x_min.value);
-      let max_tenth_power_value = roundup_decimal(x_max.value);
-      min_10power = min_tenth_power_value;
-      x_case_gain = max_tenth_power_value - min_tenth_power_value;
-      redraw_canvas_gain("all");
-    }
-    x_max.oninput = function(){
-      let min_tenth_power_value = roundup_decimal(x_min.value);
-      let max_tenth_power_value = roundup_decimal(x_max.value);
-      x_case_gain = max_tenth_power_value - min_tenth_power_value;
-      redraw_canvas_gain("all");
-    }
-    let y_inputs = math_preferences.getElementsByClassName("range-wrapper-bode2")[0].getElementsByTagName("input");
-    let y_min = y_inputs[0];
-    let y_max = y_inputs[1];
-    y_max.oninput = function(){
-      let new_max = value_magnet(y_max.value,20);
-      let new_min = value_magnet(y_min.value,20);
-      gain_upper_bound = new_max;
-      y_case_gain = (new_max - new_min)/20;
-      redraw_canvas_gain("all");
-    }
-    y_min.oninput = function(){
-      let new_max = value_magnet(y_max.value,20);
-      let new_min = value_magnet(y_min.value,20);
-      y_case_gain = (new_max - new_min)/20;
-      redraw_canvas_gain("all");
-    }
-
-    math_preferences.innerHTML +=
-    `
-    <span style="font-weight:500;color:#777777;visibility:hidden">Time response preferences:</span>
-    <div class="expression-wrapper" style="visibility:hidden">
-      <span>x-axis | time from:</span>
-      <div class="range-wrapper-time">
-        <span style="font-size:14px;margin-top:2px;font-family:Arial">0</span>
-        <span style="margin: 0 6px 0 6px">to </span>
-        <input type="text" value="10">
-      </div>
-    </div>
-    <div class="expression-wrapper" style="visibility:hidden">
-      <span>y-axis | from:</span>
-      <div class="range-wrapper-time">
-        <input type="text" value="0">
-        <span style="margin: 0 6px 0 6px">to </span>
-        <input type="text" value="10">
-      </div>
-    </div>
-    <div class="expression-wrapper" style="visibility:hidden">
-      <span>Graph precision:</span>
-      <input type="range" id="precision-range" name="" value="4" step="1" min="1" max="6" onchange="changeStrokeWeight()">
-    </div>
-    <div class="expression-wrapper" style="visibility:hidden">
-      <span>Automatic range:</span>
-      <input id="automatic-range-time" type="checkbox" name="" value="" style="width:15px;height:15px;" checked="checked">
-    </div>
-    <div class="expression-wrapper" style="visibility:hidden">
-      <span>Additional information:</span>
-      <input id="addition-information" type="checkbox" name="" value="" style="width:15px;height:15px;" checked="checked">
-    </div>
-
-    `
-    let time_input = math_preferences.getElementsByClassName("range-wrapper-time")[0].getElementsByTagName("input")[0];
-    let auto_range_checkbox = document.getElementById("automatic-range-time");
-    let precision_range = document.getElementById("precision-range");
-    let timerep_inputs = math_preferences.getElementsByClassName("range-wrapper-time")[1].getElementsByTagName("input");
-    let timerep_min = timerep_inputs[0];
-    let timerep_max = timerep_inputs[1];
-
-    precision_range.onchange = function(){
-      precision = 7 - precision_range.value;
-      redraw_canvas_gain("all");
-    }
-
-    auto_range_checkbox.onchange = function(){
-      if(!auto_range_checkbox.checked){
-        max_y_timerep = timerep_max.value;
-        min_y_timerep = timerep_min.value;
-      }
-      redraw_canvas_gain("all");
-    }
-
-    timerep_max.onchange = function(){
-      if(!isNaN(timerep_max.value)){
-        max_y_timerep = timerep_max.value;
-        redraw_canvas_gain("all");
-      }
-    }
-
-    timerep_min.onchange = function(){
-      if(!isNaN(timerep_min.value)){
-        min_y_timerep = timerep_min.value;
-        redraw_canvas_gain("all");
-      }
-    }
-
-    time_input.oninput = function(){
-      max_x_timerep = time_input.value;
-      if(max_x_timerep != 0){
-        redraw_canvas_gain("all");
-      }
-    }
-
-    math_preferences.innerHTML +=
-    `
-    <span style="font-weight:500;color:#777777;visibility:hidden">Nyquist preferences:</span>
-    <div class="expression-wrapper" style="visibility:hidden">
-      <span>x-axis | from:</span>
-      <div class="range-wrapper-nyquist">
-        <input type="text" value="-1">
-        <span style="margin: 0 6px 0 6px">to </span>
-        <input type="text" value="1">
-      </div>
-    </div>
-    <div class="expression-wrapper" style="visibility:hidden">
-      <span>y-axis | max/min:</span>
-      <div class="range-wrapper-nyquist">
-        <span style="margin: 0 6px 0 0">at </span>
-        <input type="text" value="1">
-      </div>
-    </div>
-    <div class="expression-wrapper" style="visibility:hidden">
-      <span>Automatic range:</span>
-      <input id="automatic-range-nyq" type="checkbox" name="" value="" style="width:15px;height:15px;" checked="checked">
-    </div>
-    `
-    let auto_range_checkbox2 = document.getElementById("automatic-range-nyq");
-    let range_inputs2 = math_preferences.getElementsByClassName("range-wrapper-nyquist");
-    let x_inputs2 = range_inputs2[0].getElementsByTagName("input");
-    let y_inputs2 = range_inputs2[1].getElementsByTagName("input");
-    let x_min2 = x_inputs2[0];
-    let x_max2 = x_inputs2[1];
-    let y_min2 = y_inputs2[0];
-
-    auto_range_checkbox2.onchange = function(){
-      if(!auto_range_checkbox2.checked){
-        min_nyquist_x = x_min2.value;
-        max_nyquist_x = x_max2.value;
-        max_nyquist_y = y_min2.value;
-      }
-      redraw_canvas_gain("all");
-    }
-
-    x_min2.oninput = function(){
-      if(!isNaN(x_min2.value)){
-        min_nyquist_x = x_min2.value;
-        redraw_canvas_gain("all");
-      }
-    }
-
-    x_max2.oninput = function(){
-      if(!isNaN(x_max2.value)){
-        max_nyquist_x = x_max2.value;
-        redraw_canvas_gain("all");
-      }
-    }
-
-    y_min2.oninput = function(){
-      if(!isNaN(y_min2.value) || y_min2.value == 0){
-        min_nyquist_y = 0;
-        max_nyquist_y = y_min2.value;
-        redraw_canvas_gain("all");
-      }
-    }
-}
-
 
 function updateInputFormulaFromList(event){
   let selected_input = document.getElementById("input-choices").value;
@@ -3368,26 +3171,25 @@ function draw_time_response_T(T,i,pole_zero="pole"){
 }
 
 function draw_time_responses(){
-  if(document.getElementById("automatic-range-time").checked){
-    let nof_shown=0;
+  // Find out a suitable max_y and min_y for the time responses:
+  let nof_shown=0;
+  for(let i=0; i<bode_graphs.length; i++){
+    if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_timeresponse_bool)) nof_shown+=1;
+  }
+  if (nof_shown==0){
+    min_y_timerep = -2;
+    max_y_timerep = 2;
+  } else {
+    min_y_timerep = 100000;
+    max_y_timerep = -100000;
     for(let i=0; i<bode_graphs.length; i++){
-      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_timeresponse_bool)) nof_shown+=1;
-    }
-    if (nof_shown==0){
-      min_y_timerep = -2;
-      max_y_timerep = 2;
-    } else {
-      min_y_timerep = 100000;
-      max_y_timerep = -100000;
-      for(let i=0; i<bode_graphs.length; i++){
-        if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_timeresponse_bool)){
-          let current_graph = bode_graphs[i];
-          if(current_graph.bode_max_timerep > max_y_timerep){
-            max_y_timerep = current_graph.bode_max_timerep;
-          }
-          if(current_graph.bode_min_timerep < min_y_timerep){
-            min_y_timerep = current_graph.bode_min_timerep;
-          }
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_timeresponse_bool)){
+        let current_graph = bode_graphs[i];
+        if(current_graph.bode_max_timerep > max_y_timerep){
+          max_y_timerep = current_graph.bode_max_timerep;
+        }
+        if(current_graph.bode_min_timerep < min_y_timerep){
+          min_y_timerep = current_graph.bode_min_timerep;
         }
       }
     }
@@ -5569,12 +5371,7 @@ function draw_timelines(){
   max_y_timerep = Math.ceil(max_y_timerep*1) / 1;
   let x_step = +(Math.abs(max_x_timerep)/10).toPrecision(1);
   let y_step = +(Math.abs(max_y_timerep - min_y_timerep)/10).toPrecision(1);
-  if(document.getElementById("automatic-range-time").checked){
-    max_y_timerep = +(get_bestMultiple(max_y_timerep, y_step, "upper") + y_step).toFixed(2);
-  }
-  else{
-    max_y_timerep = +(get_bestMultiple(max_y_timerep, y_step, "upper")).toFixed(2);
-  }
+  max_y_timerep = +(get_bestMultiple(max_y_timerep, y_step, "upper") + y_step).toFixed(2);
   min_y_timerep = +(get_bestMultiple(min_y_timerep, y_step, "lower")).toFixed(2);
   // Since max_y and min_y might have changed - recalculate this:
   y_step = +(Math.abs(max_y_timerep - min_y_timerep)/10).toPrecision(1);
@@ -6638,7 +6435,6 @@ function ready (){
   toggle_assignments();
   set_difficulty_level({value:50});
   toggle_quiz_enabled();
-  updateToolbox();
 
   document.addEventListener('keydown', function(event) {
     console.log(event.key);
