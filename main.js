@@ -1353,21 +1353,9 @@ function next_quiz (){
       let z=2.0*Math.random();
       let w=0.4+4.0*Math.random();
       if (correct_system_order==1){
-        addNewGraph(null, {name:"Ghost.P...._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
-        next_graph_no_to_add=graph_color;
-        id_bank=next_graph_no_to_add;
-        addNewGraph(null, {name:"Ghost..T..._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
-        next_graph_no_to_add=graph_color;
-        id_bank=next_graph_no_to_add;
-        addNewGraph(null, {name:"Ghost...N.._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+        addNewGraph(null, {name:"Ghost.PTN.._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
       } else {
-        addNewGraph(null, {name:"Ghost.P...._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
-        next_graph_no_to_add=graph_color;
-        id_bank=next_graph_no_to_add;
-        addNewGraph(null, {name:"Ghost..T..._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
-        next_graph_no_to_add=graph_color;
-        id_bank=next_graph_no_to_add;
-        addNewGraph(null, {name:"Ghost...N.._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+        addNewGraph(null, {name:"Ghost.PTN.._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
       }
 
       if (Math.random() < 0.5){
@@ -1412,21 +1400,9 @@ function next_quiz (){
       let z=2.0*Math.random();
       let w=0.4+4.0*Math.random();
       if (correct_system_order==1){
-        addNewGraph(null, {name:"GhostM....._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
-        next_graph_no_to_add=graph_color;
-        id_bank=next_graph_no_to_add;
-        addNewGraph(null, {name:"Ghost..T..._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
-        next_graph_no_to_add=graph_color;
-        id_bank=next_graph_no_to_add;
-        addNewGraph(null, {name:"Ghost...N.._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+        addNewGraph(null, {name:"GhostM.TN.._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
       } else {
-        addNewGraph(null, {name:"GhostM....._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
-        next_graph_no_to_add=graph_color;
-        id_bank=next_graph_no_to_add;
-        addNewGraph(null, {name:"Ghost..T..._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
-        next_graph_no_to_add=graph_color;
-        id_bank=next_graph_no_to_add;
-        addNewGraph(null, {name:"Ghost...N.._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+        addNewGraph(null, {name:"GhostM.TN.._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
       }
 
       // Let's make t/w wrong:
@@ -1459,21 +1435,9 @@ function next_quiz (){
       let z=2.0*Math.random();
       let w=0.4+4.0*Math.random();
       if (correct_system_order==1){
-        addNewGraph(null, {name:"Ghost.P...._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
-        next_graph_no_to_add=graph_color;
-        id_bank=next_graph_no_to_add;
-        addNewGraph(null, {name:"GhostM....._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
-        next_graph_no_to_add=graph_color;
-        id_bank=next_graph_no_to_add;
-        addNewGraph(null, {name:"Ghost...N.._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+        addNewGraph(null, {name:"GhostMP.N.._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
       } else {
-        addNewGraph(null, {name:"Ghost.P...._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
-        next_graph_no_to_add=graph_color;
-        id_bank=next_graph_no_to_add;
-        addNewGraph(null, {name:"GhostM....._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
-        next_graph_no_to_add=graph_color;
-        id_bank=next_graph_no_to_add;
-        addNewGraph(null, {name:"Ghost...N.._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+        addNewGraph(null, {name:"GhostMP.N.._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
       }
 
       // Let's make k and z and w wrong:
@@ -1513,21 +1477,9 @@ function next_quiz (){
       let z=2.0*Math.random();
       let w=0.4+4.0*Math.random();
       if (correct_system_order==1){
-        addNewGraph(null, {name:"Ghost.P...._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
-        next_graph_no_to_add=graph_color;
-        id_bank=next_graph_no_to_add;
-        addNewGraph(null, {name:"Ghost..T..._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
-        next_graph_no_to_add=graph_color;
-        id_bank=next_graph_no_to_add;
-        addNewGraph(null, {name:"GhostM....._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
+        addNewGraph(null, {name:"GhostMPT..._", mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"});
       } else {
-        addNewGraph(null, {name:"Ghost.P...._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
-        next_graph_no_to_add=graph_color;
-        id_bank=next_graph_no_to_add;
-        addNewGraph(null, {name:"Ghost..T..._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
-        next_graph_no_to_add=graph_color;
-        id_bank=next_graph_no_to_add;
-        addNewGraph(null, {name:"GhostM....._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
+        addNewGraph(null, {name:"GhostMPT..._", mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"});
       }
 
       // Let's make k/z wrong:
