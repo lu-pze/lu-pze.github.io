@@ -210,20 +210,20 @@ function createRangeSlider(event){
   }
 
   slider.classList.add("slider-wrapper");
+  // Yes, this is ugly. But flex layout is broken (or at least differs) in mobile ios and Firefox vs. Chrome.
+  // So table-based layout is a safer bet:
   slider.innerHTML =
-  `
-    <div class="slider-subwrapper">
-      <div class="value-wrapper">
-        <span style="margin:0">a =</span>
+  `<table><tr><td>
+        <span style="margin:0 0 0 10px;font-size:24px">a =</span>
+</td><td class="value-wrapper">
         <input type="text" id="variable_${button_id}" value="">
-      </div>
-      <div class="slider">
+</td><td>
         <input type="text" value="${range_min}" class="slider-bound" style="text-align:right">
-        <input type="range" min="${range_min}" max="${range_max}" step="0.01" class="range-slider" id=${"RANGE_" + button_id} value="${range_value}" style="width:100%">
+</td><td width="100%">
+        <input type="range" min="${range_min}" max="${range_max}" step="0.01" class="range-slider" id=${"RANGE_" + button_id} value="${range_value}" style="width:100%;margin:0 auto;">
+</td><td>
         <input type="text" value="${range_max}" class="slider-bound">
-      </div>
-    </div>
-  `
+</td></tr></table>`
 //      <button type="button" class="delete-graph"><svg width="30" height="30" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
 //  let delete_button = slider.getElementsByClassName("delete-graph")[0];
 //  delete_button.addEventListener('click',removeSlider);
