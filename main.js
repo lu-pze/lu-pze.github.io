@@ -456,7 +456,7 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
       (equation_string == GRAPH_TWO_COMPLEX_POLES.formula)){
     s += `<button type="button" class="download-script" id="${id_bank}" onclick="download_script(${id_bank})"><svg width="28" height="28" viewBox="0 0 24 24" fill="#b0b0b0" style="vertical-align:top"><use href="#icon_ios_share"/></svg></button>`;
   }
-  s += `<button type="button" class="delete-graph" id="delete-graph_${id_bank}" onclick="removeGraph(${id_bank})"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
+  s += `<button type="button" class="delete-graph" id="delete-graph_${id_bank}" onclick="removeGraph(${id_bank});updateAfterRemoveGraph();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
   </div>
   <div class="slider-buttons">
   </div>
@@ -564,8 +564,10 @@ function removeInformationTab(input_id){
 function removeAllGraphs (){
   const equations = document.querySelectorAll(".equation-wrapper .equation .delete-graph");
   equations.forEach((equation) => {
-    equation.click();
+    let linked_id=parseInt(equation.id.substr(13));
+    removeGraph(linked_id);
   });
+  updateAfterRemoveGraph();
   bode_graphs = [];
   id_bank = 1;
   input_formula = "1/s";
@@ -585,7 +587,6 @@ function removeGraph (linked_id){
     if(current_graph.bode_id == parseInt(linked_id)){
       equation_to_remove = current_graph.bode_formula;
       bode_graphs.splice(bode_graphs.indexOf(current_graph),1);
-      redraw();
     }
   }
   //Now remove any variables that belongs to this equation:
@@ -614,13 +615,15 @@ function removeGraph (linked_id){
     slider.remove();
   }
   linked_equation.parentElement.remove();
+}
 
+function updateAfterRemoveGraph(){
   for(let b=0; b<bode_graphs.length; b++){
     let graph_id = bode_graphs[b].bode_id;
     checkSlider(graph_id);
     redraw_canvas_gain(graph_id);
   }
-
+  redraw();
 }
 
 function changeGraphDisplayStatus(event){
