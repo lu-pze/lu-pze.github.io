@@ -92,7 +92,6 @@ let box_background_color;
 
 let canvas_width;
 let canvas_height;
-let graph_width = 1200;
 let graph_bode_mag_width;
 let graph_bode_mag_height;
 let graph_bode_mag_x;
@@ -2759,9 +2758,8 @@ function windowResized(){
 
 function setGraphDimensions(){
   let this_window_width=max(1295,windowWidth);  // Also present in style.css  "body{min-width: 1280px;}
-  canvas_width = this_window_width - 395;
+  canvas_width = this_window_width - 380;
   canvas_height = windowHeight - 110;
-  graph_width = (canvas_width - 100)*2/5;
 
   graph_bode_mag_width = (canvas_width - 100)*0.42;
   graph_bode_mag_height = (canvas_height-150)*0.48;
@@ -6297,7 +6295,7 @@ function findOmegaZero(input_array){
     a_bound = (a_bound + b_bound)/2;
     //let output = buffer_formula.replaceAll('s','(i*' + Math.pow(10,a_bound).toString() + ')');
     //output = math.evaluate(output).toPolar().phi;
-    let linked_array_pos = map(a_bound,min_10power,min_10power + x_case_gain,0,graph_width-1);
+    let linked_array_pos = map(a_bound,min_10power,min_10power + x_case_gain,0,graph_bode_mag_width-1);
     let output = input_array[Math.ceil(linked_array_pos)];
     return [output*180/Math.PI + 180, Math.pow(10,a_bound)];
   }
@@ -6309,12 +6307,12 @@ function findOmegaZero(input_array){
 function findOmega180(input_array){
   let a_bound = min_10power;
   let b_bound = min_10power + x_case_gain;
-  let f_a = input_array[Math.ceil(map(a_bound,min_10power,min_10power + x_case_gain,0,graph_width-1))] + Math.PI;
-  let f_b = input_array[Math.ceil(map(b_bound,min_10power,min_10power + x_case_gain,0,graph_width-1))] + Math.PI;
+  let f_a = input_array[Math.ceil(map(a_bound,min_10power,min_10power + x_case_gain,0,graph_bode_mag_width-1))] + Math.PI;
+  let f_b = input_array[Math.ceil(map(b_bound,min_10power,min_10power + x_case_gain,0,graph_bode_mag_width-1))] + Math.PI;
   if(f_a * f_b < 0 && Math.abs(f_a) > 0.005 && Math.abs(f_b) > 0.005){
     for(let h=0; h<20; h++){
       let mid_point = (a_bound + b_bound)/2;
-      let f_mid = input_array[Math.ceil(map(mid_point,min_10power,min_10power + x_case_gain,0,graph_width-1))] + Math.PI;
+      let f_mid = input_array[Math.ceil(map(mid_point,min_10power,min_10power + x_case_gain,0,graph_bode_mag_width-1))] + Math.PI;
       if(f_mid * f_a < 0){
         b_bound = mid_point;
       }
