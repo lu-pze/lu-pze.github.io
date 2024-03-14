@@ -3148,6 +3148,8 @@ function draw_time_responses(){
       }
     }
   }
+  // The startup screen should be nice. So force the y range a little:
+  if ((max_y_timerep >= 1.0)&&(min_y_timerep<0.01)&&(min_y_timerep>-0.01)) min_y_timerep = 0;
   if (max_y_timerep > 500) max_y_timerep = 500;
   if (min_y_timerep < -500) min_y_timerep = -500;
 
