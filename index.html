@@ -24,7 +24,8 @@
     </script>
     <script type="text/javascript" src="main.js"></script>
 <style>
-body{margin:0;min-width:1280px;background-color:#000;}
+body{margin:0;min-width:1280px;background-color:#000;overflow-x:hidden;overflow-y:auto;}
+body::-webkit-scrollbar {width:0;} /* Hide scrollbar width */
 .page{display:grid;grid-template-columns:1fr 380px;grid-template-rows:1fr 110px 40px;}
 .footer{grid-column:1/span 2;grid-row:3;background:linear-gradient(180deg,rgba(178,181,193,1) 0%,rgba(153,154,157,1) 100%);display:none; /* When javascript is done loading, this is set to display:inline;*/}
 .math-bar{grid-row:1;grid-column:2;background-color:#fff}
@@ -346,10 +347,10 @@ Full source code is available at <a href="https://github.com/lu-pze/lu-pze.githu
 What's new? Read the <a href="https://github.com/lu-pze/lu-pze.github.io/commits/main" target="_blank">version history</a>.
 <hr>
 <center>Suggestions?<br><br>
-Pex Tufvesson<br>
+Frida Heskebeck<br>
 Department of Automatic Control.<br>
 Lund University, Lund, Sweden.<br>
-pex.tufvesson@control.lth.se</center><br>
+frida.heskebeck@control.lth.se</center><br>
 <br>
       </div>
 
@@ -373,7 +374,7 @@ pex.tufvesson@control.lth.se</center><br>
 
       <div class="footer">
         <div class="footer-info">
-          <h1>LU-PZE: Lund University Pole-Zero Explorer - an Automatic Control Theory Playground. Suggestions -> pex.tufvesson@control.lth.se</h1>
+          <h1>LU-PZE: Lund University Pole-Zero Explorer - an Automatic Control Theory Playground. Have fun! / Frida & Pex</h1>
        </div>
       </div>
       <div class="math-bar">
