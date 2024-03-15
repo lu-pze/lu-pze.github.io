@@ -1992,8 +1992,8 @@ const all_tasks={
 //## Two complex poles
 //Step reference (w=2,z=0.7,k=0.7)
 //Bode reference (w=8, z=0.05)
-"w=0.9;z=0.0":"Move the pole markers in the <b>pole-zero map</b> in such way that the resonance frequency w becomes 0.9 and the damping factor z becomes 0.0.",
 "w=1.6;z=0.2":"Drag the pole markers in the <b>pole-zero map</b> so that the resonance frequency w=1.6 and damping factor z=0.2.",
+"w=0.9;z=0.0":"Move the pole markers in the <b>pole-zero map</b> in such way that the resonance frequency w becomes 0.9 and the damping factor z becomes 0.0.",
 "w=8;z=0.05;k_3=1":"Change the <b>resonance frequency</b> w, <b>damping factor</b> z and <b>static gain</b> k<sub>3</sub> to make the Bode plots mimick the blue lines.",
 "w=2;z=0.7;k3=0.7":"Your task is to match the pink step input response. First, set your <b>static gain</b> k<sub>3</sub>. Then, drag the <b>Bode plot</b> to align your system response with the pink step input response.",
 
@@ -3525,6 +3525,7 @@ function mousePressed(){
   clicked_on_bode_phase_graph_no = -1;
   clicked_on_time_variable = "";
   clicked_on_pole_zero_graph_no = -1;
+  direction_of_T_drag=0; // Let first run of mouseDragged decide which direction to move T
 
   const boxes_to_not_handle_clicks_in=['.download_script_box','.toolbox','.help','.achievements_box','.assignments_box'];
   for (let box_no in boxes_to_not_handle_clicks_in){
@@ -4183,9 +4184,15 @@ function mouseReleased(){
 }
 
 
-function drag_T_in_step_response(T_to_change,mouseDiffX){
+let direction_of_T_drag=0;
+function drag_T_in_step_response (T_to_change,mouseDiffX){
   let T_x = range_slider_variables[variable_position[T_to_change]];
-  T_x = T_x + mouseDiffX * 10.0;
+  if (direction_of_T_drag==0){
+    // Figure our if T is positive or negative, and adjust the dragging direction:
+    if (T_x >= 0) direction_of_T_drag=1;
+    else direction_of_T_drag=-1;
+  }
+  T_x = T_x + direction_of_T_drag * mouseDiffX * 10.0;
   range_slider_variables[variable_position[T_to_change]] = T_x;
   // Update range slider value:
   document.getElementById("variable_"+variable_position[T_to_change]).value = T_x.toFixed(2);
@@ -4193,7 +4200,7 @@ function drag_T_in_step_response(T_to_change,mouseDiffX){
   document.getElementById("RANGE_"+variable_position[T_to_change]).value = T_x.toFixed(2);
 }
 
-function drag_T_in_Bode(T_to_change,mouseDiffX){
+function drag_T_in_Bode (T_to_change,mouseDiffX){
   let T_x = range_slider_variables[variable_position[T_to_change]];
   T_x = T_x * (1.0 - mouseDiffX*10.0);
   range_slider_variables[variable_position[T_to_change]] = T_x;
@@ -4203,7 +4210,7 @@ function drag_T_in_Bode(T_to_change,mouseDiffX){
   document.getElementById("RANGE_"+variable_position[T_to_change]).value = T_x.toFixed(2);
 }
 
-function drag_k_in_step_response(k_to_change,mouseDiffY,y_range){
+function drag_k_in_step_response (k_to_change,mouseDiffY,y_range){
   let k = range_slider_variables[variable_position[k_to_change]];
   k = k - mouseDiffY * y_range;
   range_slider_variables[variable_position[k_to_change]] = k;
@@ -4213,7 +4220,7 @@ function drag_k_in_step_response(k_to_change,mouseDiffY,y_range){
   document.getElementById("RANGE_"+variable_position[k_to_change]).value = k.toFixed(2);
 }
 
-function drag_k_in_Bode(k_to_change,mouseDiffY){
+function drag_k_in_Bode (k_to_change,mouseDiffY){
   let k = range_slider_variables[variable_position[k_to_change]];
   k = k * (1.0 - mouseDiffY*12.0);
   range_slider_variables[variable_position[k_to_change]] = k;
@@ -4304,7 +4311,12 @@ function mouseDragged(){
     } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
       let variable_to_change = clicked_on_time_variable;
       let T_x = range_slider_variables[variable_position[variable_to_change]];
-      T_x = T_x + mouseDiffX * 10.0;
+      if (direction_of_T_drag==0){
+        // Figure our if T is positive or negative, and adjust the dragging direction:
+        if (T_x >= 0) direction_of_T_drag=1;
+        else direction_of_T_drag=-1;
+      }
+      T_x = T_x + direction_of_T_drag * mouseDiffX * 10.0;
       if ((variable_to_change == "T_6")||(variable_to_change == "T_7")){
         if (T_x<0) T_x = 0;
       }
