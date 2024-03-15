@@ -1965,7 +1965,7 @@ const all_assignments={
   "two_complex_poles":{t:"3. Investigate a system with <b>two complex poles</b>",tasks:["w=0.9;z=0.0","w=1.6;z=0.2","w=8;z=0.05;k_3=1","w=2;z=0.7;k3=0.7"],info:"A set of <b>two complex poles</b> will make the system's time response oscillate."},
   "time_delay":{t:"4. Investigate a system with <b>time delay</b>",tasks:["L=3","L_gain_margin=2"],info:"A system with <b>time delay</b> is more difficult to control."},
   "one_zero_two_poles":{t:"5. Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4,T6,T7=1,T8=1.5_poles"],info:"With <b>one zero and two poles</b>, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
-  "four_poles":{t:"6. Investigate a system with <b>four poles</b>",tasks:["gainm=5_phasex=2","phase_margin=45"],info:"A system with <b>four poles</b> gets a lot more phase shift, with a larger spin in the Nyquist diagram."},
+  "four_poles":{t:"6. Investigate a system with <b>four poles</b>",tasks:["gainm=5_phasex=2","phasemargin=45"],info:"A system with <b>four poles</b> gets a lot more phase shift, with a larger spin in the Nyquist diagram."},
   "none":{t:"...no assignment",tasks:["impossible"],info:""},
 //  "nyquist":{t:"Check out the <b>Nyquist diagram</b>",tasks:["k_above_or_equal_100","set_input_to_ramp"],info:"Named after Harry Nyquist 1889-1976, a Swedish-American physicist and electronic engineer."}
 };
@@ -2012,7 +2012,7 @@ const all_tasks={
 //#Four poles
 // ToDo:
 "gainm=5_phasex=2":"Drag the Bode plot so that the <b>Gain margin</b> is 5 and the <b>Phase crossover frequency</b> is 2 rad/s. What practical implication does mean that the Gain margin is 5?",// (T5=0.3, k=2)
-"phase_margin=45":"CURRENTLY NOT SOLVABLE (but we're working on it!): Change k<sub>5</sub> so that the <b>Phase margin</b> is 45°. How can you analyze the closed loop system stability from the Nyquist diagram?"
+"phasemargin=45":"Change k<sub>5</sub> so that the <b>Phase margin</b> is 45°. How can you analyze the closed loop system stability from the Nyquist diagram?"
 };
 let done_tasks=[];
 
@@ -4022,6 +4022,9 @@ function mouseReleased(){
       let value = Math.pow(10.0, value_dB / 20.0);
       if ((value >= 4.8)&&(value <= 5.2)&&(bode_graphs[v].bode_phase_crossover_freq>=1.9)&&(bode_graphs[v].bode_phase_crossover_freq<=2.1)){
         task_done("gainm=5_phasex=2");
+      }
+      if ((bode_graphs[v].bode_phase_margin>=42)&&(bode_graphs[v].bode_phase_margin<=48)){
+        task_done("phasemargin=45");
       }
     }
   }
