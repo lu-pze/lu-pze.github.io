@@ -1992,27 +1992,27 @@ const all_tasks={
 //## Two complex poles
 //Step reference (w=2,z=0.7,k=0.7)
 //Bode reference (w=8, z=0.05)
-"w=1.6;z=0.2":"Drag the pole markers in the <b>pole-zero map</b> so that the resonance frequency w=1.6 and damping factor z=0.2.",
-"w=0.9;z=0.0":"Move the pole markers in the <b>pole-zero map</b> in such way that the resonance frequency w becomes 0.9 and the damping factor z becomes 0.0.",
-"w=8;z=0.05;k_3=1":"Change the <b>resonance frequency</b> w, <b>damping factor</b> z and <b>static gain</b> k<sub>3</sub> to make the Bode plots mimick the blue lines.",
-"w=2;z=0.7;k3=0.7":"Your task is to match the pink step input response. First, set your <b>static gain</b> k<sub>3</sub>. Then, drag the <b>Bode plot</b> to align your system response with the pink step input response.",
+"w=1.6;z=0.2":"Drag the pole markers in the <b>pole-zero map</b> so that the resonance frequency w=1.6 and damping factor z=0.2. How does changing w affect the step response of the system? How does changing z affect the step response of the system?",
+"w=0.9;z=0.0":"Move the pole markers in the <b>pole-zero map</b> in such way that the resonance frequency w becomes 0.9 and the damping factor z becomes 0.0. What happens with the system when z is 0? Is the system stable?",
+"w=8;z=0.05;k_3=1":"The very evil vampire Dracula is afraid of heights. Save the world by putting Dracula on a high mountain by changing the <b>resonance frequency</b> w, <b>damping factor</b> z and <b>static gain</b> k<sub>3</sub> to make the Bode plots mimick the blue lines. As the Hero<sup>TM</sup> you've now become, tell your admirers the name of the peak. Also, tell the press what could happen if the system has input with this specific frequency.",
+"w=2;z=0.7;k3=0.7":"Your task is to match the pink step input response. First, set your <b>static gain</b> k<sub>3</sub>. Then, drag the <b>Bode plot</b> to align your system response with the pink step input response. How does the second-order-system step response differ between a system with real poles versus complex poles?",
 
 //## Time delay
-"L=3":"Drag the step input response to change the time delay to 3.0 seconds.",
-"L_gain_margin=2":"Change the <b>time delay</b> L so that the <b>Gain margin</b> becomes 2.0.",// (L=0.3)
+"L=3":"Drag the step input response to change the time delay to 3.0 seconds. What does it mean that a system has a time delay?",
+"L_gain_margin=2":"Change the <b>time delay</b> L so that the <b>Gain margin</b> becomes 2.0. Why is there a spiral in the Nyquist diagram?",// (L=0.3)
 
 //## One zero two Poles
 //Nyquist reference (k=1,T6=2.5,T7=1,T8=6)
 //Bode reference (k4=0.75,T6=9.25,T7=0.5,T8=2)
 //Step reference (k4=1,T6=1,T7=1,T8=-1.5)
 "k4=1;T6=2.5;T7=1;T8=6":"Your task is to make your Nyquist diagram match up with the orange one. <b>Drag the pole and zero markers in the Bode plots</b>, and change k<sub>4</sub> to make the Nyquist curve follow the orange line. Note that there are many combinations of T<sub>6</sub>, T<sub>7</sub>, and T<sub>8</sub> that gives identical Nyquist diagrams but non-similar Bode diagrams. Can you explain why?",// (k=1,T6=2.5,T7=1,T8=6)
-"k4=0.75;T6=9.25;T7=0.5;T8=2":"Change the parameters so that your Bode plots align with the green lines.",//. (k4=0.75,T6=9.25,T7=0.5,T8=2)
-"k4,T6,T7=1,T8=1.5_poles":"With k<sub>4</sub>=1, drag the pole and zero markers in the <b>pole-zero map</b> so that the step response follows the blue line.",
+"k4=0.75;T6=9.25;T7=0.5;T8=2":"Change the parameters so that your Bode plots align with the green lines. Can you summarize how a pole and a zero affect the shape of the Bode digrams?",//. (k4=0.75,T6=9.25,T7=0.5,T8=2)
+"k4,T6,T7=1,T8=1.5_poles":"With k<sub>4</sub>=1, drag the pole and zero markers in the <b>pole-zero map</b> so that the step response follows the blue line. Why is the step response reversed in the beginning? Is the system stable?",
 
 //#Four poles
 // ToDo:
-"T5=0.3;k=2":"CURRENTLY NOT SOLVABLE (but we're working on it!): Change k<sub>5</sub> and T<sub>5</sub> by dragging the sliders or typing in a number so that the <b>Gain margin</b> is 0.5 and the <b>Phase crossover frequency</b> is 1.25 rad/s.",// (T5=0.3, k=2)
-"phase_margin=20":"CURRENTLY NOT SOLVABLE (but we're working on it!): Drag the Bode plot so that the <b>Phase margin</b> is 20° with a <b>Gain crossover frequency</b> of 5 rad/s.",
+"T5=0.3;k=2":"CURRENTLY NOT SOLVABLE (but we're working on it!): Drag the Bode plot so that the <b>Gain margin</b> is 5 and the <b>Phase crossover frequency</b> is 2 rad/s. What practical implication does mean that the Gain margin is 5?",// (T5=0.3, k=2)
+"phase_margin=20":"CURRENTLY NOT SOLVABLE (but we're working on it!): Change k<sub>5</sub> so that the Phase margin is 45°. How can you analyze the closed loop system stability from the Nyquist diagram?"
 };
 let done_tasks=[];
 
