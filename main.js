@@ -1983,8 +1983,8 @@ const all_tasks={
 //## Two real poles
 //reference in step (T2=T3=1, k2=0.5)
 //reference in bode phase (T2=5, T3=0.05, k2=1)
-"T2,T3=0.05_and_5":"Your task is to change T<sub>2</sub> and T<sub>3</sub> to make your Bode phase plot mimick the blue curve in the Bode phase plot. Feel free to change these time constants in whatever way you find suitable.",//. (T2=0.05, T3=5.0)
 "T2,T3=1;k2=0.5":"Your first subtask is to set k<sub>2</sub>=0.5 exactly, then drag the two pole markers in the <b>pole-zero map</b> to make the step response follow the cyan line. Can you explain how this second-order step response differs from a first-order system?",//. (T2=T3=1, k2=1)
+"T2,T3=0.05_and_5":"Your task is to change T<sub>2</sub> and T<sub>3</sub> to make your Bode phase plot mimick the blue curve in the Bode phase plot. Feel free to change these time constants in whatever way you find suitable.",//. (T2=0.05, T3=5.0)
 "T2=10;T3=0.5":"Your task is to drag the pole markers in the Bode plots making the <b>cutoff frequencies</b> in the Bode plot become 0.1 rad/s and 2.0 rad/s. Now, tell me how the cutoff frequencies as seen in the Bode plots are related to the poles' locations in the pole-zero map.",// (T2=10, T3=0.5 or vice versa)
 "phasemargin=55":"Please drag the two pole markers in the Bode diagram to ensure that the <b>Phase margin</b> for the system is 55°. Can you explain how the phase margin can be found in the Nyquist diagram?",// (T2=T3=0.5-1.5k k2=7-8 approximately
 "gaincrossover=3":"Finally, drag the two pole markers in the Bode diagram to ensure that the <b>gain crossover frequency</b> becomes 3.0 rad/s. But before you go, call your friend and tell them how you can get the gain crossover frequency from a Bode magnitude plot.",// (T2=T3=0.5-1.5k k2=7-8 approximately)
@@ -2188,6 +2188,8 @@ function select_assignment(event){
     //Step reference (k4=1,T6=1,T7=1,T8=-1.5)
     addNewGraph(none, {name:"Ghost..T..._Match this response", mf:"\\frac{(1-1.5s)}{(1+s)(1+s)}", formula:"(1-1.5s)/(1+s)*1/(1+s)"});
   }
+  // Recalculate figures in the information bar, Phase margin, Gain crossover frequency, gain margin, etc.:
+  redraw_canvas_gain("all");
 }
 
 let assignment_grade=0;
