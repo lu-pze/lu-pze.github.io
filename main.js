@@ -6356,6 +6356,9 @@ function initial_graph(){
   addNewGraph(null, graph_to_add);
   graph_no +=1;
   next_graph_no_to_add = graph_no;
+
+  let welcome_text=document.getElementById("welcome_text");
+  welcome_text.innerHTML="";
 }
 
 // Called by p5:
