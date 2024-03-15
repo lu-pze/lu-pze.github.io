@@ -447,7 +447,7 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
       (equation_string == GRAPH_TWO_REAL_POLES.formula) ||
       (equation_string == GRAPH_TWO_COMPLEX_POLES.formula) ||
       (equation_string == GRAPH_TIME_DELAY.formula)){ // Make sure that hover doesn't make read-only graphs yellow:
-    s += "background:#fff;";
+    s += "background:none;";
   }
   s += `font-size: 20px;" title="${graph_name}">${mathfield_string}</math-field>`;
   // These are the GRAPHS that should have download code buttons:
@@ -1967,7 +1967,6 @@ const all_assignments={
   "one_zero_two_poles":{t:"5. Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4,T6,T7=1,T8=1.5_poles"],info:"With <b>one zero and two poles</b>, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
   "four_poles":{t:"6. Investigate a system with <b>four poles</b>",tasks:["gainm=5_phasex=2","phasemargin=45"],info:"A system with <b>four poles</b> gets a lot more phase shift, with a larger spin in the Nyquist diagram."},
   "none":{t:"...no assignment",tasks:["impossible"],info:""},
-//  "nyquist":{t:"Check out the <b>Nyquist diagram</b>",tasks:["k_above_or_equal_100","set_input_to_ramp"],info:"Named after Harry Nyquist 1889-1976, a Swedish-American physicist and electronic engineer."}
 };
 let done_assignments={};
 
@@ -2010,7 +2009,6 @@ const all_tasks={
 "k4,T6,T7=1,T8=1.5_poles":"With k<sub>4</sub>=1, drag the pole and zero markers in the <b>pole-zero map</b> so that the step response follows the blue line. Why is the step response reversed in the beginning? Is the system stable?",
 
 //#Four poles
-// ToDo:
 "gainm=5_phasex=2":"Drag the Bode plot so that the <b>Gain margin</b> is 5 and the <b>Phase crossover frequency</b> is 2 rad/s. What practical implication does mean that the Gain margin is 5?",// (T5=0.3, k=2)
 "phasemargin=45":"Change k<sub>5</sub> so that the <b>Phase margin</b> is 45°. How can you analyze the closed loop system stability from the Nyquist diagram?"
 };
