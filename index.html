@@ -165,13 +165,13 @@ input{background:none}
 @keyframes explorer_2_anim_out {
   0% {opacity:1.0}
   100% {opacity:0.0}}
-.toolbox{padding:20px 20px 0px 20px;right:10px;top:120px;z-index:1;box-shadow:0 0 15px #cccccc;background-color:#ddd;position:absolute;visibility:hidden;font-family:Arial,sans-serif;font-weight:400;color:#8b8b8b;}
+.toolbox{padding:20px 20px 10px 20px;right:10px;top:120px;z-index:1;box-shadow:0 0 15px #cccccc;background-color:#ddd;position:absolute;visibility:hidden;font-family:Arial,sans-serif;font-weight:400;color:#8b8b8b;}
 .toolbox.active{visibility: visible;opacity: 1;}
 .help{padding:20px 20px 10px 20px;right:10px;top:120px;z-index:1;box-shadow: 0 0 15px #cccccc;background-color:#d0d0d0f0;position: absolute;visibility: hidden;}
 .help.active{visibility:visible;opacity:1;}
 .download_script_box{padding:20px 20px 10px 20px;right:10px;top:120px;z-index:1;box-shadow: 0 0 15px #cccccc;background-color:#d0d0d0f0;position: absolute;visibility: hidden;font-family:"Lucida Console","Courier New",monospace;font-weight:600;}
 .download_script_box.active{visibility: visible;opacity: 1;}
-.assignments_box{--d:700px;--angle:135deg; --w:100%;padding:0px 20px 10px 20px;left:50%;top:40%;transform: translate(-50%,-50%);z-index:5;position: absolute;visibility: hidden;font-family:"Lucida Console","Courier New",monospace;font-weight:600;border-radius: 25px;}
+.assignments_box{--d:700px;--angle:135deg; --w:100%;padding:0px 20px 0px 20px;left:50%;top:40%;transform: translate(-50%,-50%);z-index:5;position: absolute;visibility: hidden;font-family:"Lucida Console","Courier New",monospace;font-weight:600;border-radius: 25px;}
 .assignments_box.active{visibility: visible;opacity: 1;}
 .assignments_box:before{border-radius: 25px;margin:0;padding:0;content:"";height:100%;left:0;width:var(--w);position: absolute;box-shadow: 0 0 30px #d0d0b0;z-index:-1;background: repeating-linear-gradient(var(--angle), #f0f0f0e8, #c0c0e0f4, #f0f0f0e8 var(--d));background-size: calc(var(--d)/sin(var(--angle))) 100%;animation: AnimationName 8s linear infinite;}
 @keyframes AnimationName{0% {background-position: calc(var(--d)/sin(var(--angle))) 0;}}
@@ -310,7 +310,7 @@ input{background:none}
             <label><input type="checkbox" id="color-mode-checkbox" value="" style="width:15px;height:15px;" onclick="toggle_sound()">Enable sound</label>
           </div>
         </div>
-        <img src="images/explorers_1024.png" width="384px" style="margin:0;padding:0">
+        <img src="images/star_1.png" width="384px" style="margin:0;padding:0">
       </div>
 
       <div class="help">

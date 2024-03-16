@@ -2084,7 +2084,7 @@ function update_assignments(){
     }
     s += "<br>";
   }
-
+  s += '<img src="images/explorers_1024.png" width="384px" style="margin:0;padding:0">';
   assignments_box.innerHTML=s;
 }
 
