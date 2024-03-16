@@ -165,7 +165,7 @@ input{background:none}
 @keyframes explorer_2_anim_out {
   0% {opacity:1.0}
   100% {opacity:0.0}}
-.toolbox{padding:20px 20px 10px 20px;right:10px;top:120px;z-index:1;box-shadow:0 0 15px #cccccc;background-color:#ddd;position:absolute;visibility:hidden;}
+.toolbox{padding:20px 20px 0px 20px;right:10px;top:120px;z-index:1;box-shadow:0 0 15px #cccccc;background-color:#ddd;position:absolute;visibility:hidden;font-family:Arial,sans-serif;font-weight:400;color:#8b8b8b;}
 .toolbox.active{visibility: visible;opacity: 1;}
 .help{padding:20px 20px 10px 20px;right:10px;top:120px;z-index:1;box-shadow: 0 0 15px #cccccc;background-color:#d0d0d0f0;position: absolute;visibility: hidden;}
 .help.active{visibility:visible;opacity:1;}
@@ -221,7 +221,6 @@ input{background:none}
 .expression-wrapper{display:flex;flex-direction: column;margin-bottom: 4px;}
 .range-wrapper{display:flex;flex-direction:row;}
 .range-wrapper input{width:30px;}
-.toolbox{font-family:Arial,sans-serif;font-weight:400;color:#8b8b8b;}
 .range-wrapper span{color:#282828;font-weight: 400;}
 .input-equation{visibility: hidden;height: 0px;margin-top:0px}
 .input-equation.active{visibility: visible;height: 60px;margin-top:10px}
@@ -311,6 +310,7 @@ input{background:none}
             <label><input type="checkbox" id="color-mode-checkbox" value="" style="width:15px;height:15px;" onclick="toggle_sound()">Enable sound</label>
           </div>
         </div>
+        <img src="images/explorers_1024.png" width="384px" style="margin:0;padding:0">
       </div>
 
       <div class="help">

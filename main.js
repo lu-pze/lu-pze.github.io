@@ -2597,7 +2597,6 @@ function changeStrokeWeight(event){
 
 function changeColorMode(event){
   let checkbox_value = document.getElementById("color-mode-checkbox").checked;
-  let graph_space = document.getElementsByClassName("graph-space")[0];
   let graph_information_tabs = document.getElementsByClassName("graph-information-tabs")[0];
   let graph_information = document.getElementsByClassName("graph-information")[0];
   if(!checkbox_value){
@@ -2607,7 +2606,6 @@ function changeColorMode(event){
     text_color = color('hsb(0, 0%, 100%)');
     angle_color = "#ff40ff";
     box_background_color = 120;  // The tooltip hover box
-    graph_space.setAttribute("style","grid-column: 2;grid-row: 2;background:#292929;")
     graph_information_tabs.style.background="#202020";
     graph_information.style.background="#484848";
     const checkedRadio = document.querySelector('.graph-information-tabs input[type="radio"]:checked');
@@ -2623,7 +2621,6 @@ function changeColorMode(event){
     text_color = color('hsb(0, 0%, 5%)');
     angle_color = "#ff40ff";
     box_background_color = 255;  // The tooltip hover box
-    graph_space.setAttribute("style","grid-column: 2;grid-row: 2;background:#fff;")
     graph_information_tabs.style.background="#fff";
     graph_information.style.background="#ddd";
     const checkedRadio = document.querySelector('.graph-information-tabs input[type="radio"]:checked');
