@@ -2665,7 +2665,6 @@ function updateGraphInformation(){
   let gain_cross = sub_information[0].getElementsByClassName("value")[1];
   let gain = sub_information[0].getElementsByClassName("value")[2];
   let phase_cross = sub_information[0].getElementsByClassName("value")[3];
-  let settling_time = sub_information[0].getElementsByClassName("value")[4];
   for(let h=0; h<inputs.length; h++){
     if(inputs[h].checked){
       let input_id = +inputs[h].id.split("_")[1];
@@ -2694,12 +2693,6 @@ function updateGraphInformation(){
         let value = Math.pow(10.0, value_dB / 20.0);
         gain.innerHTML = value.toFixed(2);
         phase_cross.innerHTML = current_graph.bode_phase_crossover_freq.toFixed(2);
-      }
-      if(isNaN(current_graph.bode_settling_time)){
-        settling_time.innerHTML = "NaN";
-      }
-      else{
-        settling_time.innerHTML = current_graph.bode_settling_time.toFixed(3) + "s";
       }
     }
   }
@@ -5477,7 +5470,6 @@ class bode_graph{
     this.bode_phase_margin = 0;
     this.bode_gain_crossover_freq = 0;
     this.bode_phase_crossover_freq = 0;
-    this.bode_settling_time = 0;
     this.graph_name = "Graph";
     this.full_name = "";
   }
@@ -5817,8 +5809,6 @@ class bode_graph{
         }
       }
     }
-    let fivePercent = fivePercentTimeResponse(this.bode_timerep_array);
-    this.bode_settling_time = fivePercent;
   }
 
 
@@ -6313,23 +6303,6 @@ function findOmega180(input_array){
   }
   else{
     return NaN;
-  }
-}
-
-function fivePercentTimeResponse(input_array){
-  let final_value = +getTimeValues(max_x_timerep + 50).toFixed(3);
-  let values = [];
-  for(let h=0; h<input_array.length; h++){
-    let ratio = Math.abs(input_array[h] - final_value)/final_value;
-    if(Math.abs(ratio - 0.05) < 0.001){
-      values.push(map(h,0,input_array.length,0,max_x_timerep));
-    }
-  }
-  if(values.length == 0){
-    return NaN;
-  }
-  else{
-    return values[values.length-1];
   }
 }
 
