@@ -1545,6 +1545,9 @@ function update_quiz(){
     let cap_0 = document.getElementById("cap_0");
     cap_grade=new_cap_grade;
     cap_0.src = "images/cap_"+new_cap_grade+".png";
+    cap_0.style.animation = 'none';
+    cap_0.offsetHeight; /* trigger reflow */
+    cap_0.style.animation="new_badge_anim 2s ease-out 1";
   }
   let cap_0_text = document.getElementById("cap_0_text");
   cap_0_text.innerHTML = quiz_difficulty.toFixed(0) + "/100&nbsp";
@@ -2213,6 +2216,9 @@ function update_tasks (){
     let assignment_0 = document.getElementById("assignment_0");
     assignment_0.src = "images/assignment_"+assignment_grade+".png";
     assignment_grade = new_assignment_grade;
+    assignment_0.style.animation = 'none';
+    assignment_0.offsetHeight; /* trigger reflow */
+    assignment_0.style.animation="new_badge_anim 2s ease-out 1";
   }
   let assignment_0_text = document.getElementById("assignment_0_text");
   assignment_0_text.innerHTML = done_tasks.length + "/" + Object.keys(all_tasks).length + "&nbsp";
@@ -2397,6 +2403,9 @@ function update_achievements (){
     let star_0 = document.getElementById("star_0");
     star_grade=new_star_grade;
     star_0.src = "images/star_"+new_star_grade+".png";
+    star_0.style.animation = 'none';
+    star_0.offsetHeight; /* trigger reflow */
+    star_0.style.animation="new_badge_anim 2s ease-out 1";
   }
   let star_0_text = document.getElementById("star_0_text");
   star_0_text.innerHTML = done_achievements.length + "/" + Object.keys(all_achievements).length + "&nbsp";
