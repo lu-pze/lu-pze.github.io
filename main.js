@@ -3653,7 +3653,7 @@ function mousePressed(){
       let q_position = all_questions[q_id].pos();
       if (q_position.visible){
         let distance = Math.sqrt((mouseY - q_position.y)*(mouseY - q_position.y) + (mouseX - q_position.x)*(mouseX - q_position.x));
-        if(distance < 10000){
+        if(distance < 500){
           yes_close_enough = true;
           queue.push([distance,q_id]);
         }
@@ -4864,6 +4864,7 @@ function mouseMoved(){
 
   // If questions are enabled, draw a line to the closest question icon:
   if (questions_enabled){
+    redraw();
     let queue = [];
     let yes_close_enough = false;
 
@@ -4871,9 +4872,18 @@ function mouseMoved(){
       let q_position = all_questions[q_id].pos();
       if (q_position.visible){
         let distance = Math.sqrt((mouseY - q_position.y)*(mouseY - q_position.y) + (mouseX - q_position.x)*(mouseX - q_position.x));
-        if(distance < 10000){
+        if(distance < 500){
           yes_close_enough = true;
           queue.push([distance,q_id]);
+          let stroke_weight = 10 - distance/50;
+          if (stroke_weight>0.01){
+            // Draw a yellow line to the closest question:
+            push();
+            strokeWeight(stroke_weight);
+            stroke("#ffff00c0");
+            line(mouseX,mouseY,q_position.x,q_position.y);
+            pop();
+          }
         }
       }
     }
@@ -4886,14 +4896,6 @@ function mouseMoved(){
       }
     }
     if(yes_close_enough){
-      redraw();
-      // Draw a yellow line to the closest question:
-      let q_position = all_questions[output[1]].pos();
-      push();
-      strokeWeight(8);
-      stroke("#ffff00c0");
-      line(mouseX,mouseY,q_position.x,q_position.y);
-      pop();
       // Draw a grey box with the question text:
       push();
       noStroke();
