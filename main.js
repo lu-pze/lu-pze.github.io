@@ -680,7 +680,7 @@ const all_questions={
 2. <b>Precision</b>: Seconds provide a level of precision that is often necessary in control systems where timing is critical. Many control algorithms and computations require precise timing information to function effectively.<br>
 3. <b>Compatibility</b>: Seconds are compatible with various units of measurement used in control systems, such as meters for distance and radians for angular displacement. This compatibility simplifies the integration of time-based variables into control system equations and models.<br>
 4. <b>Practicality</b>: Seconds are a practical unit of time for describing dynamic processes in control systems. They offer a convenient balance between granularity (small time intervals) and readability (larger time intervals), making them suitable for analyzing both fast and slow dynamics.<br>
-5. <b>Engineering Convention</b>: The use of seconds on the time axis aligns with established engineering conventions and standards. It allows control engineers to communicate effectively and interpret results consistently within the field.<br>
+5. <b>Engineering Convention</b>: The use of seconds on the time axis aligns with established engineering conventions and standards. It allows control engineers to communicate effectively and interpret results consistently within the field.<br><br>
 Overall, using seconds on the time axis in automatic control simplifies analysis, enhances precision, and ensures compatibility with established engineering practices, making it a common and practical choice.`},
 
   "degrees":{q:"Degrees vs. radians - which is it?",pos:function(){return {visible:true,x:graph_bode_phase_x+graph_bode_phase_x_offset,y:graph_bode_phase_y+graph_bode_phase_y_offset-20}},
@@ -758,6 +758,10 @@ function enable_questions(){
   }
   let questions_div=document.getElementById("questions_div");
   questions_div.innerHTML=s;
+  let answer_text_div = document.getElementById("answer_text");
+  answer_text_div.innerHTML="";
+  let toggleElement = document.querySelector('.answer');
+  toggleElement.classList.remove('active');
 }
 function disable_questions(){
   questions_enabled = false;
@@ -2099,7 +2103,7 @@ const all_assignments={
   "time_delay":{t:"4. Investigate a system with <b>time delay</b>",tasks:["L=3","L_gain_margin=2"],info:"A system with <b>time delay</b> is more difficult to control."},
   "one_zero_two_poles":{t:"5. Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4,T6,T7=1,T8=1.5_poles"],info:"With <b>one zero and two poles</b>, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
   "four_poles":{t:"6. Investigate a system with <b>four poles</b>",tasks:["gainm=5_phasex=2","phasemargin=45"],info:"A system with <b>four poles</b> gets a lot more phase shift, with a larger spin in the Nyquist diagram."},
-  "none":{t:"...no assignment",tasks:["impossible"],info:""},
+  "none":{t:"...<b>no assignment</b>",tasks:["impossible"],info:""},
 };
 let done_assignments={};
 
