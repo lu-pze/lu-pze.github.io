@@ -4943,13 +4943,13 @@ function mouseMoved(){
         let distance = Math.sqrt((mouseY - q_position.y)*(mouseY - q_position.y) + (mouseX - q_position.x)*(mouseX - q_position.x));
         if(distance < 500){
           yes_close_enough = true;
-          queue.push([distance,q_id]);
+          queue.push([distance,q_id,q_position]);
           let stroke_weight = 10 - distance/50;
           if (stroke_weight>0.01){
-            // Draw a yellow line to the closest question:
+            // Draw a yellow line to the closest questions:
             push();
             strokeWeight(stroke_weight);
-            stroke("#ffff00c0");
+            stroke("#ffff0080");
             line(mouseX,mouseY,q_position.x,q_position.y);
             pop();
           }
@@ -4977,34 +4977,80 @@ function mouseMoved(){
       //textSize(15);
       //text(all_questions[output[1]].q,13,25);
       //pop();
+
+      let hover_answer = document.getElementById("hover_answer");
       let q_id=output[1];
       if (q_id!=last_hover_answer_id){
-        let hover_answer = document.getElementById("hover_answer");
+        hover_answer.style.transform=null;
         let s="";
         s+="<h2>" + all_questions[q_id].q + "</h2>";
         s+=all_questions[q_id].a;
         s+="<br><br>";
         hover_answer.innerHTML=s;
         last_hover_answer_id=q_id;
+        let rect=hover_answer.getBoundingClientRect();
+        if (rect.height > windowHeight){
+          // Scale around center:
+          hover_answer.style.transform="translate(-50%,-50%) scale(" + (windowHeight/(rect.height)) +") translate(50%,50%)";
+        }
       }
       //Move this div:
-      //hover_answer.style.top=mouseY+"px";
-      //hover_answer.style.left=mouseX+"px";
       if (mouseX<windowWidth/2){
+        // Place to the right of mouse pointer:
         hover_answer.style.left=mouseX+"px";
         hover_answer.style.right=null;
       } else {
+        // Place to the left of mouse pointer:
         hover_answer.style.left=null;
         hover_answer.style.right=(windowWidth-mouseX)+"px";
       }
-      if (mouseY<windowHeight/2){
-        hover_answer.style.top=mouseY+"px";
+
+      let rect=hover_answer.getBoundingClientRect();
+      if (rect.height > (windowHeight-10)){
+        // Full height answer that was scaled at creation. Fixed position in y-dir:
+        hover_answer.style.top="0px";
         hover_answer.style.bottom=null;
+      } else if (mouseY<windowHeight/2){
+        // Place above mouse pointer:
+        // Check to make sure that a "high" infobox doesn't get too far down:
+        if (rect.height + mouseY > windowHeight){
+          // Stick to bottom of screen to prevent it going too far down:
+          hover_answer.style.top=null;
+          hover_answer.style.bottom="0px";
+        } else {
+          // Move with mouseY pos:
+          hover_answer.style.top=mouseY+"px";
+          hover_answer.style.bottom=null;
+        }
       } else {
-        hover_answer.style.top=null;
-        hover_answer.style.bottom=(windowHeight-mouseY)+"px";
+        // Place below mouse pointer:
+        if (rect.height + (windowHeight-mouseY) > windowHeight){
+          // Stick to top of screen to prevent it going too far up:
+          hover_answer.style.top="0px";
+          hover_answer.style.bottom=null;
+        } else {
+          // Move with mouseY pos:
+          hover_answer.style.top=null;
+          hover_answer.style.bottom=(windowHeight-mouseY)+"px";
+        }
       }
       hover_answer.style.visibility=null;
+
+      rect=hover_answer.getBoundingClientRect();
+      // Draw a white line to the closest questions:
+      let q_position=output[2];
+      push();
+      let stroke_weight = 10 - distance/50;
+      strokeWeight(stroke_weight);
+      //stroke("#ffff00c0");
+      //line(q_position.x,q_position.y,rect.left,rect.top);
+      //line(q_position.x,q_position.y,rect.right,rect.top);
+      //line(q_position.x,q_position.y,rect.left,rect.bottom);
+      //line(q_position.x,q_position.y,rect.right,rect.bottom);
+      stroke("#ffffffff");
+      line(mouseX,mouseY,q_position.x,q_position.y);
+      pop();
+
     } else {
       if (last_hover_answer_id!=""){
         let hover_answer = document.getElementById("hover_answer");
