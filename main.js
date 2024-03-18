@@ -6766,6 +6766,8 @@ function ready (){
   // Make sure that input function selector is visible:
   let toggleElement = document.querySelector('.input-equation');
   toggleElement.classList="active";
+  let hover_answer = document.getElementById("hover_answer");
+  hover_answer.style.visibility="hidden";
   // Enable gamification from start:
   toggle_gamification();
   toggle_assignments();
