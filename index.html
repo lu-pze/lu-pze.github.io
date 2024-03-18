@@ -177,7 +177,7 @@ input{background:none}
 .assignments_box.active{visibility: visible;opacity: 1;}
 .assignments_box:before{border-radius: 25px;margin:0;padding:0;content:"";height:100%;left:0;width:var(--w);position: absolute;box-shadow: 0 0 30px #d0d0b0;z-index:-1;background: repeating-linear-gradient(var(--angle), #f0f0f0e8, #c0c0e0f4, #f0f0f0e8 var(--d));background-size: calc(var(--d)/sin(var(--angle))) 100%;animation: AnimationName 8s linear infinite;}
 @keyframes AnimationName{0% {background-position: calc(var(--d)/sin(var(--angle))) 0;}}
-.achievements_box{--d:700px;--angle:135deg; --w:100%;padding:0px 20px 10px 20px;left:50%;top:40%;transform: translate(-50%,-50%);z-index:5;position: absolute;visibility: hidden;font-family:"Lucida Console","Courier New",monospace;font-size:110%;border-radius: 25px;}
+.achievements_box{--d:700px;--angle:135deg; --w:100%;padding:0px 20px 10px 20px;left:50%;top:10%;transform: translate(-50%,0);z-index:5;position: absolute;visibility: hidden;font-family:"Lucida Console","Courier New",monospace;font-size:100%;border-radius: 25px;}
 .achievements_box.active{visibility: visible;opacity: 1;}
 .achievements_box:before{border-radius:25px;margin:0;padding:0;content:"";height:100%;left:0;width:var(--w);position: absolute;box-shadow: 0 0 30px #d0d0b0;z-index:-1;background: repeating-linear-gradient(var(--angle), #f0f0f0e8, #d0d0b0f4, #f0f0f0e8 var(--d));background-size: calc(var(--d)/sin(var(--angle))) 100%;animation: AnimationName 8s linear infinite;}
 @keyframes AnimationName{0% {background-position: calc(var(--d)/sin(var(--angle))) 0;}}
@@ -239,7 +239,8 @@ input{background:none}
 }
 .questions_div{z-index:50;color:#ffff0080;position:absolute;pointer-events:none;}
 .question_div{position:absolute;transform:translate(-50%,-50%)}
-.answer{width:35%;padding:20px 20px 10px 20px;top:10%;left:50%;transform:translate(-50%,0);z-index:1;box-shadow: 0 0 15px #cccccc;background-color:#d0d0d0f0;position: absolute;visibility: hidden;}
+.hover_answer{width:35%;padding:20px 20px 10px 20px;z-index:101;background-color:#d0d0d0f0;position:absolute}
+.answer{width:35%;padding:20px 20px 10px 20px;top:10%;left:50%;transform:translate(-50%,0);z-index:50;box-shadow: 0 0 15px #cccccc;background-color:#d0d0d0f0;position: absolute;visibility: hidden;}
 .answer.active{visibility:visible;opacity:1;}
 </style>
 <!--
@@ -291,6 +292,7 @@ input{background:none}
     <div class="quiz_answer" id="quiz_answer"></div>
     <div class="quiz_no" id="quiz_no"><svg width="100" height="100" viewBox="0 0 24 24"><use href="#icon_warning_amber"/></svg></div>
     <div class="questions_div" id="questions_div"></div>
+    <div class="hover_answer" id="hover_answer"></div>
     </div>
 
     <div class="page">

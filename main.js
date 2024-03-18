@@ -752,29 +752,27 @@ By analyzing Bode plots, engineers can identify resonance frequencies, damping r
 //Why does the Bode magnitude plot use magnitude instead of amplitude in automatic control? Give an answer with vivid examples of Automatic control theory, with correct automatic control vocabulary while keeping the rest of the english simple.
 //Some automatic control engineers use decibel dB scale on their Bode magnitude plots instead of decimal magnitude numbers. Give me pros and cons of using decibel scale vs. log-scaled numbers.
   "Bode_mag":{q:"Why use logarithmic scale in the Bode magnitude plot?",pos:function(){return {visible:true,x:graph_bode_mag_x+graph_bode_mag_x_offset,y:graph_bode_mag_y+graph_bode_mag_y_offset-10};},
-  a:`Magnitude, in this context, refers to the ratio of output signal amplitude to input signal amplitude, typically expressed as a real value, or in decibels (dB). Using log-scale magnitude allows engineers to compare signal levels across different frequencies on a logarithmic scale, which is more intuitive and easier to interpret.<br><br>
-Some automatic control engineers use the decibel (dB) scale on their Bode magnitude plots instead of decimal magnitude numbers.<br><br>
-<b>Using Log-Scaled Numbers:</b><br><br>
-Pros:<br><ul>
+  a:`Magnitude, in this context, refers to the ratio of output signal amplitude to input signal amplitude, typically expressed as a real value, or in decibels (dB). Using log-scale magnitude allows engineers to compare signal levels across different frequencies on a logarithmic scale, which is more intuitive and easier to interpret.
+Some automatic control engineers use the decibel (dB) scale on their Bode magnitude plots instead of decimal magnitude numbers.<br>
+<b>Using Log-Scaled Numbers:</b>Pros:<ul>
 <li>Direct Representation: Log-scaled numbers provide a direct representation of the logarithmic relationship between input and output signals, which can be beneficial for those with a strong mathematical background.<br>
 <li>Simplicity in Conversion: Converting log-scaled numbers back to linear magnitude is straightforward, requiring basic exponentiation.<br>
 <li>Simplicity in Visualization: For those familiar with logarithmic scales, log-scaled numbers may offer simpler visualization and interpretation of the frequency response.<br>
 </ul>
-Cons:<br><ul>
+Cons:<ul>
 <li>Less Intuitive: Log-scaled numbers may be less intuitive for engineers without a strong mathematical background or experience with logarithmic scales, making interpretation more challenging.<br>
-<li>Limited Direct Comparison: Direct comparison of gain values at different frequencies may be less straightforward compared to dB, potentially complicating the identification of critical system characteristics.<br><br>
-</ul><b>Using Decibel (dB) Scale:</b><br><br>
-Pros:<br><ul>
+<li>Limited Direct Comparison: Direct comparison of gain values at different frequencies may be less straightforward compared to dB, potentially complicating the identification of critical system characteristics.<br>
+</ul><b>Using Decibel (dB) Scale:</b>Pros:<ul>
 <li>Logarithmic Representation: dB scale provides a logarithmic representation of magnitude, compressing a wide range of values into a more manageable scale. This simplifies visualization and interpretation of the frequency response over a broad range of frequencies.<br>
 <li>Relative Sensitivity: dB scale emphasizes relative changes in magnitude rather than absolute values, making it easier to focus on significant changes in gain or attenuation, which is crucial in control systems where small changes can have significant effects.<br>
 <li>Ease of Interpretation: dB values are more intuitive for many engineers, particularly those with backgrounds in signal processing or telecommunications. They provide a standardized way to express signal levels and system gains across different frequencies.<br>
 <li>Direct Comparison: dB allows for direct comparison of gain values at different frequencies, simplifying the identification of critical system characteristics such as bandwidth, gain margin, and resonance frequencies.<br>
 <li>Consistency with Standards: dB is consistent with industry standards and practices in fields like telecommunications and audio engineering, facilitating communication and collaboration among professionals.<br>
-</ul>Cons:<br><ul>
-<li>Complex Conversion: Converting dB values back to linear magnitude can be more complex compared to log-scaled numbers, especially for those less familiar with the dB scale.<br>
-<li>Potential Misinterpretation: Some individuals may misinterpret dB values if they are not familiar with the scale, leading to errors in analysis or design.<br><br>
-</ul>While both decibel (dB) scale and log-scaled numbers have their advantages and disadvantages, the choice between them often depends on the engineer's background, preferences, and the specific requirements of the analysis or design task at hand.`},
-
+</ul>Cons:<ul>
+<li>Complex Conversion: Converting dB values back to linear magnitude can be more complex compared to log-scaled numbers, especially for those less familiar with the dB scale.</li>
+<li>Potential Misinterpretation: Some individuals may misinterpret dB values if they are not familiar with the scale, leading to errors in analysis or design.
+</ul>`},
+//Too long, so removed: While both decibel (dB) scale and log-scaled numbers have their advantages and disadvantages, the choice between them often depends on the engineer's background, preferences, and the specific requirements of the analysis or design task at hand.
 
 //Why is the step input response of a automatic control transfer function important? What can I learn from it? Give an answer with vivid examples of Automatic control theory, with correct automatic control vocabulary while keeping the rest of the english simple.
 //Who invented the Bode plots, and why are they essential for Automatic control theory? Give an answer with vivid examples of Automatic control theory, with correct automatic control vocabulary while keeping the rest of the english simple.
@@ -793,10 +791,8 @@ The step input response of an automatic control transfer function is crucial for
 //In automatic control and a resonant second order system, what is the damping factor? Give an answer with vivid examples of resonating systems, with correct automatic control vocabulary while keeping the rest of the english simple.
   "Damping_factor_z":{q:"What is the damping factor?",pos:function(){
     let z_span = document.getElementById('variable_z');
-    console.log(z_span);
     if (z_span!=null){
       let rect = z_span.getBoundingClientRect();
-      console.log(rect);
       return {visible:true,x:rect.left + rect.width/2,y:rect.top + rect.height/2};
     } else {
       return {visible:false};
@@ -804,7 +800,6 @@ The step input response of an automatic control transfer function is crucial for
   },a:`In automatic control, the damping factor (often called z or the Greek letter zeta &zeta;) of a resonant second-order system measures how fast the system's oscillations fade away over time. It's like the system's ability to dampen or reduce its vibrations.<br><br>
 Let's imagine a bell as an example of a resonating system. When you strike a bell, it produces a ringing sound that gradually fades away. The damping factor determines how quickly the sound fades. If the bell has high damping, the sound dies down rapidly. But if the damping is low, the sound lingers for longer.<br><br>
 In automatic control, damping is crucial for ensuring stable and controlled behavior of systems. If a resonant system has insufficient damping, it can lead to excessive oscillations or even instability. Engineers adjust the damping factor to strike a balance between stability and responsiveness in control systems, just like tuning a bell to produce the desired sound.`},
-
 
 };
 function enable_questions(){
@@ -817,7 +812,7 @@ function enable_questions(){
     let q_position = all_questions[q_id].pos();
     if (q_position.visible){
       s += "<div class='question_div' id='"+q_id+"' style='top:"+q_position.y+"px;left:"+q_position.x+"px;'>";
-      s += '<svg fill="#ffff0080" width="100px" height="100px" viewBox="0 0 24 24"><use href="#icon_help"/></svg>';
+      s += '<svg fill="#ffff00a0" width="100px" height="100px" viewBox="0 0 24 24"><use href="#icon_help"/></svg>';
       s += "</div>";
     }
   }
@@ -834,6 +829,10 @@ function disable_questions(){
   questions_icon_svg.style.fill=null;
   let questions_div=document.getElementById("questions_div");
   questions_div.innerHTML="";
+  let hover_answer = document.getElementById("hover_answer");
+  hover_answer.style.visibility="hidden";
+  hover_answer.innerHTML="";
+  last_hover_answer_id="";
 }
 
 function answerToggle(event){
@@ -3715,37 +3714,37 @@ function mousePressed(){
   }
 
   if (questions_enabled){
-    // This is a question click. It's a one-time click.
-    let queue = [];
-    let yes_close_enough = false;
-    for (let q_id in all_questions){
-      let q_position = all_questions[q_id].pos();
-      if (q_position.visible){
-        let distance = Math.sqrt((mouseY - q_position.y)*(mouseY - q_position.y) + (mouseX - q_position.x)*(mouseX - q_position.x));
-        if(distance < 500){
-          yes_close_enough = true;
-          queue.push([distance,q_id]);
-        }
-      }
-    }
-    let output;
-    let distance = 10000;
-    for(let h=0; h<queue.length; h++){
-      if(queue[h][0] < distance){
-        distance = queue[h][0];
-        output = queue[h];
-      }
-    }
-    if(yes_close_enough){
-      redraw();
-      let q_position = all_questions[output[1]].pos();
-      push();
-      strokeWeight(8);
-      stroke("#ffff00c0");
-      line(mouseX,mouseY,q_position.x,q_position.y);
-      pop();
-      show_answer(output[1]);
-    }
+    //// This is a question click. It's a one-time click.
+    //let queue = [];
+    //let yes_close_enough = false;
+    //for (let q_id in all_questions){
+    //  let q_position = all_questions[q_id].pos();
+    //  if (q_position.visible){
+    //    let distance = Math.sqrt((mouseY - q_position.y)*(mouseY - q_position.y) + (mouseX - q_position.x)*(mouseX - q_position.x));
+    //    if(distance < 500){
+    //      yes_close_enough = true;
+    //      queue.push([distance,q_id]);
+    //    }
+    //  }
+    //}
+    //let output;
+    //let distance = 10000;
+    //for(let h=0; h<queue.length; h++){
+    //  if(queue[h][0] < distance){
+    //    distance = queue[h][0];
+    //    output = queue[h];
+    //  }
+    //}
+    //if(yes_close_enough){
+    //  redraw();
+    //  let q_position = all_questions[output[1]].pos();
+    //  push();
+    //  strokeWeight(8);
+    //  stroke("#ffff00c0");
+    //  line(mouseX,mouseY,q_position.x,q_position.y);
+    //  pop();
+    //  show_answer(output[1]);
+    //}
     disable_questions();
     // Get rid of the yellow line drawn when hovering:
     redraw_canvas_gain("all");
@@ -4916,6 +4915,7 @@ function draw_hover_nyquist(){
   }
 }
 
+let last_hover_answer_id="";
 let nof_redraws_in_math_bar=0;
 function mouseMoved(){
   // If we are in the math-bar, no need to redraw.
@@ -4965,18 +4965,53 @@ function mouseMoved(){
       }
     }
     if(yes_close_enough){
-      // Draw a grey box with the question text:
-      push();
-      noStroke();
-      translate(mouseX,mouseY);
-      fill(box_background_color,200);
-      stroke(150);
-      rect(0,0,375,40);
-      noStroke();
-      fill(text_color);
-      textSize(15);
-      text(all_questions[output[1]].q,13,25);
-      pop();
+      //// Draw a grey box with the question text:
+      //push();
+      //noStroke();
+      //translate(mouseX,mouseY);
+      //fill(box_background_color,200);
+      //stroke(150);
+      //rect(0,0,375,40);
+      //noStroke();
+      //fill(text_color);
+      //textSize(15);
+      //text(all_questions[output[1]].q,13,25);
+      //pop();
+      let q_id=output[1];
+      if (q_id!=last_hover_answer_id){
+        let hover_answer = document.getElementById("hover_answer");
+        let s="";
+        s+="<h2>" + all_questions[q_id].q + "</h2>";
+        s+=all_questions[q_id].a;
+        s+="<br><br>";
+        hover_answer.innerHTML=s;
+        last_hover_answer_id=q_id;
+      }
+      //Move this div:
+      //hover_answer.style.top=mouseY+"px";
+      //hover_answer.style.left=mouseX+"px";
+      if (mouseX<windowWidth/2){
+        hover_answer.style.left=mouseX+"px";
+        hover_answer.style.right=null;
+      } else {
+        hover_answer.style.left=null;
+        hover_answer.style.right=(windowWidth-mouseX)+"px";
+      }
+      if (mouseY<windowHeight/2){
+        hover_answer.style.top=mouseY+"px";
+        hover_answer.style.bottom=null;
+      } else {
+        hover_answer.style.top=null;
+        hover_answer.style.bottom=(windowHeight-mouseY)+"px";
+      }
+      hover_answer.style.visibility=null;
+    } else {
+      if (last_hover_answer_id!=""){
+        let hover_answer = document.getElementById("hover_answer");
+        hover_answer.style.visibility="hidden";
+        hover_answer.innerHTML="";
+        last_hover_answer_id="";
+      }
     }
     return;
   }
