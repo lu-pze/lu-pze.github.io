@@ -662,14 +662,144 @@ function updateFormulaAndDraw(input_element){
 }
 
 
+// ---------------- start of questions and answers code
+
+let questions_enabled = false;
+function questionsToggle(event){
+  if (questions_enabled){
+    disable_questions();
+    redraw_canvas_gain("all");
+  } else {
+    enable_questions();
+  }
+}
+const all_questions={
+  "seconds":{q:"Why are we using seconds as time unit?",pos:function(){return {visible:true,x:graph_step_response_x+graph_step_response_width+graph_step_response_x_offset,y:graph_step_response_y+graph_step_response_height+graph_step_response_y_offset+20}},
+    a:`In automatic control systems, particularly in the context of time-domain analysis, the unit of seconds is commonly used on the time axis for several reasons:<br>
+1. <b>Standardization</b>: Using seconds as the unit of time provides a standardized and universally accepted measurement. It allows for consistency and comparability across different systems and analyses.<br>
+2. <b>Precision</b>: Seconds provide a level of precision that is often necessary in control systems where timing is critical. Many control algorithms and computations require precise timing information to function effectively.<br>
+3. <b>Compatibility</b>: Seconds are compatible with various units of measurement used in control systems, such as meters for distance and radians for angular displacement. This compatibility simplifies the integration of time-based variables into control system equations and models.<br>
+4. <b>Practicality</b>: Seconds are a practical unit of time for describing dynamic processes in control systems. They offer a convenient balance between granularity (small time intervals) and readability (larger time intervals), making them suitable for analyzing both fast and slow dynamics.<br>
+5. <b>Engineering Convention</b>: The use of seconds on the time axis aligns with established engineering conventions and standards. It allows control engineers to communicate effectively and interpret results consistently within the field.<br>
+Overall, using seconds on the time axis in automatic control simplifies analysis, enhances precision, and ensures compatibility with established engineering practices, making it a common and practical choice.`},
+
+  "degrees":{q:"Degrees vs. radians - which is it?",pos:function(){return {visible:true,x:graph_bode_phase_x+graph_bode_phase_x_offset,y:graph_bode_phase_y+graph_bode_phase_y_offset-20}},
+    a:`In automatic control theory, particularly in the context of frequency domain analysis and Bode plots, the choice between using degrees and radians depends on the conventions of the specific analysis or system, as well as personal preference. However, there are some general guidelines:<br><br>
+1. <b>Phase Angle (φ)</b>:<br>
+   - Degrees: Degrees are commonly used to represent phase angles in Bode plots, especially in introductory or practical contexts. Phase angles are often more intuitively understood in degrees, ranging from -180° to 180°.<br>
+   - Radians: Radians can also be used to represent phase angles, particularly in more advanced or theoretical analyses. In mathematical calculations and advanced control theory, radians are preferred due to their natural connection with trigonometric functions and calculus.<br>
+2. <b>Frequency (ω)</b>:<br>
+   - Radians per Second (rad/s): Frequency in control theory is typically expressed in radians per second. This convention aligns with the use of Laplace transforms and complex numbers in control system analysis. Radians per second are favored because they provide a direct relationship with angular frequency, facilitating mathematical manipulation and analysis.<br>
+   - Hertz (Hz): While radians per second is the standard unit for frequency in control theory, Hertz (cycles per second) can also be used, especially in practical applications or when discussing frequency in terms more familiar to non-specialists.<br><br>
+In summary, the choice between using degrees and radians depends on the context and requirements of the analysis. Degrees are more common and intuitive for phase angles in practical applications, especially in introductory settings. However, radians are preferred for more advanced mathematical analyses due to their natural compatibility with trigonometric functions and calculus. Radians per second is the standard unit for frequency in control theory, aligning with the use of Laplace transforms and complex numbers.`},
+
+
+//In automatic control, why do we study first-order systems with one real pole? Give an answer with vivid examples of first-order systems, with correct automatic control vocabulary while keeping the rest of the english simple.
+  "ONE_REAL_POLE_pz":{q:"Why do we study systems with one pole?",pos:function(){
+    for(let i=0; i<bode_graphs.length; i++){
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula)){
+        return {visible:true,x:pole_zero_graph_x[i]+graph_pole_zero_width/2,y:pole_zero_graph_y[i]+graph_pole_zero_width/2};
+      }
+    }
+    return {visible:false}
+  },a:`We study first-order systems with one real pole because they provide a foundational understanding of how systems respond to inputs in automatic control. Imagine a cup of hot tea as an example of a first-order system. When you blow on the tea to cool it down, the temperature decreases gradually over time. This simple process can be modeled as a first-order system with one real pole.<br><br>
+Understanding these systems helps us design controls for various applications, such as temperature regulation in ovens or speed control in vehicles. By studying first-order systems with one real pole, we can analyze the system's response time, time constant, and steady-state behavior, enabling us to design efficient and reliable control strategies.<br><br>
+In essence, exploring these systems allows us to grasp the fundamental principles of automatic control, paving the way for more complex analyses and designs in real-world applications.`},
+
+
+//In automatic control, why do we study second-order systems with two real-valued poles? Give an answer with vivid examples of second-order damped systems, with correct automatic control vocabulary while keeping the rest of the english simple.
+  "TWO_REAL_POLES_pz":{q:"Why do we study systems with two real poles?",pos:function(){
+    for(let i=0; i<bode_graphs.length; i++){
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)){
+        return {visible:true,x:pole_zero_graph_x[i]+graph_pole_zero_width/2,y:pole_zero_graph_y[i]+graph_pole_zero_width/2};
+      }
+    }
+    return {visible:false}
+  },a:`We study second-order systems with two real-valued poles because they represent damped systems, which are common in automatic control. Think of a car's suspension system as an example of a second-order damped system. When the car hits a bump, the suspension absorbs the shock, causing the car to oscillate up and down before returning to its resting position.<br><br>
+Understanding these systems helps us design controls for various applications, such as shock absorbers in vehicles or vibration dampers in buildings. By studying second-order systems with two real-valued poles, we can analyze the damping ratio, natural frequency, and transient response characteristics, enabling us to optimize system performance and stability.<br><br>
+In essence, exploring these systems allows us to understand how damping influences the behavior of dynamic systems, ensuring smooth and controlled responses in real-world applications.`},
+
+
+//In automatic control, why do we study second-order systems with two complex poles? Give an answer with vivid examples of resonating systems, with correct automatic control vocabulary while keeping the rest of the english simple.
+  "TWO_COMPLEX_POLES_pz":{q:"Why do we study systems with two complex poles?",pos:function(){
+    for(let i=0; i<bode_graphs.length; i++){
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)){
+        return {visible:true,x:pole_zero_graph_x[i]+graph_pole_zero_width/2,y:pole_zero_graph_y[i]+graph_pole_zero_width/2};
+      }
+    }
+    return {visible:false}
+  },a:`We study second-order systems with two complex poles because they often represent resonating systems, which are prevalent in automatic control. Imagine a playground swing as an example of a resonating system. When you push a swing, it oscillates back and forth at its natural frequency. Similarly, in control systems, resonating systems exhibit oscillatory behavior when subjected to certain inputs or disturbances.<br><br>
+Understanding these systems helps us design controls for various applications, like audio speakers or vibrating machines, where managing resonance is crucial. By studying second-order systems with two complex poles, we can analyze the resonance frequency, damping ratio, and stability characteristics, enabling us to mitigate unwanted oscillations and ensure system stability.<br><br>
+In essence, delving into these systems allows us to harness and control resonance effects, ensuring optimal performance and stability in real-world applications.`},
+
+
+//Who invented the Nyquist diagram, and why is it essential for Automatic control theory? Give an answer with vivid examples of Automatic control theory, with correct automatic control vocabulary while keeping the rest of the english simple.
+  "Nyquist":{q:"Who invented the Nyquist diagram?",pos:function(){return {visible:true,x:graph_nyquist_x+graph_nyquist_x_offset+graph_nyquist_width/2,y:graph_nyquist_y+graph_nyquist_y_offset-10};},
+  a:`The Nyquist diagram was invented by the Swedish-American engineer and physicist Harry Nyquist in the early 1930s. It's a powerful tool in automatic control theory for analyzing the stability of feedback control systems.<br><br>
+Imagine you're driving a car and you want to maintain a steady speed. The car's cruise control system adjusts the throttle based on feedback from your speedometer. If the control system is unstable, it might overcorrect, causing the car to speed up and slow down unpredictably.<br><br>
+The Nyquist diagram helps engineers understand and predict the stability of such control systems. It plots the frequency response of a system on a complex plane, providing insights into how system dynamics change with frequency.<br><br>
+By analyzing the Nyquist plot, engineers can determine if a control system is stable or if it's prone to oscillations or instability. This information is crucial for designing reliable and effective control systems for various applications, such as aircraft autopilots, robotic arms, or temperature controllers in industrial processes.`},
+
+
+};
+function enable_questions(){
+  questions_enabled = true;
+  let questions_icon_svg = document.getElementById("questions_icon_svg");
+  questions_icon_svg.style.fill="#5050ff";
+  // Find out the placement of question icons:
+  let s="";
+  for (let q_id in all_questions){
+    let q_position = all_questions[q_id].pos();
+    if (q_position.visible){
+      s += "<div class='question_div' id='"+q_id+"' style='top:"+q_position.y+"px;left:"+q_position.x+"px;'>";
+      s += '<svg fill="#ffff0080" width="100px" height="100px" viewBox="0 0 24 24"><use href="#icon_help"/></svg>';
+      s += "</div>";
+    }
+  }
+  let questions_div=document.getElementById("questions_div");
+  questions_div.innerHTML=s;
+}
+function disable_questions(){
+  questions_enabled = false;
+  let questions_icon_svg = document.getElementById("questions_icon_svg");
+  questions_icon_svg.style.fill=null;
+  let questions_div=document.getElementById("questions_div");
+  questions_div.innerHTML="";
+}
+
+function answerToggle(event){
+  let toggleElement = document.querySelector('.answer');
+  toggleElement.classList.toggle('active');
+}
+
+function show_answer(q_id){
+  // Show a box with the text for the q_id question:
+  let s="";
+  s+="<h2>" + all_questions[q_id].q + "</h2>";
+  s+=all_questions[q_id].a;
+  s+="<br><br>";
+
+  let answer_text_div = document.getElementById("answer_text");
+  answer_text_div.innerHTML=s;
+  let toggleElement = document.querySelector('.answer');
+  toggleElement.classList.toggle('active');
+  if (q_id=="ONE_REAL_POLE_pz") achievement_done("open_ONE_REAL_POLE_help");
+}
+
+
+
+
+
+// ---------------- end of questions and answer code
+
 function toolboxMenuToggle(event){
   let toggleElement = document.querySelector('.toolbox');
   toggleElement.classList.toggle('active');
 }
 
-function helpToggle(event){
-  achievement_done("view_help");
-  let toggleElement = document.querySelector('.help');
+function infoToggle(event){
+  achievement_done("view_info");
+  let toggleElement = document.querySelector('.info');
   toggleElement.classList.toggle('active');
 }
 
@@ -2343,10 +2473,11 @@ function achievement_done (which_one){
 const all_achievements={
   "view_achievements":"Open your <svg width='20' height='20' viewBox='0 0 24 24' style='vertical-align:middle'><use href='#icon_star'/></svg> Achievements",
   "view_assignments":"Open your <svg width='20' height='20' viewBox='0 0 24 24' style='vertical-align:middle'><use href='#icon_assignment'/></svg> Assignments",
-  "view_help":"Open the <svg width='20' height='20' viewBox='0 0 24 24' style='vertical-align:middle'><use href='#icon_help'/></svg> help section",
+  "view_info":"Open the <svg width='20' height='20' viewBox='0 0 24 24' style='vertical-align:middle'><use href='#icon_info'/></svg> info section",
   "go_fullscreen":"Get rid of distractions by going <svg width='20' height='20' viewBox='0 0 24 24' style='vertical-align:middle'><use href='#icon_fullscreen'/></svg> fullscreen",
   "drag_pole":"Drag a pole in the pole-zero map",
   "drag_zero":"Drag a zero in the pole-zero map",
+  "open_ONE_REAL_POLE_help":"Open the <svg width='20' height='20' viewBox='0 0 24 24' style='vertical-align:middle'><use href='#icon_help'/></svg> help section for the pole-zero map about <b>one real pole</b>.",
   "drag_bode_mag":"Drag a transfer function in the Bode magnitude plot",
   "drag_bode_phase":"Drag a transfer function in the Bode phase plot",
   "drag_complex_pole":"Drag <b>two complex poles</b> in the pole-zero map",
@@ -3479,7 +3610,6 @@ function mousePressed(){
 
   if (splash_screen_active){
     // This first click is to get rid of the splash screen:
-
     let pze_logo=document.getElementById("pze_logo");
     pze_logo.style.animation = 'none';
     pze_logo.offsetHeight; /* trigger reflow */
@@ -3515,6 +3645,44 @@ function mousePressed(){
     return false;
   }
 
+  if (questions_enabled){
+    // This is a question click. It's a one-time click.
+    let queue = [];
+    let yes_close_enough = false;
+    for (let q_id in all_questions){
+      let q_position = all_questions[q_id].pos();
+      if (q_position.visible){
+        let distance = Math.sqrt((mouseY - q_position.y)*(mouseY - q_position.y) + (mouseX - q_position.x)*(mouseX - q_position.x));
+        if(distance < 10000){
+          yes_close_enough = true;
+          queue.push([distance,q_id]);
+        }
+      }
+    }
+    let output;
+    let distance = 10000;
+    for(let h=0; h<queue.length; h++){
+      if(queue[h][0] < distance){
+        distance = queue[h][0];
+        output = queue[h];
+      }
+    }
+    if(yes_close_enough){
+      redraw();
+      let q_position = all_questions[output[1]].pos();
+      push();
+      strokeWeight(8);
+      stroke("#ffff00c0");
+      line(mouseX,mouseY,q_position.x,q_position.y);
+      pop();
+      show_answer(output[1]);
+    }
+    disable_questions();
+    // Get rid of the yellow line drawn when hovering:
+    redraw_canvas_gain("all");
+    return false;
+  }
+
   // Decide what we clicked on initially, to know what to move.
   // Reset what we've clicked on:
   clicked_on_time_response_graph_no = -1;
@@ -3524,7 +3692,7 @@ function mousePressed(){
   clicked_on_pole_zero_graph_no = -1;
   direction_of_T_drag=0; // Let first run of mouseDragged decide which direction to move T
 
-  const boxes_to_not_handle_clicks_in=['.download_script_box','.toolbox','.help','.achievements_box','.assignments_box'];
+  const boxes_to_not_handle_clicks_in=['.download_script_box','.toolbox','.info','.achievements_box','.assignments_box'];
   for (let box_no in boxes_to_not_handle_clicks_in){
     let box = document.querySelector(boxes_to_not_handle_clicks_in[box_no]);
     if (box.classList.contains('active')){
@@ -4692,6 +4860,56 @@ function mouseMoved(){
     redraw();
     nof_redraws_in_math_bar = 0;
   }
+
+
+  // If questions are enabled, draw a line to the closest question icon:
+  if (questions_enabled){
+    let queue = [];
+    let yes_close_enough = false;
+
+    for (let q_id in all_questions){
+      let q_position = all_questions[q_id].pos();
+      if (q_position.visible){
+        let distance = Math.sqrt((mouseY - q_position.y)*(mouseY - q_position.y) + (mouseX - q_position.x)*(mouseX - q_position.x));
+        if(distance < 10000){
+          yes_close_enough = true;
+          queue.push([distance,q_id]);
+        }
+      }
+    }
+    let output;
+    let distance = 10000;
+    for(let h=0; h<queue.length; h++){
+      if(queue[h][0] < distance){
+        distance = queue[h][0];
+        output = queue[h];
+      }
+    }
+    if(yes_close_enough){
+      redraw();
+      // Draw a yellow line to the closest question:
+      let q_position = all_questions[output[1]].pos();
+      push();
+      strokeWeight(8);
+      stroke("#ffff00c0");
+      line(mouseX,mouseY,q_position.x,q_position.y);
+      pop();
+      // Draw a grey box with the question text:
+      push();
+      noStroke();
+      translate(mouseX,mouseY);
+      fill(box_background_color,200);
+      stroke(150);
+      rect(0,0,375,40);
+      noStroke();
+      fill(text_color);
+      textSize(15);
+      text(all_questions[output[1]].q,13,25);
+      pop();
+    }
+    return;
+  }
+
 
   // Check if we're hovering any of the pole-zero graphs:
   for(let i=0; i<bode_graphs.length; i++){
