@@ -675,7 +675,7 @@ function questionsToggle(event){
 }
 const all_questions={
   "seconds":{q:"Why are we using seconds as time unit?",pos:function(){return {visible:true,x:graph_step_response_x+graph_step_response_width+graph_step_response_x_offset,y:graph_step_response_y+graph_step_response_height+graph_step_response_y_offset+20}},
-    a:`In automatic control systems, particularly in the context of time-domain analysis, the unit of seconds is commonly used on the time axis for several reasons:<br>
+    a:`In automatic control systems, particularly in the context of time-domain analysis, the unit of seconds is commonly used on the time axis for several reasons:<br><br>
 1. <b>Standardization</b>: Using seconds as the unit of time provides a standardized and universally accepted measurement. It allows for consistency and comparability across different systems and analyses.<br>
 2. <b>Precision</b>: Seconds provide a level of precision that is often necessary in control systems where timing is critical. Many control algorithms and computations require precise timing information to function effectively.<br>
 3. <b>Compatibility</b>: Seconds are compatible with various units of measurement used in control systems, such as meters for distance and radians for angular displacement. This compatibility simplifies the integration of time-based variables into control system equations and models.<br>
@@ -702,9 +702,9 @@ In summary, the choice between using degrees and radians depends on the context 
       }
     }
     return {visible:false}
-  },a:`We study first-order systems with one real pole because they provide a foundational understanding of how systems respond to inputs in automatic control. Imagine a cup of hot tea as an example of a first-order system. When you blow on the tea to cool it down, the temperature decreases gradually over time. This simple process can be modeled as a first-order system with one real pole.<br><br>
-Understanding these systems helps us design controls for various applications, such as temperature regulation in ovens or speed control in vehicles. By studying first-order systems with one real pole, we can analyze the system's response time, time constant, and steady-state behavior, enabling us to design efficient and reliable control strategies.<br><br>
-In essence, exploring these systems allows us to grasp the fundamental principles of automatic control, paving the way for more complex analyses and designs in real-world applications.`},
+  },a:`Imagine a cup of hot tea as an example of a first-order system. When you blow on the tea to cool it down, the temperature decreases gradually over time. This simple process can be modeled as a first-order system with one real pole. We study first-order systems with one real pole because they provide a foundational understanding of how systems respond to inputs in automatic control.<br><br>
+Understanding these systems helps us design controls for various applications, such as temperature regulation in ovens or speed control in vehicles. By studying first-order systems with one real pole, we can analyze the system's response time, time constant, and steady-state behavior, enabling us to design efficient and reliable control strategies.`},
+//In essence, exploring these systems allows us to grasp the fundamental principles of automatic control, paving the way for more complex analyses and designs in real-world applications.
 
 
 //In automatic control, why do we study second-order systems with two real-valued poles? Give an answer with vivid examples of second-order damped systems, with correct automatic control vocabulary while keeping the rest of the english simple.
@@ -715,9 +715,9 @@ In essence, exploring these systems allows us to grasp the fundamental principle
       }
     }
     return {visible:false}
-  },a:`We study second-order systems with two real-valued poles because they represent damped systems, which are common in automatic control. Think of a car's suspension system as an example of a second-order damped system. When the car hits a bump, the suspension absorbs the shock, causing the car to oscillate up and down before returning to its resting position.<br><br>
-Understanding these systems helps us design controls for various applications, such as shock absorbers in vehicles or vibration dampers in buildings. By studying second-order systems with two real-valued poles, we can analyze the damping ratio, natural frequency, and transient response characteristics, enabling us to optimize system performance and stability.<br><br>
-In essence, exploring these systems allows us to understand how damping influences the behavior of dynamic systems, ensuring smooth and controlled responses in real-world applications.`},
+  },a:`Think of a car's suspension system as an example of a second-order damped system. When the car hits a bump, the suspension absorbs the shock, causing the car to oscillate up and down before returning to its resting position. We study second-order systems with two real-valued poles because they represent damped systems, which are common in automatic control.<br><br>
+Understanding these systems helps us design controls for various applications, such as shock absorbers in vehicles or vibration dampers in buildings. By studying second-order systems with two real-valued poles, we can analyze the damping ratio, natural frequency, and transient response characteristics, enabling us to optimize system performance and stability.`},
+//In essence, exploring these systems allows us to understand how damping influences the behavior of dynamic systems, ensuring smooth and controlled responses in real-world applications.
 
 
 //In automatic control, why do we study second-order systems with two complex poles? Give an answer with vivid examples of resonating systems, with correct automatic control vocabulary while keeping the rest of the english simple.
@@ -728,17 +728,17 @@ In essence, exploring these systems allows us to understand how damping influenc
       }
     }
     return {visible:false}
-  },a:`We study second-order systems with two complex poles because they often represent resonating systems, which are prevalent in automatic control. Imagine a playground swing as an example of a resonating system. When you push a swing, it oscillates back and forth at its natural frequency. Similarly, in control systems, resonating systems exhibit oscillatory behavior when subjected to certain inputs or disturbances.<br><br>
-Understanding these systems helps us design controls for various applications, like audio speakers or vibrating machines, where managing resonance is crucial. By studying second-order systems with two complex poles, we can analyze the resonance frequency, damping ratio, and stability characteristics, enabling us to mitigate unwanted oscillations and ensure system stability.<br><br>
-In essence, delving into these systems allows us to harness and control resonance effects, ensuring optimal performance and stability in real-world applications.`},
+  },a:`Imagine a playground swing as an example of a resonating system. When you push a swing, it oscillates back and forth at its natural frequency. Similarly, in control systems, resonating systems exhibit oscillatory behavior when subjected to certain inputs or disturbances. We study second-order systems with two complex poles because they often represent resonating systems, which are prevalent in automatic control.<br><br>
+Understanding these systems helps us design controls for various applications, like audio speakers or vibrating machines, where managing resonance is crucial. By studying second-order systems with two complex poles, we can analyze the resonance frequency, damping ratio, and stability characteristics, enabling us to mitigate unwanted oscillations and ensure system stability.`},
+//In essence, delving into these systems allows us to harness and control resonance effects, ensuring optimal performance and stability in real-world applications.
 
 
 //Who invented the Nyquist diagram, and why is it essential for Automatic control theory? Give an answer with vivid examples of Automatic control theory, with correct automatic control vocabulary while keeping the rest of the english simple.
   "Nyquist":{q:"Who invented the Nyquist diagram?",pos:function(){return {visible:true,x:graph_nyquist_x+graph_nyquist_x_offset+graph_nyquist_width/2,y:graph_nyquist_y+graph_nyquist_y_offset-10};},
   a:`The Nyquist diagram was invented by the Swedish-American engineer and physicist Harry Nyquist in the early 1930s. It's a powerful tool in automatic control theory for analyzing the stability of feedback control systems.<br><br>
 Imagine you're driving a car and you want to maintain a steady speed. The car's cruise control system adjusts the throttle based on feedback from your speedometer. If the control system is unstable, it might overcorrect, causing the car to speed up and slow down unpredictably.<br><br>
-The Nyquist diagram helps engineers understand and predict the stability of such control systems. It plots the frequency response of a system on a complex plane, providing insights into how system dynamics change with frequency.<br><br>
-By analyzing the Nyquist plot, engineers can determine if a control system is stable or if it's prone to oscillations or instability. This information is crucial for designing reliable and effective control systems for various applications, such as aircraft autopilots, robotic arms, or temperature controllers in industrial processes.`},
+The Nyquist diagram helps you understand and predict the stability of such control systems. It plots the frequency response of a system on a complex plane, providing insights into how system dynamics change with frequency.<br><br>
+By analyzing the Nyquist plot, you can determine if a control system is stable or if it's prone to oscillations or instability. This information is crucial for designing reliable and effective control systems for various applications, such as aircraft autopilots, robotic arms, or temperature controllers in industrial processes.`},
 
 
 //Who invented the Bode plots, and why are they essential for Automatic control theory? Give an answer with vivid examples of Automatic control theory, with correct automatic control vocabulary while keeping the rest of the english simple.
@@ -746,7 +746,7 @@ By analyzing the Nyquist plot, engineers can determine if a control system is st
   a:`Bode plots were developed by the American engineer Hendrik Wade Bode in the 1930s. They are fundamental tools in automatic control theory for analyzing the frequency response of dynamic systems.<br><br>
 Imagine you're designing a sound system for a concert hall. You want to ensure that the system delivers clear and balanced sound across a wide range of frequencies. Bode plots help engineers understand how the system responds to different frequencies, allowing them to optimize its performance.<br><br>
 Bode plots display the magnitude and phase of a system's frequency response on logarithmic scales. This makes it easier to visualize how a system amplifies or attenuates signals at different frequencies and how it shifts the phase of those signals.<br><br>
-By analyzing Bode plots, engineers can identify resonance frequencies, damping ratios, and stability margins of control systems. This information is crucial for designing stable and robust control systems for applications such as aircraft autopilots, electronic circuits, or motion control systems in robotics.`},
+By analyzing Bode plots, you can identify resonance frequencies, damping ratios, and stability margins of control systems. This information is crucial for designing stable and robust control systems for applications such as aircraft autopilots, electronic circuits, or motion control systems in robotics.`},
 
 
 //Why does the Bode magnitude plot use magnitude instead of amplitude in automatic control? Give an answer with vivid examples of Automatic control theory, with correct automatic control vocabulary while keeping the rest of the english simple.
@@ -777,14 +777,14 @@ Cons:<ul>
 //Why is the step input response of a automatic control transfer function important? What can I learn from it? Give an answer with vivid examples of Automatic control theory, with correct automatic control vocabulary while keeping the rest of the english simple.
 //Who invented the Bode plots, and why are they essential for Automatic control theory? Give an answer with vivid examples of Automatic control theory, with correct automatic control vocabulary while keeping the rest of the english simple.
   "Step_response":{q:"Why is the step input response important?",pos:function(){return {visible:true,x:graph_step_response_x+graph_step_response_x_offset+graph_step_response_width/2,y:graph_step_response_y+graph_step_response_y_offset+graph_step_response_height/2};},
-  a:`The step input response of an automatic control transfer function is important because it provides valuable insights into how a control system behaves when subjected to a sudden change in its input signal.<br><br>
-Imagine you're driving a car with cruise control. When you press the accelerator pedal to set a new speed, the car's cruise control system adjusts the throttle to reach the desired speed smoothly and without overshooting. The step input response of the cruise control system shows how quickly and accurately the car reaches the new speed and how stable the system is during this transition.<br><br>
+  a:`Imagine you're driving a car with cruise control. When you press the accelerator pedal to set a new speed, the car's cruise control system adjusts the throttle to reach the desired speed smoothly and without overshooting. The step input response of the cruise control system shows how quickly and accurately the car reaches the new speed and how stable the system is during this transition.<br><br>
+The step input response of a transfer function is important because it provides valuable insights into how a control system behaves when subjected to a sudden change in its input signal.<br><br>
 By analyzing the step input response, engineers can determine several key characteristics of the control system:<br>
 1. <b>Rise Time</b>: This is the time it takes for the system's output to reach a certain percentage (usually 90% or 95%) of its final value after the step input is applied. A shorter rise time indicates a faster response.<br>
 2. <b>Settling Time</b>: This is the time it takes for the system's output to settle within a certain tolerance band around its final value and stay there. A shorter settling time indicates a faster response and better stability.<br>
 3. <b>Overshoot</b>: This is the maximum deviation of the system's output from its final value during the transient response. Excessive overshoot can lead to oscillations or instability in the system.<br>
 4. <b>Steady-State Error</b>: This is the difference between the desired output and the actual output of the system once it has settled. Minimizing steady-state error is important for achieving accurate and precise control.<br><br>
-By analyzing these characteristics, engineers can evaluate the performance and stability of the control system and make necessary adjustments to improve its behavior. For example, if the system exhibits excessive overshoot or slow settling time, engineers may need to tune the controller parameters to achieve better response.<br><br>
+By analyzing these characteristics, you can evaluate the performance and stability of the control system and make necessary adjustments to improve its behavior. For example, if the system exhibits excessive overshoot or slow settling time, you may need to tune the controller parameters to achieve better response.<br><br>
 The step input response of an automatic control transfer function is crucial for understanding and optimizing the dynamic behavior of control systems, ensuring they respond quickly, accurately, and stably to changes in their inputs.`},
 
 
@@ -797,9 +797,9 @@ The step input response of an automatic control transfer function is crucial for
     } else {
       return {visible:false};
     }
-  },a:`In automatic control, the damping factor (often called z or the Greek letter zeta &zeta;) of a resonant second-order system measures how fast the system's oscillations fade away over time. It's like the system's ability to dampen or reduce its vibrations.<br><br>
-Let's imagine a bell as an example of a resonating system. When you strike a bell, it produces a ringing sound that gradually fades away. The damping factor determines how quickly the sound fades. If the bell has high damping, the sound dies down rapidly. But if the damping is low, the sound lingers for longer.<br><br>
-In automatic control, damping is crucial for ensuring stable and controlled behavior of systems. If a resonant system has insufficient damping, it can lead to excessive oscillations or even instability. Engineers adjust the damping factor to strike a balance between stability and responsiveness in control systems, just like tuning a bell to produce the desired sound.`},
+  },a:`Let's imagine a bell as an example of a resonating system. When you strike a bell, it produces a ringing sound that gradually fades away. The damping factor determines how quickly the sound fades. If the bell has high damping, the sound dies down rapidly. But if the damping is low, the sound lingers for longer.<br><br>
+The damping factor (often called z or the Greek letter zeta &zeta;) of a resonant second-order system measures how fast the system's oscillations fade away over time. It's like the system's ability to dampen or reduce its vibrations.<br><br>
+Damping is crucial for ensuring stable and controlled behavior of systems. If a resonant system has insufficient damping, it can lead to excessive oscillations or even instability. Engineers adjust the damping factor to strike a balance between stability and responsiveness in control systems, just like tuning a bell to produce the desired sound.`},
 
 };
 function enable_questions(){
