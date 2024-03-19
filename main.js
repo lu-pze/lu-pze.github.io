@@ -906,6 +906,26 @@ The Bode phase plot is an essential tool for analyzing and designing control sys
 </ul>
 The -180-degree mark on a Bode phase plot is crucial for ensuring the stability of control systems by avoiding conditions that turn negative feedback into positive feedback, potentially causing undamped oscillations and instability. These examples elucidate the dire consequences of neglecting or miscalculating feedback control in engineering systems.`},
 
+
+//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"In automatic control theory, why is a transfer function with a time delay difficult to use feedback control with? Give me three vivid examples of systems with time delays. Give your answer in HTML and LaTeX formatting, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
+  "time_delay_L":{q:"Why is a time delay a problem?",pos:function(){
+    let span = document.getElementById('variable_L');
+    if (span!=null){
+      let rect = span.getBoundingClientRect();
+      return {visible:true,x:rect.left + rect.width/2,y:rect.top + rect.height/2};
+    } else {
+      return {visible:false};
+    }
+  },a:`<p>A transfer function with a time delay presents significant challenges for feedback control implementation. Time delay in a system, often denoted as <i>L</i> or &tau;, effectively means that the system's output response to a control action is not instant but delayed by a certain time duration. This attribute complicates the use of feedback control for several reasons:</p>
+<ul><li><b>Predictability:</b> The presence of a time delay makes the system's response less predictable. Feedback control relies on correcting errors by adjusting inputs based on the difference between the desired and actual outputs. A delay disrupts this dynamic, as adjustments made by the controller will not have an immediate effect, making it harder to stabilize the system.</li>
+<li><b>Stability:</b> Time delays can introduce or exacerbate stability issues. In feedback systems, the controller's actions based on delayed information can lead to overcompensation, initiating oscillatory or even unstable behavior.</li>
+<li><b>Performance:</b> Achieving desired performance metrics (like settling time, overshoot, and bandwidth) becomes more challenging with time delays since the delay limits how quickly and accurately the system can respond to changes.</li>
+</ul>Examples of systems with time delays:
+<ol><li><b>Networked Control Systems:</b> In systems where the control loops are closed via communication networks (such as the Internet), delays inherent in the network transmission can significantly affect the control performance, making it difficult to ensure stability and responsiveness.</li>
+<li><b>Chemical Process Control:</b> Many processes in chemical engineering, such as distillation columns or chemical reactors, have inherent time delays due to the time it takes for heat, mass transfer, or chemical reactions to occur. Controlling these processes accurately requires accounting for these delays.</li>
+<li><b>Automotive Engine Control:</b> There is a time delay between the moment the fuel injector is activated and when the increased engine power is realized. This delay must be considered in the engine control system to ensure optimal performance and fuel efficiency.</li>
+</ol>`},
+
 };
 function enable_questions(){
   questions_enabled = true;
