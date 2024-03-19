@@ -820,7 +820,7 @@ Damping is crucial for ensuring stable and controlled behavior of systems. If a 
 
 
 //curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"Respond using HTML and LaTeX. In automatic control theory, what is the definition of phase margin? Give me three vivid examples where the phase margin is crucial. Answer with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
-  "phase_margin":{q:"What is phase margin?",pos:function(){
+  "phase_margin":{q:"What is the phase margin?",pos:function(){
     let span = document.getElementById('phase_margin');
     if (span!=null){
       let rect = span.getBoundingClientRect();
@@ -836,6 +836,54 @@ where &phi;(&omega;<sub>gc</sub>) is the phase of the open-loop transfer functio
 <b>Industrial Robot Arms</b>: In robotic systems used for manufacturing or assembly, precise and stable control of robotic arms is essential for accuracy and efficiency. The phase margin is crucial in tuning the control systems that govern these robotic arms, making sure they can follow desired trajectories smoothly without oscillating or veering off course. This is especially important when the robotic arms are performing high-speed movements or delicate operations, where stability translates into safety and precision.<br>
 <b>Automotive Cruise Control Systems</b>: Modern vehicles often come equipped with cruise control systems that automatically adjust the vehicle's speed to maintain a set speed. The stability of these control systems is heavily dependent on having an adequate phase margin. A good phase margin ensures that the vehicle smoothly accelerates or decelerates to the desired speed without excessive overshoot, undershoot, or oscillations, thereby enhancing both comfort and safety for passengers and other road users.<br><br>
 In each of these examples, the phase margin ensures that the control system is sufficiently robust to handle deviations from ideal conditions without sacrificing performance or safety.`},
+
+
+
+//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"In automatic control theory, what is the definition of phase crossover frequency? Give me three vivid examples where the phase crossover frequency is crucial. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
+  "phase_crossover_frequency":{q:"What is the phase crossover frequency?",pos:function(){
+    let span = document.getElementById('phase_crossover_frequency');
+    if (span!=null){
+      let rect = span.getBoundingClientRect();
+      return {visible:true,x:rect.left + rect.width/2,y:rect.top + rect.height/2};
+    } else {
+      return {visible:false};
+    }
+  },a:`<p>The <strong>phase crossover frequency</strong> (often denoted as &omega;<sub>pc</sub>) refers to the frequency at which the phase angle of the open-loop transfer function of a system crosses through -180°. This is a crucial parameter in analyzing and designing control systems, especially when dealing with stability and performance characteristics as per the Nyquist stability criterion. At the phase crossover frequency, the phase margin of the system is determined, which is a measure of the system's tolerance to gain changes before becoming unstable.</p>
+  <ul>
+  <li><strong>Aerospace Control Systems:</strong> In the design of flight control systems for aircraft, the phase crossover frequency is vital in ensuring that the aircraft responds appropriately to pilot inputs without entering into oscillatory or unstable behavior. A well-designed phase crossover frequency helps in maintaining the aircraft's stability and maneuverability, especially during critical maneuvers.</li>
+  <li><strong>Process Control in Chemical Plants:</strong> In chemical process control, maintaining the desired reaction conditions precisely is critical for both safety and product quality. The phase crossover frequency plays a key role in the design of control systems that regulate temperature, pressure, and flow rates within reactors. A poorly chosen phase crossover frequency can lead to system instability, leading to over-correction and oscillations, or even catastrophic failures in worst-case scenarios.</li>
+  <li><strong>Automotive Cruise Control Systems:</strong> The phase crossover frequency is also critical in the design of cruise control systems, ensuring that the vehicle can maintain a set speed regardless of varying load conditions (like climbing hills or carrying additional passengers). An optimal phase crossover frequency ensures that the system provides smooth acceleration and deceleration, enhancing both comfort and fuel efficiency, without leading to instability that could cause uncomfortable ride experiences or loss of control.</li>
+  </ul>
+The phase crossover frequency is a fundamental concept in automatic control theory that influences the stability and performance of a wide variety of systems. Its proper determination is essential for the design of robust and effective control systems in numerous practical applications.`},
+
+
+//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"In automatic control theory, what is the definition of gain margin? Give me three vivid examples where the gain margin is crucial. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
+  "gain_margin":{q:"What is the gain margin?",pos:function(){
+    let span = document.getElementById('gain_margin');
+    if (span!=null){
+      let rect = span.getBoundingClientRect();
+      return {visible:true,x:rect.left + rect.width/2,y:rect.top + rect.height/2};
+    } else {
+      return {visible:false};
+    }
+  },a:`<p>The <strong>gain margin</strong> is a measure of the stability of a system. Specifically, it is the amount by which the system's open-loop gain can be increased before the system becomes unstable. The gain margin is calculated as:</p>
+  <p>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+  \\text{Gain Margin} = \\frac{1}{|G(j\\omega_{pc})|}
+  </math-field>
+    <math-field read-only style='vertical-align:bottom;display:inline-block'>
+  \\text{or in decibel scale, } Gain Margin_{dB} = 20 \\log_{10} \\left( \\frac{1}{|G(j\\omega_{pc})|} \\right)
+  </math-field><br><br>
+  <p>where |G(j&omega;<sub>pc</sub>)| is the magnitude of the open-loop transfer function G at the phase crossover frequency &omega;<sub>pc</sub>, where the phase angle is -180°.</p>
+  <ul>
+  <li><strong>Aircraft Control Systems:</strong> In aircraft, ensuring the stability of control systems like autopilots is crucial for safety. A significant gain margin allows for changes in aircraft dynamics due to different flight conditions (speed, altitude) without risking instability. For instance, abrupt maneuvers or changes in aerodynamic conditions could potentially push the system towards instability. A healthy gain margin ensures there's enough 'buffer' to handle such variations without compromising control.</li>
+
+  <li><strong>Automotive Cruise Control:</strong> Cruise control systems maintain a vehicle's speed without manual input by adjusting the throttle position. Variations in vehicle load (e.g., passengers or cargo) and road inclinations can alter system dynamics. A sufficient gain margin ensures that the system can accommodate such changes and maintain speed without becoming unstable, avoiding oscillations or erratic speed adjustments.</li>
+
+  <li><strong>Chemical Process Control:</strong> In chemical plants, the control of processes such as reactor temperatures, pressure, and flow rates is vital. These processes are highly sensitive to operating conditions. A control system with an adequate gain margin ensures stability even as the process dynamics change with varying reactant concentrations, temperature, or pressure. This is particularly crucial in ensuring consistent product quality and preventing potentially hazardous conditions.</li>
+  </ul>
+The gain margin is a fundamental measure in ensuring the stability of control systems across a variety of applications. By providing a quantifiable buffer against changes that could lead to instability, it plays a critical role in the design and analysis of robust control systems.`},
+
 
 };
 function enable_questions(){
@@ -887,7 +935,6 @@ function show_answer(q_id){
   answer_text_div.innerHTML=s;
   let toggleElement = document.querySelector('.answer');
   toggleElement.classList.toggle('active');
-  if (q_id=="ONE_REAL_POLE_pz") achievement_done("open_ONE_REAL_POLE_help");
 }
 
 
@@ -2581,7 +2628,7 @@ const all_achievements={
   "go_fullscreen":"Get rid of distractions by going <svg width='20' height='20' viewBox='0 0 24 24' style='vertical-align:middle'><use href='#icon_fullscreen'/></svg> fullscreen",
   "drag_pole":"Drag a pole in the pole-zero map",
   "drag_zero":"Drag a zero in the pole-zero map",
-  "open_ONE_REAL_POLE_help":"Open the <svg width='20' height='20' viewBox='0 0 24 24' style='vertical-align:middle'><use href='#icon_help'/></svg> help section for the pole-zero map about <b>one real pole</b>.",
+  "ask_a_question":"Right click to ask <svg width='20' height='20' viewBox='0 0 24 24' style='vertical-align:middle'><use href='#icon_help'/></svg> questions.",
   "drag_bode_mag":"Drag a transfer function in the Bode magnitude plot",
   "drag_bode_phase":"Drag a transfer function in the Bode phase plot",
   "drag_complex_pole":"Drag <b>two complex poles</b> in the pole-zero map",
@@ -6847,6 +6894,7 @@ function ready (){
     // Prevent the default right-click behavior
     event.preventDefault();
     questionsToggle();
+    achievement_done("ask_a_question");
   });
   //document.addEventListener('mouseup', function(event) {
   //  if (event.button === 2) {
