@@ -885,6 +885,27 @@ The phase crossover frequency is a fundamental concept in automatic control theo
 The gain margin is a fundamental measure in ensuring the stability of control systems across a variety of applications. By providing a quantifiable buffer against changes that could lead to instability, it plays a critical role in the design and analysis of robust control systems.`},
 
 
+//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"In automatic control theory, why is -180 degree on the y axis in the Bode phase plot important? Give me three vivid examples when feedback control goes wrong and the catastrophic results. Give your answer in HTML and LaTeX formatting, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
+  "Bode_-180_degrees":{q:"Why is -180° important in the Bode phase plot?",pos:function(){
+  let angle=-180;
+  if ((angle >= phase_lower_bound) && (angle <= phase_upper_bound)){
+    let screen_y = map(angle,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
+    return {visible:true,x:graph_bode_phase_x+graph_bode_phase_x_offset,y:graph_bode_phase_y+graph_bode_phase_y_offset+screen_y}
+  } else return {visible:false};},
+  a:`<b>Tacoma Narrows Bridge Collapse (1940)</b>
+  <p>The Tacoma Narrows Bridge collapse is a classic example of a physical system falling into catastrophic oscillation due to inadequate damping and feedback. The bridge entered a resonance condition under wind forces, which matched one of its natural frequencies. The aerodynamic feedback, supposed to dampen the motion, instead led to destructive oscillations because the dynamic response of the bridge was not correctly anticipated in the design.</p>
+<b>Chernobyl Nuclear Disaster (1986)</b>
+  <p>At Chernobyl, a series of operator errors compounded by a reactor design vulnerable to runaway conditions due to positive feedback led to an explosion and catastrophic meltdown. The reactor's design, which had a positive void coefficient, meant that an increase in temperature led to increased reactor power, a classic example of positive feedback leading to instability, contrary to the desired negative feedback for controlling nuclear reactions.</p>
+<b>Air France Flight 447 Crash (2009)</b>
+  <p>The crash of Air France Flight 447 offers a modern example where feedback control systems may have contributed to catastrophe. In this case, the aircraft's pitot tubes iced over, feeding incorrect airspeed data to the flight computers. The automated control systems, misled by this data, made inappropriate control commands that the pilots struggled to correct, ultimately leading to a fatal stall.</p>
+The Bode phase plot is an essential tool for analyzing and designing control systems. A point of critical importance on this plot is the -180-degree mark on the y-axis. This angle is particularly significant because:
+<ul>
+<li><b>Phase Margin:</b> The -180-degree phase angle is pivotal in determining the phase margin of the system. The phase margin is the amount of additional phase lag at the crossover frequency (where the gain is 1 or 0 dB in the magnitude plot) that will bring the system to the verge of instability. A phase margin close to zero or negative indicates a system that could be unstable or exhibit poor transient behavior.
+<li><b>Stability Criterion:</b> According to the Nyquist Stability Criterion, for a system to be stable, the closed-loop frequency response should not encircle the point (-1, j0) in the complex plane. A phase shift of -180 degrees combined with a gain greater than one at this phase shift means the system output will be in phase opposition to the input, potentially leading to positive feedback loop instead of the desired negative feedback. This creates the risk of undamped oscillations or instability.
+<li><b>Feedback Control:</b> In a negative feedback loop, the goal is generally to subtract the feedback signal from the input signal. If the phase lag reaches -180 degrees at a frequency where the gain is higher than 1, then the feedback becomes positive instead, amplifying errors rather than correcting them, leading to potential instability.
+</ul>
+The -180-degree mark on a Bode phase plot is crucial for ensuring the stability of control systems by avoiding conditions that turn negative feedback into positive feedback, potentially causing undamped oscillations and instability. These examples elucidate the dire consequences of neglecting or miscalculating feedback control in engineering systems.`},
+
 };
 function enable_questions(){
   questions_enabled = true;
@@ -2371,6 +2392,7 @@ function update_assignments(){
 
 function restart_lupze(){
   //location.reload();
+  disable_questions();
   let quiz_text = document.getElementById("quiz_text");
   quiz_text.innerHTML="";
   current_quiz="none";
