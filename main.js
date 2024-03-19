@@ -732,6 +732,23 @@ Understanding these systems helps us design controls for various applications, s
 Understanding these systems helps us design controls for various applications, like audio speakers or vibrating machines, where managing resonance is crucial. By studying second-order systems with two complex poles, we can analyze the resonance frequency, damping ratio, and stability characteristics, enabling us to mitigate unwanted oscillations and ensure system stability.`},
 //In essence, delving into these systems allows us to harness and control resonance effects, ensuring optimal performance and stability in real-world applications.
 
+//In automatic control, why do we study second-order systems with two complex poles? Give an answer with vivid examples of resonating systems, with correct automatic control vocabulary while keeping the rest of the english simple.
+  "ONE_ZERO_TWO_POLES_pz":{q:"Why do we study systems with one zero and two poles?",pos:function(){
+    for(let i=0; i<bode_graphs.length; i++){
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula)){
+        return {visible:true,x:pole_zero_graph_x[i]+graph_pole_zero_width/2,y:pole_zero_graph_y[i]+graph_pole_zero_width/2};
+      }
+    }
+    return {visible:false}
+  },a:`<b>DC Motor Speed Control System</b>: A direct current (DC) motor's speed can be controlled through voltage adjustments. The mathematical model of a DC motor might result in a transfer function with one zero and two poles when considering the electrical dynamics (voltage-to-current) and mechanical dynamics (torque-to-speed). This system showcases how input voltage changes can affect the steady-state speed and transient performance, such as overshoot and settling time.<br>
+<b>Mass-Spring-Damper System</b>: This classic mechanical system comprises a mass attached to a spring and a damper, where the force applied to the mass is countered by the spring's restoring force and the damper's resistive force. The system's transfer function, relating force to displacement, often features one zero and two poles, demonstrating natural frequencies, damping ratios, and resonance phenomena.<br>
+<b>Thermal System for a Heated Tank</b>: Consider a tank where liquid is heated through an electric heater and cooled by the surrounding environment. The dynamics of heating (considering the heater power as input and the liquid temperature as output) might be represented by a transfer function with one zero and two poles, revealing how heat transfer rates, heat capacity, and environmental interaction influence temperature control and stability.<br><br>
+Many physical and engineering systems can be approximated or modeled accurately enough with one zero and two poles. This simplification aids in the conceptual understanding and practical application of control theory without overwhelming complexity.<br>
+These systems provide a clear view of how the pole and zero locations affect the system's response, including factors like stability, settling time, overshoot, and steady-state error.<br><br>
+With a relatively simple system configuration, various feedback control techniques (like PID control, lead or lag compensators) can be applied and analyzed, offering lessons on how control actions modify system behavior.`},
+//In automatic control theory, studying systems with one zero and two poles provides insights into the dynamics of a wide range of physical and engineering applications. Such configurations often occur in practical systems and offer a balance between simplicity and the ability to capture significant dynamic behaviors. This focus allows for the exploration of essential concepts such as stability, transient response, and steady-state accuracy within a manageable framework, facilitating the understanding and design of feedback control systems.
+//In summary, studying systems with one zero and two poles in automatic control theory is a foundational step that bridges theoretical concepts with practical applications, encouraging a deep understanding of how various control strategies can be employed to achieve desired system behaviors in a wide range of real-world scenarios.
+
 
 //Who invented the Nyquist diagram, and why is it essential for Automatic control theory? Give an answer with vivid examples of Automatic control theory, with correct automatic control vocabulary while keeping the rest of the english simple.
   "Nyquist":{q:"Who invented the Nyquist diagram?",pos:function(){return {visible:true,x:graph_nyquist_x+graph_nyquist_x_offset+graph_nyquist_width/2,y:graph_nyquist_y+graph_nyquist_y_offset-10};},
@@ -789,7 +806,7 @@ The step input response of an automatic control transfer function is crucial for
 
 
 //In automatic control and a resonant second order system, what is the damping factor? Give an answer with vivid examples of resonating systems, with correct automatic control vocabulary while keeping the rest of the english simple.
-  "Damping_factor_z":{q:"What is the damping factor?",pos:function(){
+  "Damping_factor_z":{q:"What is the damping factor (&zeta; or z)?",pos:function(){
     let z_span = document.getElementById('variable_z');
     if (z_span!=null){
       let rect = z_span.getBoundingClientRect();
@@ -800,6 +817,25 @@ The step input response of an automatic control transfer function is crucial for
   },a:`Let's imagine a bell as an example of a resonating system. When you strike a bell, it produces a ringing sound that gradually fades away. The damping factor determines how quickly the sound fades. If the bell has high damping, the sound dies down rapidly. But if the damping is low, the sound lingers for longer.<br><br>
 The damping factor (often called z or the Greek letter zeta &zeta;) of a resonant second-order system measures how fast the system's oscillations fade away over time. It's like the system's ability to dampen or reduce its vibrations.<br><br>
 Damping is crucial for ensuring stable and controlled behavior of systems. If a resonant system has insufficient damping, it can lead to excessive oscillations or even instability. Engineers adjust the damping factor to strike a balance between stability and responsiveness in control systems, just like tuning a bell to produce the desired sound.`},
+
+
+//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"Respond using HTML and LaTeX. In automatic control theory, what is the definition of phase margin? Give me three vivid examples where the phase margin is crucial. Answer with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
+  "phase_margin":{q:"What is phase margin?",pos:function(){
+    let span = document.getElementById('phase_margin');
+    if (span!=null){
+      let rect = span.getBoundingClientRect();
+      return {visible:true,x:rect.left + rect.width/2,y:rect.top + rect.height/2};
+    } else {
+      return {visible:false};
+    }
+  },a:`<b>Phase margin</b> is defined as the amount of additional phase lag at the gain crossover frequency that would lead to the system becoming unstable. The gain crossover frequency is the frequency at which the magnitude of the open-loop transfer function equals 1.0 (which sometimes is refered to as 0 dB). The phase margin is a measure of system stability; a higher phase margin indicates a more stable system. It is usually expressed in degrees.<br><br>
+Mathematically, the phase margin can be expressed as<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>PhaseMargin = 180^\\circ + \\phi(\\omega_{gc})</math-field><br>
+where &phi;(&omega;<sub>gc</sub>) is the phase of the open-loop transfer function at the gain crossover frequency &omega;<sub>gc</sub>.<br><br>
+<b>Aircraft Autopilot Systems</b>: Stability is paramount in aircraft control systems to ensure smooth and safe flight operations. The phase margin plays a critical role in the design of autopilot systems, where it ensures that even with the presence of uncertainties in aircraft dynamics or external disturbances (like wind gusts), the system remains stable and can maintain or return to the desired flight path. A sufficiently high phase margin is needed to account for these uncertainties and provide a buffer against instability.<br>
+<b>Industrial Robot Arms</b>: In robotic systems used for manufacturing or assembly, precise and stable control of robotic arms is essential for accuracy and efficiency. The phase margin is crucial in tuning the control systems that govern these robotic arms, making sure they can follow desired trajectories smoothly without oscillating or veering off course. This is especially important when the robotic arms are performing high-speed movements or delicate operations, where stability translates into safety and precision.<br>
+<b>Automotive Cruise Control Systems</b>: Modern vehicles often come equipped with cruise control systems that automatically adjust the vehicle's speed to maintain a set speed. The stability of these control systems is heavily dependent on having an adequate phase margin. A good phase margin ensures that the vehicle smoothly accelerates or decelerates to the desired speed without excessive overshoot, undershoot, or oscillations, thereby enhancing both comfort and safety for passengers and other road users.<br><br>
+In each of these examples, the phase margin ensures that the control system is sufficiently robust to handle deviations from ideal conditions without sacrificing performance or safety.`},
 
 };
 function enable_questions(){
