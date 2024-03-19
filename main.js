@@ -954,6 +954,34 @@ The -180-degree mark on a Bode phase plot is crucial for ensuring the stability 
           <li><strong>Tuning:</strong> Adjusting the system parameters (such as spring constants or masses in mechanical systems) can shift the resonance frequency away from the operating range, thus minimizing its impact.</li>
       </ol>`},
 
+
+//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For a student learning automatic control theory, give four positive examples of outcomes of doing rapid exercises with quiz-type questions where the difficulty level adapts to the performance of the student. Write your answer in HTML with LaTeX for mathematical formulas, with correct automatic control vocabulary while keeping the rest of the english simple. You do not need to make an introduction or a summary, just write the html code with the embedded LaTeX formulas."}]}'
+  "quiz_badge":{q:"Who's the quiz for?",pos:function(){
+    let span = document.getElementById('cap_0');
+    if (span!=null){
+      let rect = span.getBoundingClientRect();
+      return {visible:true,x:rect.left + rect.width/2,y:rect.top + rect.height/2};
+    } else {
+      return {visible:false};
+    }
+  },a:`It's for you. The adapting difficulty level of the quiz will help your training, regardless of your level, with rapid questions and personalized feedback where you make mistakes. You will get:
+<ul>
+    <li>Improved <strong>feedback-loop understanding</strong>: By engaging in adaptive difficulty exercises, you can grasp concepts such as the transfer function,<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+  G(s) = \\frac{Y(s)}{U(s)},
+  </math-field><br>
+and the significance of stability in control systems more effectively. This approach ensures that the material is neither too challenging nor too easy, facilitating optimal learning progress.</li>
+    <li>Increased <strong>frequency response analysis</strong> proficiency: You can enhance your understanding of Bode plots and Nyquist plots, crucial for determining the frequency response of a system. Through adaptive questioning, you will be gradually introduced to more sophisticated analysis techniques, improving your ability to assess system performance and stability margins using these methods, exemplified by the gain margin G<sub>m</sub> and phase margin &phi;<sub>m</sub>.</li>
+    </ul>Click on the quiz icon to get started!`},
+//    <li>Enhanced <strong>root locus skills</strong>: Adaptive quizzes can help you master the plotting of root locus diagrams, essential for analyzing system responses. Through tailored questions, students can progressively understand complex plots, for instance, how to determine the system's stability by examining the locations of poles in the s-plane, represented by (s = &sigma; + j&omega;).</li>
+//    <li>Better <strong>PID controller tuning</strong>: Personalized exercises enable you to experiment with proportional (P), integral (I), and derivative (D) controller parameters and observe their effects on system performance, including minimizing the error signal, e(t). This hands-on approach helps demystify the process of optimizing a PID controller, given as<br>
+//  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+//  PID(s) = K_p + \\frac{K_i}{s} + K_ds,
+//  </math-field><br>
+//for different system dynamics.</li>
+
+
+
 };
 function enable_questions(){
   questions_enabled = true;
