@@ -926,6 +926,34 @@ The -180-degree mark on a Bode phase plot is crucial for ensuring the stability 
 <li><b>Automotive Engine Control:</b> There is a time delay between the moment the fuel injector is activated and when the increased engine power is realized. This delay must be considered in the engine control system to ensure optimal performance and fuel efficiency.</li>
 </ol>`},
 
+
+//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"In automatic control theory, in a system with two complex poles, what is the resonance frequency and what options do we have to deal with it? Give me three vivid examples of systems with resonance, both good and bad ones. Give your answer in HTML with LaTeX for mathematical formulas, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
+  "resonance_frequency_w":{q:"What about the resonance frequency w?",pos:function(){
+    let span = document.getElementById('variable_w');
+    if (span!=null){
+      let rect = span.getBoundingClientRect();
+      return {visible:true,x:rect.left + rect.width/2,y:rect.top + rect.height/2};
+    } else {
+      return {visible:false};
+    }
+  },a:`<h3>Beneficial Resonance</h3>
+      <ul>
+          <li><strong>Musical Instruments:</strong> The body of a violin acts as a resonator, amplifying the sound at certain frequencies, which enriches the music's quality and volume.</li>
+          <li><strong>Radio Receivers:</strong> Tuning a receiver to resonate at a specific frequency allows it to selectively pick up the desired radio signal amidst numerous other signals.</li>
+      </ul>
+      <h3>Harmful Resonance</h3>
+      <ul>
+          <li><strong>Tacoma Narrows Bridge (1940):</strong> Due to resonance, the bridge experienced drastic oscillations in windy conditions, ultimately leading to its collapse. This classic example highlights the critical importance of considering resonance in engineering design.</li>
+          <li><strong>Building Vibrations:</strong> Buildings that resonate with seismic or wind-induced vibrations can suffer from structural damage. This necessitates careful design to avoid resonant frequencies that could coincide with environmental forces.</li>
+      </ul>
+  A system with two complex poles exhibits a phenomenon known as <em>resonance</em>. The resonance frequency, often denoted as &omega;<sub>r</sub>, is a specific frequency at which the system's output amplitude significantly increases. This frequency is closely related to the natural frequency of the system but is affected by damping.</p>
+      <p>To manage or mitigate the effects of resonance, there are several strategies we can employ:</p>
+      <ol>
+          <li><strong>Damping Increase:</strong> By increasing the damping ratio of the system, the peak of the resonance can be reduced, making the system less sensitive to variations around the resonance frequency.</li>
+          <li><strong>Feedback Control:</strong> Implementing a feedback control strategy can help regulate the system's response, including at the resonance frequency, ensuring stability and desired performance.</li>
+          <li><strong>Tuning:</strong> Adjusting the system parameters (such as spring constants or masses in mechanical systems) can shift the resonance frequency away from the operating range, thus minimizing its impact.</li>
+      </ol>`},
+
 };
 function enable_questions(){
   questions_enabled = true;
