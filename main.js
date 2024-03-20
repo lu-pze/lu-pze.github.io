@@ -42,6 +42,13 @@ const GRAPH_TIME_DELAY = {name:"Time delay", mf:"\\frac{3}{1+s}e^{-Ls}", formula
 const GRAPH_ONE_ZERO_TWO_POLES = {name:"One zero two poles", mf:"\\frac{k_4(1+T_8s)}{(1+T_6s)(1+T_7s)}", formula:"k_4(1+T_8s)/(1+T_6s)*1/(1+T_7s)"};
 const GRAPH_FOUR_POLES = {name:"Four poles", mf:"\\frac{k_5}{(1+T_5s)^4}", formula:"k_5/((1+T_5s)^4)"};
 const GRAPH_ONE_ZERO = {name:"One zero", mf:"T_4s+0.5", formula:"T_4*s+0.5"};
+//const GRAPH_ONE_POLE_WITH_PID_YR = {name:"One pole with PID R->Y", mf:"\\frac{K k_1 (1 + T_i s + T_iT_ds^2)}{K k_1 + T_i (1 + K k_1)s + T_i (T_1 + K k_1 T_d)s^2}", formula:"(K*k_1*(1 + T_i*s + T_i*T_d*s*s)) / (K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)*s*s)"};
+const GRAPH_ONE_POLE_WITH_PID_YR = {name:"One pole with PID R->Y", mf:"G_{YR} = \\frac{G_{PID} \\cdot G}{1 + G_{PID} \\cdot G}", formula:"(K*k_1*(1 + T_i*s + T_i*T_d*s*s)) / (K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)*s*s)"};
+const GRAPH_PID = {name:"PID controller", mf:"G_{PID}=K \\left(1 + \\frac{1}{s T_i} + s T_d \\right)}", formula:"K + K / (s * T_i) + K * T_d * s"};
+const GRAPH_ONE_POLE_WITH_PID_S = {name:"One pole with PID Sensitivity", mf:"S = \\frac{1}{1 + G_{PID} \\cdot G}", formula:"1/s"};
+const GRAPH_ONE_POLE_WITH_PID_YL = {name:"One pole with PID Load", mf:"G_{YL} = \\frac{G}{1 + G_{PID} \\cdot G}", formula:"1/s"};
+const GRAPH_ONE_POLE_WITH_PID_OPEN = {name:"One pole with PID open-loop", mf:"G_{OL} = G_{PID} \\cdot G", formula:"1/s"};
+
 
 const GRAPH_ORDER = [
   GRAPH_ONE_REAL_POLE,
@@ -50,7 +57,12 @@ const GRAPH_ORDER = [
   GRAPH_TIME_DELAY,
   GRAPH_ONE_ZERO_TWO_POLES,
   GRAPH_FOUR_POLES,
-  GRAPH_ONE_ZERO
+  GRAPH_ONE_ZERO,
+  GRAPH_PID,
+  GRAPH_ONE_POLE_WITH_PID_YR,
+  GRAPH_ONE_POLE_WITH_PID_S,
+  GRAPH_ONE_POLE_WITH_PID_YL,
+  GRAPH_ONE_POLE_WITH_PID_OPEN
 ];
 const NOF_GRAPHS_AT_STARTUP = 4;
 let next_graph_no_to_add = 0;
@@ -191,6 +203,8 @@ const default_variable_values={
   "T_6":{min:  0.0,max:10.0,value:1.5},
   "T_7":{min:  0.0,max:10.0,value:1.1},
   "T_8":{min:-10.0,max:10.0,value:0.7},
+  "T_d":{min:  0.0,max:10.0,value:0.0},
+  "T_i":{min:  0.01,max:10.0,value:1.0},
   "q"  :{min:  0.01,max:1.0,value:0.1},
   "v"  :{min:  0.1,max:20.0,value:4.5}};
 
@@ -430,7 +444,7 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   if (graph_name.startsWith("Ghost")){
     if (graph_name[10]==".") s='<div class="equation" style="display:none;"';
   }
-  s +=">";
+  s +=" id='" + graph_name + "'>";
 
   s +=`<input type="checkbox" class="show-graph" style="background: hsl(${linked_color},100%,50%)" title="${graph_name}">`;
   s += "<math-field ";
@@ -449,7 +463,11 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
       (equation_string == GRAPH_TIME_DELAY.formula)){ // Make sure that hover doesn't make read-only graphs yellow:
     s += "background:none;";
   }
-  s += `font-size: 20px;" title="${graph_name}">${mathfield_string}</math-field>`;
+  let font_size=20;
+  if (equation_string == GRAPH_ONE_POLE_WITH_PID_YR.formula){
+    font_size=14.5;
+  }
+  s += `font-size: ${font_size}px;" title="${graph_name}">${mathfield_string}</math-field>`;
   // These are the GRAPHS that should have download code buttons:
   if ((equation_string == GRAPH_ONE_REAL_POLE.formula) ||
       (equation_string == GRAPH_TWO_REAL_POLES.formula) ||
@@ -981,6 +999,53 @@ and the significance of stability in control systems more effectively. This appr
 //  PID(s) = K_p + \\frac{K_i}{s} + K_ds,
 //  </math-field><br>
 //for different system dynamics.</li>
+
+
+
+
+
+//What is the closed-loop transfer function when the open-loop transfer function is \\frac{k_1}{1+T_1s} and the regulator is a PID controller with k_p, k_i and k_d?
+  "GRAPH_ONE_POLE_WITH_PID_YR":{q:"How did we get this closed-loop transfer function?",pos:function(){
+    let span = document.getElementById('One pole with PID R->Y');
+    if (span!=null){
+      let rect = span.getBoundingClientRect();
+      return {visible:true,x:rect.left + rect.width/2,y:rect.top + rect.height/2};
+    } else {
+      return {visible:false};
+    }
+  },a:`To find the closed-loop transfer function G<sub>YR</sub>(s) when the open-loop transfer function is<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+  G(s) = \\frac{k_1}{1+T_1s},
+  </math-field><br>
+and the regulator is a PID controller with gain K, and time constants T<sub>i</sub>, and T<sub>d</sub>, we need to first derive the transfer function of the PID controller and then use the concept of feedback control. The transfer function of this PID controller is given by:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+ G_{PID}(s) = K \\left(1 + \\frac{1}{sT_i} + sT_d\\right)
+  </math-field><br>
+Now, the closed-loop transfer function G<sub>YR</sub>(s) is given by the formula for the feedback system:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+G_{YR}(s) = \\frac{G_{PID}(s) \\cdot G(s)}{1 + G_{PID}(s) \\cdot G(s)}
+  </math-field><br>
+where G(s) is the open-loop transfer function.
+Substituting the given values, we get:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+G_{YR}(s) = \\frac{K \\left(1 + \\frac{1}{sT_i} + sT_d\\right) \\cdot (\\frac{k_1}{1+T_1s})}{1 + K \\left(1 + \\frac{1}{sT_i} + sT_d\\right) \\cdot (\\frac{k_1}{1+T_1s})}
+  </math-field><br>
+To simplify further, we can multiply both numerator and denominator by (1+T<sub>1</sub>s) to get rid of the denominators:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+G_{YR}(s) = \\frac{K (1 + \\frac{1}{sT_i} + sT_d) \\cdot k_1}{(1 + T_1s) + K (1 + \\frac{1}{sT_i} + sT_d) \\cdot k_1}
+  </math-field><br>
+Let's multiply the nominator and denominator by sT<sub>i</sub>:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+G_{YR}(s) = \\frac{K (sT_i + 1 + s^2 T_i T_d) \\cdot k_1}{(s T_i + T_1 T_i s^2) + K (s T_i + 1 + s^2 T_i T_d) \\cdot k_1}
+  </math-field><br>
+And finally, let's collect terms:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+G_{YR}(s) = \\frac{K k_1 (1 + T_i s + T_iT_ds^2)}{K k_1 + T_i (1 + K k_1)s + T_i (T_1 + K k_1 T_d)s^2}
+  </math-field><br>
+This gives us the closed-loop transfer function G<sub>YR</sub>(s) for the given open-loop transfer function and the PID controller.`},
+
+
+
 
 
 
@@ -6778,8 +6843,8 @@ class bode_graph{
 
 
 const NOF_CONSTANT_VARIABLES = 1; // We have 'e'. Shall not make a slider for that one.
-let range_slider_variables = [2.718281828459045,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001];
-let range_slider_alphabet = ['e','a','b','c','d','f','g','h','i','j','l','L','m','n','o','p','q','r','t','u','v','x','y','k_1','k_2','k_3','k_4','k_5','k_6','w','z','T_1','T_2','T_3','T_4','T_5','T_6','T_7','T_8'];
+let range_slider_variables = [2.718281828459045,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001];
+let range_slider_alphabet = ['e','a','b','c','f','g','h','j','l','L','m','n','o','p','q','r','t','u','v','x','y','k_1','k_2','k_3','k_4','k_5','k_6','w','z','K','T_1','T_2','T_3','T_4','T_5','T_6','T_7','T_8','T_i','T_d'];
 // To go from "T_1" to the index in range_slider_variables:
 let variable_position = {};
 let buffer_formula = 0;
