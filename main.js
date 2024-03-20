@@ -671,6 +671,8 @@ function questionsToggle(event){
     redraw_canvas_gain("all");
   } else {
     enable_questions();
+    // Directly show a question without waiting for mouseMoved:
+    handle_questions();
   }
 }
 const all_questions={
@@ -984,6 +986,8 @@ and the significance of stability in control systems more effectively. This appr
 
 };
 function enable_questions(){
+  have_asked_questions=true;
+  remove_banner_if_needed();
   questions_enabled = true;
   let questions_icon_svg = document.getElementById("questions_icon_svg");
   questions_icon_svg.style.fill="#5050ff";
@@ -3841,6 +3845,12 @@ let initial_mouseX = 0;
 let initial_mouseY = 0;
 
 let splash_screen_active=true;
+let this_is_a_touch_device=false;
+
+function touchStarted(){
+  this_is_a_touch_device = true;
+  mousePressed();
+}
 
 //function mouseClicked(){
 function mousePressed(){
@@ -6880,6 +6890,41 @@ function findOmega180(input_array){
 }
 
 
+// --------------------- banner
+
+let have_asked_questions=false;
+let banner_is_visible=false;
+function prepare_banner(){
+  setTimeout(trigger_banner,60*1000);
+}
+
+function trigger_banner(){
+  if (have_asked_questions==false){
+    if (this_is_a_touch_device==false){
+      banner_is_visible=true;
+      const banner=document.getElementById("banner");
+      banner.innerHTML='<img src="images/Right_click_banner.png" alt="Right click to ask questions!" class="banner" width="50%"><img src="images/Right_click_banner_thanks.png" width="50%" style="visibility:hidden">';
+      banner.style.animation = 'none';
+      banner.offsetHeight; /* trigger reflow */
+      banner.style.animation="banner_anim_in 7s ease-out 1";
+    }
+  }
+}
+
+function remove_banner_if_needed(){
+  if (banner_is_visible==true){
+    banner_is_visible = false;
+    banner.innerHTML='<img src="images/Right_click_banner_thanks.png" alt="Right click to ask questions!" class="banner" width="50%">';
+    banner.style.animation = 'none';
+    banner.offsetHeight; /* trigger reflow */
+    banner.style.animation="banner_anim_out 5s ease-out 1";
+    banner.style.opacity = 0.0;
+  }
+}
+
+// --------------------- end of banner code
+
+
 let is_fullscreen = false;
 function toggle_fullscreen(){
   if (is_fullscreen == false){
@@ -7000,4 +7045,6 @@ function ready (){
   //  }
   //  disable_questions();
   //});
+
+  prepare_banner();
 }
