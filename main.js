@@ -45,7 +45,7 @@ const GRAPH_ONE_ZERO = {name:"One zero", mf:"T_4s+0.5", formula:"T_4*s+0.5"};
 //const GRAPH_ONE_POLE_WITH_PID_YR = {name:"One pole with PID R->Y", mf:"\\frac{K k_1 (1 + T_i s + T_iT_ds^2)}{K k_1 + T_i (1 + K k_1)s + T_i (T_1 + K k_1 T_d)s^2}", formula:"(K*k_1*(1 + T_i*s + T_i*T_d*s*s)) / (K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)*s*s)"};
 const GRAPH_ONE_POLE_WITH_PID_YR = {name:"One pole with PID R->Y", mf:"G_{YR} = \\frac{G_{PID} \\cdot G}{1 + G_{PID} \\cdot G}", formula:"(K*k_1*(1 + T_i*s + T_i*T_d*s*s)) / (K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)*s*s)"};
 const GRAPH_PID = {name:"PID controller", mf:"G_{PID}=K \\left(1 + \\frac{1}{s T_i} + s T_d \\right)}", formula:"K + K / (s * T_i) + K * T_d * s"};
-const GRAPH_ONE_POLE_WITH_PID_S = {name:"One pole with PID Sensitivity", mf:"S = \\frac{1}{1 + G_{PID} \\cdot G}", formula:"1/s"};
+const GRAPH_ONE_POLE_WITH_PID_S = {name:"One pole with PID Sensitivity", mf:"S = \\frac{1}{1 + G_{PID} \\cdot G}", formula:"(s*T_i*(1+T_1*s))/(K*k_1 + (K*k_1*T_i + T_1)*s + T_i*(T_1 + K*k_1*T_d)*s*s)"};
 const GRAPH_ONE_POLE_WITH_PID_YL = {name:"One pole with PID Load", mf:"G_{YL} = \\frac{G}{1 + G_{PID} \\cdot G}", formula:"1/s"};
 const GRAPH_ONE_POLE_WITH_PID_OPEN = {name:"One pole with PID open-loop", mf:"G_{OL} = G_{PID} \\cdot G", formula:"1/s"};
 
@@ -62,7 +62,7 @@ const GRAPH_ORDER = [
   GRAPH_ONE_POLE_WITH_PID_YR,
   GRAPH_ONE_POLE_WITH_PID_S,
   GRAPH_ONE_POLE_WITH_PID_YL,
-  GRAPH_ONE_POLE_WITH_PID_OPEN
+  GRAPH_ONE_POLE_WITH_PID_OPEN,
 ];
 const NOF_GRAPHS_AT_STARTUP = 4;
 let next_graph_no_to_add = 0;
@@ -464,9 +464,9 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
     s += "background:none;";
   }
   let font_size=20;
-  if (equation_string == GRAPH_ONE_POLE_WITH_PID_YR.formula){
-    font_size=14.5;
-  }
+  //if (equation_string == GRAPH_ONE_POLE_WITH_PID_YR.formula){
+  //  font_size=14.5;
+  //}
   s += `font-size: ${font_size}px;" title="${graph_name}">${mathfield_string}</math-field>`;
   // These are the GRAPHS that should have download code buttons:
   if ((equation_string == GRAPH_ONE_REAL_POLE.formula) ||
@@ -844,7 +844,9 @@ Damping is crucial for ensuring stable and controlled behavior of systems. If a 
     let span = document.getElementById('phase_margin');
     if (span!=null){
       let rect = span.getBoundingClientRect();
-      return {visible:true,x:rect.left + rect.width/2,y:rect.top + rect.height/2};
+      let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
+      let scroll_y = window.pageYOffset || document.documentElement.scrollTop
+      return {visible:true,x:scroll_x + rect.left + rect.width/2,y:scroll_y + rect.top + rect.height/2};
     } else {
       return {visible:false};
     }
@@ -864,7 +866,9 @@ In each of these examples, the phase margin ensures that the control system is s
     let span = document.getElementById('phase_crossover_frequency');
     if (span!=null){
       let rect = span.getBoundingClientRect();
-      return {visible:true,x:rect.left + rect.width/2,y:rect.top + rect.height/2};
+      let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
+      let scroll_y = window.pageYOffset || document.documentElement.scrollTop
+      return {visible:true,x:scroll_x + rect.left + rect.width/2,y:scroll_y + rect.top + rect.height/2};
     } else {
       return {visible:false};
     }
@@ -882,7 +886,9 @@ The phase crossover frequency is a fundamental concept in automatic control theo
     let span = document.getElementById('gain_margin');
     if (span!=null){
       let rect = span.getBoundingClientRect();
-      return {visible:true,x:rect.left + rect.width/2,y:rect.top + rect.height/2};
+      let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
+      let scroll_y = window.pageYOffset || document.documentElement.scrollTop
+      return {visible:true,x:scroll_x + rect.left + rect.width/2,y:scroll_y + rect.top + rect.height/2};
     } else {
       return {visible:false};
     }
@@ -932,7 +938,9 @@ The -180-degree mark on a Bode phase plot is crucial for ensuring the stability 
     let span = document.getElementById('variable_L');
     if (span!=null){
       let rect = span.getBoundingClientRect();
-      return {visible:true,x:rect.left + rect.width/2,y:rect.top + rect.height/2};
+      let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
+      let scroll_y = window.pageYOffset || document.documentElement.scrollTop
+      return {visible:true,x:scroll_x + rect.left + rect.width/2,y:scroll_y + rect.top + rect.height/2};
     } else {
       return {visible:false};
     }
@@ -952,7 +960,9 @@ The -180-degree mark on a Bode phase plot is crucial for ensuring the stability 
     let span = document.getElementById('variable_w');
     if (span!=null){
       let rect = span.getBoundingClientRect();
-      return {visible:true,x:rect.left + rect.width/2,y:rect.top + rect.height/2};
+      let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
+      let scroll_y = window.pageYOffset || document.documentElement.scrollTop
+      return {visible:true,x:scroll_x + rect.left + rect.width/2,y:scroll_y + rect.top + rect.height/2};
     } else {
       return {visible:false};
     }
@@ -980,7 +990,9 @@ The -180-degree mark on a Bode phase plot is crucial for ensuring the stability 
     let span = document.getElementById('cap_0');
     if (span!=null){
       let rect = span.getBoundingClientRect();
-      return {visible:true,x:rect.left + rect.width/2,y:rect.top + rect.height/2};
+      let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
+      let scroll_y = window.pageYOffset || document.documentElement.scrollTop
+      return {visible:true,x:scroll_x + rect.left + rect.width/2,y:scroll_y + rect.top + rect.height/2};
     } else {
       return {visible:false};
     }
@@ -1005,11 +1017,13 @@ and the significance of stability in control systems more effectively. This appr
 
 
 //What is the closed-loop transfer function when the open-loop transfer function is \\frac{k_1}{1+T_1s} and the regulator is a PID controller with k_p, k_i and k_d?
-  "GRAPH_ONE_POLE_WITH_PID_YR":{q:"How did we get this closed-loop transfer function?",pos:function(){
+  "GRAPH_ONE_POLE_WITH_PID_YR":{q:"How do we get the closed-loop transfer function?",pos:function(){
     let span = document.getElementById('One pole with PID R->Y');
     if (span!=null){
       let rect = span.getBoundingClientRect();
-      return {visible:true,x:rect.left + rect.width/2,y:rect.top + rect.height/2};
+      let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
+      let scroll_y = window.pageYOffset || document.documentElement.scrollTop
+      return {visible:true,x:scroll_x + rect.left + rect.width/2,y:scroll_y + rect.top + rect.height/2};
     } else {
       return {visible:false};
     }
@@ -1047,7 +1061,97 @@ This gives us the closed-loop transfer function G<sub>YR</sub>(s) for the given 
 
 
 
+//Sensitivity function
+//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For a student learning automatic control theory, describe the sensitivity function for a system with one pole, controlled using a PI controller. Give three examples of systems where the sensitivity function is useful. Write your answer in HTML with LaTeX for mathematical formulas, with correct automatic control vocabulary while keeping the rest of the english simple. You do not need to make an introduction or a summary, and you don't need to include JavaScript libraries, just write the html code with the embedded LaTeX formulas."}]}'
+  "GRAPH_ONE_POLE_WITH_PID_S":{q:"What is the sensitivity function?",pos:function(){
+    let span = document.getElementById('One pole with PID Sensitivity');
+    if (span!=null){
+      let rect = span.getBoundingClientRect();
+      let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
+      let scroll_y = window.pageYOffset || document.documentElement.scrollTop
+      return {visible:true,x:scroll_x + rect.left + rect.width/2,y:scroll_y + rect.top + rect.height/2};
+    } else {
+      return {visible:false};
+    }
+  },a:`The sensitivity function, S(s), measures the system's sensitivity to changes in the open loop gain. For a system with one pole controlled by a Proportional-Integral-Derivative (PID) controller, S(s) can be defined as follows:</p>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+      S(s) = \\frac{1}{1 + G_{PID}(s)G(s)}
+  </math-field><br>
+      <p>where G(s) is the transfer function of the plant, and G<sub>PID</sub>(s) is the transfer function of the PID controller.</p>
+      <p>The sensitivity function is particularly useful in evaluating and designing control systems to ensure robust performance. It helps in identifying how the system's output is affected by disturbances or changes in system parameters.</p>
+      <h3>Examples of Systems Where the Sensitivity Function is Useful</h3>
+      <ol>
+          <li>Automotive Cruise Control: Helps to assess how changes in vehicle load or hill gradient affect the speed control.</li>
+          <li>Temperature Regulation Systems: Important for determining how external temperature fluctuations or changes in the heating element characteristics affect the controlled temperature.</li>
+          <li>Robotics: Used to evaluate how variations in load or joint stiffness influence the robot's position control accuracy.</li>
+      </ol>
 
+  By combining the transfer function for our system (also known as plant):<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+  G(s) = \\frac{k_1}{1+T_1s},
+  </math-field><br>
+with the transfer function of a general PID controller:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+ G_{PID}(s) = K \\left(1 + \\frac{1}{sT_i} + sT_d\\right)
+  </math-field><br>
+and the formula for the sensitivity function above gives us:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+      S(s) = \\frac{1}{1 + K \\left(1 + \\frac{1}{sT_i} + sT_d\\right) \\cdot \\frac{k_1}{1+T_1s}}
+  </math-field><br>
+Let's multiply by 1+T<sub>1</sub>s in both the nominator and denominator:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+      S(s) = \\frac{1 + T_1s}{1 + T_1s + K \\left(1 + \\frac{1}{sT_i} + sT_d\\right) \\cdot k_1}
+  </math-field><br>
+Let's multiply by sT<sub>i</sub> in both the nominator and denominator:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+      S(s) = \\frac{sT_i + T_1 T_i s^2}{s T_i + T_1 T_i s^2 + K (T_i s + 1 + T_iT_d s^2) \\cdot k_1}
+  </math-field><br>
+And we collect the terms:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+      S(s) = \\frac{sT_i(1 + T_1 s)}{K k_1 + (K k_1 T_i + T_1) s + T_i (T_1 + K k_1 T_d) s^2}
+  </math-field>`},
+
+
+//Load
+//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For a student learning automatic control theory, explain why the transfer function from the load (or a disturbance that is added to the input of the plant) to the output is useful when using a PID controller to control a first order system with transfer function G(s). Write your answer in HTML with LaTeX for mathematical formulas, with correct automatic control vocabulary while keeping the rest of the english simple. You do not need to make an introduction or a summary, and you do not need to include JavaScript libraries, just write the html code with the embedded LaTeX formulas."}]}'
+  "GRAPH_ONE_POLE_WITH_PID_YL":{q:"Why do we look at the Load to Output Transfer Function in PID Control?",pos:function(){
+    let span = document.getElementById('One pole with PID Load');
+    if (span!=null){
+      let rect = span.getBoundingClientRect();
+      let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
+      let scroll_y = window.pageYOffset || document.documentElement.scrollTop
+      return {visible:true,x:scroll_x + rect.left + rect.width/2,y:scroll_y + rect.top + rect.height/2};
+    } else {
+      return {visible:false};
+    }
+  },a:`Understanding the impact of a load (or a disturbance) on the system is vital for designing an effective control strategy. To manage the system effectively, the transfer function of the controlled system, or plant, G(s), is combined with the transfer function of the PID controller, G<sub>PID</sub>(s), to analyze the overall system behavior.</p>
+      <p>When a load or disturbance influences the system, it impacts the output directly. To comprehend this effect, the transfer function from the load to the output is derived. This function elucidates how disturbances affect the system's output, aiding in designing the PID controller to mitigate these effects, ensuring the system's output remains stable and tracks the desired setpoint effectively.</p>
+      <p>Let's denote the transfer function from the load to the output as G<sub>YL</sub>. This function is critical because it provides insight into the system's robustness and sensitivity to external disturbances. By minimizing the impact of G<sub>YL</sub>, the PID controller helps maintain the system's performance even in the presence of unexpected loads or disturbances.</p>
+      For a first order system with transfer function G(s) being controlled by a PID controller, the goal is to adjust the PID parameters K, T<sub>i</sub>, and T<sub>d</sub> to achieve a balance where the system remains stable, achieves the desired speed of response, and minimizes the effect of any load or disturbance on the output.`},
+
+
+
+//Open-loop
+//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For a student learning automatic control theory, describe what can be learnt from the open-loop transfer function G_{OL}(s) = G_{PID}(s) * G(s) when using a PID controller to control a first order system with transfer function G(s). Write your answer in HTML with LaTeX for mathematical formulas, with correct automatic control vocabulary while keeping the rest of the english simple. You do not need to make an introduction or a summary, and you do not need to include JavaScript libraries, just write the html code with the embedded LaTeX formulas."}]}'
+  "GRAPH_ONE_POLE_WITH_PID_OPEN":{q:"How can we use the open-loop transfer function?",pos:function(){
+    let span = document.getElementById('One pole with PID open-loop');
+    if (span!=null){
+      let rect = span.getBoundingClientRect();
+      let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
+      let scroll_y = window.pageYOffset || document.documentElement.scrollTop
+      return {visible:true,x:scroll_x + rect.left + rect.width/2,y:scroll_y + rect.top + rect.height/2};
+    } else {
+      return {visible:false};
+    }
+  },a:`The open-loop transfer function, denoted as G<sub>OL</sub>(s) = G<sub>PID</sub>(s) * G(s), is a fundamental concept when using a PID (Proportional-Integral-Derivative) controller to manage a first order system represented by its transfer function G(s). This function provides crucial insights into the behavior of the control system before the feedback loop is closed. Here are several aspects one can learn from G<sub>OL</sub>(s):</p>
+  <ul>
+      <li><strong>System Type and Order:</strong> By examining G<sub>OL</sub>(s), we can identify the overall order and type of the system. The order is determined by the highest power of s in the denominator of G<sub>OL</sub>(s), which influences the system's response time and stability. The type, defined by the number of integrators (or poles at the origin), affects the system's ability to track step, ramp, and parabolic inputs without steady-state error.</li>
+      <li><strong>Stability:</strong> The roots of the denominator of G<sub>OL</sub>(s), also known as the poles of the system, can be analyzed to assess stability. In general, for a system to be stable, all poles must have negative real parts (lie in the left half of the s-plane). This assessment is crucial before applying feedback.</li>
+      <li><strong>Gain and Phase Margins:</strong> G<sub>OL</sub>(s) can be used to calculate the gain and phase margins, which are indicators of how much the system's gain or phase can change before the system becomes unstable. These margins are essential for designing a robust control system that can tolerate certain levels of model inaccuracies and disturbances.</li>
+      <li><strong>Frequency Response:</strong> From G<sub>OL</sub>(s), the frequency response of the system can be derived, which shows how the system responds to different frequencies of input signals. This is particularly useful for understanding the resonance frequencies and the bandwidth of the system, which are critical for ensuring the desired speed of response without excessive oscillations or noise amplification.</li>
+      <li><strong>PID Tuning Insights:</strong> The incorporation of G<sub>PID</sub>(s) in G<sub>OL</sub>(s) helps in tuning the PID controller's parameters (Proportional, Integral, and Derivative gains). By altering these gains and analyzing the resulting open-loop transfer function, one can achieve desired transient response characteristics (like settling time, overshoot) and steady-state performance (like steady-state error).</li>
+      </ul>
+  Understanding these aspects through the analysis of G<sub>OL</sub>(s) is pivotal for designing and implementing effective PID control strategies in automatic control systems.`},
 
 };
 function enable_questions(){
