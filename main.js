@@ -1309,6 +1309,43 @@ The PID controller is usually connected in a feedback loop as in the image above
   This list provides a glance into the incredible diversity of applications for first-order systems across engineering disciplines, illustrating the fundamental role that principles of automatic control theory play in technological advancements and everyday applications.`},
 
 
+//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For an automatic control theory student, make a list of tweny examples of second-order systems from various engineering fields such as electronics, chemistry, physics, mechanics, mathematics, household appliances, and gadgets. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
+  "GRAPH_TWO_REAL_POLES":{q:"What is a second-order system?",pos:function(){
+    let span = document.getElementById('Two real poles');
+    if (span!=null){
+      let rect = span.getBoundingClientRect();
+      let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
+      let scroll_y = window.pageYOffset || document.documentElement.scrollTop
+      return {visible:true,x:scroll_x + rect.left + rect.width/2,y:scroll_y + rect.top + rect.height/2};
+    } else {
+      return {visible:false};
+    }
+  },a:`<ul>
+        <li><b>Electronics:</b> LC Circuit (Tank Circuit) - A classic example where the electric charge oscillates between an inductor (<em>L</em>) and capacitor (<em>C</em>), described by d<sup>2</sup>q/dt<sup>2</sup> + q/(LC) = 0.</li>
+        <li><b>Automotive:</b> Suspension System - Represents the vehicle's dynamics, where the oscillatory behavior models comfort and handling.</li>
+        <li><b>Mechatronics:</b> Robotic Arm Joints - The positioning control typically involves second-order dynamics to describe the movement.</li>
+        <li><b>Physics:</b> Mass-Spring-Damper System - A fundamental second-order system, described by m*d<sup>2</sup>x/dt<sup>2</sup> + c*dx/dt + kx = F(t), where m, c, and k are mass, damping coefficient, and spring constant, respectively.</li>
+        <li><b>Chemical Engineering:</b> Temperature Control in a Chemical Reactor - Where the temperature control loop can be approximated by a second-order system to maintain optimal reaction conditions.</li>
+        <li><b>Electrical Engineering:</b> RLC Circuits - Used in filters, tuners, and frequency discriminators, representing a resistive (R), inductive (L), and capacitive (C) elements.</li>
+        <li><b>Aerospace:</b> Attitude Control Systems - Governs the orientation of aircraft or spacecraft, often modelled with second-order dynamics.</li>
+        <li>Mechanics:</b> Pendulum Dynamics (Small Angle Approximation) - Described by d<sup>2</sup>&theta;/dt<sup>2</sup> + g/l * &theta; = 0, where g is the acceleration due to gravity and l is the pendulum length.</li>
+        <li><b>Marine Engineering:</b> Ship Roll Dynamics - Explains how ships stabilize after being tilted by waves, displaying second-order characteristics.</li>
+        <li><b>Mathematics:</b> Differential Equations - Many natural phenomena and engineering problems are modeled as second-order linear differential equations.</li>
+        <li><b>Heating, Ventilation, and Air Conditioning (HVAC):</b> Temperature Control Systems - Regulate the building's climate using feedback mechanisms akin to second-order systems.</li>
+        <li><b>Household Appliances:</b> Washing Machine Balance Control - Ensures stability during the spin cycle, a problem of dynamic balancing and vibration control.</li>
+        <li><b>Gadgets:</b> Gyroscopes in Smartphones - Employed for orientation detection, involving principles of angular momentum and second-order control for accuracy.</li>
+        <li><b>Renewable Energy:</b> Wind Turbine Pitch Control - Adjusts the blade pitch to optimize efficiency and regulate power output, a second-order control challenge.</li>
+        <li><b>Biomedical Engineering:</b> Drug Delivery Systems - The kinetics of drug absorption and effects can sometimes be modeled as second-order processes.</li>
+        <li><b>Optics:</b> Laser Cavity Control - Stability and precision in the laser output are managed through feedback that closely resembles second-order dynamics.</li>
+        <li><b>Acoustics:</b> Loudspeaker Systems - The mechanical and electrical aspects of speaker design often involve second-order dynamic models.</li>
+        <li><b>Robotics:</b> Drone Stabilization - The flight control systems for drones, ensuring stable operation, leverage second-order dynamics.</li>
+        <li><b>Information Technology:</b> Packet Switching in Network Routers - While primarily a function of software, the control of data flow can be conceptually understood through second-order system analogies.</li>
+        <li><b>Environmental Engineering:</b> Pollution Dispersion Models - The spread and dissipation of pollutants in ecosystems can be described using principles akin to second-order systems.</li>
+    </ul>Note that some of the systems described above may have complex poles, having a damped oscillating system response.`},
+
+
+
+
 
 
 };
