@@ -844,10 +844,12 @@ The step input response of an automatic control transfer function is crucial for
 
 //In automatic control and a resonant second order system, what is the damping factor? Give an answer with vivid examples of resonating systems, with correct automatic control vocabulary while keeping the rest of the english simple.
   "Damping_factor_z":{q:"What is the damping factor (&zeta; or z)?",pos:function(){
-    let z_span = document.getElementById('variable_z');
-    if (z_span!=null){
-      let rect = z_span.getBoundingClientRect();
-      return {visible:true,x:rect.left + rect.width/2,y:rect.top + rect.height/2};
+    let span = document.getElementById('variable_z');
+    if (span!=null){
+      let rect = span.getBoundingClientRect();
+      let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
+      let scroll_y = window.pageYOffset || document.documentElement.scrollTop
+      return {visible:true,x:scroll_x + rect.left + rect.width/2,y:scroll_y + rect.top + rect.height/2};
     } else {
       return {visible:false};
     }
@@ -2677,7 +2679,7 @@ const all_assignments={
   "time_delay":{t:"4. Investigate a system with <b>time delay</b>",tasks:["L=3","L_gain_margin=2"],info:"A system with <b>time delay</b> is more difficult to control."},
   "one_zero_two_poles":{t:"5. Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4,T6,T7=1,T8=1.5_poles"],info:"With <b>one zero and two poles</b>, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
   "four_poles":{t:"6. Investigate a system with <b>four poles</b>",tasks:["gainm=5_phasex=2","phasemargin=45"],info:"A system with <b>four poles</b> gets a lot more phase shift, with a larger spin in the Nyquist diagram."},
-  "pid_controller":{t:"7. EXPERIMENTAL: <b>PID controller</b>",tasks:["pid_help_PID","pid_help_YR","pid_help_S","pid_help_YL","pid_help_OPEN"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about using a PID controller with a first-order system. / Frida & Pex"},
+  "pid_controller":{t:"7. EXPERIMENTAL: <b>PID controller</b> and <b>one pole</b>",tasks:["pid_help_PID","pid_help_YR","pid_help_S","pid_help_YL","pid_help_OPEN"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about using a PID controller with a first-order system. / Frida & Pex"},
   "none":{t:"...<b>no assignment</b>",tasks:["impossible"],info:""},
 };
 let done_assignments={};
@@ -5450,7 +5452,6 @@ function handle_questions(){
         // Scale around center:
         hover_answer.style.transform="translate(-50%,-50%) scale(" + (windowHeight/(rect.height)) +") translate(50%,50%)";
       }
-      console.log(q_id);
       if (q_id == "GRAPH_PID") task_done("pid_help_PID");
       if (q_id == "GRAPH_ONE_POLE_WITH_PID_YR") task_done("pid_help_YR");
       if (q_id == "GRAPH_ONE_POLE_WITH_PID_S") task_done("pid_help_S");
@@ -5469,32 +5470,35 @@ function handle_questions(){
     }
 
     let rect=hover_answer.getBoundingClientRect();
+    let scroll_y = window.pageYOffset || document.documentElement.scrollTop
     if (rect.height > (windowHeight-10)){
       // Full height answer that was scaled at creation. Fixed position in y-dir:
       hover_answer.style.top="0px";
       hover_answer.style.bottom=null;
-    } else if (mouseY<windowHeight/2){
+    } else if ((mouseY-scroll_y)<windowHeight/2){
       // Place above mouse pointer:
       // Check to make sure that a "high" infobox doesn't get too far down:
-      if (rect.height + mouseY > windowHeight){
+      if (rect.height + (mouseY-scroll_y) > windowHeight){
         // Stick to bottom of screen to prevent it going too far down:
         hover_answer.style.top=null;
         hover_answer.style.bottom="0px";
       } else {
         // Move with mouseY pos:
-        hover_answer.style.top=mouseY+"px";
+        hover_answer.style.top=(mouseY-scroll_y)+"px";
         hover_answer.style.bottom=null;
       }
     } else {
       // Place below mouse pointer:
-      if (rect.height + (windowHeight-mouseY) > windowHeight){
+//      if (rect.height + (windowHeight-mouseY) > windowHeight){
+      if (rect.height + (windowHeight-(mouseY-scroll_y)) > windowHeight){
         // Stick to top of screen to prevent it going too far up:
         hover_answer.style.top="0px";
         hover_answer.style.bottom=null;
       } else {
         // Move with mouseY pos:
         hover_answer.style.top=null;
-        hover_answer.style.bottom=(windowHeight-mouseY)+"px";
+//        hover_answer.style.bottom=(windowHeight-mouseY)+"px";
+        hover_answer.style.bottom=(windowHeight-mouseY+scroll_y)+"px";
       }
     }
     hover_answer.style.visibility=null;
