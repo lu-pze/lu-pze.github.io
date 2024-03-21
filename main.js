@@ -638,8 +638,6 @@ function removeGraph (linked_id){
     variables_to_delete = ["T_4"];
   } else if (equation_to_remove == GRAPH_PID.formula){
     variables_to_delete = ["K","T_i","T_d"];
-  } else if (equation_to_remove == GRAPH_ONE_POLE_WITH_PID_S.formula){
-    variables_to_delete = ["k_1","K","T_1","T_i","T_d"];
   }
   for(let i=0; i<variables_to_delete.length; i++){
     let variable_to_delete = variables_to_delete[i];
