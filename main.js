@@ -243,12 +243,14 @@ function createRangeSlider(event){
 //  delete_button.addEventListener('click',removeSlider);
 
   // Printing variable names using mathlive:
-  slider.getElementsByTagName("span")[0].innerHTML = "<math-field read-only style='vertical-align:bottom;display:inline-block'>" + range_slider_alphabet[button_id] + " =</math-field>";
+  slider.getElementsByTagName("span")[0].innerHTML = "<math-field read-only style='vertical-align:bottom;display:inline-block' class='slider_mf'>" + range_slider_alphabet[button_id] + " =</math-field>";
 
   //let linked_letter = range_slider_alphabet[button_id];
   let range_slider = slider.getElementsByClassName("range-slider")[0];
   let linked_span = slider.getElementsByClassName("value-wrapper")[0].getElementsByTagName("input")[0];
   linked_span.value = (+range_slider.value).toFixed(2);
+  const mf = slider.getElementsByClassName('slider_mf')[0];
+  mf.menuItems = []; // Stop MathLive from grabbing right mouse clicks.
 
   range_slider.onchange = function(){
     // Only reacts on the final value of the slider, and not continuous movements:
@@ -487,6 +489,8 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
 
   let new_equation = new_equation_wrapper.getElementsByClassName("equation")[0];
   new_equation.getElementsByClassName("show-graph")[0].addEventListener('change',changeGraphDisplayStatus);
+  let mf = new_equation_wrapper.getElementsByClassName("formula")[0];
+  mf.menuItems = []; // This prevents MathField from grabbing right mouse clicks. We want to handle those ourselves.
 
   let new_bode_graph = new bode_graph(id_bank,equation_string);
   bode_graphs.push(new_bode_graph);
@@ -2721,7 +2725,7 @@ const all_tasks={
 "phasemargin=45":"Change k<sub>5</sub> so that the <b>Phase margin</b> is 45°. How can you analyze the closed loop system stability from the Nyquist diagram?",
 
 //#PID controller
-"pid_help_PID":"Read about <b>PID control</b> by right clicking and moving your mouse over the G<sub>PID</sub> equation above.",
+"pid_help_PID":"Read about <b>PID control</b> by right clicking on the G<sub>PID</sub> equation above.",
 "pid_help_YR":"Read about the <b>closed-loop response G<sub>YR</sub></b>.",
 "pid_help_S":"Read about the <b>sensitivity function S</b>.",
 "pid_help_YL":"Read about the <b>Load function G<sub>YL</sub></b>.",
