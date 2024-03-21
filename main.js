@@ -46,8 +46,8 @@ const GRAPH_ONE_ZERO = {name:"One zero", mf:"T_4s+0.5", formula:"T_4*s+0.5"};
 const GRAPH_ONE_POLE_WITH_PID_YR = {name:"One pole with PID R->Y", mf:"G_{YR} = \\frac{G_{PID} \\cdot G}{1 + G_{PID} \\cdot G}", formula:"(K*k_1*(1 + T_i*s + T_i*T_d*s*s)) / (K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)*s*s)"};
 const GRAPH_PID = {name:"PID controller", mf:"G_{PID}=K \\left(1 + \\frac{1}{s T_i} + s T_d \\right)}", formula:"K + K / (s * T_i) + K * T_d * s"};
 const GRAPH_ONE_POLE_WITH_PID_S = {name:"One pole with PID Sensitivity", mf:"S = \\frac{1}{1 + G_{PID} \\cdot G}", formula:"(s*T_i*(1+T_1*s))/(K*k_1 + (K*k_1*T_i + T_1)*s + T_i*(T_1 + K*k_1*T_d)*s*s)"};
-const GRAPH_ONE_POLE_WITH_PID_YL = {name:"One pole with PID Load", mf:"G_{YL} = \\frac{G}{1 + G_{PID} \\cdot G}", formula:"1/s"};
-const GRAPH_ONE_POLE_WITH_PID_OPEN = {name:"One pole with PID open-loop", mf:"G_{OL} = G_{PID} \\cdot G", formula:"1/s"};
+const GRAPH_ONE_POLE_WITH_PID_YL = {name:"One pole with PID Load", mf:"G_{YL} = \\frac{G}{1 + G_{PID} \\cdot G}", formula:"(k_1*T_i*s)/(K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)s*s)"};
+const GRAPH_ONE_POLE_WITH_PID_OPEN = {name:"One pole with PID open-loop", mf:"G_{OL} = G_{PID} \\cdot G", formula:"(K*k_1*(1 + T_i*s + T_i*T_d*s*s))/(T_i*(s+T_1*s*s))"};
 
 
 const GRAPH_ORDER = [
@@ -1100,8 +1100,8 @@ This gives us the closed-loop transfer function G<sub>YR</sub>(s) for the given 
           <li>Temperature Regulation Systems: Important for determining how external temperature fluctuations or changes in the heating element characteristics affect the controlled temperature.</li>
           <li>Robotics: Used to evaluate how variations in load or joint stiffness influence the robot's position control accuracy.</li>
       </ol>
-
-  By combining the transfer function for our system (also known as plant):<br>
+<h3>How do we get the sensitivity function?</h3>
+  By combining the transfer function for our system (also known as plant, or process):<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
   G(s) = \\frac{k_1}{1+T_1s},
   </math-field><br>
@@ -1142,7 +1142,42 @@ And we collect the terms:<br>
   },a:`Understanding the impact of a load (or a disturbance) on the system is vital for designing an effective control strategy. To manage the system effectively, the transfer function of the controlled system, or plant, G(s), is combined with the transfer function of the PID controller, G<sub>PID</sub>(s), to analyze the overall system behavior.</p>
       <p>When a load or disturbance influences the system, it impacts the output directly. To comprehend this effect, the transfer function from the load to the output is derived. This function elucidates how disturbances affect the system's output, aiding in designing the PID controller to mitigate these effects, ensuring the system's output remains stable and tracks the desired setpoint effectively.</p>
       <p>Let's denote the transfer function from the load to the output as G<sub>YL</sub>. This function is critical because it provides insight into the system's robustness and sensitivity to external disturbances. By minimizing the impact of G<sub>YL</sub>, the PID controller helps maintain the system's performance even in the presence of unexpected loads or disturbances.</p>
-      For a first order system with transfer function G(s) being controlled by a PID controller, the goal is to adjust the PID parameters K, T<sub>i</sub>, and T<sub>d</sub> to achieve a balance where the system remains stable, achieves the desired speed of response, and minimizes the effect of any load or disturbance on the output.`},
+      For a first order system with transfer function G(s) being controlled by a PID controller, the goal is to adjust the PID parameters K, T<sub>i</sub>, and T<sub>d</sub> to achieve a balance where the system remains stable, achieves the desired speed of response, and minimizes the effect of any load or disturbance on the output.
+<h3>How do we get the load-to-output transfer function G<sub>YL</sub>?</h3>
+  By combining the transfer function for our system (also known as plant, or process):<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+  G(s) = \\frac{k_1}{1+T_1s},
+  </math-field><br>
+with the transfer function of a general PID controller:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+ G_{PID}(s) = K \\left(1 + \\frac{1}{sT_i} + sT_d\\right)
+  </math-field><br>
+and the formula for G<sub>YL</sub>:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+G_{YL} = \\frac{G}{1 + G_{PID} \\cdot G}
+  </math-field><br>
+we end up with:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+G_{YL} = \\frac{\\frac{k_1}{1+T_1s}}{1 + K \\left(1 + \\frac{1}{sT_i} + sT_d\\right) \\cdot \\frac{k_1}{1+T_1s}}
+  </math-field><br>
+Let's multiply nominator and denominator with 1+T<sub>1</sub>s:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+G_{YL} = \\frac{k_1}{(1+T_1s) + K \\left(1 + \\frac{1}{sT_i} + sT_d\\right) \\cdot k_1}
+  </math-field><br>
+Let's multiply nominator and denominator with sT<sub>i</sub>:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+G_{YL} = \\frac{k_1 s T_i}{(1+T_1s)sT_i + K \\left(sT_i + 1 + sT_isT_d\\right) \\cdot k_1}
+  </math-field><br>
+Let's get rid of the paranthesis in the denominator:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+G_{YL} = \\frac{k_1 T_i s}{sT_i + T_1T_is^2 + Kk_1T_is + Kk_1 + Kk_1T_iT_ds^2}
+  </math-field><br>
+Let's group our terms:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+G_{YL} = \\frac{k_1 T_i s}{Kk_1 + T_i(1 + Kk_1)s + T_i(T_1 + Kk_1T_d)s^2}
+  </math-field><br>
+...and we end up with an expression where we can insert our coefficients, and we can see that this is a second-order transfer function, since the largest power of s in the denominator is 2.
+      `},
 
 
 
@@ -1166,7 +1201,33 @@ And we collect the terms:<br>
       <li><strong>Frequency Response:</strong> From G<sub>OL</sub>(s), the frequency response of the system can be derived, which shows how the system responds to different frequencies of input signals. This is particularly useful for understanding the resonance frequencies and the bandwidth of the system, which are critical for ensuring the desired speed of response without excessive oscillations or noise amplification.</li>
       <li><strong>PID Tuning Insights:</strong> The incorporation of G<sub>PID</sub>(s) in G<sub>OL</sub>(s) helps in tuning the PID controller's parameters (Proportional, Integral, and Derivative gains). By altering these gains and analyzing the resulting open-loop transfer function, one can achieve desired transient response characteristics (like settling time, overshoot) and steady-state performance (like steady-state error).</li>
       </ul>
-  Understanding these aspects through the analysis of G<sub>OL</sub>(s) is pivotal for designing and implementing effective PID control strategies in automatic control systems.`},
+  Understanding these aspects through the analysis of G<sub>OL</sub>(s) is pivotal for designing and implementing effective PID control strategies in automatic control systems.
+<h3>How do we get the open-loop transfer function G<sub>OL</sub>?</h3>
+  By combining the transfer function for our system (also known as plant, or process):<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+  G(s) = \\frac{k_1}{1+T_1s},
+  </math-field><br>
+with the transfer function of a general PID controller:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+ G_{PID}(s) = K \\left(1 + \\frac{1}{sT_i} + sT_d\\right)
+  </math-field><br>
+and the formula for G<sub>OL</sub> above, we get:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+ G_{OL}(s) = K \\left(1 + \\frac{1}{sT_i} + sT_d\\right) \\cdot \\frac{k_1}{1+T_1s}
+  </math-field><br>
+Aiming for getting one single denominator:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+ G_{OL}(s) = \\frac{Kk_1}{1+T_1s} \\left(\\frac{sT_i + 1 + sT_isT_d}{sT_i}\\right)
+  </math-field><br>
+And multiplying these together:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+ G_{OL}(s) = \\frac{Kk_1(sT_i + 1 + sT_isT_d)}{sT_i(1+T_1s)}
+  </math-field><br>
+Grouping the terms:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+ G_{OL}(s) = \\frac{Kk_1(1 + T_is + T_iT_ds^2)}{T_i(s+T_1s^2)}
+  </math-field><br>
+...and we end up with our open-loop transfer function. The reason you would want to simplify the expression as shown above is to get a formula that can be used by inserting our constants, and also to see the structure of the nominator and denominator polynomials - this is a second-order transfer function, since the highest power of s in the denominator is 2.`},
 
 
 //curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"In automatic control theory, why do we use PID controllers, what is the transfer function of a PID-controller? Explain why the introduction of the PID controller was such a revolution using three vivid examples. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
