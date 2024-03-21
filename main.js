@@ -1044,7 +1044,9 @@ and the significance of stability in control systems more effectively. This appr
     } else {
       return {visible:false};
     }
-  },a:`When we take our system and control it with, in this example, a PID controller, then the closed-loop response G<sub>YR</sub> will tell us how the output y(t) reacts to the reference input. The step input response graph shows a system with the reference input value 0.0 for time t<0, and reference value 1.0 when t>=0. Ideally, this would make the output y(t) also resemble a step function. However, it's difficult to make an ideal controller.
+  },a:`<center><img src="images/PID_control_loop_v2.svg" width="80%"></center><br>
+The closed-loop response is how the output Y responds to the input R.<br><br>
+When we take our system and control it with, in this example, a PID controller, then the closed-loop response G<sub>YR</sub> will tell us how the output y(t) reacts to the reference input. The step input response graph shows a system with the reference input value 0.0 for time t<0, and reference value 1.0 when t>=0. Ideally, this would make the output y(t) also resemble a step function. However, it's difficult to make an ideal controller.<br>
   <h3>How do we get the closed-loop transfer function?</h3>
   To find the closed-loop transfer function G<sub>YR</sub>(s) when the open-loop transfer function is<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
@@ -1255,17 +1257,17 @@ Grouping the terms:<br>
   - K is the gain of the controller.<br>
   - T<sub>i</sub> is the time constant of the integral term.<br>
   - T<sub>d</sub> is the time constant of the derivative term.<br>
-  - s is the complex frequency variable in the Laplace transform.<br>
+  - s is the complex frequency variable in the Laplace transform.<br><br>
+<center><img src="images/PID_control_loop_v2.svg" width="80%"></center><br>
+The PID controller is usually connected in a feedback loop as in the image above, responding to the error e, and producing a suitable input signal U to the system trying to make the output Y as similar to the reference signal R as possible.<br><br>
   The introduction of the PID controller was revolutionary in the field of automatic control theory for several reasons:
   <h3>Improved Stability and Performance in Industrial Control Systems</h3>
   <div>The introduction of PID controllers allowed for significant improvements in the stability and performance of industrial control systems. For example, in a chemical processing plant, maintaining the temperature at a specific point is crucial for the quality of the product. A PID controller can take the temperature readings (process variable), compare it to the desired setpoint, and adjust the heat input (control variable) proportionally (P), based on the accumulated error over time (I), and anticipating future trends (D). This fine-tuned control prevents overshoot and helps maintain the temperature within a very narrow range, leading to consistent product quality.</div>
   <h3>Automation in Automotive Systems</h3>
   <div>PID controllers have been fundamental in the automation of various systems within the automotive industry, notably in cruise control. Traditional systems could struggle with maintaining a set speed over varying terrains. Through the application of PID control, a vehicle can automatically adjust the throttle position to maintain the set speed as closely as possible, considering changes in road gradient and load. For example, when driving uphill, the controller anticipates the need for more power and adjusts accordingly, ensuring smoother rides and enhanced fuel efficiency.</div>
   <h3>Flight Control Systems</h3>
-  <div>In aerospace, the precision and reliability of PID controllers have enabled advancements in flight control systems. Automatic altitude control is a pertinent example. A PID controller can continuously adjust the aircraft's control surfaces to maintain a target altitude, taking into account the varying aerodynamic forces and disturbances. This capability is crucial not only for passenger comfort but also for reducing pilot workload, especially during long-haul flights or when flying through turbulent weather conditions.</div><br>
-
-  In conclusion, the PID controller's ability to combine real-time error correction with predictive and historical data makes it a versatile and powerful tool in automatic control theory. Its widespread adoption across various industries underscores its importance in enhancing control system performance, stability, and efficiency.
-`},
+  <div>In aerospace, the precision and reliability of PID controllers have enabled advancements in flight control systems. Automatic altitude control is a pertinent example. A PID controller can continuously adjust the aircraft's control surfaces to maintain a target altitude, taking into account the varying aerodynamic forces and disturbances. This capability is crucial not only for passenger comfort but also for reducing pilot workload, especially during long-haul flights or when flying through turbulent weather conditions.</div><br>`},
+//  In conclusion, the PID controller's ability to combine real-time error correction with predictive and historical data makes it a versatile and powerful tool in automatic control theory. Its widespread adoption across various industries underscores its importance in enhancing control system performance, stability, and efficiency.
 
 
 
