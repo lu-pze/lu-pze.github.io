@@ -83,8 +83,8 @@ let phase_upper_bound = 0;
 let gain_upper_bound = 60;
 let phase_case_number;
 
-//                              red   yellow    green     blue  magenta       orange        green
-let color_table = [     270,    350,      32,     170,     202,-90+5*81,-90-360+6*81,-90-360+7*81,-90-360+8*81,-90-360+9*81,-90-360+10*81,-90-360+11*81,-90-360+12*81,-90-360+13*81,-90-360+14*81,-90-360+15*81];
+//                              red   yellow    green     blue  magenta   light green        green
+let color_table = [     270,    350,      32,     170,     202,-90+5*81,           76,-90-360+7*81,-90-360+8*81,-90-360+9*81,-90-360+10*81,-90-360+11*81,-90-360+12*81,-90-360+13*81,-90-360+14*81,-90-360+15*81];
 
 let max_y_timerep = 100;
 let min_y_timerep = 0;
@@ -512,22 +512,30 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
     new_bode_graph.graph_name = graph_name.substr(12);
   }
 
-  let input_element_id = id_bank;
-  for(let i=0; i<bode_graphs.length; i++){
-    let current_bode_graph = bode_graphs[i];
-    if(parseInt(input_element_id) == current_bode_graph.bode_id){
-      // Create sliders for all included variables directly:
-      let event={};
-      event.target={};
-      let equation_id=input_element_id; // The DOM number of the equation
-      // Search for all variables in the equation_string:
-      for(let i=NOF_CONSTANT_VARIABLES; i<range_slider_alphabet.length; i++){
-        let current_letter = range_slider_alphabet[i];
-        if(equation_string.includes(current_letter)){
-          //let linked_button = document.getElementById("BTNS_" + equation_id.toString() + "_" + i.toString());
-          range_slider_variables[i] = 1.0;  // Initial value
-          event.target.id="BTNS_" + equation_id.toString() + "_" + i.toString();
-          createRangeSlider(event);
+  let yes_add_range_sliders = true;
+  if (equation_string == GRAPH_ONE_POLE_WITH_PID_S.formula) yes_add_range_sliders=false;
+  if (equation_string == GRAPH_ONE_POLE_WITH_PID_YL.formula) yes_add_range_sliders=false;
+  if (equation_string == GRAPH_ONE_POLE_WITH_PID_YR.formula) yes_add_range_sliders=false;
+  if (equation_string == GRAPH_ONE_POLE_WITH_PID_OPEN.formula) yes_add_range_sliders=false;
+
+  if (yes_add_range_sliders){
+    let input_element_id = id_bank;
+    for(let i=0; i<bode_graphs.length; i++){
+      let current_bode_graph = bode_graphs[i];
+      if(parseInt(input_element_id) == current_bode_graph.bode_id){
+        // Create sliders for all included variables directly:
+        let event={};
+        event.target={};
+        let equation_id=input_element_id; // The DOM number of the equation
+        // Search for all variables in the equation_string:
+        for(let i=NOF_CONSTANT_VARIABLES; i<range_slider_alphabet.length; i++){
+          let current_letter = range_slider_alphabet[i];
+          if(equation_string.includes(current_letter)){
+            //let linked_button = document.getElementById("BTNS_" + equation_id.toString() + "_" + i.toString());
+            range_slider_variables[i] = 1.0;  // Initial value
+            event.target.id="BTNS_" + equation_id.toString() + "_" + i.toString();
+            createRangeSlider(event);
+          }
         }
       }
     }
@@ -624,6 +632,10 @@ function removeGraph (linked_id){
     variables_to_delete = ["T_5","k_5"];
   } else if (equation_to_remove == GRAPH_ONE_ZERO.formula){
     variables_to_delete = ["T_4"];
+  } else if (equation_to_remove == GRAPH_PID.formula){
+    variables_to_delete = ["K","T_i","T_d"];
+  } else if (equation_to_remove == GRAPH_ONE_POLE_WITH_PID_S.formula){
+    variables_to_delete = ["k_1","K","T_1","T_i","T_d"];
   }
   for(let i=0; i<variables_to_delete.length; i++){
     let variable_to_delete = variables_to_delete[i];
@@ -1018,7 +1030,7 @@ and the significance of stability in control systems more effectively. This appr
 
 
 //What is the closed-loop transfer function when the open-loop transfer function is \\frac{k_1}{1+T_1s} and the regulator is a PID controller with k_p, k_i and k_d?
-  "GRAPH_ONE_POLE_WITH_PID_YR":{q:"How do we get the closed-loop transfer function?",pos:function(){
+  "GRAPH_ONE_POLE_WITH_PID_YR":{q:"What is the closed-loop response G<sub>YR</sub>?",pos:function(){
     let span = document.getElementById('One pole with PID R->Y');
     if (span!=null){
       let rect = span.getBoundingClientRect();
@@ -1028,7 +1040,9 @@ and the significance of stability in control systems more effectively. This appr
     } else {
       return {visible:false};
     }
-  },a:`To find the closed-loop transfer function G<sub>YR</sub>(s) when the open-loop transfer function is<br>
+  },a:`When we take our system and control it with, in this example, a PID controller, then the closed-loop response G<sub>YR</sub> will tell us how the output y(t) reacts to the reference input. The step input response graph shows a system with the reference input value 0.0 for time t<0, and reference value 1.0 when t>=0. Ideally, this would make the output y(t) also resemble a step function. However, it's difficult to make an ideal controller.
+  <h3>How do we get the closed-loop transfer function?</h3>
+  To find the closed-loop transfer function G<sub>YR</sub>(s) when the open-loop transfer function is<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
   G(s) = \\frac{k_1}{1+T_1s},
   </math-field><br>
@@ -1064,7 +1078,7 @@ This gives us the closed-loop transfer function G<sub>YR</sub>(s) for the given 
 
 //Sensitivity function
 //curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For a student learning automatic control theory, describe the sensitivity function for a system with one pole, controlled using a PI controller. Give three examples of systems where the sensitivity function is useful. Write your answer in HTML with LaTeX for mathematical formulas, with correct automatic control vocabulary while keeping the rest of the english simple. You do not need to make an introduction or a summary, and you don't need to include JavaScript libraries, just write the html code with the embedded LaTeX formulas."}]}'
-  "GRAPH_ONE_POLE_WITH_PID_S":{q:"What is the sensitivity function?",pos:function(){
+  "GRAPH_ONE_POLE_WITH_PID_S":{q:"What is the sensitivity function, S?",pos:function(){
     let span = document.getElementById('One pole with PID Sensitivity');
     if (span!=null){
       let rect = span.getBoundingClientRect();
@@ -1115,7 +1129,7 @@ And we collect the terms:<br>
 
 //Load
 //curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For a student learning automatic control theory, explain why the transfer function from the load (or a disturbance that is added to the input of the plant) to the output is useful when using a PID controller to control a first order system with transfer function G(s). Write your answer in HTML with LaTeX for mathematical formulas, with correct automatic control vocabulary while keeping the rest of the english simple. You do not need to make an introduction or a summary, and you do not need to include JavaScript libraries, just write the html code with the embedded LaTeX formulas."}]}'
-  "GRAPH_ONE_POLE_WITH_PID_YL":{q:"Why do we look at the Load to Output Transfer Function in PID Control?",pos:function(){
+  "GRAPH_ONE_POLE_WITH_PID_YL":{q:"Why do we look at the Load to Output Transfer Function G<sub>YL</sub> in PID Control?",pos:function(){
     let span = document.getElementById('One pole with PID Load');
     if (span!=null){
       let rect = span.getBoundingClientRect();
@@ -1134,7 +1148,7 @@ And we collect the terms:<br>
 
 //Open-loop
 //curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For a student learning automatic control theory, describe what can be learnt from the open-loop transfer function G_{OL}(s) = G_{PID}(s) * G(s) when using a PID controller to control a first order system with transfer function G(s). Write your answer in HTML with LaTeX for mathematical formulas, with correct automatic control vocabulary while keeping the rest of the english simple. You do not need to make an introduction or a summary, and you do not need to include JavaScript libraries, just write the html code with the embedded LaTeX formulas."}]}'
-  "GRAPH_ONE_POLE_WITH_PID_OPEN":{q:"How can we use the open-loop transfer function?",pos:function(){
+  "GRAPH_ONE_POLE_WITH_PID_OPEN":{q:"How can we use the open-loop transfer function G<sub>OL</sub>?",pos:function(){
     let span = document.getElementById('One pole with PID open-loop');
     if (span!=null){
       let rect = span.getBoundingClientRect();
@@ -1153,6 +1167,82 @@ And we collect the terms:<br>
       <li><strong>PID Tuning Insights:</strong> The incorporation of G<sub>PID</sub>(s) in G<sub>OL</sub>(s) helps in tuning the PID controller's parameters (Proportional, Integral, and Derivative gains). By altering these gains and analyzing the resulting open-loop transfer function, one can achieve desired transient response characteristics (like settling time, overshoot) and steady-state performance (like steady-state error).</li>
       </ul>
   Understanding these aspects through the analysis of G<sub>OL</sub>(s) is pivotal for designing and implementing effective PID control strategies in automatic control systems.`},
+
+
+//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"In automatic control theory, why do we use PID controllers, what is the transfer function of a PID-controller? Explain why the introduction of the PID controller was such a revolution using three vivid examples. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
+  "GRAPH_PID":{q:"What is a PID controller?",pos:function(){
+    let span = document.getElementById('PID controller');
+    if (span!=null){
+      let rect = span.getBoundingClientRect();
+      let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
+      let scroll_y = window.pageYOffset || document.documentElement.scrollTop
+      return {visible:true,x:scroll_x + rect.left + rect.width/2,y:scroll_y + rect.top + rect.height/2};
+    } else {
+      return {visible:false};
+    }
+  },a:`In automatic control theory, PID controllers are used to regulate the behavior of a system. A PID controller combines three types of control: Proportional (P), Integral (I), and Derivative (D). These components are combined to make control decisions that help a system reach its desired setpoint efficiently and with minimal error.
+  The transfer function of a PID controller is given by:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+ G_{PID}(s) = K \\left(1 + \\frac{1}{sT_i} + sT_d\\right)
+  </math-field><br>
+  Where:
+  - G<sub>PID</sub>(s) is the transfer function in the Laplace domain.<br>
+  - K is the gain of the controller.<br>
+  - T<sub>i</sub> is the time constant of the integral term.<br>
+  - T<sub>d</sub> is the time constant of the derivative term.<br>
+  - s is the complex frequency variable in the Laplace transform.<br>
+  The introduction of the PID controller was revolutionary in the field of automatic control theory for several reasons:
+  <h3>Improved Stability and Performance in Industrial Control Systems</h3>
+  <div>The introduction of PID controllers allowed for significant improvements in the stability and performance of industrial control systems. For example, in a chemical processing plant, maintaining the temperature at a specific point is crucial for the quality of the product. A PID controller can take the temperature readings (process variable), compare it to the desired setpoint, and adjust the heat input (control variable) proportionally (P), based on the accumulated error over time (I), and anticipating future trends (D). This fine-tuned control prevents overshoot and helps maintain the temperature within a very narrow range, leading to consistent product quality.</div>
+  <h3>Automation in Automotive Systems</h3>
+  <div>PID controllers have been fundamental in the automation of various systems within the automotive industry, notably in cruise control. Traditional systems could struggle with maintaining a set speed over varying terrains. Through the application of PID control, a vehicle can automatically adjust the throttle position to maintain the set speed as closely as possible, considering changes in road gradient and load. For example, when driving uphill, the controller anticipates the need for more power and adjusts accordingly, ensuring smoother rides and enhanced fuel efficiency.</div>
+  <h3>Flight Control Systems</h3>
+  <div>In aerospace, the precision and reliability of PID controllers have enabled advancements in flight control systems. Automatic altitude control is a pertinent example. A PID controller can continuously adjust the aircraft's control surfaces to maintain a target altitude, taking into account the varying aerodynamic forces and disturbances. This capability is crucial not only for passenger comfort but also for reducing pilot workload, especially during long-haul flights or when flying through turbulent weather conditions.</div><br>
+
+  In conclusion, the PID controller's ability to combine real-time error correction with predictive and historical data makes it a versatile and powerful tool in automatic control theory. Its widespread adoption across various industries underscores its importance in enhancing control system performance, stability, and efficiency.
+`},
+
+
+
+
+
+//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For an automatic control theory student, make a list of tweny examples of first-order systems from various engineering fields such as electronics, chemistry, physics, mechanics, mathematics, household appliances, and gadgets. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
+  "GRAPH_ONE_REAL_POLE":{q:"What is a first-order system?",pos:function(){
+    let span = document.getElementById('One real pole');
+    if (span!=null){
+      let rect = span.getBoundingClientRect();
+      let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
+      let scroll_y = window.pageYOffset || document.documentElement.scrollTop
+      return {visible:true,x:scroll_x + rect.left + rect.width/2,y:scroll_y + rect.top + rect.height/2};
+    } else {
+      return {visible:false};
+    }
+  },a:`<ul>
+      <li><strong>Electronics</strong>: RC (Resistor-Capacitor) Low Pass Filter - Governed by the equation V<sub>out</sub> = V<sub>in</sub> * (1 - e<sup>-t/RC</sup>)</li>
+      <li><strong>Thermal Engineering</strong>: Temperature control of a room using a heater - Where the room temperature's rate of change is proportional to the difference between the ambient and desired temperatures.</li>
+      <li><strong>Mechanics</strong>: Viscous damping in a mechanical shock absorber - Can be modeled as a first-order system where the force is proportional to the velocity.</li>
+      <li><strong>Chemistry</strong>: Chemical reactors in which the reaction rate is of first-order with respect to a reactant concentration.</li>
+      <li><strong>Physics</strong>: Charging of a capacitor through a resistor - Described by the equation q(t) = Q(1 - e<sup>-t/RC</sup>), where q(t) is the charge at time t.</li>
+      <li><strong>Mathematics</strong>: Solutions of first-order linear differential equations used to model diverse physical phenomena.</li>
+      <li><strong>Biomedical Engineering</strong>: Modeling the rate of absorption of a drug into the bloodstream.</li>
+      <li><strong>Automobiles</strong>: The cruise control system in a vehicle, adjusting the throttle position to maintain a constant speed.</li>
+      <li><strong>Aeronautics</strong>: The altitude hold mode in autopilot systems, maintaining a set altitude by adjusting flight control surfaces.</li>
+      <li><strong>Household Appliances</strong>: Thermostat control for heating systems, maintaining a target temperature within a room.</li>
+      <li><strong>Environmental Engineering</strong>: Modeling the dilution of pollutants in a river, assuming first-order decay of pollutant concentration.</li>
+      <li><strong>Electrical Engineering</strong>: Current control in a DC motor, governed by the motor's inductance and resistance.</li>
+      <li><strong>Robotics</strong>: Position control of a robotic arm's single joint, where the position is controlled by varying the input voltage.</li>
+      <li><strong>Optics</strong>: The response of a photodetector circuit, where the output voltage changes as a function of light intensity.</li>
+      <li><strong>Fluid Dynamics</strong>: The flow of fluid in a pipe with a constant cross-sectional area, where the flow rate stabilizes due to frictional forces.</li>
+      <li><strong>Sound Engineering</strong>: High-pass filters used in audio systems to attenuate lower frequencies while allowing higher frequencies to pass through.</li>
+      <li><strong>Signal Processing</strong>: Exponential moving average filter, often used to smooth out time series data.</li>
+      <li><strong>Telecommunications</strong>: The tuning circuit in a radio receiver, selecting a particular frequency while filtering out others.</li>
+      <li><strong>Marine Engineering</strong>: Control of a ship's velocity by adjusting its propeller speed.</li>
+      <li><strong>Space Exploration</strong>: Orientation control in satellites using reaction wheels, adjusting the satellite's angular position.</li>
+      </ul>
+  This list provides a glance into the incredible diversity of applications for first-order systems across engineering disciplines, illustrating the fundamental role that principles of automatic control theory play in technological advancements and everyday applications.`},
+
+
+
 
 };
 function enable_questions(){
@@ -2383,13 +2473,14 @@ function show_quiz_wrong_text(text){
   // Trigger an animation with the text:
   let quiz_answer_div = document.getElementById("quiz_answer");
   quiz_answer_div.innerHTML=text;
-  let left = (100*mouseX /windowWidth);
-  if (left > 85) left = 85;
-  let top = (100*mouseY/windowHeight);
-  if (top > 90) left = 90;
+  let left = (100*mouseX/windowWidth) + 1;
+  if (left > 75) left = 75;
   document.querySelector('.quiz_answer').style.setProperty('--left',left+"%");
-  document.querySelector('.quiz_answer').style.setProperty('--top',top+"%");
   document.querySelector('.quiz_no').style.setProperty('--left',left+"%");
+  let top = (100*mouseY/windowHeight);
+  if (top > 84) top = 84;
+  if (top < 3) top = 3;
+  document.querySelector('.quiz_answer').style.setProperty('--top',top+"%");
   document.querySelector('.quiz_no').style.setProperty('--top',top+"%");
   let quiz_no_div = document.getElementById("quiz_no");
   // Order of the animation parameters:
@@ -2407,11 +2498,11 @@ function show_quiz_wrong_text(text){
   quiz_no_div.style.animation="QuizAnim2 12s ease-out 0s 1";
 }
 
-function quiz_perhaps(why_its_almost_wrong){
+function quiz_perhaps (why_its_almost_wrong){
   show_quiz_wrong_text(why_its_almost_wrong);
 }
 
-function quiz_incorrect(why_its_wrong){
+function quiz_incorrect (why_its_wrong){
   quiz_current_streak = 0;
   quiz_streaks[current_quiz] = 0; // The streak for this type of question.
   if (adaptive_difficulty_enabled==true){
@@ -2521,7 +2612,7 @@ const all_assignments={
   "time_delay":{t:"4. Investigate a system with <b>time delay</b>",tasks:["L=3","L_gain_margin=2"],info:"A system with <b>time delay</b> is more difficult to control."},
   "one_zero_two_poles":{t:"5. Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4,T6,T7=1,T8=1.5_poles"],info:"With <b>one zero and two poles</b>, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
   "four_poles":{t:"6. Investigate a system with <b>four poles</b>",tasks:["gainm=5_phasex=2","phasemargin=45"],info:"A system with <b>four poles</b> gets a lot more phase shift, with a larger spin in the Nyquist diagram."},
-  "pid_controller":{t:"7. EXPERIMENTAL: <b>PID controller</b>",tasks:[],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about using a PID controller with a first-order system. / Frida & Pex"},
+  "pid_controller":{t:"7. EXPERIMENTAL: <b>PID controller</b>",tasks:["pid_help_PID","pid_help_YR","pid_help_S","pid_help_YL","pid_help_OPEN"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about using a PID controller with a first-order system. / Frida & Pex"},
   "none":{t:"...<b>no assignment</b>",tasks:["impossible"],info:""},
 };
 let done_assignments={};
@@ -2566,7 +2657,15 @@ const all_tasks={
 
 //#Four poles
 "gainm=5_phasex=2":"Drag the Bode plot so that the <b>Gain margin</b> is 5 and the <b>Phase crossover frequency</b> is 2 rad/s. What practical implication does mean that the Gain margin is 5?",// (T5=0.3, k=2)
-"phasemargin=45":"Change k<sub>5</sub> so that the <b>Phase margin</b> is 45°. How can you analyze the closed loop system stability from the Nyquist diagram?"
+"phasemargin=45":"Change k<sub>5</sub> so that the <b>Phase margin</b> is 45°. How can you analyze the closed loop system stability from the Nyquist diagram?",
+
+//#PID controller
+"pid_help_PID":"Read about <b>PID control</b> by right clicking and moving your mouse over the G<sub>PID</sub> equation above.",
+"pid_help_YR":"Read about the <b>closed-loop response G<sub>YR</sub></b>.",
+"pid_help_S":"Read about the <b>sensitivity function S</b>.",
+"pid_help_YL":"Read about the <b>Load function G<sub>YL</sub></b>.",
+"pid_help_OPEN":"Read about the <b>open-loop formula G<sub>OL</sub></b>.",
+
 };
 let done_tasks=[];
 
@@ -2746,6 +2845,7 @@ function select_assignment(event){
     addNewGraph(null, {name:"Ghost..T..._Match this response", mf:"\\frac{(1-1.5s)}{(1+s)(1+s)}", formula:"(1-1.5s)/(1+s)*1/(1+s)"});
   } else if(event.value=="pid_controller"){
     addNewGraph(null, GRAPH_PID);
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR);
     addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S);
     addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YL);
     addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_OPEN);
@@ -5285,6 +5385,12 @@ function handle_questions(){
         // Scale around center:
         hover_answer.style.transform="translate(-50%,-50%) scale(" + (windowHeight/(rect.height)) +") translate(50%,50%)";
       }
+      console.log(q_id);
+      if (q_id == "GRAPH_PID") task_done("pid_help_PID");
+      if (q_id == "GRAPH_ONE_POLE_WITH_PID_YR") task_done("pid_help_YR");
+      if (q_id == "GRAPH_ONE_POLE_WITH_PID_S") task_done("pid_help_S");
+      if (q_id == "GRAPH_ONE_POLE_WITH_PID_YL") task_done("pid_help_YL");
+      if (q_id == "GRAPH_ONE_POLE_WITH_PID_OPEN") task_done("pid_help_OPEN");
     }
     //Move this div:
     if (mouseX<windowWidth/2){
