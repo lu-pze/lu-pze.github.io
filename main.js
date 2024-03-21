@@ -205,6 +205,7 @@ const default_variable_values={
   "T_8":{min:-10.0,max:10.0,value:0.7},
   "T_d":{min:  0.0,max:10.0,value:0.0},
   "T_i":{min:  0.01,max:10.0,value:1.0},
+  "K"  :{min:  0.01,max:10.0,value:1.0},
   "q"  :{min:  0.01,max:1.0,value:0.1},
   "v"  :{min:  0.1,max:20.0,value:4.5}};
 
@@ -2520,6 +2521,7 @@ const all_assignments={
   "time_delay":{t:"4. Investigate a system with <b>time delay</b>",tasks:["L=3","L_gain_margin=2"],info:"A system with <b>time delay</b> is more difficult to control."},
   "one_zero_two_poles":{t:"5. Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4,T6,T7=1,T8=1.5_poles"],info:"With <b>one zero and two poles</b>, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
   "four_poles":{t:"6. Investigate a system with <b>four poles</b>",tasks:["gainm=5_phasex=2","phasemargin=45"],info:"A system with <b>four poles</b> gets a lot more phase shift, with a larger spin in the Nyquist diagram."},
+  "pid_controller":{t:"7. EXPERIMENTAL: <b>PID controller</b>",tasks:[],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about using a PID controller with a first-order system. / Frida & Pex"},
   "none":{t:"...<b>no assignment</b>",tasks:["impossible"],info:""},
 };
 let done_assignments={};
@@ -2703,6 +2705,8 @@ function select_assignment(event){
     next_graph_no_to_add=4;
   } else if(event.value=="four_poles"){
     next_graph_no_to_add=5;
+  } else if(event.value=="pid_controller"){
+    next_graph_no_to_add=0;
   }
   // Set the color of the graph:
   id_bank = next_graph_no_to_add;
@@ -2722,24 +2726,29 @@ function select_assignment(event){
   //           E = shows up in Equations
   if(event.value=="one_pole"){
     //"reference eq in step response(k=0.65, T1=2)"
-    addNewGraph(none, {name:"Ghost..T..._Match this response", mf:"\\frac{0.65}{1+2s}", formula:"(0.65)/((1+2s))"});
+    addNewGraph(null, {name:"Ghost..T..._Match this response", mf:"\\frac{0.65}{1+2s}", formula:"(0.65)/((1+2s))"});
   } else if(event.value=="two_real_poles"){
     //reference in step (T2=T3=1, k2=0.5)
-    addNewGraph(none, {name:"Ghost..T..._Match this response", mf:"\\frac{0.5}{1+2s+s^2}", formula:"0.5/(1+2s+s^2)"});
+    addNewGraph(null, {name:"Ghost..T..._Match this response", mf:"\\frac{0.5}{1+2s+s^2}", formula:"0.5/(1+2s+s^2)"});
     //reference in bode phase (T2=5, T3=0.05, k2=1)
-    addNewGraph(none, {name:"Ghost.P...._Match this Bode phase", mf:"\\frac{1}{(1+5s)(1+0.05s)}", formula:"1/(1+5s)*1/(1+0.05s)"});
+    addNewGraph(null, {name:"Ghost.P...._Match this Bode phase", mf:"\\frac{1}{(1+5s)(1+0.05s)}", formula:"1/(1+5s)*1/(1+0.05s)"});
   } else if(event.value=="two_complex_poles"){
     //Bode reference (w=8, z=0.05)
-    addNewGraph(none, {name:"GhostMP...._Match this Bode", mf:"\\frac{8^2}{s^2+2*0.05*8*s+8^2}", formula:"8^2/(s^2+2*0.05*8*s+8^2)"});
+    addNewGraph(null, {name:"GhostMP...._Match this Bode", mf:"\\frac{8^2}{s^2+2*0.05*8*s+8^2}", formula:"8^2/(s^2+2*0.05*8*s+8^2)"});
     //Step reference (w=2,z=0.7,k=0.7)
-    addNewGraph(none, {name:"Ghost..T..._Match this response", mf:"\\frac{0.7*2^2}{s^2+2*0.7*2*s+2^2}", formula:"0.7*2^2/(s^2+2*0.7*2*s+2^2)"});
+    addNewGraph(null, {name:"Ghost..T..._Match this response", mf:"\\frac{0.7*2^2}{s^2+2*0.7*2*s+2^2}", formula:"0.7*2^2/(s^2+2*0.7*2*s+2^2)"});
   } else if(event.value=="one_zero_two_poles"){
     //Nyquist reference (k=1,T6=2.5,T7=1,T8=6)
-    addNewGraph(none, {name:"Ghost...N.._Match this Nyquist", mf:"\\frac{(1+6s)}{(1+2.5s)(1+s)}", formula:"(1+6s)/(1+2.5s)*1/(1+s)"});
+    addNewGraph(null, {name:"Ghost...N.._Match this Nyquist", mf:"\\frac{(1+6s)}{(1+2.5s)(1+s)}", formula:"(1+6s)/(1+2.5s)*1/(1+s)"});
     //Bode reference (k4=0.75,T6=9.25,T7=0.5,T8=2)
-    addNewGraph(none, {name:"GhostMP...._Match this Bode", mf:"\\frac{0.75(1+2s)}{(1+9.25s)(1+0.5s)}", formula:"0.75(1+2s)/(1+9.25s)*1/(1+0.5s)"});
+    addNewGraph(null, {name:"GhostMP...._Match this Bode", mf:"\\frac{0.75(1+2s)}{(1+9.25s)(1+0.5s)}", formula:"0.75(1+2s)/(1+9.25s)*1/(1+0.5s)"});
     //Step reference (k4=1,T6=1,T7=1,T8=-1.5)
-    addNewGraph(none, {name:"Ghost..T..._Match this response", mf:"\\frac{(1-1.5s)}{(1+s)(1+s)}", formula:"(1-1.5s)/(1+s)*1/(1+s)"});
+    addNewGraph(null, {name:"Ghost..T..._Match this response", mf:"\\frac{(1-1.5s)}{(1+s)(1+s)}", formula:"(1-1.5s)/(1+s)*1/(1+s)"});
+  } else if(event.value=="pid_controller"){
+    addNewGraph(null, GRAPH_PID);
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S);
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YL);
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_OPEN);
   }
   // Recalculate figures in the information bar, Phase margin, Gain crossover frequency, gain margin, etc.:
   redraw_canvas_gain("all");
@@ -7197,6 +7206,10 @@ function ready (){
     //  quiz_correct();
     //  update_quiz();
     //}
+    if (event.key=='F1'){
+      select_assignment({value:"pid_controller"});
+    }
+
     if (event.key=='Escape'){
       restart_lupze();
     }
