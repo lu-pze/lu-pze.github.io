@@ -418,7 +418,7 @@ function addNewGraphClicked(event, graph_to_add){
   addNewGraph(event, graph_to_add);
 }
 
-function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\frac{v^2}{s^2+2qvs+v^2}", formula:"(0.9s+1)/((s+1)^2)*(v^2)/(s^2+2*q*v*s+v^2)"}){
+function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\frac{v^2}{s^2+2qvs+v^2}", formula:"(0.9s+1)/((s+1)^2)*(v^2)/(s^2+2*q*v*s+v^2)"}, enable_string="_____MPTNIE"){
   let graph_name = graph_to_add.name;
   let mathfield_string = graph_to_add.mf;
   let equation_string = graph_to_add.formula;
@@ -439,14 +439,16 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   }
   next_graph_no_to_add += 1;
 
+  if (graph_name.startsWith("Ghost")){
+    enable_string=graph_name;
+  }
+
   let new_equation_wrapper = document.createElement('div');
   new_equation_wrapper.classList.add('equation-wrapper');
   id_bank += 1;
   let linked_color = color_table[id_bank%color_table.length];
   let s ='<hr><div class="equation"';
-  if (graph_name.startsWith("Ghost")){
-    if (graph_name[10]==".") s='<div class="equation" style="display:none;"';
-  }
+  if (enable_string[10]==".") s='<div class="equation" style="display:none;"';
   s +=" id='" + graph_name + "'>";
 
   s +=`<input type="checkbox" class="show-graph" style="background: hsl(${linked_color},100%,50%)" title="${graph_name}">`;
@@ -506,13 +508,13 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   //         N   = shows up in Nyquist diagram
   //          I  = shows up in information tab
   //           E = shows up in Equations
+  if (enable_string[5]==".")  new_bode_graph.bode_display_bodemag_bool = false;
+  if (enable_string[6]==".")  new_bode_graph.bode_display_bodephase_bool = false;
+  if (enable_string[7]==".")  new_bode_graph.bode_display_timeresponse_bool = false;
+  if (enable_string[8]==".")  new_bode_graph.bode_display_nyquist_bool = false;
+  if (enable_string[9]==".")  new_bode_graph.bode_display_information_bool = false;
+  if (enable_string[10]==".") new_bode_graph.bode_display_equation_bool = false;
   if (graph_name.startsWith("Ghost")){
-    if (graph_name[5]==".")  new_bode_graph.bode_display_bodemag_bool = false;
-    if (graph_name[6]==".")  new_bode_graph.bode_display_bodephase_bool = false;
-    if (graph_name[7]==".")  new_bode_graph.bode_display_timeresponse_bool = false;
-    if (graph_name[8]==".")  new_bode_graph.bode_display_nyquist_bool = false;
-    if (graph_name[9]==".")  new_bode_graph.bode_display_information_bool = false;
-    if (graph_name[10]==".") new_bode_graph.bode_display_equation_bool = false;
     new_bode_graph.graph_name = graph_name.substr(12);
   }
 
@@ -545,7 +547,7 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
     }
   }
 
-  if (!((graph_name.startsWith("Ghost"))&&(graph_name[9]=="."))){
+  if (!(enable_string[9]==".")){
     addNewInformationTab(id_bank, graph_name);
   }
 
@@ -3231,23 +3233,23 @@ function select_assignment (event){
     //Step reference (k4=1,T6=1,T7=1,T8=-1.5)
     addNewGraph(null, {name:"Ghost..T..._Match this response", mf:"\\frac{(1-1.5s)}{(1+s)(1+s)}", formula:"(1-1.5s)/(1+s)*1/(1+s)"});
   } else if(event.value=="pid_controller"){
-    addNewGraph(null, GRAPH_PID);
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR);
+    addNewGraph(null, GRAPH_PID, "_____MP...E");
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR, "_____MPT..E");
   } else if(event.value=="pid_controller_S"){
-    addNewGraph(null, GRAPH_PID);
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR);
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S);
+    addNewGraph(null, GRAPH_PID, "_____MP...E");
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR, "_____MPT..E");
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S, "_____M....E");
   } else if(event.value=="pid_controller_YL"){
-    addNewGraph(null, GRAPH_PID);
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR);
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S);
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YL);
+    addNewGraph(null, GRAPH_PID, "_____MP...E");
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR, "_____MPT..E");
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S, "_____M....E");
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YL, "_____MPT..E");
   } else if(event.value=="pid_controller_OL"){
-    addNewGraph(null, GRAPH_PID);
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR);
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S);
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YL);
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_OPEN);
+    addNewGraph(null, GRAPH_PID, "_____MP...E");
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR, "_____MPT..E");
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S, "_____M....E");
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YL, "_____MPT..E");
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_OPEN, "_____MP.NIE");
   }
   // Recalculate figures in the information bar, Phase margin, Gain crossover frequency, gain margin, etc.:
   redraw_canvas_gain("all");
