@@ -2886,7 +2886,12 @@ const all_assignments={
   "time_delay":{t:"4. Investigate a system with <b>time delay</b>",tasks:["L=3","L_gain_margin=2"],info:"A system with <b>time delay</b> is more difficult to control."},
   "one_zero_two_poles":{t:"5. Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4,T6,T7=1,T8=1.5_poles"],info:"With <b>one zero and two poles</b>, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
   "four_poles":{t:"6. Investigate a system with <b>four poles</b>",tasks:["gainm=5_phasex=2","phasemargin=45"],info:"A system with <b>four poles</b> gets a lot more phase shift, with a larger spin in the Nyquist diagram."},
-  "pid_controller":{t:"7. EXPERIMENTAL: <b>PID controller</b> and <b>one pole</b>",tasks:["pid_help_PID","pid_help_YR","pid_help_S","pid_help_YL","pid_help_OPEN"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about using a PID controller with a first-order system. / Frida & Pex"},
+  "pid_controller":{t:"7. EXPERIMENTAL: <b>PID controller</b> and <b>one pole</b>",tasks:["pid_help_PID","pid_help_YR"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about using a PID controller with a first-order system. / Frida & Pex"},
+  "pid_controller_S":{t:"8. EXPERIMENTAL: <b>PID controller</b> and <b>sensitivity</b>",tasks:["pid_help_PID","pid_help_YR","pid_help_S"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about understanding the sensitivity function. / Frida & Pex"},
+  "pid_controller_YL":{t:"9. EXPERIMENTAL: <b>PID controller</b> and <b>load</b>",tasks:["pid_help_PID","pid_help_YR","pid_help_S","pid_help_YL"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about using a PID controller with a load. / Frida & Pex"},
+  "pid_controller_OL":{t:"10. EXPERIMENTAL: <b>PID controller</b> and <b>open-loop</b>",tasks:["pid_help_PID","pid_help_OPEN"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about understanding the open-loop transfer function when using a PID controller with a first-order system. / Frida & Pex"},
+
+
   "none":{t:"...<b>no assignment</b>",tasks:["impossible"],info:""},
 };
 let done_assignments={};
@@ -3037,7 +3042,7 @@ function restart_lupze(){
   next_graph_no_to_add = NOF_GRAPHS_AT_STARTUP;
 }
 
-function select_assignment(event){
+function select_assignment (event){
   current_assignment = event.value;
   update_tasks();
   removeAllGraphs();
@@ -3080,6 +3085,12 @@ function select_assignment(event){
     next_graph_no_to_add=5;
   } else if(event.value=="pid_controller"){
     next_graph_no_to_add=0;
+  } else if(event.value=="pid_controller_S"){
+    next_graph_no_to_add=0;
+  } else if(event.value=="pid_controller_YL"){
+    next_graph_no_to_add=0;
+  } else if(event.value=="pid_controller_OL"){
+    next_graph_no_to_add=0;
   }
   // Set the color of the graph:
   id_bank = next_graph_no_to_add;
@@ -3118,6 +3129,18 @@ function select_assignment(event){
     //Step reference (k4=1,T6=1,T7=1,T8=-1.5)
     addNewGraph(null, {name:"Ghost..T..._Match this response", mf:"\\frac{(1-1.5s)}{(1+s)(1+s)}", formula:"(1-1.5s)/(1+s)*1/(1+s)"});
   } else if(event.value=="pid_controller"){
+    addNewGraph(null, GRAPH_PID);
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR);
+  } else if(event.value=="pid_controller_S"){
+    addNewGraph(null, GRAPH_PID);
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR);
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S);
+  } else if(event.value=="pid_controller_YL"){
+    addNewGraph(null, GRAPH_PID);
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR);
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S);
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YL);
+  } else if(event.value=="pid_controller_OL"){
     addNewGraph(null, GRAPH_PID);
     addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR);
     addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S);
@@ -7590,6 +7613,15 @@ function ready (){
     //}
     if (event.key=='F1'){
       select_assignment({value:"pid_controller"});
+    }
+    if (event.key=='F2'){
+      select_assignment({value:"pid_controller_S"});
+    }
+    if (event.key=='F3'){
+      select_assignment({value:"pid_controller_YL"});
+    }
+    if (event.key=='F4'){
+      select_assignment({value:"pid_controller_OL"});
     }
 
     if (event.key=='Escape'){
