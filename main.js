@@ -2991,7 +2991,7 @@ const all_assignments={
   "pid_controller":{t:"7. EXPERIMENTAL: <b>PID controller</b> and <b>one pole</b>",tasks:["pid_help_PID","pid_help_YR"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about using a PID controller with a first-order system. / Frida & Pex"},
   "pid_controller_S":{t:"8. EXPERIMENTAL: <b>PID controller</b> and <b>sensitivity</b>",tasks:["pid_help_PID","pid_help_YR","pid_help_S"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about understanding the sensitivity function. / Frida & Pex"},
   "pid_controller_YL":{t:"9. EXPERIMENTAL: <b>PID controller</b> and <b>load</b>",tasks:["pid_help_PID","pid_help_YR","pid_help_S","pid_help_YL"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about using a PID controller with a load. / Frida & Pex"},
-  "pid_controller_OL":{t:"10. EXPERIMENTAL: <b>PID controller</b> and <b>open-loop</b>",tasks:["pid_help_PID","pid_help_OPEN"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about understanding the open-loop transfer function when using a PID controller with a first-order system. / Frida & Pex"},
+  "pid_controller_OL":{t:"10.EXPERIMENTAL: <b>PID controller</b> and <b>open-loop</b>",tasks:["pid_help_PID","pid_help_OPEN"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about understanding the open-loop transfer function when using a PID controller with a first-order system. / Frida & Pex"},
 
 
   "none":{t:"...<b>no assignment</b>",tasks:["impossible"],info:""},
@@ -5354,7 +5354,27 @@ function set_T_in_pz_map(T_to_change,real){
 
 }
 
-function mouseDragged(){
+
+function redraw_canvas_gain_for_variables(vars){
+  // Find out which graphs needs to be recalculated if any of the vars were changed:
+  for(let i=0; i<bode_graphs.length; i++){
+    if(bode_graphs[i].bode_displaybool){
+      let need_to_recalculate=false;
+      let formula = bode_graphs[i].bode_formula;
+      for (let the_var in vars){
+        if (formula.includes(the_var)){
+          need_to_recalculate = true;
+          break;
+        }
+      }
+      if (need_to_recalculate){
+        redraw_canvas_gain(bode_graphs[i].bode_id);
+      }
+    }
+  }
+}
+
+function mouseDragged (){
   if (mouseButton==RIGHT){
     if (questions_enabled){
       handle_questions();
@@ -5376,7 +5396,8 @@ function mouseDragged(){
         // We dragged a slider to a k-value above or equal 100:
         achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
       }
-      redraw_canvas_gain(bode_graphs[i].bode_id);
+      //redraw_canvas_gain(bode_graphs[i].bode_id); //faster, but we might affect other graphs here:
+      redraw_canvas_gain_for_variables(["k_1","T_1"]);
 
     } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
       drag_T_in_step_response(clicked_on_time_variable,mouseDiffX);
@@ -5484,7 +5505,8 @@ function mouseDragged(){
         // We dragged a slider to a k-value above or equal 100:
         achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
       }
-      redraw_canvas_gain(bode_graphs[i].bode_id);
+      //redraw_canvas_gain(bode_graphs[i].bode_id); //faster, but we might affect other graphs here:
+      redraw_canvas_gain_for_variables(["k_1","T_1"]);
 
     } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
       achievement_done("drag_bode_mag");
@@ -5563,7 +5585,8 @@ function mouseDragged(){
     if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_ONE_REAL_POLE.formula){
       achievement_done("drag_bode_phase");
       drag_T_in_Bode("T_1",mouseDiffX);
-      redraw_canvas_gain(bode_graphs[i].bode_id);
+      //redraw_canvas_gain(bode_graphs[i].bode_id); //faster, but we might affect other graphs here:
+      redraw_canvas_gain_for_variables(["k_1","T_1"]);
 
     } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
       achievement_done("drag_bode_phase");
@@ -5631,7 +5654,8 @@ function mouseDragged(){
               if (real>0){
                 achievement_done("drag_pole_to_right_half_plane");
               }
-              redraw_canvas_gain(bode_graphs[i].bode_id);
+              //redraw_canvas_gain(bode_graphs[i].bode_id); //faster, but we might affect other graphs here:
+              redraw_canvas_gain_for_variables(["k_1","T_1"]);
 
             } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
               achievement_done("drag_pole");
