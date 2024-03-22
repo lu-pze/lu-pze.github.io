@@ -729,7 +729,7 @@ Overall, using seconds on the time axis in automatic control simplifies analysis
 In summary, the choice between using degrees and radians depends on the context and requirements of the analysis. Degrees are more common and intuitive for phase angles in practical applications, especially in introductory settings. However, radians are preferred for more advanced mathematical analyses due to their natural compatibility with trigonometric functions and calculus. Radians per second is the standard unit for frequency in control theory, aligning with the use of Laplace transforms and complex numbers.`},
 
 
-//In automatic control, why do we study first-order systems with one real pole? Give an answer with vivid examples of first-order systems, with correct automatic control vocabulary while keeping the rest of the english simple.
+//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For an automatic control theory student, make a list of tweny examples of first-order systems from various engineering fields such as electronics, chemistry, physics, mechanics, mathematics, household appliances, and gadgets. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
   "ONE_REAL_POLE_pz":{q:"Why do we study systems with one pole?",pos:function(){
     for(let i=0; i<bode_graphs.length; i++){
       if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula)){
@@ -737,35 +737,99 @@ In summary, the choice between using degrees and radians depends on the context 
       }
     }
     return {visible:false}
-  },a:`Imagine a cup of hot tea as an example of a first-order system. When you blow on the tea to cool it down, the temperature decreases gradually over time. This simple process can be modeled as a first-order system with one real pole. We study first-order systems with one real pole because they provide a foundational understanding of how systems respond to inputs in automatic control.<br><br>
-Understanding these systems helps us design controls for various applications, such as temperature regulation in ovens or speed control in vehicles. By studying first-order systems with one real pole, we can analyze the system's response time, time constant, and steady-state behavior, enabling us to design efficient and reliable control strategies.`},
-//In essence, exploring these systems allows us to grasp the fundamental principles of automatic control, paving the way for more complex analyses and designs in real-world applications.
+  },a:`<ul>
+      <li><strong>Electronics</strong>: RC (Resistor-Capacitor) Low Pass Filter - Governed by the equation V<sub>out</sub> = V<sub>in</sub> * (1 - e<sup>-t/RC</sup>)</li>
+      <li><strong>Thermal Engineering</strong>: Temperature control of a room using a heater - Where the room temperature's rate of change is proportional to the difference between the ambient and desired temperatures.</li>
+      <li><strong>Mechanics</strong>: Viscous damping in a mechanical shock absorber - Can be modeled as a first-order system where the force is proportional to the velocity.</li>
+      <li><strong>Chemistry</strong>: Chemical reactors in which the reaction rate is of first-order with respect to a reactant concentration.</li>
+      <li><strong>Physics</strong>: Charging of a capacitor through a resistor - Described by the equation q(t) = Q(1 - e<sup>-t/RC</sup>), where q(t) is the charge at time t.</li>
+      <li><strong>Mathematics</strong>: Solutions of first-order linear differential equations used to model diverse physical phenomena.</li>
+      <li><strong>Biomedical Engineering</strong>: Modeling the rate of absorption of a drug into the bloodstream.</li>
+      <li><strong>Automobiles</strong>: The cruise control system in a vehicle, adjusting the throttle position to maintain a constant speed.</li>
+      <li><strong>Aeronautics</strong>: The altitude hold mode in autopilot systems, maintaining a set altitude by adjusting flight control surfaces.</li>
+      <li><strong>Household Appliances</strong>: Thermostat control for heating systems, maintaining a target temperature within a room.</li>
+      <li><strong>Environmental Engineering</strong>: Modeling the dilution of pollutants in a river, assuming first-order decay of pollutant concentration.</li>
+      <li><strong>Electrical Engineering</strong>: Current control in a DC motor, governed by the motor's inductance and resistance.</li>
+      <li><strong>Robotics</strong>: Position control of a robotic arm's single joint, where the position is controlled by varying the input voltage.</li>
+      <li><strong>Optics</strong>: The response of a photodetector circuit, where the output voltage changes as a function of light intensity.</li>
+      <li><strong>Fluid Dynamics</strong>: The flow of fluid in a pipe with a constant cross-sectional area, where the flow rate stabilizes due to frictional forces.</li>
+      <li><strong>Sound Engineering</strong>: High-pass filters used in audio systems to attenuate lower frequencies while allowing higher frequencies to pass through.</li>
+      <li><strong>Signal Processing</strong>: Exponential moving average filter, often used to smooth out time series data.</li>
+      <li><strong>Telecommunications</strong>: The tuning circuit in a radio receiver, selecting a particular frequency while filtering out others.</li>
+      <li><strong>Marine Engineering</strong>: Control of a ship's velocity by adjusting its propeller speed.</li>
+      <li><strong>Space Exploration</strong>: Orientation control in satellites using reaction wheels, adjusting the satellite's angular position.</li>
+      </ul>
+  This list provides a glance into the incredible diversity of applications for first-order systems across engineering disciplines, illustrating the fundamental role that principles of automatic control theory play in technological advancements and everyday applications.`},
 
 
-//In automatic control, why do we study second-order systems with two real-valued poles? Give an answer with vivid examples of second-order damped systems, with correct automatic control vocabulary while keeping the rest of the english simple.
-  "TWO_REAL_POLES_pz":{q:"Why do we study systems with two real poles?",pos:function(){
+
+
+//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For an automatic control theory student, make a list of tweny examples of second-order systems from various engineering fields such as electronics, chemistry, physics, mechanics, mathematics, household appliances, and gadgets. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
+  "TWO_REAL_POLES_pz":{q:"Why do we study systems with two poles?",pos:function(){
     for(let i=0; i<bode_graphs.length; i++){
       if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)){
         return {visible:true,x:pole_zero_graph_x[i]+graph_pole_zero_width/2,y:pole_zero_graph_y[i]+graph_pole_zero_width/2};
       }
     }
     return {visible:false}
-  },a:`Think of a car's suspension system as an example of a second-order damped system. When the car hits a bump, the suspension absorbs the shock, causing the car to oscillate up and down before returning to its resting position. We study second-order systems with two real-valued poles because they represent damped systems, which are common in automatic control.<br><br>
-Understanding these systems helps us design controls for various applications, such as shock absorbers in vehicles or vibration dampers in buildings. By studying second-order systems with two real-valued poles, we can analyze the damping ratio, natural frequency, and transient response characteristics, enabling us to optimize system performance and stability.`},
-//In essence, exploring these systems allows us to understand how damping influences the behavior of dynamic systems, ensuring smooth and controlled responses in real-world applications.
+  },a:`<ul>
+        <li><b>Electronics:</b> LC Circuit (Tank Circuit) - A classic example where the electric charge oscillates between an inductor (<em>L</em>) and capacitor (<em>C</em>), described by d<sup>2</sup>q/dt<sup>2</sup> + q/(LC) = 0.</li>
+        <li><b>Automotive:</b> Suspension System - Represents the vehicle's dynamics, where the oscillatory behavior models comfort and handling.</li>
+        <li><b>Mechatronics:</b> Robotic Arm Joints - The positioning control typically involves second-order dynamics to describe the movement.</li>
+        <li><b>Physics:</b> Mass-Spring-Damper System - A fundamental second-order system, described by m*d<sup>2</sup>x/dt<sup>2</sup> + c*dx/dt + kx = F(t), where m, c, and k are mass, damping coefficient, and spring constant, respectively.</li>
+        <li><b>Chemical Engineering:</b> Temperature Control in a Chemical Reactor - Where the temperature control loop can be approximated by a second-order system to maintain optimal reaction conditions.</li>
+        <li><b>Electrical Engineering:</b> RLC Circuits - Used in filters, tuners, and frequency discriminators, representing a resistive (R), inductive (L), and capacitive (C) elements.</li>
+        <li><b>Aerospace:</b> Attitude Control Systems - Governs the orientation of aircraft or spacecraft, often modelled with second-order dynamics.</li>
+        <li><b>Mechanics:</b> Pendulum Dynamics (Small Angle Approximation) - Described by d<sup>2</sup>&theta;/dt<sup>2</sup> + g/l * &theta; = 0, where g is the acceleration due to gravity and l is the pendulum length.</li>
+        <li><b>Marine Engineering:</b> Ship Roll Dynamics - Explains how ships stabilize after being tilted by waves, displaying second-order characteristics.</li>
+        <li><b>Mathematics:</b> Differential Equations - Many natural phenomena and engineering problems are modeled as second-order linear differential equations.</li>
+        <li><b>Heating, Ventilation, and Air Conditioning (HVAC):</b> Temperature Control Systems - Regulate the building's climate using feedback mechanisms akin to second-order systems.</li>
+        <li><b>Household Appliances:</b> Washing Machine Balance Control - Ensures stability during the spin cycle, a problem of dynamic balancing and vibration control.</li>
+        <li><b>Gadgets:</b> Gyroscopes in Smartphones - Employed for orientation detection, involving principles of angular momentum and second-order control for accuracy.</li>
+        <li><b>Renewable Energy:</b> Wind Turbine Pitch Control - Adjusts the blade pitch to optimize efficiency and regulate power output, a second-order control challenge.</li>
+        <li><b>Biomedical Engineering:</b> Drug Delivery Systems - The kinetics of drug absorption and effects can sometimes be modeled as second-order processes.</li>
+        <li><b>Optics:</b> Laser Cavity Control - Stability and precision in the laser output are managed through feedback that closely resembles second-order dynamics.</li>
+        <li><b>Acoustics:</b> Loudspeaker Systems - The mechanical and electrical aspects of speaker design often involve second-order dynamic models.</li>
+        <li><b>Robotics:</b> Drone Stabilization - The flight control systems for drones, ensuring stable operation, leverage second-order dynamics.</li>
+        <li><b>Information Technology:</b> Packet Switching in Network Routers - While primarily a function of software, the control of data flow can be conceptually understood through second-order system analogies.</li>
+        <li><b>Environmental Engineering:</b> Pollution Dispersion Models - The spread and dissipation of pollutants in ecosystems can be described using principles akin to second-order systems.</li>
+    </ul>Note that some of the systems described above may have complex poles, having a damped oscillating system response.`},
 
 
-//In automatic control, why do we study second-order systems with two complex poles? Give an answer with vivid examples of resonating systems, with correct automatic control vocabulary while keeping the rest of the english simple.
-  "TWO_COMPLEX_POLES_pz":{q:"Why do we study systems with two complex poles?",pos:function(){
+
+//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For an automatic control theory student, make a list of tweny examples of second-order systems from various engineering fields such as electronics, chemistry, physics, mechanics, mathematics, household appliances, and gadgets. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
+  "TWO_COMPLEX_POLES_pz":{q:"Why do we study systems with two poles?",pos:function(){
     for(let i=0; i<bode_graphs.length; i++){
       if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)){
         return {visible:true,x:pole_zero_graph_x[i]+graph_pole_zero_width/2,y:pole_zero_graph_y[i]+graph_pole_zero_width/2};
       }
     }
     return {visible:false}
-  },a:`Imagine a playground swing as an example of a resonating system. When you push a swing, it oscillates back and forth at its natural frequency. Similarly, in control systems, resonating systems exhibit oscillatory behavior when subjected to certain inputs or disturbances. We study second-order systems with two complex poles because they often represent resonating systems, which are prevalent in automatic control.<br><br>
-Understanding these systems helps us design controls for various applications, like audio speakers or vibrating machines, where managing resonance is crucial. By studying second-order systems with two complex poles, we can analyze the resonance frequency, damping ratio, and stability characteristics, enabling us to mitigate unwanted oscillations and ensure system stability.`},
-//In essence, delving into these systems allows us to harness and control resonance effects, ensuring optimal performance and stability in real-world applications.
+  },a:`<ul>
+        <li><b>Electronics:</b> LC Circuit (Tank Circuit) - A classic example where the electric charge oscillates between an inductor (<em>L</em>) and capacitor (<em>C</em>), described by d<sup>2</sup>q/dt<sup>2</sup> + q/(LC) = 0.</li>
+        <li><b>Automotive:</b> Suspension System - Represents the vehicle's dynamics, where the oscillatory behavior models comfort and handling.</li>
+        <li><b>Mechatronics:</b> Robotic Arm Joints - The positioning control typically involves second-order dynamics to describe the movement.</li>
+        <li><b>Physics:</b> Mass-Spring-Damper System - A fundamental second-order system, described by m*d<sup>2</sup>x/dt<sup>2</sup> + c*dx/dt + kx = F(t), where m, c, and k are mass, damping coefficient, and spring constant, respectively.</li>
+        <li><b>Chemical Engineering:</b> Temperature Control in a Chemical Reactor - Where the temperature control loop can be approximated by a second-order system to maintain optimal reaction conditions.</li>
+        <li><b>Electrical Engineering:</b> RLC Circuits - Used in filters, tuners, and frequency discriminators, representing a resistive (R), inductive (L), and capacitive (C) elements.</li>
+        <li><b>Aerospace:</b> Attitude Control Systems - Governs the orientation of aircraft or spacecraft, often modelled with second-order dynamics.</li>
+        <li><b>Mechanics:</b> Pendulum Dynamics (Small Angle Approximation) - Described by d<sup>2</sup>&theta;/dt<sup>2</sup> + g/l * &theta; = 0, where g is the acceleration due to gravity and l is the pendulum length.</li>
+        <li><b>Marine Engineering:</b> Ship Roll Dynamics - Explains how ships stabilize after being tilted by waves, displaying second-order characteristics.</li>
+        <li><b>Mathematics:</b> Differential Equations - Many natural phenomena and engineering problems are modeled as second-order linear differential equations.</li>
+        <li><b>Heating, Ventilation, and Air Conditioning (HVAC):</b> Temperature Control Systems - Regulate the building's climate using feedback mechanisms akin to second-order systems.</li>
+        <li><b>Household Appliances:</b> Washing Machine Balance Control - Ensures stability during the spin cycle, a problem of dynamic balancing and vibration control.</li>
+        <li><b>Gadgets:</b> Gyroscopes in Smartphones - Employed for orientation detection, involving principles of angular momentum and second-order control for accuracy.</li>
+        <li><b>Renewable Energy:</b> Wind Turbine Pitch Control - Adjusts the blade pitch to optimize efficiency and regulate power output, a second-order control challenge.</li>
+        <li><b>Biomedical Engineering:</b> Drug Delivery Systems - The kinetics of drug absorption and effects can sometimes be modeled as second-order processes.</li>
+        <li><b>Optics:</b> Laser Cavity Control - Stability and precision in the laser output are managed through feedback that closely resembles second-order dynamics.</li>
+        <li><b>Acoustics:</b> Loudspeaker Systems - The mechanical and electrical aspects of speaker design often involve second-order dynamic models.</li>
+        <li><b>Robotics:</b> Drone Stabilization - The flight control systems for drones, ensuring stable operation, leverage second-order dynamics.</li>
+        <li><b>Information Technology:</b> Packet Switching in Network Routers - While primarily a function of software, the control of data flow can be conceptually understood through second-order system analogies.</li>
+        <li><b>Environmental Engineering:</b> Pollution Dispersion Models - The spread and dissipation of pollutants in ecosystems can be described using principles akin to second-order systems.</li>
+    </ul>Note that some of the systems described above may have real poles, having a damped system response without oscillation.`},
+
+
+
 
 //In automatic control, why do we study second-order systems with two complex poles? Give an answer with vivid examples of resonating systems, with correct automatic control vocabulary while keeping the rest of the english simple.
   "ONE_ZERO_TWO_POLES_pz":{q:"Why do we study systems with one zero and two poles?",pos:function(){
@@ -1273,8 +1337,8 @@ The PID controller is usually connected in a feedback loop as in the image above
 
 
 
-//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For an automatic control theory student, make a list of tweny examples of first-order systems from various engineering fields such as electronics, chemistry, physics, mechanics, mathematics, household appliances, and gadgets. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
-  "GRAPH_ONE_REAL_POLE":{q:"What is a first-order system?",pos:function(){
+//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For an automatic control theory student, show how we get the transfer function G(s) of a one-pole system when we start with the differential equation. Use an example of heating water. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
+  "GRAPH_ONE_REAL_POLE":{q:"How do we get this transfer function for one pole?",pos:function(){
     let span = document.getElementById('One real pole');
     if (span!=null){
       let rect = span.getBoundingClientRect();
@@ -1284,33 +1348,48 @@ The PID controller is usually connected in a feedback loop as in the image above
     } else {
       return {visible:false};
     }
-  },a:`<ul>
-      <li><strong>Electronics</strong>: RC (Resistor-Capacitor) Low Pass Filter - Governed by the equation V<sub>out</sub> = V<sub>in</sub> * (1 - e<sup>-t/RC</sup>)</li>
-      <li><strong>Thermal Engineering</strong>: Temperature control of a room using a heater - Where the room temperature's rate of change is proportional to the difference between the ambient and desired temperatures.</li>
-      <li><strong>Mechanics</strong>: Viscous damping in a mechanical shock absorber - Can be modeled as a first-order system where the force is proportional to the velocity.</li>
-      <li><strong>Chemistry</strong>: Chemical reactors in which the reaction rate is of first-order with respect to a reactant concentration.</li>
-      <li><strong>Physics</strong>: Charging of a capacitor through a resistor - Described by the equation q(t) = Q(1 - e<sup>-t/RC</sup>), where q(t) is the charge at time t.</li>
-      <li><strong>Mathematics</strong>: Solutions of first-order linear differential equations used to model diverse physical phenomena.</li>
-      <li><strong>Biomedical Engineering</strong>: Modeling the rate of absorption of a drug into the bloodstream.</li>
-      <li><strong>Automobiles</strong>: The cruise control system in a vehicle, adjusting the throttle position to maintain a constant speed.</li>
-      <li><strong>Aeronautics</strong>: The altitude hold mode in autopilot systems, maintaining a set altitude by adjusting flight control surfaces.</li>
-      <li><strong>Household Appliances</strong>: Thermostat control for heating systems, maintaining a target temperature within a room.</li>
-      <li><strong>Environmental Engineering</strong>: Modeling the dilution of pollutants in a river, assuming first-order decay of pollutant concentration.</li>
-      <li><strong>Electrical Engineering</strong>: Current control in a DC motor, governed by the motor's inductance and resistance.</li>
-      <li><strong>Robotics</strong>: Position control of a robotic arm's single joint, where the position is controlled by varying the input voltage.</li>
-      <li><strong>Optics</strong>: The response of a photodetector circuit, where the output voltage changes as a function of light intensity.</li>
-      <li><strong>Fluid Dynamics</strong>: The flow of fluid in a pipe with a constant cross-sectional area, where the flow rate stabilizes due to frictional forces.</li>
-      <li><strong>Sound Engineering</strong>: High-pass filters used in audio systems to attenuate lower frequencies while allowing higher frequencies to pass through.</li>
-      <li><strong>Signal Processing</strong>: Exponential moving average filter, often used to smooth out time series data.</li>
-      <li><strong>Telecommunications</strong>: The tuning circuit in a radio receiver, selecting a particular frequency while filtering out others.</li>
-      <li><strong>Marine Engineering</strong>: Control of a ship's velocity by adjusting its propeller speed.</li>
-      <li><strong>Space Exploration</strong>: Orientation control in satellites using reaction wheels, adjusting the satellite's angular position.</li>
-      </ul>
-  This list provides a glance into the incredible diversity of applications for first-order systems across engineering disciplines, illustrating the fundamental role that principles of automatic control theory play in technological advancements and everyday applications.`},
+  },a:`To explain how to derive the transfer function G(s) of a one-pole system, let’s consider a simplified example in the context of heating water, a common process in automatic control systems. The goal is to understand how the temperature of the water changes in response to some heating input.<br><br>
+  Our starting point is the first-order differential equation that represents the dynamic behavior of the system. In this case, it involves the rate of temperature change in the water in relation to the heating power applied.<br><br>
+
+  Let’s say the differential equation is:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+  \\frac{dT}{dt} = K \\cdot P(t)
+  </math-field><br>
+
+  where,<br>
+  - T is the temperature of the water,<br>
+  - t is time,<br>
+  - K is a constant that combines the properties of the water and the heating element (like the heat transfer coefficient),<br>
+  - P(t) is the heating power applied, a function of time.<br><br>
+
+  <h3>Step 1: Laplace Transform</h3>
+  The first step is to apply the Laplace transform to both sides of the differential equation. The Laplace transform of a function f(t), designated as F(s), translates the function from the time domain into the complex frequency domain, represented by s.<br><br>
+  The Laplace transform of dT/dt is sT(s) - T(0), where T(s) is the Laplace transform of T(t), and T(0) represents the initial condition (initial temperature of the water, which we'll assume to be zero for simplicity).
+
+  Hence, after applying the Laplace transform, our equation becomes:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+  sT(s) = K \\cdot P(s)
+  </math-field><br>
+  Note: We have dropped the initial condition for simplicity, assuming it to be zero.
+
+  <h3>Step 2: Transfer Function</h3>
+
+  The transfer function, G(s), of a system is defined as the ratio of the output (in the Laplace domain) to the input (also in the Laplace domain), under the assumption of zero initial conditions. In our example, the output is T(s), and the input is P(s).<br><br>
+
+  From the Laplace-transformed equation, rearrange for G(s):<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+  G(s) = \\frac{T(s)}{P(s)} = \\frac{K}{s}
+  </math-field><br>
+
+  This denotes that the system has a simple pole at s = 0, indicating that the system's response will have characteristics akin to a first-order system, such as an exponential rise or decay depending on the input.<br><br>
+
+  In controlling the temperature of the water, G(s) gives us crucial information on how the system will respond to various inputs. By understanding the transfer function, control strategies, such as PID (Proportional-Integral-Derivative) control, can be designed and implemented to achieve desired temperature regulation accurately and efficiently.
+
+  This example illustrates the fundamental steps of deriving the transfer function of a one-pole (first-order) system, moving from a time-domain differential equation to a frequency-domain representation, crucial for analyzing and designing control systems in automatic control theory.`},
 
 
-//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For an automatic control theory student, make a list of tweny examples of second-order systems from various engineering fields such as electronics, chemistry, physics, mechanics, mathematics, household appliances, and gadgets. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
-  "GRAPH_TWO_REAL_POLES":{q:"What is a second-order system?",pos:function(){
+//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For an automatic control theory student, show how we get the transfer function G(s) of a two-pole system with real valued poles when we start with the differential equation. Use an example of suspension system in a car. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
+  "GRAPH_TWO_REAL_POLES":{q:"How do we get this transfer function for two real poles?",pos:function(){
     let span = document.getElementById('Two real poles');
     if (span!=null){
       let rect = span.getBoundingClientRect();
@@ -1320,31 +1399,122 @@ The PID controller is usually connected in a feedback loop as in the image above
     } else {
       return {visible:false};
     }
-  },a:`<ul>
-        <li><b>Electronics:</b> LC Circuit (Tank Circuit) - A classic example where the electric charge oscillates between an inductor (<em>L</em>) and capacitor (<em>C</em>), described by d<sup>2</sup>q/dt<sup>2</sup> + q/(LC) = 0.</li>
-        <li><b>Automotive:</b> Suspension System - Represents the vehicle's dynamics, where the oscillatory behavior models comfort and handling.</li>
-        <li><b>Mechatronics:</b> Robotic Arm Joints - The positioning control typically involves second-order dynamics to describe the movement.</li>
-        <li><b>Physics:</b> Mass-Spring-Damper System - A fundamental second-order system, described by m*d<sup>2</sup>x/dt<sup>2</sup> + c*dx/dt + kx = F(t), where m, c, and k are mass, damping coefficient, and spring constant, respectively.</li>
-        <li><b>Chemical Engineering:</b> Temperature Control in a Chemical Reactor - Where the temperature control loop can be approximated by a second-order system to maintain optimal reaction conditions.</li>
-        <li><b>Electrical Engineering:</b> RLC Circuits - Used in filters, tuners, and frequency discriminators, representing a resistive (R), inductive (L), and capacitive (C) elements.</li>
-        <li><b>Aerospace:</b> Attitude Control Systems - Governs the orientation of aircraft or spacecraft, often modelled with second-order dynamics.</li>
-        <li>Mechanics:</b> Pendulum Dynamics (Small Angle Approximation) - Described by d<sup>2</sup>&theta;/dt<sup>2</sup> + g/l * &theta; = 0, where g is the acceleration due to gravity and l is the pendulum length.</li>
-        <li><b>Marine Engineering:</b> Ship Roll Dynamics - Explains how ships stabilize after being tilted by waves, displaying second-order characteristics.</li>
-        <li><b>Mathematics:</b> Differential Equations - Many natural phenomena and engineering problems are modeled as second-order linear differential equations.</li>
-        <li><b>Heating, Ventilation, and Air Conditioning (HVAC):</b> Temperature Control Systems - Regulate the building's climate using feedback mechanisms akin to second-order systems.</li>
-        <li><b>Household Appliances:</b> Washing Machine Balance Control - Ensures stability during the spin cycle, a problem of dynamic balancing and vibration control.</li>
-        <li><b>Gadgets:</b> Gyroscopes in Smartphones - Employed for orientation detection, involving principles of angular momentum and second-order control for accuracy.</li>
-        <li><b>Renewable Energy:</b> Wind Turbine Pitch Control - Adjusts the blade pitch to optimize efficiency and regulate power output, a second-order control challenge.</li>
-        <li><b>Biomedical Engineering:</b> Drug Delivery Systems - The kinetics of drug absorption and effects can sometimes be modeled as second-order processes.</li>
-        <li><b>Optics:</b> Laser Cavity Control - Stability and precision in the laser output are managed through feedback that closely resembles second-order dynamics.</li>
-        <li><b>Acoustics:</b> Loudspeaker Systems - The mechanical and electrical aspects of speaker design often involve second-order dynamic models.</li>
-        <li><b>Robotics:</b> Drone Stabilization - The flight control systems for drones, ensuring stable operation, leverage second-order dynamics.</li>
-        <li><b>Information Technology:</b> Packet Switching in Network Routers - While primarily a function of software, the control of data flow can be conceptually understood through second-order system analogies.</li>
-        <li><b>Environmental Engineering:</b> Pollution Dispersion Models - The spread and dissipation of pollutants in ecosystems can be described using principles akin to second-order systems.</li>
-    </ul>Note that some of the systems described above may have complex poles, having a damped oscillating system response.`},
+  },a:`Let's walk through the process of deriving the transfer function G(s) for a two-pole system, taking a car suspension system as an illustrative example. In an automatic control context, a suspension system aims to minimize the impact of road bumps on the car's body, enhancing passenger comfort. This system can be simplified to a mass-spring-damper model.
+
+  <h3>Step 1: Define the Physical System</h3>
+  Consider a car suspension system simplified as: m is the mass of the car body, c is the damping coefficient (represents the shock absorber), k is the spring constant. The external force on the system, F(t), is due to road irregularities. The displacement of the mass from its equilibrium position is x(t).
+
+  <h3>Step 2: Write the Differential Equation</h3>
+  The dynamics of the system can be captured by the second-order differential equation derived from Newton's second law of motion:
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+  m\\frac{d^2x(t)}{dt^2} + c\\frac{dx(t)}{dt} + kx(t) = F(t)
+  </math-field><br>
+
+  <h3>Step 3: Laplace Transform</h3>
+  To find the transfer function G(s), we apply the Laplace transform to the differential equation, assuming zero initial conditions.<br>
+  Laplace transforms of derivatives are<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+  \\mathcal{L}\\left\\{\\frac{d^n f(t)}{dt^n}\\right\\} = s^n F(s) - s^{n-1}f(0) - ... - f^{(n-1)}(0),
+</math-field><br>
+  where f(0) and its derivatives up to (n-1) are initial conditions and are zero in our case.
+  Applying the Laplace transform gives:<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+  ms^2X(s) + csX(s) + kX(s) = F(s)
+</math-field><br>
+
+  <h3>Step 4: Derive the Transfer Function</h3>
+  The transfer function G(s) is defined as the output over the input in the Laplace domain, where the output is X(s) and the input is F(s).<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+  G(s) = \\frac{X(s)}{F(s)} = \\frac{1}{ms^2 + cs + k}
+</math-field><br>
+
+  <h3>Step 5: Identify the Poles</h3>
+  The poles of the system are the roots of the characteristic polynomial in the denominator of G(s):<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+  ms^2 + cs + k = 0
+</math-field><br>
+
+  The solutions to this quadratic equation are:<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+  s = \\frac{-c \\pm \\sqrt{c^2 - 4mk}}{2m}
+</math-field><br>
+
+  As an example, let's say our suspension system has mass m=1000&nbsp;kg, damping coefficient c=1000&nbsp;Ns/m, and spring constant k=5000&nbsp;N/m.
+  Then the transfer function becomes:<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+  G(s) = \\frac{1}{1000s^2 + 1000s + 5000}
+</math-field><br>
+  And the poles would be:<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+  s = \\frac{-1000 \\pm \\sqrt{1000^2 - 4 \\cdot 1000 \\cdot 5000}}{2 \\cdot 1000}
+</math-field><br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+  s = \\frac{-1000 \\pm \\sqrt{-16000000}}{2000}
+</math-field><br>
+  This illustrates a system with complex conjugate poles, indicating an underdamped system typical for making the car suspension comfortable by allowing it to \"bounce\" slightly before settling. Notice, however, in this example and the given values, the calculation gives real poles, and we will end up with the transfer function for two real poles.`},
 
 
 
+//curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For an automatic control theory student, show how we get the transfer function G(s) of a two-pole system with complex valued poles when we start with the differential equation. Use an example of Pendulum Dynamics (Small Angle Approximation) - Described by d<sup>2</sup>&theta;/dt<sup>2</sup> + g/l * &theta; = 0, where g is the acceleration due to gravity and l is the pendulum length.</li>. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
+  "GRAPH_TWO_COMPLEX_POLES":{q:"How do we get this transfer function for two complex poles?",pos:function(){
+    let span = document.getElementById('Two complex poles');
+    if (span!=null){
+      let rect = span.getBoundingClientRect();
+      let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
+      let scroll_y = window.pageYOffset || document.documentElement.scrollTop
+      return {visible:true,x:scroll_x + rect.left + rect.width/2,y:scroll_y + rect.top + rect.height/2};
+    } else {
+      return {visible:false};
+    }
+  },a:`Let's derive the transfer function G(s) of a system with complex-valued poles, using the example of a pendulum's dynamics under the small angle approximation. This is a fundamental concept in automatic control theory, which helps us understand system behavior in response to inputs. We'll start with the pendulum's differential equation and proceed step-by-step.
+  <h3>Differential Equation</h3>
+  For a simple pendulum under the small angle approximation, the equation of motion is given as follows:<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+  \\frac{d^2\\theta}{dt^2} + \\frac{g}{l}\\theta = 0,
+</math-field><br>
+  where: &theta; is the angular displacement (in radians), g is the acceleration due to gravity m/s<sup>2</sup>, l is the length of the pendulum (m).<br>
+
+  <h3>Laplace Transform</h3>
+  To find the transfer function G(s), we first apply the Laplace transform to the differential equation. The Laplace transform of a derivative transforms derivatives into algebraic terms, making the equation easier to manipulate.
+  Given a function f(t), the Laplace transform of its second derivative is s<sup>2</sup>F(s) - s*f(0) - f'(0), where F(s) is the Laplace transform of f(t). Assuming zero initial conditions &theta;(0)=0 and d&theta;/dt(0)=0, which is common in control theory for simplicity, the Laplace transform of our differential equation becomes:<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+  s^2\\Theta(s) + \\frac{g}{l}\\Theta(s) = 0,
+</math-field><br>
+  where &Theta;(s) is the Laplace transform of &theta;(t).
+
+  <h3>Rearranging the equation</h3>
+  Collecting terms, we express the above equation as:<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+  (s^2 + \\frac{g}{l})\\Theta(s) = 0.
+</math-field><br>
+  To find the transfer function G(s), we usually express the equation in the form of &Theta;(s) = G(s) * Input(s). However, in our case, the equation represents natural dynamics without an explicit input. For educational purposes, if we consider a modified equation that includes an input, such as a torque or a force F(t) that influences &theta;(t), we could write:<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+  \\frac{d^2\\theta}{dt^2} + \\frac{g}{l}\\theta = F(t),
+</math-field><br>
+  and the Laplace transform would give us (assuming F(t) is the input):<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+  s^2\\Theta(s) + \\frac{g}{l}\\Theta(s) = F(s).
+</math-field><br>
+  From this point, we can express &Theta;(s) in terms of F(s) and derive the transfer function.
+
+  <h3>Transfer Function</h3>
+  The transfer function G(s) is defined as the ratio of the output (in this case, &Theta;(s)) to the input F(s), determined under the assumption of zero initial conditions. So, we have:<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+  G(s) = \\frac{\\Theta(s)}{F(s)} = \\frac{1}{s^2 + \\frac{g}{l}}.
+</math-field><br>
+
+  <h3>Complex Poles</h3>
+  The characteristic equation of the system is the denominator of G(s), which is:<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+  s^2 + \\frac{g}{l} = 0.
+</math-field><br>
+  Solving for s, we find the poles of the system:<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+  s = \\pm\\sqrt{-\\frac{g}{l}} = \\pm j\\sqrt{\\frac{g}{l}}.
+</math-field><br>
+  These are complex-valued poles, indicating the oscillatory nature of the pendulum’s motion. The presence of j (the imaginary unit) indicates that the system will exhibit sinusoidal oscillations, with a frequency dependent on √(g/l).<br><br>
+
+  By transforming the differential equation of a pendulum into the s-domain, we obtained the transfer function G(s), revealing complex poles which indicate the oscillatory response of the system. This approach using Laplace transforms is pivotal in control theory, allowing the analysis and design of control systems based on the system’s dynamics represented by its transfer function.`},
 
 
 
