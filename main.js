@@ -4048,6 +4048,12 @@ function draw_bode_responses(type){
           try{ // The graph may be deleted, so this might fail:
             draw_bode_phase_T(range_slider_variables[variable_position["T_5"]],i);
           } catch {}
+        } else if(bode_graphs[i].bode_formula == GRAPH_PID.formula){
+          // Draw T_i and T_d:
+          try{ // The graph may be deleted, so this might fail:
+            draw_bode_phase_T(range_slider_variables[variable_position["T_i"]],i);
+            draw_bode_phase_T(range_slider_variables[variable_position["T_d"]],i);
+          } catch {}
         }
       }
     }
@@ -4148,6 +4154,12 @@ function draw_bode_responses(type){
           // Draw T_5:
           try{ // The graph may be deleted, so this might fail:
             draw_bode_mag_T(range_slider_variables[variable_position["T_5"]],i);
+          } catch {}
+        } else if (bode_graphs[i].bode_formula == GRAPH_PID.formula){
+          // Draw T_i and T_d:
+          try{ // The graph may be deleted, so this might fail:
+            draw_bode_mag_T(range_slider_variables[variable_position["T_i"]],i);
+            draw_bode_mag_T(range_slider_variables[variable_position["T_d"]],i);
           } catch {}
         }
       }
@@ -4914,6 +4926,20 @@ function mousePressed(){
         } else {
           clicked_on_time_variable="T_7";
         }
+      } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_PID.formula){
+        // If user clicked on PID, let's find out if closest to T_i or T_d:
+        let T_i = range_slider_variables[variable_position["T_i"]];
+        let T_i_frequency = 1 / Math.abs(T_i);
+        let T_i_x = (Math.log(T_i_frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
+        let T_d = range_slider_variables[variable_position["T_d"]];
+        let T_d_frequency = 1 / Math.abs(T_d);
+        let T_d_x = (Math.log(T_d_frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
+        let x = mouseX - graph_bode_mag_x_offset - graph_bode_mag_x;
+        if (Math.abs(T_i_x - x) < Math.abs(T_d_x - x)){
+          clicked_on_time_variable="T_i";
+        } else {
+          clicked_on_time_variable="T_d";
+        }
       }
     }
     if (current_quiz!="none"){
@@ -5076,6 +5102,20 @@ function mousePressed(){
           clicked_on_time_variable="T_6";
         } else {
           clicked_on_time_variable="T_7";
+        }
+      } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_PID.formula){
+        // If user clicked on TWO_REAL_POLES, let's find out if closest to T_i or T_d:
+        let T_i = range_slider_variables[variable_position["T_i"]];
+        let T_i_frequency = 1 / Math.abs(T_i);
+        let T_i_x = (Math.log(T_i_frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
+        let T_d = range_slider_variables[variable_position["T_d"]];
+        let T_d_frequency = 1 / Math.abs(T_d);
+        let T_d_x = (Math.log(T_d_frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
+        let x = mouseX - graph_bode_phase_x_offset - graph_bode_phase_x;
+        if (Math.abs(T_i_x - x) < Math.abs(T_d_x - x)){
+          clicked_on_time_variable="T_i";
+        } else {
+          clicked_on_time_variable="T_d";
         }
       }
     }
@@ -5364,7 +5404,7 @@ function redraw_canvas_gain_for_variables(vars){
       let need_to_recalculate=false;
       let formula = bode_graphs[i].bode_formula;
       for (let the_var in vars){
-        if (formula.includes(the_var)){
+        if (formula.includes(vars[the_var])){
           need_to_recalculate = true;
           break;
         }
@@ -5573,6 +5613,14 @@ function mouseDragged (){
       drag_T_in_Bode("T_5",mouseDiffX);
       drag_k_in_Bode("k_5",mouseDiffY);
       redraw_canvas_gain(bode_graphs[i].bode_id);
+
+    } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_PID.formula){
+      achievement_done("drag_bode_mag");
+      drag_T_in_Bode(clicked_on_time_variable,mouseDiffX);
+      drag_k_in_Bode("K",mouseDiffY);
+      //redraw_canvas_gain(bode_graphs[i].bode_id);
+      redraw_canvas_gain_for_variables(["K","T_i","T_d"]);
+
     }
     initial_mouseX = mouseX;
     initial_mouseY = mouseY;
@@ -5588,7 +5636,7 @@ function mouseDragged (){
       achievement_done("drag_bode_phase");
       drag_T_in_Bode("T_1",mouseDiffX);
       //redraw_canvas_gain(bode_graphs[i].bode_id); //faster, but we might affect other graphs here:
-      redraw_canvas_gain_for_variables(["k_1","T_1"]);
+      redraw_canvas_gain_for_variables(["T_1"]);
 
     } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
       achievement_done("drag_bode_phase");
@@ -5627,6 +5675,13 @@ function mouseDragged (){
       achievement_done("drag_bode_phase");
       drag_T_in_Bode("T_5",mouseDiffX);
       redraw_canvas_gain(bode_graphs[i].bode_id);
+
+    } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_PID.formula){
+      achievement_done("drag_bode_phase");
+      drag_T_in_Bode(clicked_on_time_variable,mouseDiffX);
+      //redraw_canvas_gain(bode_graphs[i].bode_id);
+      redraw_canvas_gain_for_variables(["K","T_i","T_d"]);
+
     }
     initial_mouseX = mouseX;
     initial_mouseY = mouseY;
@@ -5657,7 +5712,7 @@ function mouseDragged (){
                 achievement_done("drag_pole_to_right_half_plane");
               }
               //redraw_canvas_gain(bode_graphs[i].bode_id); //faster, but we might affect other graphs here:
-              redraw_canvas_gain_for_variables(["k_1","T_1"]);
+              redraw_canvas_gain_for_variables(["T_1"]);
 
             } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
               achievement_done("drag_pole");
