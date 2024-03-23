@@ -1635,7 +1635,8 @@ function enable_questions(){
     let q_position = all_questions[q_id].pos();
     if (q_position.visible){
       s += "<div class='question_div' id='"+q_id+"' style='top:"+q_position.y+"px;left:"+q_position.x+"px;'>";
-      s += '<svg fill="#ffff00a0" width="100px" height="100px" viewBox="0 0 24 24"><use href="#icon_help"/></svg>';
+//      s += '<svg fill="#ffff00a0" width="100px" height="100px" viewBox="0 0 24 24"><use href="#icon_help"/></svg>';
+      s += '<img src="images/question_small.png" width="100px" style="opacity:0.8">';
       s += "</div>";
     }
   }
