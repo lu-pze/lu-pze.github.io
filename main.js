@@ -1634,7 +1634,7 @@ function enable_questions(){
   for (let q_id in all_questions){
     let q_position = all_questions[q_id].pos();
     if (q_position.visible){
-      s += "<div class='question_div' id='"+q_id+"' style='top:"+q_position.y+"px;left:"+q_position.x+"px;'>";
+      s += "<div class='question_div' id='"+q_id+"' style='top:"+(q_position.y+6)+"px;left:"+(q_position.x+4)+"px;'>";
 //      s += '<svg fill="#ffff00a0" width="100px" height="100px" viewBox="0 0 24 24"><use href="#icon_help"/></svg>';
       s += '<img src="images/question_small.png" width="100px" style="opacity:0.8">';
       s += "</div>";
@@ -3103,10 +3103,10 @@ function update_assignments(){
   else if (nof_assignments_done == 4) s+="Good job!";
   else if (nof_assignments_done == 5) s+="You can smell the finish line!";
   else if (nof_assignments_done == 6) s+="You're a legend!";
-  s += "<br><br>";
+  s += "<br>";
 
   if (nof_assignments_done > 0){
-    s+="Completed assignments:<br>";
+    s+="<br>Completed assignments:<br>";
     for (let assignment_id in all_assignments){
       if (done_assignments[assignment_id] == all_assignments[assignment_id].tasks.length){
         let long_name = all_assignments[assignment_id].t;
@@ -3118,7 +3118,6 @@ function update_assignments(){
         s+="><label for='"+assignment_id+"'>&nbsp;" + long_name + "</label><br>";
       }
     }
-    s += "<br>";
   }
   s += '<img src="images/explorers_1024.png" width="384px" style="margin:0;padding:0">';
   assignments_box.innerHTML=s;
