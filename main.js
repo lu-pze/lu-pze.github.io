@@ -4596,6 +4596,8 @@ function mousePressed(){
     setTimeout(initial_graph, first_time + 2*delay);
     setTimeout(initial_graph, first_time + 3*delay);
 
+    text_color = color('hsb(0,0%,100%)');
+
     splash_screen_active=false;
     return false;
   }
@@ -7750,7 +7752,7 @@ function setup (){
   background_color = color('hsb(0,0%,4%)');
   box_background_color = 120;
   line_color = color('hsb(0,0%,22%)');  // Grey graph lines
-  text_color = color('hsb(0,0%,100%)');
+  text_color = color('hsb(0,0%,20%)');
   angle_color = "#ff40ff";
   // To go from "T_1" to the index in range_slider_variables:
   for(let i=0; i<range_slider_alphabet.length; i++){

@@ -132,22 +132,22 @@ input{background:none}
 @keyframes new_badge_anim {
   0% {opacity:0%;transform:scale(2.0) rotate(120deg);}
   100% {opacity:100%;transform:scale(1.0) rotate(0deg);}}
-.pze_logo{left:42%;top:66%;z-index:19;position:absolute;opacity:1.0;font-family:Arial,sans-serif;font-size:900%;font-weight:800;text-align: center;line-height:80%;color:#ff8;text-shadow:  -2px -2px 0 #000,   2px -2px 0 #000,  -2px  2px 0 #000,   2px  2px 0 #000;pointer-events:none;animation: pze_logo_anim_in 3.5s ease-out 0s 1;overflow: hidden;}
+.pze_logo{left:42%;bottom:1%;z-index:150;position:absolute;opacity:1.0;font-family:Arial,sans-serif;font-size:900%;font-weight:800;text-align: center;line-height:80%;color:#ff8;text-shadow:  -2px -2px 0 #000,   2px -2px 0 #000,  -2px  2px 0 #000,   2px  2px 0 #000;pointer-events:none;animation: pze_logo_anim_in 3.5s ease-out 0s 1;overflow: hidden;}
 @keyframes pze_logo_anim_in {
-  0% {opacity:0.0;top:70%}
-  30% {opacity:0.0;top:70%}
+  0% {opacity:0.0;bottom:-10%}
+  30% {opacity:0.0;bottom:-10%}
   50% {opacity:1.0;}
-  100% {top:66%;}}
+  100% {bottom:1%;}}
 @keyframes pze_logo_anim_out {
   0% {opacity:1.0}
   100% {opacity:0.0}}
 .cropped {margin:0;padding:0;position:fixed;left:0;top:0;height:100%;width:100%;overflow:hidden;pointer-events:none;}
-.lu_logo{left:55%;top:40%;height:80%;z-index:19;position:absolute;transform: translate(-50%,-50%) scale(1.4);opacity:1.0;animation: lu_logo_anim_in 3.0s ease-out 1;pointer-events:none;overflow: hidden;}
+.lu_logo{left:55%;top:40%;height:80%;z-index:19;position:absolute;transform: translate(-50%,-50%) scale(0.8);opacity:1.0;animation: lu_logo_anim_in 3.0s ease-out 1;pointer-events:none;overflow: hidden;}
 @keyframes lu_logo_anim_in {
   0% {left:50%;top:50%;transform: translate(-50%,-50%) scale(12.0);opacity:0.0;}
   10% {opacity:1.0;}
-  50% {left:55%;top:40%;transform: translate(-50%,-50%) scale(1.4);}
-  50% {left:55%;top:40%;opacity:1.0;}}
+  50% {left:55%;top:40%;transform: translate(-50%,-50%) scale(0.7);}
+  100% {left:55%;top:40%;opacity:1.0;}}
 @keyframes lu_logo_anim_out {
   0% {opacity:1.0}
   100% {left:55%;top:38%;opacity:0.0}}
@@ -386,7 +386,7 @@ frida.heskebeck@control.lth.se</center><br>
       </div>
 
       <div class="cropped">
-      <div class="pze_logo" id="pze_logo">Pole-Zero<br>Explorer</div>
+      <div class="pze_logo" id="pze_logo"><img src="images/pze_logo_small.png" width="500px"></div>
       <div class="lu_logo" id="lu_logo"><img src="images/lu_logo.svg" height="70%"></div>
       <div class="explorer_1" id="explorer_1"><img src="images/explorer_1.png" height="70%"></div>
       <div class="explorer_2" id="explorer_2"><img src="images/explorer_2.png" height="70%"></div>
