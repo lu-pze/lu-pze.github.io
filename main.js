@@ -7671,7 +7671,7 @@ function trigger_banner(){
     if (this_is_a_touch_device==false){
       banner_is_visible=true;
       const banner=document.getElementById("banner");
-      banner.innerHTML='<img src="images/Right_click_banner_v2_small.png" alt="Right click to ask questions!" class="banner" width="45%"><img src="images/Right_click_banner_v2_small.png" width="45%" style="visibility:hidden">';
+      banner.innerHTML='<img src="images/Right_click_banner_small.png" alt="Right click to ask questions!" class="banner" width="45%"><img src="images/Right_click_banner_small.png" width="45%" style="visibility:hidden">';
       banner.style.animation = 'none';
       banner.offsetHeight; /* trigger reflow */
       banner.style.animation="banner_anim_in 7s ease-out 1";
@@ -7682,7 +7682,7 @@ function trigger_banner(){
 function remove_banner_if_needed(){
   if (banner_is_visible==true){
     banner_is_visible = false;
-    banner.innerHTML='<img src="images/Right_click_banner_v2_small.png" alt="Right click to ask questions!" class="banner" width="45%">';
+    banner.innerHTML='<img src="images/Right_click_banner_small.png" alt="Right click to ask questions!" class="banner" width="45%">';
     banner.style.animation = 'none';
     banner.offsetHeight; /* trigger reflow */
     banner.style.animation="banner_anim_out 5s ease-out 1";
