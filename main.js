@@ -227,6 +227,9 @@ function createRangeSlider(event){
   if ((variable_name=="k_1")&&((current_assignment=="pid_controller")||(current_assignment=="pid_controller_S")||(current_assignment=="pid_controller_YL")||(current_assignment=="pid_controller_OL"))){
     range_min=0.01;
   }
+  if ((variable_name=="T_1")&&((current_assignment=="pid_controller")||(current_assignment=="pid_controller_S")||(current_assignment=="pid_controller_YL")||(current_assignment=="pid_controller_OL"))){
+    range_value=6.0;
+  }
 
   slider.classList.add("slider-wrapper");
   // Yes, this is ugly. But flex layout is broken (or at least differs) in mobile ios and Firefox vs. Chrome.
@@ -6897,6 +6900,11 @@ class bode_graph{
 
   get_timevalues_p5(){
     let formula_to_use = this.bode_formula;
+
+    // Some formulas will never be displayed in the time response window, so just don't waste time calculating them:
+    if (formula_to_use==GRAPH_PID.formula) return;
+    if (formula_to_use==GRAPH_ONE_POLE_WITH_PID_S.formula) return;
+    if (formula_to_use==GRAPH_ONE_POLE_WITH_PID_OPEN.formula) return;
 
     // Take care of "known good" formulas that we know an exact answer to:
     let have_a_solution = false;
