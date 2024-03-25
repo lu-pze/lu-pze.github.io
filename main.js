@@ -1277,7 +1277,7 @@ And we collect the terms:<br>
 
 //Load
 //curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For a student learning automatic control theory, explain why the transfer function from the load (or a disturbance that is added to the input of the plant) to the output is useful when using a PID controller to control a first order system with transfer function G(s). Write your answer in HTML with LaTeX for mathematical formulas, with correct automatic control vocabulary while keeping the rest of the english simple. You do not need to make an introduction or a summary, and you do not need to include JavaScript libraries, just write the html code with the embedded LaTeX formulas."}]}'
-  "GRAPH_ONE_POLE_WITH_PID_YL":{q:"Why do we look at the Load to Output Transfer Function G<sub>YL</sub> in PID Control?",pos:function(){
+  "GRAPH_ONE_POLE_WITH_PID_YL":{q:"Why do we look at the Load Disturbance Transfer Function G<sub>YL</sub> in PID Control?",pos:function(){
     let span = document.getElementById('One pole with PID Load');
     if (span!=null){
       let rect = span.getBoundingClientRect();
@@ -3007,10 +3007,9 @@ const all_assignments={
   "one_zero_two_poles":{t:"5. Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4,T6,T7=1,T8=1.5_poles"],info:"With <b>one zero and two poles</b>, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
   "four_poles":{t:"6. Investigate a system with <b>four poles</b>",tasks:["gainm=5_phasex=2","phasemargin=45"],info:"A system with <b>four poles</b> gets a lot more phase shift, with a larger spin in the Nyquist diagram."},
   "pid_controller":{t:"7. EXPERIMENTAL: <b>PID controller</b> and <b>one pole</b>",tasks:["pid_help_PID","pid_help_YR"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about using a PID controller with a first-order system. / Frida & Pex"},
-  "pid_controller_S":{t:"8. EXPERIMENTAL: <b>PID controller</b> and <b>sensitivity</b>",tasks:["pid_help_PID","pid_help_YR","pid_help_S"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about understanding the sensitivity function. / Frida & Pex"},
-  "pid_controller_YL":{t:"9. EXPERIMENTAL: <b>PID controller</b> and <b>load</b>",tasks:["pid_help_PID","pid_help_YR","pid_help_S","pid_help_YL"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about using a PID controller with a load. / Frida & Pex"},
-  "pid_controller_OL":{t:"10.EXPERIMENTAL: <b>PID controller</b> and <b>open-loop</b>",tasks:["pid_help_PID","pid_help_OPEN"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about understanding the open-loop transfer function when using a PID controller with a first-order system. / Frida & Pex"},
-
+  //"pid_controller_S":{t:"8. EXPERIMENTAL: <b>PID controller</b> and <b>sensitivity</b>",tasks:["pid_help_PID","pid_help_YR","pid_help_S"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about understanding the sensitivity function. / Frida & Pex"},
+  "pid_controller_YL":{t:"8. EXPERIMENTAL: <b>PID controller</b> and <b>load</b>",tasks:["pid_help_PID","pid_help_YR","pid_help_YL"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about using a PID controller with a load. / Frida & Pex"},
+  //"pid_controller_OL":{t:"10.EXPERIMENTAL: <b>PID controller</b> and <b>open-loop</b>",tasks:["pid_help_PID","pid_help_OPEN"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about understanding the open-loop transfer function when using a PID controller with a first-order system. / Frida & Pex"},
 
   "none":{t:"...<b>no assignment</b>",tasks:["impossible"],info:""},
 };
@@ -3061,9 +3060,9 @@ const all_tasks={
 //#PID controller
 "pid_help_PID":"Read about <b>PID control</b> by right clicking on the G<sub>PID</sub> equation above.",
 "pid_help_YR":"Read about the <b>closed-loop response G<sub>YR</sub></b>.",
-"pid_help_S":"Read about the <b>sensitivity function S</b>.",
-"pid_help_YL":"Read about the <b>Load function G<sub>YL</sub></b>.",
-"pid_help_OPEN":"Read about the <b>open-loop formula G<sub>OL</sub></b>.",
+//"pid_help_S":"Read about the <b>sensitivity function S</b>.",
+"pid_help_YL":"Read about the <b>Load disturbance transfer function G<sub>YL</sub></b>.",
+//"pid_help_OPEN":"Read about the <b>open-loop formula G<sub>OL</sub></b>.",
 
 };
 let done_tasks=[];
@@ -3257,7 +3256,7 @@ function select_assignment (event){
   } else if(event.value=="pid_controller_YL"){
     addNewGraph(null, GRAPH_PID, "_____MP...E");
     addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR, "_____MPT..E");
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S, "_____M..N.E");
+    //addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S, "_____M..N.E");
     addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YL, "_____MPT..E");
   } else if(event.value=="pid_controller_OL"){
     addNewGraph(null, GRAPH_PID, "_____MP...E");
@@ -4284,6 +4283,8 @@ function draw_time_responses(){
         if (T_5 >= 0){
           draw_static_gain(range_slider_variables[variable_position["k_5"]],i);
         }
+      } else if (bode_graphs[i].bode_formula == GRAPH_ONE_POLE_WITH_PID_YR.formula){
+        draw_static_gain(1.0,i);
       }
     }
   }
@@ -7848,22 +7849,9 @@ function ready (){
     //  quiz_correct();
     //  update_quiz();
     //}
-    if (event.key=='F1'){
-      select_assignment({value:"pid_controller"});
-    }
-    if (event.key=='F2'){
-      select_assignment({value:"pid_controller_S"});
-    }
-    if (event.key=='F3'){
-      select_assignment({value:"pid_controller_YL"});
-    }
-    if (event.key=='F4'){
-      select_assignment({value:"pid_controller_OL"});
-    }
-
-    if (event.key=='Escape'){
-      restart_lupze();
-    }
+    if (event.key=='F1') select_assignment({value:"pid_controller"});
+    if (event.key=='F2') select_assignment({value:"pid_controller_YL"});
+    if (event.key=='Escape') restart_lupze();
   });
 
   document.addEventListener('contextmenu', function(event) {
