@@ -1714,6 +1714,36 @@ function show_answer_to_task(task_id){
   answer_text_div.innerHTML=s;
   let toggleElement = document.querySelector('.answer');
   toggleElement.classList.toggle('active');
+  toggleElement.style.animation = 'none';
+  toggleElement.offsetHeight; /* trigger reflow */
+  toggleElement.style.animation="slidein 1.0s ease-out 1";
+  let placement=all_tasks[task_id].placement;
+  toggleElement.style.top=null;
+  toggleElement.style.bottom=null;
+  toggleElement.style.left=null;
+  toggleElement.style.right=null;
+  if (placement==null){
+    toggleElement.style.top="30%";
+    toggleElement.style.left="32.5%";  //50%-35%/2
+  } else if (placement=="UL"){
+    toggleElement.style.top="5%";
+    toggleElement.style.left="3%";
+  } else if (placement=="UC"){
+    toggleElement.style.top="5%";
+    toggleElement.style.left="32.5%";  //50%-35%/2
+  } else if (placement=="UR"){
+    toggleElement.style.top="5%";
+    toggleElement.style.right="390px";
+  } else if (placement=="DL"){
+    toggleElement.style.bottom="120px";
+    toggleElement.style.left="3%";
+  } else if (placement=="DC"){
+    toggleElement.style.bottom="120px";
+    toggleElement.style.left="32.5%";  //50%-35%/2
+  } else if (placement=="DR"){
+    toggleElement.style.bottom="120px";
+    toggleElement.style.right="390px";
+  }
 }
 
 
@@ -3105,7 +3135,7 @@ const all_tasks={
 
 // #PID controller and one pole
 //Sol: K is increased.
-"PID_(K>1)":{t:"<b>Make the closed-loop system faster</b> by changing K while looking at the step response. How does changing the K parameter affect the step response of the closed-loop system?",a:`<h2>What happens when you change the proportional part P in the PID controller?</h2>Changing K affects the speed of the closed-loop system step response. Higher K means a faster step response and that the poles are placed further away from the origin in the pole-zero map.`},
+"PID_(K>1)":{t:"<b>Make the closed-loop system faster</b> by changing K while looking at the step response. How does changing the K parameter affect the step response of the closed-loop system?",a:`<h2>What happens when you change the proportional part P in the PID controller?</h2>Changing K affects the speed of the closed-loop system step response. Higher K means a faster step response and that the poles are placed further away from the origin in the pole-zero map.`,placement:"DR"},
 
 //Sol: Ti pole is greater than system pole.
 "PID_(T_i)>(T_1)":{t:"Change T<sub>i</sub> so that the T<sub>i</sub> pole in the Bode plot (orange) is to the right of the pole for the system (red). How does changing the T<sub>i</sub> parameter affect the Bode plot and step response of the closed-loop system?",a:`<h2>What happens when you change the integrating part T<sub>i</sub> of the PID controller</h2>Including the integrating I part of the PID controller removes the stationary error that we get with only a proportional P-controller. The smaller T<sub>i</sub> is, the more "power" the I-part has. Small T<sub>i</sub> values can result in oscillations and overshoot which we can see on the resonance peak that appears in the Bode plot as well. Large T<sub>i</sub> values, which means "little power to the I-part", results in a step response where it takes a long time for the stationary error to disappear.`},
@@ -7955,6 +7985,7 @@ function ready (){
     //}
     if (event.key=='F1') select_assignment({value:"pid_controller"});
     if (event.key=='F2') select_assignment({value:"pid_controller_YL"});
+    if (event.key=='F3') show_answer_to_task("PID_(T_d!=0)");
     if (event.key=='Escape') restart_lupze();
   });
 
