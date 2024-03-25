@@ -2960,7 +2960,7 @@ function task_done (which_one){
         // Trigger an animation with the text:
         let achievement_text_div = document.getElementById("achievement_text");
         let assignment_star_div = document.getElementById("assignment_star");
-        achievement_text_div.innerHTML=all_tasks[which_one];
+        achievement_text_div.innerHTML=all_tasks[which_one].t;
         let left = (100*mouseX /windowWidth);
         if (left > 85) left = 85;
         let top = (100*mouseY/windowHeight);
@@ -3020,77 +3020,69 @@ let done_assignments={};
 const all_tasks={
 //## One pole
 //"reference eq in step response(k=0.65, T1=2)"
-"T1=2":"Your task is to change T<sub>1</sub> by moving the slider or type in T<sub>1</sub>'s value to make the pole's location -1/2 in the pole-zero map. Can you explain how the pole's location and its time constant are related?",//. (T1=2)
-"k1=2.9":"Your task is to drag the <b>step input response</b> making the static gain of the system 2.9. When will the system reach its static gain?",//. (k1=2.9)
-"T1_k1_bode":"Save the princess from the dragon by dragging the pole marker in the Bode plots to mimick the orange step response. The princess, as it turns out, will only leave the dragon if you can explain how she can find the <b>static gain</b> in the Bode magnitude plot. Can you save her?",// (k=0.65, T1=2)
-"T1_pole=-2":"Drag the pole marker in the <b>pole-zero map</b> to make the system four times faster than the orange one. What does it mean to have a faster system?",//. (pole in -2)
-"T1_unstable":"Make the pole <b>unstable</b>.", // T_1 < 0
+"T1=2":{t:"Your task is to change T<sub>1</sub> by moving the slider or type in T<sub>1</sub>'s value to make the pole's location -1/2 in the pole-zero map. Can you explain how the pole's location and its time constant are related?"},//. (T1=2)
+"k1=2.9":{t:"Your task is to drag the <b>step input response</b> making the static gain of the system 2.9. When will the system reach its static gain?"},//. (k1=2.9)
+"T1_k1_bode":{t:"Save the princess from the dragon by dragging the pole marker in the Bode plots to mimick the orange step response. The princess, as it turns out, will only leave the dragon if you can explain how she can find the <b>static gain</b> in the Bode magnitude plot. Can you save her?"},// (k=0.65, T1=2)
+"T1_pole=-2":{t:"Drag the pole marker in the <b>pole-zero map</b> to make the system four times faster than the orange one. What does it mean to have a faster system?"},//. (pole in -2)
+"T1_unstable":{t:"Make the pole <b>unstable</b>."}, // T_1 < 0
 
 //## Two real poles
 //reference in step (T2=T3=1, k2=0.5)
 //reference in bode phase (T2=5, T3=0.05, k2=1)
-"T2,T3=1;k2=0.5":"Your first subtask is to set k<sub>2</sub>=0.5 exactly, then drag the two pole markers in the <b>pole-zero map</b> to make the step response follow the cyan line. Can you explain how this second-order step response differs from a first-order system?",//. (T2=T3=1, k2=1)
-"T2,T3=0.05_and_5":"Your task is to change T<sub>2</sub> and T<sub>3</sub> to make your Bode phase plot mimick the blue curve in the Bode phase plot. Feel free to change these time constants in whatever way you find suitable.",//. (T2=0.05, T3=5.0)
-"T2=10;T3=0.5":"Your task is to drag the pole markers in the Bode plots making the <b>cutoff frequencies</b> in the Bode plot become 0.1 rad/s and 2.0 rad/s. Now, tell me how the cutoff frequencies as seen in the Bode plots are related to the poles' locations in the pole-zero map.",// (T2=10, T3=0.5 or vice versa)
-"phasemargin=55":"Please drag the two pole markers in the Bode diagram to ensure that the <b>Phase margin</b> for the system is 55°. Can you explain how the phase margin can be found in the Nyquist diagram?",// (T2=T3=0.5-1.5k k2=7-8 approximately
-"gaincrossover=3":"Finally, drag the two pole markers in the Bode diagram to ensure that the <b>gain crossover frequency</b> becomes 3.0 rad/s. But before you go, call your friend and tell them how you can get the gain crossover frequency from a Bode magnitude plot.",// (T2=T3=0.5-1.5k k2=7-8 approximately)
+"T2,T3=1;k2=0.5":{t:"Your first subtask is to set k<sub>2</sub>=0.5 exactly, then drag the two pole markers in the <b>pole-zero map</b> to make the step response follow the cyan line. Can you explain how this second-order step response differs from a first-order system?"},//. (T2=T3=1, k2=1)
+"T2,T3=0.05_and_5":{t:"Your task is to change T<sub>2</sub> and T<sub>3</sub> to make your Bode phase plot mimick the blue curve in the Bode phase plot. Feel free to change these time constants in whatever way you find suitable."},//. (T2=0.05, T3=5.0)
+"T2=10;T3=0.5":{t:"Your task is to drag the pole markers in the Bode plots making the <b>cutoff frequencies</b> in the Bode plot become 0.1 rad/s and 2.0 rad/s. Now, tell me how the cutoff frequencies as seen in the Bode plots are related to the poles' locations in the pole-zero map."},// (T2=10, T3=0.5 or vice versa)
+"phasemargin=55":{t:"Please drag the two pole markers in the Bode diagram to ensure that the <b>Phase margin</b> for the system is 55°. Can you explain how the phase margin can be found in the Nyquist diagram?"},// (T2=T3=0.5-1.5k k2=7-8 approximately
+"gaincrossover=3":{t:"Finally, drag the two pole markers in the Bode diagram to ensure that the <b>gain crossover frequency</b> becomes 3.0 rad/s. But before you go, call your friend and tell them how you can get the gain crossover frequency from a Bode magnitude plot."},// (T2=T3=0.5-1.5k k2=7-8 approximately)
 
 //## Two complex poles
 //Step reference (w=2,z=0.7,k=0.7)
 //Bode reference (w=8, z=0.05)
-"w=1.6;z=0.2":"Drag the pole markers in the <b>pole-zero map</b> so that the resonance frequency w=1.6 and damping factor z=0.2. How does changing w affect the step response of the system? How does changing z affect the step response of the system?",
-"w=0.9;z=0.0":"Move the pole markers in the <b>pole-zero map</b> in such way that the resonance frequency w becomes 0.9 and the damping factor z becomes 0.0. What happens with the system when z is 0? Is the system stable?",
-"w=8;z=0.05;k_3=1":"The very evil vampire Dracula is afraid of heights. Save the world by putting Dracula on a high mountain by changing the <b>resonance frequency</b> w, <b>damping factor</b> z and <b>static gain</b> k<sub>3</sub> to make the Bode plots mimick the blue lines. As the Hero<sup>TM</sup> you've now become, tell your admirers the name of the peak. Also, tell the press what could happen if the system has input with this specific frequency.",
-"w=2;z=0.7;k3=0.7":"Your task is to match the pink step input response. First, set your <b>static gain</b> k<sub>3</sub>. Then, drag the <b>Bode plot</b> to align your system response with the pink step input response. How does the second-order-system step response differ between a system with real poles versus complex poles?",
+"w=1.6;z=0.2":{t:"Drag the pole markers in the <b>pole-zero map</b> so that the resonance frequency w=1.6 and damping factor z=0.2. How does changing w affect the step response of the system? How does changing z affect the step response of the system?"},
+"w=0.9;z=0.0":{t:"Move the pole markers in the <b>pole-zero map</b> in such way that the resonance frequency w becomes 0.9 and the damping factor z becomes 0.0. What happens with the system when z is 0? Is the system stable?"},
+"w=8;z=0.05;k_3=1":{t:"The very evil vampire Dracula is afraid of heights. Save the world by putting Dracula on a high mountain by changing the <b>resonance frequency</b> w, <b>damping factor</b> z and <b>static gain</b> k<sub>3</sub> to make the Bode plots mimick the blue lines. As the Hero<sup>TM</sup> you've now become, tell your admirers the name of the peak. Also, tell the press what could happen if the system has input with this specific frequency."},
+"w=2;z=0.7;k3=0.7":{t:"Your task is to match the pink step input response. First, set your <b>static gain</b> k<sub>3</sub>. Then, drag the <b>Bode plot</b> to align your system response with the pink step input response. How does the second-order-system step response differ between a system with real poles versus complex poles?"},
 
 //## Time delay
-"L=3":"Drag the step input response to change the time delay to 3.0 seconds. What does it mean that a system has a time delay?",
-"L_gain_margin=2":"Change the <b>time delay</b> L so that the <b>Gain margin</b> becomes 2.0. Why is there a spiral in the Nyquist diagram?",// (L=0.3)
+"L=3":{t:"Drag the step input response to change the time delay to 3.0 seconds. What does it mean that a system has a time delay?"},
+"L_gain_margin=2":{t:"Change the <b>time delay</b> L so that the <b>Gain margin</b> becomes 2.0. Why is there a spiral in the Nyquist diagram?"},// (L=0.3)
 
 //## One zero two Poles
 //Nyquist reference (k=1,T6=2.5,T7=1,T8=6)
 //Bode reference (k4=0.75,T6=9.25,T7=0.5,T8=2)
 //Step reference (k4=1,T6=1,T7=1,T8=-1.5)
-"k4=1;T6=2.5;T7=1;T8=6":"Your task is to make your Nyquist diagram match up with the orange one. <b>Drag the pole and zero markers in the Bode plots</b>, and change k<sub>4</sub> to make the Nyquist curve follow the orange line. Note that there are many combinations of T<sub>6</sub>, T<sub>7</sub>, and T<sub>8</sub> that gives identical Nyquist diagrams but non-similar Bode diagrams. Can you explain why?",// (k=1,T6=2.5,T7=1,T8=6)
-"k4=0.75;T6=9.25;T7=0.5;T8=2":"Change the parameters so that your Bode plots align with the green lines. Can you summarize how a pole and a zero affect the shape of the Bode digrams?",//. (k4=0.75,T6=9.25,T7=0.5,T8=2)
-"k4,T6,T7=1,T8=1.5_poles":"With k<sub>4</sub>=1, drag the pole and zero markers in the <b>pole-zero map</b> so that the step response follows the blue line. Why is the step response reversed in the beginning? Is the system stable?",
+"k4=1;T6=2.5;T7=1;T8=6":{t:"Your task is to make your Nyquist diagram match up with the orange one. <b>Drag the pole and zero markers in the Bode plots</b>, and change k<sub>4</sub> to make the Nyquist curve follow the orange line. Note that there are many combinations of T<sub>6</sub>, T<sub>7</sub>, and T<sub>8</sub> that gives identical Nyquist diagrams but non-similar Bode diagrams. Can you explain why?"},// (k=1,T6=2.5,T7=1,T8=6)
+"k4=0.75;T6=9.25;T7=0.5;T8=2":{t:"Change the parameters so that your Bode plots align with the green lines. Can you summarize how a pole and a zero affect the shape of the Bode digrams?"},//. (k4=0.75,T6=9.25,T7=0.5,T8=2)
+"k4,T6,T7=1,T8=1.5_poles":{t:"With k<sub>4</sub>=1, drag the pole and zero markers in the <b>pole-zero map</b> so that the step response follows the blue line. Why is the step response reversed in the beginning? Is the system stable?"},
 
 //#Four poles
-"gainm=5_phasex=2":"Drag the Bode plot so that the <b>Gain margin</b> is 5 and the <b>Phase crossover frequency</b> is 2 rad/s. What practical implication does mean that the Gain margin is 5?",// (T5=0.3, k=2)
-"phasemargin=45":"Change k<sub>5</sub> so that the <b>Phase margin</b> is 45°. How can you analyze the closed loop system stability from the Nyquist diagram?",
+"gainm=5_phasex=2":{t:"Drag the Bode plot so that the <b>Gain margin</b> is 5 and the <b>Phase crossover frequency</b> is 2 rad/s. What practical implication does mean that the Gain margin is 5?"},// (T5=0.3, k=2)
+"phasemargin=45":{t:"Change k<sub>5</sub> so that the <b>Phase margin</b> is 45°. How can you analyze the closed loop system stability from the Nyquist diagram?"},
 
 //#PID controller
-"pid_help_PID":"Read about <b>PID control</b> by right clicking on the G<sub>PID</sub> equation above.",
-"pid_help_YR":"Read about the <b>closed-loop response G<sub>YR</sub></b>.",
-//"pid_help_S":"Read about the <b>sensitivity function S</b>.",
-"pid_help_YL":"Read about the <b>Load disturbance transfer function G<sub>YL</sub></b>.",
-//"pid_help_OPEN":"Read about the <b>open-loop formula G<sub>OL</sub></b>.",
+"pid_help_PID":{t:"Read about <b>PID control</b> by right clicking on the G<sub>PID</sub> equation above."},
+"pid_help_YR":{t:"Read about the <b>closed-loop response G<sub>YR</sub></b>."},
+//"pid_help_S":{t:"Read about the <b>sensitivity function S</b>.",
+"pid_help_YL":{t:"Read about the <b>Load disturbance transfer function G<sub>YL</sub></b>."},
+//"pid_help_OPEN":{t:"Read about the <b>open-loop formula G<sub>OL</sub></b>.",
 
 
 
 // #PID controller and one pole
-"PID_(K>1)":"<b>Make the closed-loop system faster</b> by changing K while looking at the step response. How does changing the K parameter affect the step response of the closed-loop system?",
 //Sol: K is increased.
-//?: Changing K affects the speed of the closed loop system step response. Higher K means faster step response and that the poles are placed further away from the origin.
+"PID_(K>1)":{t:"<b>Make the closed-loop system faster</b> by changing K while looking at the step response. How does changing the K parameter affect the step response of the closed-loop system?",a:"Changing K affects the speed of the closed-loop system step response. Higher K means a faster step response and that the poles are placed further away from the origin in the pole-zero map."},
 
-"PID_(T_i)>(T_1)":"Change T<sub>i</sub> so that the T<sub>i</sub> pole in the Bode plot (orange) is to the right of the pole for the system (red). How does changing the T<sub>i</sub> parameter affect the Bode plot and step response of the closed-loop system?",
 //Sol: Ti pole is greater than system pole.
-//?: Including the I part of a PID controller removes the stationary error that we get with only a P-controller. The smaller Ti is, the more "power" the I-part has. Small Ti values can result in oscillations and overshoot which we also see on the resonanse peak that appears in the bode plot. Big Ti values, "little power to the I-part", results in a step response where it takes a long time for the stationary error to dissapear.
+"PID_(T_i)>(T_1)":{t:"Change T<sub>i</sub> so that the T<sub>i</sub> pole in the Bode plot (orange) is to the right of the pole for the system (red). How does changing the T<sub>i</sub> parameter affect the Bode plot and step response of the closed-loop system?",a:'Including the integrating I part of the PID controller removes the stationary error that we get with only a proportional P-controller. The smaller T<sub>i</sub> is, the more "power" the I-part has. Small T<sub>i</sub> values can result in oscillations and overshoot which we can see on the resonance peak that appears in the Bode plot as well. Large T<sub>i</sub> values, which means "little power to the I-part", results in a step response where it takes a long time for the stationary error to disappear.'},
 
-"PID_(T_d!=0)":"Change T<sub>d</sub> and explain the <b>Bode plot of the PID-controller</b>. How are the poles (marked with x) in the bode plot related to the T<sub>i</sub> and T<sub>d</sub> parameters?",
 //Sol: Td != 0
-//?: The "downhill" slope in the bode plot for the PID controller comes from the I-part of the controller. The slope bends up for the value of the pole corresponsing to the I-part of the controller, i.e., the Ti value.
-//The "uphill" slope in the bode plot for the PID controller comes from the D-part of the controller. The slope bends up for the value of the pole corresponsing to the D-part of the controller, i.e., the Td value. From here one can realise that including the D-part in a PID controller could result in problems with high-frequency noise.
-//The "height" of the bode plot for the PID controller comes from the P-part of the controller. Chaning K lowers and rises the curve.
+"PID_(T_d!=0)":{t:"Change T<sub>d</sub> and explain the <b>Bode plot of the PID-controller</b>. How are the poles (marked with x) in the bode plot related to the T<sub>i</sub> and T<sub>d</sub> parameters?",a:`The "downhill" slope in the Bode plot for the PID controller comes from the I-part of the controller. The slope bends upwards for the value of the pole corresponding to the integrating I-part of the controller, i.e., the T<sub>i</sub> value.<br><br>The "uphill" slope in the Bode plot for the PID controller comes from the derivative D-part of the controller. The slope bends upwards for the value of the pole corresponsing to the D-part of the controller, i.e., the T<sub>d</sub> value. From here one can realise that including the D-part in a PID controller could result in problems with high-frequency noise.<br><br>The "height" of the Bode plot for the PID controller comes from the proportional P-part of the controller. Chaning K will lower and raise the curve.`},
 
-"PID_(Td=0,T_1=1)":"For any fixed PI controller (T<sub>d</sub>=0). What happens with the closed-loop step response if the system's T<sub>1</sub>-parameter is changed? In other words, what happens if you have a model for a system and design your controller for that model, but then it turns out that T<sub>1</sub> for <b>the actual system differs from the model</b>? Set T<sub>d</sub>=0.0 and T<sub>1</sub> to 1.0.",
 //Sol: Change T1.
-//?: If the difference is small, not much differs. If the differene is big, the closed loop system step response could be very different. This could result in safety issues if it is a sensitive system that is controlled.
+"PID_(Td=0,T_1=1)":{t:"For any fixed PI controller (T<sub>d</sub>=0). What happens with the closed-loop step response if the system's T<sub>1</sub>-parameter is changed? In other words, what happens if you have a model for a system and design your controller for that model, but then it turns out that T<sub>1</sub> for <b>the actual system differs from the model</b>? Set T<sub>d</sub>=0.0 and T<sub>1</sub> to 1.0.",a:`If the difference in time constants between the model and the actual system is small, it will not make a large change in control behavior. If the differene between the model and the actual system is large, the closed loop system step response will be very different. This could result in safety issues if the controlled system is a sensitive system.`},
 
-"PID_(k_1)":"Change the k<sub>1</sub> parameter of the system to make the static gain of the closed-loop system anything else than 1. Change k<sub>1</sub> to 0.6.",
 //Sol: k1 changed.
-//?: No you cannot do that. The reason is that the a static gain of 1 in the closed loop step response means that the desired reference value is followed, which is what the PID controller is designed for. The systems static gain on the other hand show how the system changes when there is a step change in the inout to the system. So even though both the system and the closed loop system has a step change as input, the change is done on different signals. The reference value for the closed loop system and the system's input for the system.
-
+"PID_(k_1)":{t:"Change the k<sub>1</sub> parameter of the system to make the static gain of the closed-loop system anything else than 1. Change k<sub>1</sub> to 0.6.",a:`No you cannot do that. The reason is that the a static gain of 1.0 in the closed-loop step response means that the desired reference value is followed, which is what the PID controller is designed for. The system's static gain on the other hand show how the system changes when there is a step change in the input to the system. So even though both the system and the closed-loop system has a step change as input, the change is done on different signals: the reference value for the closed-loop system, and the system's input for the system.`},
 
 };
 let done_tasks=[];
@@ -3339,7 +3331,7 @@ function update_tasks (){
       if (done_tasks.includes(task_id)){
         nof_done_subtasks+=1;
       } else {
-        let long_name = all_tasks[task_id];
+        let long_name = all_tasks[task_id].t;
         todo += "<input type='checkbox' onclick='return false;'>&nbsp;<span style='color:#4040b0;'>" + long_name + "</span><br><br>";
       }
     }
@@ -3351,7 +3343,7 @@ function update_tasks (){
   for (let task_id in all_tasks){
     if (all_assignments[current_assignment].tasks.includes(task_id)){
       if (done_tasks.includes(task_id)){
-        let long_name = all_tasks[task_id];
+        let long_name = all_tasks[task_id].t;
         s += "<input type='checkbox' checked onclick='reset_task(\""+task_id+"\");'>&nbsp;<span style='color:#4040b0;'>" + long_name + "</span><br>";
       }
     }
