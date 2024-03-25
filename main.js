@@ -3006,7 +3006,9 @@ const all_assignments={
   "time_delay":{t:"4. Investigate a system with <b>time delay</b>",tasks:["L=3","L_gain_margin=2"],info:"A system with <b>time delay</b> is more difficult to control."},
   "one_zero_two_poles":{t:"5. Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4,T6,T7=1,T8=1.5_poles"],info:"With <b>one zero and two poles</b>, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
   "four_poles":{t:"6. Investigate a system with <b>four poles</b>",tasks:["gainm=5_phasex=2","phasemargin=45"],info:"A system with <b>four poles</b> gets a lot more phase shift, with a larger spin in the Nyquist diagram."},
-  "pid_controller":{t:"7. EXPERIMENTAL: <b>PID controller</b> and <b>one pole</b>",tasks:["pid_help_PID","pid_help_YR"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about using a PID controller with a first-order system. / Frida & Pex"},
+  "pid_controller":{t:"7. EXPERIMENTAL: <b>PID controller</b> and <b>one pole</b>",tasks:["pid_help_PID","pid_help_YR","PID_K+","PID_(T_i)>(T_1)","PID_(T_d!=0)","PID_(T_1)","PID_(k_1)"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about using a PID controller with a first-order system. / Frida & Pex"},
+
+
   //"pid_controller_S":{t:"8. EXPERIMENTAL: <b>PID controller</b> and <b>sensitivity</b>",tasks:["pid_help_PID","pid_help_YR","pid_help_S"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about understanding the sensitivity function. / Frida & Pex"},
   "pid_controller_YL":{t:"8. EXPERIMENTAL: <b>PID controller</b> and <b>load</b>",tasks:["pid_help_PID","pid_help_YR","pid_help_YL"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about using a PID controller with a load. / Frida & Pex"},
   //"pid_controller_OL":{t:"10.EXPERIMENTAL: <b>PID controller</b> and <b>open-loop</b>",tasks:["pid_help_PID","pid_help_OPEN"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about understanding the open-loop transfer function when using a PID controller with a first-order system. / Frida & Pex"},
@@ -3063,6 +3065,32 @@ const all_tasks={
 //"pid_help_S":"Read about the <b>sensitivity function S</b>.",
 "pid_help_YL":"Read about the <b>Load disturbance transfer function G<sub>YL</sub></b>.",
 //"pid_help_OPEN":"Read about the <b>open-loop formula G<sub>OL</sub></b>.",
+
+
+
+// #PID controller and one pole
+"PID_K+":"<b>Make the closed-loop system faster</b> by changing K while looking at the step response. How does changing the K parameter affect the step response of the closed-loop system?",
+//Sol: K is increased.
+//?: Changing K affects the speed of the closed loop system step response. Higher K means faster step response and that the poles are placed further away from the origin.
+
+"PID_(T_i)>(T_1)":"Change T<sub>i</sub> so that the T<sub>i</sub> pole in the Bode plot (orange) is to the right of the pole for the system (red). How does changing the T<sub>i</sub> parameter affect the Bode plot and step response of the closed-loop system?",
+//Sol: Ti pole is greater than system pole.
+//?: Including the I part of a PID controller removes the stationary error that we get with only a P-controller. The smaller Ti is, the more "power" the I-part has. Small Ti values can result in oscillations and overshoot which we also see on the resonanse peak that appears in the bode plot. Big Ti values, "little power to the I-part", results in a step response where it takes a long time for the stationary error to dissapear.
+
+"PID_(T_d!=0)":"Change T<sub>d</sub> and explain the <b>Bode plot of the PID-controller</b>. How are the poles (marked with x) in the bode plot related to the T<sub>i</sub> and T<sub>d</sub> parameters?",
+//Sol: Td != 0
+//?: The "downhill" slope in the bode plot for the PID controller comes from the I-part of the controller. The slope bends up for the value of the pole corresponsing to the I-part of the controller, i.e., the Ti value.
+//The "uphill" slope in the bode plot for the PID controller comes from the D-part of the controller. The slope bends up for the value of the pole corresponsing to the D-part of the controller, i.e., the Td value. From here one can realise that including the D-part in a PID controller could result in problems with high-frequency noise.
+//The "height" of the bode plot for the PID controller comes from the P-part of the controller. Chaning K lowers and rises the curve.
+
+"PID_(T_1)":"For any fixed PI controller (T<sub>d</sub>=0). What happens with the closed-loop step response if the system's T<sub>1</sub>-parameter is changed? In other words, what happens if you had a model for the system and desiged a controller for that model, but then it turns out that the real system has a different value for the T<sub>1</sub> parameter?",
+//Sol: Change T1.
+//?: If the difference is small, not much differs. If the differene is big, the closed loop system step response could be very different. This could result in safety issues if it is a sensitive system that is controlled.
+
+"PID_(k_1)":"Change the k<sub>1</sub> parameter of the system to make the static gain of the closed-loop system anything else than 1.",
+//Sol: k1 changed.
+//?: No you cannot do that. The reason is that the a static gain of 1 in the closed loop step response means that the desired reference value is followed, which is what the PID controller is designed for. The systems static gain on the other hand show how the system changes when there is a step change in the inout to the system. So even though both the system and the closed loop system has a step change as input, the change is done on different signals. The reference value for the closed loop system and the system's input for the system.
+
 
 };
 let done_tasks=[];
