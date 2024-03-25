@@ -1703,7 +1703,7 @@ function show_answer (q_id){
   let answer_text_div = document.getElementById("answer_text");
   answer_text_div.innerHTML=s;
   let toggleElement = document.querySelector('.answer');
-  toggleElement.classList.toggle('active');
+  toggleElement.classList.add('active');
 }
 
 function show_answer_to_task(task_id){
@@ -1713,7 +1713,7 @@ function show_answer_to_task(task_id){
   let answer_text_div = document.getElementById("answer_text");
   answer_text_div.innerHTML=s;
   let toggleElement = document.querySelector('.answer');
-  toggleElement.classList.toggle('active');
+  toggleElement.classList.add('active');
   toggleElement.style.animation = 'none';
   toggleElement.offsetHeight; /* trigger reflow */
   toggleElement.style.animation="slidein 1.0s ease-out 1";

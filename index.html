@@ -123,12 +123,13 @@ input{background:none}
 .functions-informations{display:flex;flex-direction:row;}
 .bode-information{display:flex;flex-direction:column;margin-top: 15px;margin-left: 15px;}
 .timerep-information{display:flex;flex-direction:column;margin-top: 15px;margin-left: 15px;}
-.star_0{right:1%;bottom:1%;height:8%;width:auto;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;border-radius: 20%;border:2px solid #fff;box-shadow:4px 4px 10px #00000080;overflow: hidden;}
-.star_0_text{right:1%;bottom:1%;height:8%;width:auto;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;overflow:hidden;pointer-events:none;}
-.assignment_0{right:7%;bottom:1%;height:8%;width:auto;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;border-radius: 20%;border:2px solid #fff;box-shadow:4px 4px 10px #00000080;overflow: hidden;}
-.assignment_0_text{right:7%;bottom:1%;height:8%;width:auto;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;overflow:hidden;pointer-events:none;}
-.cap_0{right:13%;bottom:1%;height:8%;width:auto;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;border-radius: 20%;border:2px solid #fff;box-shadow:4px 4px 10px #00000080;overflow: hidden;}
-.cap_0_text{right:13%;bottom:1%;height:8%;width:auto;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;overflow:hidden;pointer-events:none;}
+/* math-bar is 380px wide. Need space for 3 icons. Use 360px. Each icon 110px. 360-3*110=30, so 15px spacing:*/
+.star_0{right:10px;bottom:18px;height:110px;width:110px;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;border-radius: 20%;border:2px solid #fff;box-shadow:4px 4px 10px #00000080;overflow: hidden;}
+.star_0_text{right:10px;bottom:18px;height:110px;width:110px;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;overflow:hidden;pointer-events:none;}
+.assignment_0{right:135px;bottom:18px;height:110px;width:110px;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;border-radius: 20%;border:2px solid #fff;box-shadow:4px 4px 10px #00000080;overflow: hidden;}
+.assignment_0_text{right:135px;bottom:18px;height:110px;width:110px;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;overflow:hidden;pointer-events:none;}
+.cap_0{right:260px;bottom:18px;height:110px;width:110px;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;border-radius: 20%;border:2px solid #fff;box-shadow:4px 4px 10px #00000080;overflow: hidden;}
+.cap_0_text{right:260px;bottom:18px;height:110px;width:110px;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;overflow:hidden;pointer-events:none;}
 @keyframes new_badge_anim {
   0% {opacity:0%;transform:scale(2.0) rotate(120deg);}
   100% {opacity:100%;transform:scale(1.0) rotate(0deg);}}
@@ -241,7 +242,8 @@ input{background:none}
 .question_div{position:absolute;transform:translate(-50%,-50%)}
 .hover_answer{width:35%;padding:10px 20px 10px 20px;z-index:101;background-color:#d0d0d0f0;position:fixed;border-radius:20px}
 .hover_answer h2{color:#3030c0}
-.answer{width:35%;padding:20px 20px 10px 20px;top:10%;left:50%;transform:translate(-50%,0);z-index:50;box-shadow: 0 0 15px #cccccc;background-color:#d0d0d0f0;position: absolute;visibility: hidden;}
+.answer{width:35%;padding:10px 20px 10px 20px;z-index:101;background-color:#d0d0d0f0;position:fixed;border-radius:20px;visibility:hidden;}
+.answer h2{color:#3030c0}
 .answer.active{visibility:visible;opacity:1;}
 .banner{z-index:555;position:absolute;top:200px;left:25%}
 @keyframes banner_anim_in {
