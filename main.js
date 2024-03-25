@@ -1679,13 +1679,21 @@ function answerToggle(event){
   toggleElement.classList.toggle('active');
 }
 
-function show_answer(q_id){
+function show_answer (q_id){
   // Show a box with the text for the q_id question:
   let s="";
   s+="<h2>" + all_questions[q_id].q + "</h2>";
   s+=all_questions[q_id].a;
-  s+="<br><br>";
+  let answer_text_div = document.getElementById("answer_text");
+  answer_text_div.innerHTML=s;
+  let toggleElement = document.querySelector('.answer');
+  toggleElement.classList.toggle('active');
+}
 
+function show_answer_to_task(task_id){
+  // Show a box with the text for the task_id task:
+  let s="";
+  s+=all_tasks[task_id].a;
   let answer_text_div = document.getElementById("answer_text");
   answer_text_div.innerHTML=s;
   let toggleElement = document.querySelector('.answer');
@@ -2985,6 +2993,17 @@ function task_done (which_one){
         menu_assignment_div.style.animation="MenuAssignment 4s ease-out 0s 1";
         update_assignments();
         update_tasks();
+
+        //And, if this happens to be a task in an assignment, and there is an answer text,
+        //display that answer text with a close button.
+        if (all_tasks[which_one]!=null){
+          if (all_tasks[which_one].a!=null){
+            console.log(which_one);
+            show_answer_to_task(which_one);
+          }
+        }
+
+
       }
     }
   }
@@ -3010,7 +3029,7 @@ const all_assignments={
 
 
   //"pid_controller_S":{t:"8. EXPERIMENTAL: <b>PID controller</b> and <b>sensitivity</b>",tasks:["pid_help_PID","pid_help_YR","pid_help_S"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about understanding the sensitivity function. / Frida & Pex"},
-  "pid_controller_YL":{t:"8. EXPERIMENTAL: <b>PID controller</b> and <b>load</b>",tasks:["pid_help_PID","pid_help_YR","pid_help_YL"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about using a PID controller with a load. / Frida & Pex"},
+  "pid_controller_YL":{t:"8. Investigate a <b>PID controller</b> and <b>load</b>",tasks:["pid_help_PID","pid_help_YR","pid_help_YL","PID_Load"],info:"This assignment is about using a PID controller with a load."},
   //"pid_controller_OL":{t:"10.EXPERIMENTAL: <b>PID controller</b> and <b>open-loop</b>",tasks:["pid_help_PID","pid_help_OPEN"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about understanding the open-loop transfer function when using a PID controller with a first-order system. / Frida & Pex"},
 
   "none":{t:"...<b>no assignment</b>",tasks:["impossible"],info:""},
@@ -3070,19 +3089,25 @@ const all_tasks={
 
 // #PID controller and one pole
 //Sol: K is increased.
-"PID_(K>1)":{t:"<b>Make the closed-loop system faster</b> by changing K while looking at the step response. How does changing the K parameter affect the step response of the closed-loop system?",a:"Changing K affects the speed of the closed-loop system step response. Higher K means a faster step response and that the poles are placed further away from the origin in the pole-zero map."},
+"PID_(K>1)":{t:"<b>Make the closed-loop system faster</b> by changing K while looking at the step response. How does changing the K parameter affect the step response of the closed-loop system?",a:`<h2>Changing the proportional part P in the PID controller</h2>Changing K affects the speed of the closed-loop system step response. Higher K means a faster step response and that the poles are placed further away from the origin in the pole-zero map.`},
 
 //Sol: Ti pole is greater than system pole.
-"PID_(T_i)>(T_1)":{t:"Change T<sub>i</sub> so that the T<sub>i</sub> pole in the Bode plot (orange) is to the right of the pole for the system (red). How does changing the T<sub>i</sub> parameter affect the Bode plot and step response of the closed-loop system?",a:'Including the integrating I part of the PID controller removes the stationary error that we get with only a proportional P-controller. The smaller T<sub>i</sub> is, the more "power" the I-part has. Small T<sub>i</sub> values can result in oscillations and overshoot which we can see on the resonance peak that appears in the Bode plot as well. Large T<sub>i</sub> values, which means "little power to the I-part", results in a step response where it takes a long time for the stationary error to disappear.'},
+"PID_(T_i)>(T_1)":{t:"Change T<sub>i</sub> so that the T<sub>i</sub> pole in the Bode plot (orange) is to the right of the pole for the system (red). How does changing the T<sub>i</sub> parameter affect the Bode plot and step response of the closed-loop system?",a:`<h2>Changing the integrating part T<sub>I</sub> of the PID controller</h2>Including the integrating I part of the PID controller removes the stationary error that we get with only a proportional P-controller. The smaller T<sub>i</sub> is, the more "power" the I-part has. Small T<sub>i</sub> values can result in oscillations and overshoot which we can see on the resonance peak that appears in the Bode plot as well. Large T<sub>i</sub> values, which means "little power to the I-part", results in a step response where it takes a long time for the stationary error to disappear.`},
 
 //Sol: Td != 0
-"PID_(T_d!=0)":{t:"Change T<sub>d</sub> and explain the <b>Bode plot of the PID-controller</b>. How are the poles (marked with x) in the bode plot related to the T<sub>i</sub> and T<sub>d</sub> parameters?",a:`The "downhill" slope in the Bode plot for the PID controller comes from the I-part of the controller. The slope bends upwards for the value of the pole corresponding to the integrating I-part of the controller, i.e., the T<sub>i</sub> value.<br><br>The "uphill" slope in the Bode plot for the PID controller comes from the derivative D-part of the controller. The slope bends upwards for the value of the pole corresponsing to the D-part of the controller, i.e., the T<sub>d</sub> value. From here one can realise that including the D-part in a PID controller could result in problems with high-frequency noise.<br><br>The "height" of the Bode plot for the PID controller comes from the proportional P-part of the controller. Chaning K will lower and raise the curve.`},
+"PID_(T_d!=0)":{t:"Change T<sub>d</sub> and explain the <b>Bode plot of the PID-controller</b>. How are the poles (marked with x) in the bode plot related to the T<sub>i</sub> and T<sub>d</sub> parameters?",a:`<h2>Changing the derivative part T<sub>d</sub> of the PID controller</h2>The "downhill" slope in the Bode plot for the PID controller comes from the I-part of the controller. The slope bends upwards for the value of the pole corresponding to the integrating I-part of the controller, i.e., the T<sub>i</sub> value.<br><br>The "uphill" slope in the Bode plot for the PID controller comes from the derivative D-part of the controller. The slope bends upwards for the value of the pole corresponsing to the D-part of the controller, i.e., the T<sub>d</sub> value. From here one can realise that including the D-part in a PID controller could result in problems with high-frequency noise.<br><br>The "height" of the Bode plot for the PID controller comes from the proportional P-part of the controller. Chaning K will lower and raise the curve.`},
 
 //Sol: Change T1.
-"PID_(Td=0,T_1=1)":{t:"For any fixed PI controller (T<sub>d</sub>=0). What happens with the closed-loop step response if the system's T<sub>1</sub>-parameter is changed? In other words, what happens if you have a model for a system and design your controller for that model, but then it turns out that T<sub>1</sub> for <b>the actual system differs from the model</b>? Set T<sub>d</sub>=0.0 and T<sub>1</sub> to 1.0.",a:`If the difference in time constants between the model and the actual system is small, it will not make a large change in control behavior. If the differene between the model and the actual system is large, the closed loop system step response will be very different. This could result in safety issues if the controlled system is a sensitive system.`},
+"PID_(Td=0,T_1=1)":{t:"For any fixed PI controller (T<sub>d</sub>=0). What happens with the closed-loop step response if the system's T<sub>1</sub>-parameter is changed? In other words, what happens if you have a model for a system and design your controller for that model, but then it turns out that T<sub>1</sub> for <b>the actual system differs from the model</b>? Set T<sub>d</sub>=0.0 and T<sub>1</sub> to 1.0.",a:`<h2>What if the model and actual system differs?</h2>If the difference in time constants between the model and the actual system is small, it will not make a large change in control behavior. If the differene between the model and the actual system is large, the closed loop system step response will be very different. This could result in safety issues if the controlled system is a sensitive system.`},
 
 //Sol: k1 changed.
-"PID_(k_1)":{t:"Change the k<sub>1</sub> parameter of the system to make the static gain of the closed-loop system anything else than 1. Change k<sub>1</sub> to 0.6.",a:`No you cannot do that. The reason is that the a static gain of 1.0 in the closed-loop step response means that the desired reference value is followed, which is what the PID controller is designed for. The system's static gain on the other hand show how the system changes when there is a step change in the input to the system. So even though both the system and the closed-loop system has a step change as input, the change is done on different signals: the reference value for the closed-loop system, and the system's input for the system.`},
+"PID_(k_1)":{t:"Change the k<sub>1</sub> parameter of the system to make the static gain of the closed-loop system anything else than 1. Change k<sub>1</sub> to 0.6.",a:`<h2>What about changing the static gain of the closed-loop transfer function G<sub>YR</sub>?</h2>No. You cannot do that. The reason is that the a static gain of 1.0 in the closed-loop step response means that the desired reference value is followed, which is what the PID controller is designed for. The system's static gain on the other hand show how the system changes when there is a step change in the input to the system. So even though both the system and the closed-loop system has a step change as input, the change is done on different signals: the reference value for the closed-loop system, and the system's input for the system.`},
+
+
+//Sol: Any PID parameter changed.
+"PID_Load":{t:"Can you change any of the PID controller parameters so that the static gain of the load disturbance is not 0? Why is it good thing that the step response for the load disturbance approaches 0.0 and not 1.0, as it does for the closed-loop system?",a:`<h2>What about changing the static gain of a load disturbance G<sub>YL</sub>?</h2>No. A static gain of 0.0 means that the load disturbance is removed. For a step load disturbance, the PID controller can remove the disturbance. If the load disurbance were to be a ramp input (with a Laplace transform like 1/s^2), the load disturbance can no longer be removed. Try changing the input to a ramp function and see yourself!`},
+
+
 
 };
 let done_tasks=[];
@@ -5254,6 +5279,7 @@ function mouseReleased(){
   let k_1 = range_slider_variables[variable_position["k_1"]];
   if ((k_1 > 0.5) && (k_1<0.7)) task_done("PID_(k_1)");
   if (T_d != 0) task_done("PID_(T_d!=0)");
+  if ((K!=1.0)&&(T_i!=1.0)&&(T_d!=0)) task_done("PID_Load");
 
   let w = range_slider_variables[variable_position["w"]];
   let z = range_slider_variables[variable_position["z"]];
