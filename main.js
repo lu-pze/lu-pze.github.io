@@ -297,7 +297,11 @@ function createRangeSlider(event){
         achievement_done("T2_T3_far_apart");
       }
     }
-
+    if ((current_assignment=="pid_controller")||(current_assignment=="pid_controller_S")||(current_assignment=="pid_controller_YL")||(current_assignment=="pid_controller_OL")){
+      // Let's use fast precision:
+      we_need_faster_calculations_right_now=true;
+      precision=SPEED_PRECISION;
+    }
     // Make the relevant information bar active when a slider is changed:
     let variable_name = range_slider_alphabet[button_id];
     if ((variable_name == "k_1")||(variable_name == "T_1")){
@@ -3249,16 +3253,16 @@ function select_assignment (event){
   } else if(event.value=="pid_controller_S"){
     addNewGraph(null, GRAPH_PID, "_____MP...E");
     addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR, "_____MPT..E");
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S, "_____M....E");
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S, "_____M..N.E");
   } else if(event.value=="pid_controller_YL"){
     addNewGraph(null, GRAPH_PID, "_____MP...E");
     addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR, "_____MPT..E");
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S, "_____M....E");
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S, "_____M..N.E");
     addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YL, "_____MPT..E");
   } else if(event.value=="pid_controller_OL"){
     addNewGraph(null, GRAPH_PID, "_____MP...E");
     addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR, "_____MPT..E");
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S, "_____M....E");
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S, "_____M..N.E");
     addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YL, "_____MPT..E");
     addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_OPEN, "_____MP.NIE");
   }
@@ -4715,6 +4719,11 @@ function mousePressed(){
               } else {
                 clicked_on_time_variable = "T_7";
               }
+            }
+            if ((current_assignment=="pid_controller")||(current_assignment=="pid_controller_S")||(current_assignment=="pid_controller_YL")||(current_assignment=="pid_controller_OL")){
+              // Let's use fast precision:
+              we_need_faster_calculations_right_now=true;
+              precision=SPEED_PRECISION;
             }
             if (current_quiz!="none"){
               quiz_clicked_pole_zero(clicked_on_pole_zero_graph_no,real,imaginary,clicked_on_time_variable);
