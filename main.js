@@ -222,6 +222,11 @@ function createRangeSlider(event){
     range_max=default_variable_values[variable_name]["max"];
     range_value=default_variable_values[variable_name]["value"];
   }
+  // When a PID controller is attached, inverting the ONE_POLE output will always make the system unstable.
+  // So don't encourage that:
+  if ((variable_name=="k_1")&&((current_assignment=="pid_controller")||(current_assignment=="pid_controller_S")||(current_assignment=="pid_controller_YL")||(current_assignment=="pid_controller_OL"))){
+    range_min=0.01;
+  }
 
   slider.classList.add("slider-wrapper");
   // Yes, this is ugly. But flex layout is broken (or at least differs) in mobile ios and Firefox vs. Chrome.
