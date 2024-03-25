@@ -1644,8 +1644,8 @@ function enable_questions(){
   questions_enabled = true;
   let questions_icon_svg = document.getElementById("questions_icon_svg");
   questions_icon_svg.style.fill="#5050ff";
-  // Find out the placement of question icons:
   let s="";
+  // Find out the placement of question icons:
   for (let q_id in all_questions){
     let q_position = all_questions[q_id].pos();
     if (q_position.visible){
@@ -1653,6 +1653,22 @@ function enable_questions(){
 //      s += '<svg fill="#ffff00a0" width="100px" height="100px" viewBox="0 0 24 24"><use href="#icon_help"/></svg>';
       s += '<img src="images/question_small.png" width="100px" style="opacity:0.8">';
       s += "</div>";
+    }
+  }
+  // Find out the placement of question icons for tasks in assignments:
+  for (let task_id in all_tasks){
+    if (all_tasks[task_id].a!=null){ // Yes, there is an answer connected to this task:
+      let span = document.getElementById('task_'+task_id);
+      if (span!=null){
+        let rect = span.getBoundingClientRect();
+        let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
+        let scroll_y = window.pageYOffset || document.documentElement.scrollTop;
+        let x=scroll_x + rect.left + rect.width/2;
+        let y=scroll_y + rect.top + rect.height/2;
+        s += "<div class='question_div' id='task_"+task_id+"' style='top:"+(y+6)+"px;left:"+(x+4)+"px;'>";
+        s += '<img src="images/question_small.png" width="100px" style="opacity:0.8">';
+        s += "</div>";
+      }
     }
   }
   let questions_div=document.getElementById("questions_div");
@@ -3089,13 +3105,13 @@ const all_tasks={
 
 // #PID controller and one pole
 //Sol: K is increased.
-"PID_(K>1)":{t:"<b>Make the closed-loop system faster</b> by changing K while looking at the step response. How does changing the K parameter affect the step response of the closed-loop system?",a:`<h2>Changing the proportional part P in the PID controller</h2>Changing K affects the speed of the closed-loop system step response. Higher K means a faster step response and that the poles are placed further away from the origin in the pole-zero map.`},
+"PID_(K>1)":{t:"<b>Make the closed-loop system faster</b> by changing K while looking at the step response. How does changing the K parameter affect the step response of the closed-loop system?",a:`<h2>What happens when you change the proportional part P in the PID controller?</h2>Changing K affects the speed of the closed-loop system step response. Higher K means a faster step response and that the poles are placed further away from the origin in the pole-zero map.`},
 
 //Sol: Ti pole is greater than system pole.
-"PID_(T_i)>(T_1)":{t:"Change T<sub>i</sub> so that the T<sub>i</sub> pole in the Bode plot (orange) is to the right of the pole for the system (red). How does changing the T<sub>i</sub> parameter affect the Bode plot and step response of the closed-loop system?",a:`<h2>Changing the integrating part T<sub>I</sub> of the PID controller</h2>Including the integrating I part of the PID controller removes the stationary error that we get with only a proportional P-controller. The smaller T<sub>i</sub> is, the more "power" the I-part has. Small T<sub>i</sub> values can result in oscillations and overshoot which we can see on the resonance peak that appears in the Bode plot as well. Large T<sub>i</sub> values, which means "little power to the I-part", results in a step response where it takes a long time for the stationary error to disappear.`},
+"PID_(T_i)>(T_1)":{t:"Change T<sub>i</sub> so that the T<sub>i</sub> pole in the Bode plot (orange) is to the right of the pole for the system (red). How does changing the T<sub>i</sub> parameter affect the Bode plot and step response of the closed-loop system?",a:`<h2>What happens when you change the integrating part T<sub>i</sub> of the PID controller</h2>Including the integrating I part of the PID controller removes the stationary error that we get with only a proportional P-controller. The smaller T<sub>i</sub> is, the more "power" the I-part has. Small T<sub>i</sub> values can result in oscillations and overshoot which we can see on the resonance peak that appears in the Bode plot as well. Large T<sub>i</sub> values, which means "little power to the I-part", results in a step response where it takes a long time for the stationary error to disappear.`},
 
 //Sol: Td != 0
-"PID_(T_d!=0)":{t:"Change T<sub>d</sub> and explain the <b>Bode plot of the PID-controller</b>. How are the poles (marked with x) in the bode plot related to the T<sub>i</sub> and T<sub>d</sub> parameters?",a:`<h2>Changing the derivative part T<sub>d</sub> of the PID controller</h2>The "downhill" slope in the Bode plot for the PID controller comes from the I-part of the controller. The slope bends upwards for the value of the pole corresponding to the integrating I-part of the controller, i.e., the T<sub>i</sub> value.<br><br>The "uphill" slope in the Bode plot for the PID controller comes from the derivative D-part of the controller. The slope bends upwards for the value of the pole corresponsing to the D-part of the controller, i.e., the T<sub>d</sub> value. From here one can realise that including the D-part in a PID controller could result in problems with high-frequency noise.<br><br>The "height" of the Bode plot for the PID controller comes from the proportional P-part of the controller. Chaning K will lower and raise the curve.`},
+"PID_(T_d!=0)":{t:"Change T<sub>d</sub> and explain the <b>Bode plot of the PID-controller</b>. How are the poles (marked with x) in the bode plot related to the T<sub>i</sub> and T<sub>d</sub> parameters?",a:`<h2>What happens when you change the derivative part T<sub>d</sub> of the PID controller</h2>The "downhill" slope in the Bode plot for the PID controller comes from the I-part of the controller. The slope bends upwards for the value of the pole corresponding to the integrating I-part of the controller, i.e., the T<sub>i</sub> value.<br><br>The "uphill" slope in the Bode plot for the PID controller comes from the derivative D-part of the controller. The slope bends upwards for the value of the pole corresponsing to the D-part of the controller, i.e., the T<sub>d</sub> value. From here one can realise that including the D-part in a PID controller could result in problems with high-frequency noise.<br><br>The "height" of the Bode plot for the PID controller comes from the proportional P-part of the controller. Chaning K will lower and raise the curve.`},
 
 //Sol: Change T1.
 "PID_(Td=0,T_1=1)":{t:"For any fixed PI controller (T<sub>d</sub>=0). What happens with the closed-loop step response if the system's T<sub>1</sub>-parameter is changed? In other words, what happens if you have a model for a system and design your controller for that model, but then it turns out that T<sub>1</sub> for <b>the actual system differs from the model</b>? Set T<sub>d</sub>=0.0 and T<sub>1</sub> to 1.0.",a:`<h2>What if the model and actual system differs?</h2>If the difference in time constants between the model and the actual system is small, it will not make a large change in control behavior. If the differene between the model and the actual system is large, the closed loop system step response will be very different. This could result in safety issues if the controlled system is a sensitive system.`},
@@ -3105,7 +3121,7 @@ const all_tasks={
 
 
 //Sol: Any PID parameter changed.
-"PID_Load":{t:"Can you change any of the PID controller parameters so that the static gain of the load disturbance is not 0? Why is it good thing that the step response for the load disturbance approaches 0.0 and not 1.0, as it does for the closed-loop system?",a:`<h2>What about changing the static gain of a load disturbance G<sub>YL</sub>?</h2>No. A static gain of 0.0 means that the load disturbance is removed. For a step load disturbance, the PID controller can remove the disturbance. If the load disurbance were to be a ramp input (with a Laplace transform like 1/s^2), the load disturbance can no longer be removed. Try changing the input to a ramp function and see yourself!`},
+"PID_Load":{t:"Can you change any of the PID controller parameters so that the static gain of the load disturbance is not 0? Why is it good thing that the step response for the load disturbance approaches 0.0 and not 1.0, as it does for the closed-loop system?",a:`<h2>What about changing the static gain of a load disturbance G<sub>YL</sub>?</h2>No. You cannot change it. A static gain of 0.0 means that the load disturbance is removed. For a step load disturbance, the PID controller can remove the disturbance. If the load disurbance were to be a ramp input (with a Laplace transform like 1/s^2), the load disturbance can no longer be removed. Try changing the input to a ramp function and see yourself!`},
 
 
 
@@ -3357,7 +3373,7 @@ function update_tasks (){
         nof_done_subtasks+=1;
       } else {
         let long_name = all_tasks[task_id].t;
-        todo += "<input type='checkbox' onclick='return false;'>&nbsp;<span style='color:#4040b0;'>" + long_name + "</span><br><br>";
+        todo += "<input type='checkbox' onclick='return false;'>&nbsp;<span style='color:#4040b0;' id='task_"+task_id+"'>" + long_name + "</span><br><br>";
       }
     }
   }
@@ -3369,7 +3385,7 @@ function update_tasks (){
     if (all_assignments[current_assignment].tasks.includes(task_id)){
       if (done_tasks.includes(task_id)){
         let long_name = all_tasks[task_id].t;
-        s += "<input type='checkbox' checked onclick='reset_task(\""+task_id+"\");'>&nbsp;<span style='color:#4040b0;'>" + long_name + "</span><br>";
+        s += "<input type='checkbox' checked onclick='reset_task(\""+task_id+"\");'>&nbsp;<span style='color:#4040b0;' id='task_"+task_id+"'>" + long_name + "</span><br>";
       }
     }
   }
@@ -5933,6 +5949,33 @@ function handle_questions(){
       }
     }
   }
+  // Also, check distances to the questions related to tasks:
+  for (let task_id in all_tasks){
+    if (all_tasks[task_id].a!=null){ // Yes, there is an answer connected to this task:
+      let span = document.getElementById('task_'+task_id);
+      if (span!=null){
+        let rect = span.getBoundingClientRect();
+        let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
+        let scroll_y = window.pageYOffset || document.documentElement.scrollTop;
+        let x=scroll_x + rect.left + rect.width/2;
+        let y=scroll_y + rect.top + rect.height/2;
+        let distance = Math.sqrt((mouseY - y)*(mouseY - y) + (mouseX - x)*(mouseX - x));
+        if(distance < 500){
+          yes_close_enough = true;
+          queue.push([distance,"task_"+task_id,{x:x,y:y}]);
+          let stroke_weight = 10 - distance/50;
+          if (stroke_weight>0.01){
+            // Draw a yellow line to the closest questions:
+            push();
+            strokeWeight(stroke_weight);
+            stroke("#ffff0080");
+            line(mouseX,mouseY,x,y);
+            pop();
+          }
+        }
+      }
+    }
+  }
   let output;
   let distance = 10000;
   for(let h=0; h<queue.length; h++){
@@ -5954,15 +5997,18 @@ function handle_questions(){
     //textSize(15);
     //text(all_questions[output[1]].q,13,25);
     //pop();
-
     let hover_answer = document.getElementById("hover_answer");
     let q_id=output[1];
     if (q_id!=last_hover_answer_id){
       hover_answer.style.transform=null;
       let s="";
-      s+="<h2>" + all_questions[q_id].q + "</h2>";
-      s+=all_questions[q_id].a;
-      s+="<br><br>";
+      if (q_id.startsWith("task_")){ // This is an answer connected to a task:
+        console.log(q_id.substr(5));
+        s+=all_tasks[q_id.substr(5)].a;
+      } else { // This is from all_questions dict:
+        s+="<h2>" + all_questions[q_id].q + "</h2>";
+        s+=all_questions[q_id].a;
+      }
       hover_answer.innerHTML=s;
       last_hover_answer_id=q_id;
       let rect=hover_answer.getBoundingClientRect();
