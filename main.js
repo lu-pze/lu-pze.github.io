@@ -71,6 +71,9 @@ let id_bank = 1;
 let min_10power = -2;
 let rate = 1.4;
 let precision = 4;
+const DEFAULT_PRECISION=4;
+const SPEED_PRECISION=12;
+let we_need_faster_calculations_right_now = false; // Flag to know if precision is reduced
 
 let x_case_gain = 5;
 let y_case_gain = 6;
@@ -4192,7 +4195,10 @@ function draw_static_gain(k,i){
 }
 
 function draw_time_response_T(T,i,pole_zero="pole"){
-  let linked_x = Math.round(Math.abs(T) / 10.0 * graph_step_response_width/precision);
+  // We might have changed the precision for new calculations, but this graph still has old values.
+  // So get the precision for this graph alone:
+  let this_precision = graph_step_response_width / bode_graphs[i].bode_timerep_array.length;
+  let linked_x = Math.round(Math.abs(T) / 10.0 * graph_step_response_width/this_precision);
   let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
   let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
   let screen_x = graph_step_response_width / 10 * Math.abs(T);
@@ -4806,6 +4812,11 @@ function mousePressed(){
         }
       }
     }
+    if ((current_assignment=="pid_controller")||(current_assignment=="pid_controller_S")||(current_assignment=="pid_controller_YL")||(current_assignment=="pid_controller_OL")){
+      // Let's use fast precision:
+      we_need_faster_calculations_right_now=true;
+      precision=SPEED_PRECISION;
+    }
     if (current_quiz!="none"){
       let clicked_on_time_response_graph_no_with_ghosts = -1;
       if(yes_close_enough_with_ghosts){
@@ -4951,6 +4962,11 @@ function mousePressed(){
           clicked_on_time_variable="T_d";
         }
       }
+    }
+    if ((current_assignment=="pid_controller")||(current_assignment=="pid_controller_S")||(current_assignment=="pid_controller_YL")||(current_assignment=="pid_controller_OL")){
+      // Let's use fast precision:
+      we_need_faster_calculations_right_now=true;
+      precision=SPEED_PRECISION;
     }
     if (current_quiz!="none"){
       let clicked_on_bode_mag_graph_no_with_ghosts = -1;
@@ -5129,6 +5145,11 @@ function mousePressed(){
         }
       }
     }
+    if ((current_assignment=="pid_controller")||(current_assignment=="pid_controller_S")||(current_assignment=="pid_controller_YL")||(current_assignment=="pid_controller_OL")){
+      // Let's use fast precision:
+      we_need_faster_calculations_right_now=true;
+      precision=SPEED_PRECISION;
+    }
     if (current_quiz!="none"){
       let clicked_on_bode_phase_graph_no_with_ghosts = -1;
       if (yes_close_enough_with_ghosts){
@@ -5158,6 +5179,12 @@ function mousePressed(){
 
 
 function mouseReleased(){
+  if (we_need_faster_calculations_right_now==true){
+    // Let's stop using fast precision:
+    we_need_faster_calculations_right_now=false;
+    precision=DEFAULT_PRECISION;
+    redraw_canvas_gain("all");
+  }
   for(let v=0; v<bode_graphs.length; v++){
     if (bode_graphs[v].bode_formula == GRAPH_TWO_REAL_POLES.formula){
       if ((bode_graphs[v].bode_phase_margin >= 53.0)&&(bode_graphs[v].bode_phase_margin <= 57.0)){
@@ -7218,9 +7245,12 @@ class bode_graph{
     strokeWeight(line_stroke_weight);
     stroke(this.bode_hue,360,360);
     beginShape();
+    // We might have changed the precision for new calculations, but this graph still has old values.
+    // So get the precision for this graph alone:
+    let this_precision = graph_step_response_width / this.bode_timerep_array.length;
     for(let x=0; x<this.bode_timerep_array.length; x++){
       let screen_y = map(this.bode_timerep_array[x],min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-      vertex(x*precision,screen_y);
+      vertex(x*this_precision,screen_y);
     }
     endShape();
   }
