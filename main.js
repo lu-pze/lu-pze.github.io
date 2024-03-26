@@ -4648,13 +4648,14 @@ let initial_mouseY = 0;
 let splash_screen_active=true;
 let this_is_a_touch_device=false;
 
-function touchStarted(){
+function touchStarted(event){
   this_is_a_touch_device = true;
-  mousePressed();
+  mousePressed(event);
 }
 
+// p5.js: Browsers may have different default behaviors attached to various mouse events. To prevent any default behavior for this event, add "return false" to the end of the function.
 //function mouseClicked(){
-function mousePressed(){
+function mousePressed(event){
   if (mouseButton==RIGHT){
     return;
   }
@@ -4674,6 +4675,7 @@ function mousePressed(){
 
   if (splash_screen_active){
     // This first click is to get rid of the splash screen:
+    event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
     let pze_logo=document.getElementById("pze_logo");
     pze_logo.style.animation = 'none';
     pze_logo.offsetHeight; /* trigger reflow */
@@ -4712,6 +4714,7 @@ function mousePressed(){
   }
 
   if (questions_enabled){
+    event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
     //// This is a question click. It's a one-time click.
     //let queue = [];
     //let yes_close_enough = false;
@@ -4766,7 +4769,7 @@ function mousePressed(){
       const rect = box.getBoundingClientRect();
       if ((mouseX>=rect.left)&&(mouseX<=rect.right)&&(mouseY>=rect.top)&&(mouseY<=rect.bottom)){
         //// Disable mouse clicks to prevent poles & zeros from moving "underneath" this box:
-        return true; // Let system handle mouse after this
+        return true; // Let system handle mouse after this, can be used for iPad scrolling:
       }
     }
   }
@@ -4780,6 +4783,7 @@ function mousePressed(){
           (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula)){
         if(((mouseX-pole_zero_graph_x[i]) > 0) && ((mouseX-pole_zero_graph_x[i]) < pole_zero_width)){
           if(((mouseY-pole_zero_graph_y[i]) > 0) && ((mouseY-pole_zero_graph_y[i]) < pole_zero_height)){
+            event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
             let real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 3;
             let imaginary=2 - (mouseY-pole_zero_graph_y[i])/pole_zero_height * 4;
             clicked_on_pole_zero_graph_no = i;
@@ -4834,15 +4838,16 @@ function mousePressed(){
   if(((mouseX-graph_step_response_x) > graph_step_response_x_offset && (mouseX-graph_step_response_x) < graph_step_response_width + graph_step_response_x_offset)&&
     (((mouseY-graph_step_response_y) >= graph_step_response_height + graph_step_response_y_offset) && ((mouseY-graph_step_response_y) <= graph_step_response_height + graph_step_response_y_offset + graph_step_response_timeaxis_height))){
     if (current_quiz!="none"){
+      event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
       let time=(mouseX - graph_step_response_x - graph_step_response_x_offset) / graph_step_response_width * 10.0;
       quiz_clicked_time_response_xaxis(time);
       return false; // Cancel default actions
     }
 
-
   // Check if we've clicked the step response graph:
   } else if(((mouseX-graph_step_response_x) > graph_step_response_x_offset && (mouseX-graph_step_response_x) < graph_step_response_width + graph_step_response_x_offset)&&
     ((mouseY-graph_step_response_y) > graph_step_response_y_offset && (mouseY-graph_step_response_y) < graph_step_response_height + graph_step_response_y_offset)){
+    event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
     let queue_with_ghosts = [];
     let queue = [];
     let yes_close_enough = false;
@@ -4945,6 +4950,7 @@ function mousePressed(){
   } else if(((mouseX-graph_bode_mag_x) > graph_bode_mag_x_offset && (mouseX-graph_bode_mag_x) < graph_bode_mag_width + graph_bode_mag_x_offset) &&
            (((mouseY-graph_bode_mag_y) >= graph_bode_mag_height + graph_bode_mag_y_offset) && (mouseY-graph_bode_mag_y < (graph_bode_mag_height + graph_bode_mag_y_offset + graph_bode_phase_axis_height)))) {
     if (current_quiz!="none"){
+      event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
       let linked_x = mouseX - graph_bode_phase_x - graph_bode_phase_x_offset;
       let perc_x = linked_x / graph_bode_phase_width;
       // 0.0   equals hovering over frequency 10^min_10power (= -2);
@@ -4960,6 +4966,7 @@ function mousePressed(){
   } else if(((mouseX-graph_bode_mag_x) > 0 && (mouseX-graph_bode_mag_x) <= graph_bode_mag_x_offset)&&
     ((mouseY-graph_bode_mag_y) > graph_bode_mag_y_offset && (mouseY-graph_bode_mag_y) < graph_bode_mag_height + graph_bode_mag_y_offset)){
     if (current_quiz!="none"){
+      event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
       let linked_y = mouseY - graph_bode_mag_y - graph_bode_mag_y_offset;
       let perc_y = linked_y / graph_bode_mag_height;
       let magnitude_in_dB = gain_upper_bound - perc_y*120;//y_case_gain; //60 - perc_y
@@ -4972,6 +4979,7 @@ function mousePressed(){
   // Check if we've clicked the Bode magnitude plot. Let's find out which graph we clicked:
   } else if(((mouseX-graph_bode_mag_x) > graph_bode_mag_x_offset && (mouseX-graph_bode_mag_x) < graph_bode_mag_width + graph_bode_mag_x_offset)&&
     ((mouseY-graph_bode_mag_y) > graph_bode_mag_y_offset && (mouseY-graph_bode_mag_y) < graph_bode_mag_height + graph_bode_mag_y_offset)){
+    event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
     let linked_x = mouseX - graph_bode_mag_x - graph_bode_mag_x_offset;
     let linked_y = mouseY - graph_bode_mag_y - graph_bode_mag_y_offset;
     let perc_x = linked_x / graph_bode_mag_width;
@@ -5096,6 +5104,7 @@ function mousePressed(){
   // Check if we're dragging the Nyquist diagram:
   } else if(((mouseX-graph_nyquist_x) > graph_nyquist_x_offset && ((mouseX-graph_nyquist_x) < graph_nyquist_width + graph_nyquist_x_offset)) &&
             ((mouseY-graph_nyquist_y-graph_nyquist_y_offset) > 0 && (mouseY-graph_nyquist_y-graph_nyquist_y_offset) < graph_nyquist_height)) {
+    event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
     if (current_quiz!="none"){
       let origo_x = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
       let origo_y = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
@@ -5127,6 +5136,7 @@ function mousePressed(){
   } else if(((mouseX-graph_bode_phase_x) > graph_bode_phase_x_offset) && ((mouseX-graph_bode_phase_x) < graph_bode_phase_width + graph_bode_phase_x_offset) && 
     ((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) >= graph_bode_phase_height) && ((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) < (graph_bode_phase_height + graph_bode_phase_axis_height))) {
     if (current_quiz!="none"){
+      event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
       let linked_x = mouseX - graph_bode_phase_x - graph_bode_phase_x_offset;
       let perc_x = linked_x / graph_bode_phase_width;
       // 0.0   equals hovering over frequency 10^min_10power (= -2);
@@ -5142,6 +5152,7 @@ function mousePressed(){
   } else if(((mouseX-graph_bode_phase_x) > 0 && (mouseX-graph_bode_phase_x) <= graph_bode_mag_x_offset)&&
      ((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) > 0 && (mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) < graph_bode_phase_height)) {
     if (current_quiz!="none"){
+      event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
       let linked_y = mouseY - graph_bode_phase_y - graph_bode_phase_y_offset;
       let perc_y = linked_y / graph_bode_phase_height;
       let phase = phase_upper_bound - 45*phase_case_number*perc_y;
@@ -5153,6 +5164,7 @@ function mousePressed(){
   // Check if we've clicked the bode phase plot:
   } else if(((mouseX-graph_bode_phase_x) > graph_bode_phase_x_offset) && ((mouseX-graph_bode_phase_x) < graph_bode_phase_width + graph_bode_phase_x_offset) && 
     ((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) > 0) && ((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) < graph_bode_phase_height)){
+    event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
     let linked_x = mouseX - graph_bode_phase_x - graph_bode_phase_x_offset;
     let linked_y = mouseY - graph_bode_phase_y - graph_bode_phase_y_offset;
     let perc_x = linked_x / graph_bode_phase_width;
