@@ -4656,10 +4656,6 @@ function touchStarted(event){
 // p5.js: Browsers may have different default behaviors attached to various mouse events. To prevent any default behavior for this event, add "return false" to the end of the function.
 //function mouseClicked(){
 function mousePressed(event){
-  if (mouseButton==RIGHT){
-    return;
-  }
-
   // Audio API stuff. Can only initialize and play sound at user action, and clicking is one such action:
   if (sound_enabled==1){
     // https://webaudio.github.io/web-audio-api/#AudioBufferSourceNode
@@ -4711,6 +4707,10 @@ function mousePressed(event){
 
     splash_screen_active=false;
     return false;
+  }
+
+  if (mouseButton==RIGHT){
+    return;
   }
 
   if (questions_enabled){
