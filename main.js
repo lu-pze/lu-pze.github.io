@@ -875,7 +875,28 @@ With a relatively simple system configuration, various feedback control techniqu
   "Nyquist":{q:"Why is the Nyquist diagram useful?",pos:function(){return {visible:true,x:graph_nyquist_x+graph_nyquist_x_offset+graph_nyquist_width/2,y:graph_nyquist_y+graph_nyquist_y_offset+graph_nyquist_height/2};},
   a:`Imagine you're driving a car and you want to maintain a steady speed. The car's cruise control system adjusts the throttle based on feedback from your speedometer. If the control system is unstable, it might overcorrect, causing the car to speed up and slow down unpredictably.<br><br>
 The Nyquist diagram helps you understand and predict the stability of such control systems. It plots the frequency response of a system on a complex plane, providing insights into how system dynamics change with frequency.<br><br>
-By analyzing the Nyquist plot, you can determine if a control system is stable or if it's prone to oscillations or instability. This information is crucial for designing reliable and effective control systems for various applications, such as aircraft autopilots, robotic arms, or temperature controllers in industrial processes.`},
+By analyzing the Nyquist plot, you can determine if a control system is stable or if it's prone to oscillations or instability. This information is crucial for designing reliable and effective control systems for various applications, such as aircraft autopilots, robotic arms, or temperature controllers in industrial processes.
+<h3>Nyquist curve drawing</h3>
+The Nyquist curve is constituted of the complex number G(i&omega;) drawn in the complex plane for &omega; in [0,∞]. Assume that the process is described by the first-order transfer function<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+G(s)=\\frac{1}{1+s}
+</math-field><br>
+We compute G(i&omega;) and separate into its real- and imaginary parts:<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+G(i\\omega)=\\frac{1}{1+i\\omega}=\\frac{1-i\\omega}{1+\\omega^2}
+=\\frac{1}{1+\\omega^2}-i\\frac{\\omega}{1+\\omega^2}
+</math-field><br>
+We see that the real part is positive, whereas the imaginary part is negative for all &omega;.
+In other words, the Nyquist curve will be contained in the fourth quadrant. Further, we see that G(i&omega;) ≈ 1 for small &omega; and G(i&omega;) → 0 as 
+&omega; → ∞.<br><br>
+Most processes have low-pass characteristics. This means that the
+output signal of the process is affected by low frequency inputs,
+whereas high frequency signals are damped out. Since the distance
+between the origin and points on the Nyquist curve describes the gain
+of process, it is normal that the Nyquist curve approaches the origin
+for high frequencies.
+The phase shift between in- and output does usually increase with the
+frequency. This is the explanation to the commonly found spiral shapes in the Nyquist diagram.`},
 
 
 //Who invented the Bode plots, and why are they essential for Automatic control theory? Give an answer with vivid examples of Automatic control theory, with correct automatic control vocabulary while keeping the rest of the english simple.
@@ -887,6 +908,12 @@ By analyzing the Nyquist plot, you can determine if a control system is stable o
   "Bode_plots":{q:"Why are Bode plots useful?",pos:function(){return {visible:true,x:graph_bode_mag_x+graph_bode_mag_x_offset+graph_bode_mag_width/2,y:graph_bode_mag_y+graph_bode_mag_y_offset+graph_bode_mag_height/2};},
   a:`Imagine you're designing a sound system for a concert hall. You want to ensure that the system delivers clear and balanced sound across a wide range of frequencies. Bode plots help engineers understand how the system responds to different frequencies, allowing them to optimize its performance.<br><br>
 Bode plots display the magnitude and phase of a system's frequency response on logarithmic scales. This makes it easier to visualize how a system amplifies or attenuates signals at different frequencies and how it shifts the phase of those signals.<br><br>
+The Bode plot features two curves, |G(i&omega;)|
+and arg G(i&omega;) as functions of &omega;.
+The magnitude plot is drawn in a logarithmic scale, whereas the phase shift/argument is drawn in a linear scale. The frequency axis is
+logarithmic.
+The low frequency gain is often constant and corresponds
+to the static gain of the process.<br><br>
 By analyzing Bode plots, you can identify resonance frequencies, damping ratios, and stability margins of control systems. This information is crucial for designing stable and robust control systems for applications such as aircraft autopilots, electronic circuits, or motion control systems in robotics.`},
 
 
@@ -915,6 +942,37 @@ Cons:<ul>
 <li>Potential Misinterpretation: Some individuals may misinterpret dB values if they are not familiar with the scale, leading to errors in analysis or design.
 </ul>`},
 //Too long, so removed: While both decibel (dB) scale and log-scaled numbers have their advantages and disadvantages, the choice between them often depends on the engineer's background, preferences, and the specific requirements of the analysis or design task at hand.
+
+
+//Who invented the Bode plots, and why are they essential for Automatic control theory? Give an answer with vivid examples of Automatic control theory, with correct automatic control vocabulary while keeping the rest of the english simple.
+  "Bode_plot_phase":{q:"How do we get the Bode plot phase curve?",pos:function(){return {visible:true,x:graph_bode_phase_x+graph_bode_phase_x_offset+graph_bode_phase_width/2,y:graph_bode_phase_y+graph_bode_phase_y_offset+graph_bode_phase_height/2};},
+  a:`
+
+<h3>Bode phase for real poles and zeros G(s)&nbsp;=&nbsp;(1+Ts)<sup>n</sup></h3>
+The argument of the transfer function G(s)&nbsp;=&nbsp;(1+Ts)<sup>n</sup> is given by
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+\\arg G(i\\omega) = n \\arg (1+i\\omega T) = n\\arctan(\\omega T) 
+</math-field><br>
+For small values of &omega; the function is given by<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+\\arg G(i\\omega) \\rightarrow 0
+</math-field><br>
+For large values of &omega; the functions is given by<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+\\arg G(i\\omega) \\rightarrow n\\frac{\\pi}{2}
+</math-field><br>
+The corner frequency is defined as &omega;=1/T.
+
+<h3>Bode phase for a time delay G(s)&nbsp;=&nbsp;e<sup>-sL</sup></h3>
+This transfer function describes a pure time delay.
+This means that the output is identical to the input, except that it has been delayed by a time L, y(t)=u(t-L).
+If one sends a sinusoid through such a process, it outputs a sinusoid with the same amplitude, but with a phase shift which is larger for higher frequencies. For the transfer function G(s)&nbsp;=&nbsp;e<sup>-sL</sup> the argument becomes<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+\\arg G(i\\omega) = \\arg e^{-i\\omega L} =-\\omega L
+</math-field><br>
+  `},
+
+
 
 //Why is the step input response of a automatic control transfer function important? What can I learn from it? Give an answer with vivid examples of Automatic control theory, with correct automatic control vocabulary while keeping the rest of the english simple.
 //Who invented the Bode plots, and why are they essential for Automatic control theory? Give an answer with vivid examples of Automatic control theory, with correct automatic control vocabulary while keeping the rest of the english simple.
@@ -1390,16 +1448,18 @@ Grouping the terms:<br>
       return {visible:false};
     }
   },a:`In automatic control theory, PID controllers are used to regulate the behavior of a system. A PID controller combines three types of control: Proportional (P), Integral (I), and Derivative (D). These components are combined to make control decisions that help a system reach its desired setpoint efficiently and with minimal error.
-  The transfer function of a PID controller is given by:<br>
+The PID controller function can be described as<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+u(t)=K\\left[e(t)+\\frac{1}{T_i}\\,\\int\\limits^t\\,e(\\tau)\\,d\\tau\\,+ 
+    T_d \\frac{de(t) }{ dt}\\right]=P+I+D
+</math-field><br>
+where u is the controller output, and e is the error, i.e. the
+difference between the reference value r (the set point)
+and process output y (the measured variable). The transfer function of a PID controller is given by:<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
  G_{PID}(s) = K \\left(1 + \\frac{1}{sT_i} + sT_d\\right)
   </math-field><br>
-  Where:
-  - G<sub>PID</sub>(s) is the transfer function in the Laplace domain.<br>
-  - K is the gain of the controller.<br>
-  - T<sub>i</sub> is the time constant of the integral term.<br>
-  - T<sub>d</sub> is the time constant of the derivative term.<br>
-  - s is the complex frequency variable in the Laplace transform.<br><br>
+  Where: G<sub>PID</sub>(s) is the transfer function in the Laplace domain, K is the gain of the controller, T<sub>i</sub> is the time constant of the integral term, T<sub>d</sub> is the time constant of the derivative term, and s is the complex frequency variable in the Laplace transform.<br><br>
 <center><img src="images/PID_control_loop_v2.svg" width="80%"></center><br>
 The PID controller is usually connected in a feedback loop as in the image above, responding to the error e, and producing a suitable input signal U to the system trying to make the output Y as similar to the reference signal R as possible.<br><br>
   The introduction of the PID controller was revolutionary in the field of automatic control theory for several reasons:
