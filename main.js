@@ -4712,6 +4712,26 @@ let initial_mouseY = 0;
 let splash_screen_active=true;
 let this_is_a_touch_device=false;
 
+function mouse_is_in_a_box(mouseX,mouseY){
+  const boxes_to_not_handle_clicks_in=['.download_script_box','.toolbox','.info','.achievements_box','.assignments_box'];
+  let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
+  let scroll_y = window.pageYOffset || document.documentElement.scrollTop
+  for (let box_no in boxes_to_not_handle_clicks_in){
+    let box = document.querySelector(boxes_to_not_handle_clicks_in[box_no]);
+    if (box.classList.contains('active')){
+      //See if user clicked inside one of these boxes:
+      //The getBoundingClientRect() method returns the size of an element and its position relative to the viewport.
+      //Note: The scrolling that has been done is taken into account. This means that the rectangle's edges (top, left, bottom, and right) change their values every time the scrolling position changes.
+      const rect = box.getBoundingClientRect();
+      if ((mouseX>=rect.left+scroll_x)&&(mouseX<=rect.right+scroll_x)&&(mouseY>=rect.top+scroll_y)&&(mouseY<=rect.bottom+scroll_y)){
+        //// Disable mouse clicks to prevent poles & zeros from moving "underneath" this box:
+        return true; // Let system handle mouse after this, can be used for iPad scrolling:
+      }
+    }
+  }
+  return false;
+}
+
 function touchStarted(event){
   this_is_a_touch_device = true;
   mousePressed(event);
@@ -4825,18 +4845,7 @@ function mousePressed(event){
   clicked_on_pole_zero_graph_no = -1;
   direction_of_T_drag=0; // Let first run of mouseDragged decide which direction to move T
 
-  const boxes_to_not_handle_clicks_in=['.download_script_box','.toolbox','.info','.achievements_box','.assignments_box'];
-  for (let box_no in boxes_to_not_handle_clicks_in){
-    let box = document.querySelector(boxes_to_not_handle_clicks_in[box_no]);
-    if (box.classList.contains('active')){
-      //See if user clicked inside one of these boxes:
-      const rect = box.getBoundingClientRect();
-      if ((mouseX>=rect.left)&&(mouseX<=rect.right)&&(mouseY>=rect.top)&&(mouseY<=rect.bottom)){
-        //// Disable mouse clicks to prevent poles & zeros from moving "underneath" this box:
-        return true; // Let system handle mouse after this, can be used for iPad scrolling:
-      }
-    }
-  }
+  if (mouse_is_in_a_box(mouseX,mouseY) == true) return true; // Let system handle mouse after this, can be used for iPad scrolling:
 
   // Check if we've clicked any of the pole-zero graphs:
   for(let i=0; i<bode_graphs.length; i++){
@@ -5650,6 +5659,8 @@ function mouseDragged (){
     }
     return;
   }
+
+  if (mouse_is_in_a_box(mouseX,mouseY) == true) return true; // Let system handle mouse after this, can be used for iPad scrolling:
 
   // Dragging one of the graphs in the step response:
   if (clicked_on_time_response_graph_no != -1){
