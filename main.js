@@ -243,11 +243,11 @@ function createRangeSlider(event){
 </td><td class="value-wrapper">
         <input type="text" id="variable_${button_id}" value="">
 </td><td>
-        <input type="text" value="${range_min}" class="slider-bound" style="text-align:right">
+        <input type="text" id="text_${button_id}" value="${range_min}" class="slider-bound" style="text-align:right">
 </td><td width="100%">
         <input type="range" min="${range_min}" max="${range_max}" step="0.01" class="range-slider" id=${"RANGE_" + button_id} value="${range_value}" style="width:100%;margin:0 auto;">
 </td><td>
-        <input type="text" value="${range_max}" class="slider-bound">
+        <input type="text" id="text2_${button_id}" value="${range_max}" class="slider-bound">
 </td></tr></table>`
 //      <button type="button" class="delete-graph"><svg width="30" height="30" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
 //  let delete_button = slider.getElementsByClassName("delete-graph")[0];
@@ -466,15 +466,15 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   if (enable_string[10]==".") s='<div class="equation" style="display:none;"';
   s +=" id='" + graph_name + "'>";
 
-  s +=`<input type="checkbox" class="show-graph" style="background: hsl(${linked_color},100%,50%)" title="${graph_name}">`;
+  s +=`<input type="checkbox" id="${graph_name}-checkbox" class="show-graph" style="background: hsl(${linked_color},100%,50%)" title="${graph_name}">`;
   s += "<math-field ";
   // These are the GRAPHS that should be not changeable. "read only":
-  if ((equation_string == GRAPH_ONE_REAL_POLE.formula) ||
-      (equation_string == GRAPH_TWO_REAL_POLES.formula) ||
-      (equation_string == GRAPH_TWO_COMPLEX_POLES.formula) ||
-      (equation_string == GRAPH_TIME_DELAY.formula)){
-    s += "read-only ";
-  }
+  //if ((equation_string == GRAPH_ONE_REAL_POLE.formula) ||
+  //    (equation_string == GRAPH_TWO_REAL_POLES.formula) ||
+  //    (equation_string == GRAPH_TWO_COMPLEX_POLES.formula) ||
+  //    (equation_string == GRAPH_TIME_DELAY.formula)){
+  //  s += "read-only ";
+  //}
   s += `class="formula" id="${id_bank}" style="`
   // These are the GRAPHS that should be not changeable. "read only":
   if ((equation_string == GRAPH_ONE_REAL_POLE.formula) ||
