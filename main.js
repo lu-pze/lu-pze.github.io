@@ -477,12 +477,12 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   //}
   s += `class="formula" id="${id_bank}" style="`
   // These are the GRAPHS that should be not changeable. "read only":
-  if ((equation_string == GRAPH_ONE_REAL_POLE.formula) ||
-      (equation_string == GRAPH_TWO_REAL_POLES.formula) ||
-      (equation_string == GRAPH_TWO_COMPLEX_POLES.formula) ||
-      (equation_string == GRAPH_TIME_DELAY.formula)){ // Make sure that hover doesn't make read-only graphs yellow:
-    s += "background:none;";
-  }
+  //if ((equation_string == GRAPH_ONE_REAL_POLE.formula) ||
+  //    (equation_string == GRAPH_TWO_REAL_POLES.formula) ||
+  //    (equation_string == GRAPH_TWO_COMPLEX_POLES.formula) ||
+  //    (equation_string == GRAPH_TIME_DELAY.formula)){ // Make sure that hover doesn't make read-only graphs yellow:
+  //  s += "background:none;";
+  //}
   let font_size=20;
   //if (equation_string == GRAPH_ONE_POLE_WITH_PID_YR.formula){
   //  font_size=14.5;
@@ -492,7 +492,7 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   if ((equation_string == GRAPH_ONE_REAL_POLE.formula) ||
       (equation_string == GRAPH_TWO_REAL_POLES.formula) ||
       (equation_string == GRAPH_TWO_COMPLEX_POLES.formula)){
-    s += `<button type="button" class="download-script" id="${id_bank}" onclick="download_script(${id_bank})"><svg width="28" height="28" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_ios_share"/></svg></button>`;
+    s += `<button type="button" class="download-script" id="download_script(${id_bank})" onclick="download_script(${id_bank})"><svg width="28" height="28" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_ios_share"/></svg></button>`;
   }
   s += `<button type="button" class="delete-graph" id="delete-graph_${id_bank}" onclick="removeGraph(${id_bank});updateAfterRemoveGraph();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
   </div>
@@ -694,7 +694,6 @@ function updateFormulaAndDraw(input_element){
       let current_bode_graph = bode_graphs[i];
       if(parseInt(input_element_id) == current_bode_graph.bode_id){
         current_bode_graph.bode_formula = ev.target.getValue('ascii-math');
-
         /*
         //bug since mathlive update hope I can remove it soon
         if(ev.target.value.includes("/")){
@@ -702,7 +701,11 @@ function updateFormulaAndDraw(input_element){
           ev.target.value = ev.target.value.replaceAll("\\frac{}{}","")
         }
         */
-        
+        // Disable the download code button:
+        let the_button=document.getElementById("download_script("+input_element_id+")");
+        try{
+          the_button.style.visibility="hidden";
+        } catch {}
         checkSlider(input_element_id);
         redraw_canvas_gain(input_element_id);
         break;
