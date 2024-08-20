@@ -1714,7 +1714,7 @@ function enable_questions(){
     if (q_position.visible){
       s += "<div class='question_div' id='"+q_id+"' style='top:"+(q_position.y+6)+"px;left:"+(q_position.x+4)+"px;'>";
 //      s += '<svg fill="#ffff00a0" width="100px" height="100px" viewBox="0 0 24 24"><use href="#icon_help"/></svg>';
-      s += '<img src="images/question_small.png" width="100px" style="opacity:0.8">';
+      s += '<img src="images/question_small.webp" width="100px" style="opacity:0.8">';
       s += "</div>";
     }
   }
@@ -1729,7 +1729,7 @@ function enable_questions(){
         let x=scroll_x + rect.left + rect.width/2;
         let y=scroll_y + rect.top + rect.height/2;
         s += "<div class='question_div' id='task_"+task_id+"' style='top:"+(y+6)+"px;left:"+(x+4)+"px;'>";
-        s += '<img src="images/question_small.png" width="100px" style="opacity:0.8">';
+        s += '<img src="images/question_small.webp" width="100px" style="opacity:0.8">';
         s += "</div>";
       }
     }
@@ -2697,7 +2697,7 @@ function update_quiz(){
   if (new_cap_grade != cap_grade){
     let cap_0 = document.getElementById("cap_0");
     cap_grade=new_cap_grade;
-    cap_0.src = "images/cap_"+new_cap_grade+".png";
+    cap_0.src = "images/cap_"+new_cap_grade+".webp";
     cap_0.style.animation = 'none';
     cap_0.offsetHeight; /* trigger reflow */
     cap_0.style.animation="new_badge_anim 2s ease-out 1";
@@ -3291,7 +3291,7 @@ function update_assignments(){
       }
     }
   }
-  s += '<img src="images/explorers_1024.png" width="384px" style="margin:0;padding:0">';
+  s += '<img src="images/explorers_1024.webp" width="384px" style="margin:0;padding:0">';
   assignments_box.innerHTML=s;
 }
 
@@ -3448,7 +3448,7 @@ function update_tasks (){
   }
   if (new_assignment_grade != assignment_grade){
     let assignment_0 = document.getElementById("assignment_0");
-    assignment_0.src = "images/assignment_"+assignment_grade+".png";
+    assignment_0.src = "images/assignment_"+assignment_grade+".webp";
     assignment_grade = new_assignment_grade;
     assignment_0.style.animation = 'none';
     assignment_0.offsetHeight; /* trigger reflow */
@@ -3637,7 +3637,7 @@ function update_achievements (){
   if (new_star_grade != star_grade){
     let star_0 = document.getElementById("star_0");
     star_grade=new_star_grade;
-    star_0.src = "images/star_"+new_star_grade+".png";
+    star_0.src = "images/star_"+new_star_grade+".webp";
     star_0.style.animation = 'none';
     star_0.offsetHeight; /* trigger reflow */
     star_0.style.animation="new_badge_anim 2s ease-out 1";
@@ -7948,7 +7948,7 @@ function trigger_banner(){
     if (this_is_a_touch_device==false){
       banner_is_visible=true;
       const banner=document.getElementById("banner");
-      banner.innerHTML='<img src="images/Right_click_banner_small.png" alt="Right click to ask questions!" class="banner" width="45%"><img src="images/Right_click_banner_small.png" width="45%" style="visibility:hidden">';
+      banner.innerHTML='<img src="images/Right_click_banner_small.webp" alt="Right click to ask questions!" class="banner" width="45%"><img src="images/Right_click_banner_small.webp" width="45%" style="visibility:hidden">';
       banner.style.animation = 'none';
       banner.offsetHeight; /* trigger reflow */
       banner.style.animation="banner_anim_in 7s ease-out 1";
@@ -7959,7 +7959,7 @@ function trigger_banner(){
 function remove_banner_if_needed(){
   if (banner_is_visible==true){
     banner_is_visible = false;
-    banner.innerHTML='<img src="images/Right_click_banner_small.png" alt="Right click to ask questions!" class="banner" width="45%">';
+    banner.innerHTML='<img src="images/Right_click_banner_small.webp" alt="Right click to ask questions!" class="banner" width="45%">';
     banner.style.animation = 'none';
     banner.offsetHeight; /* trigger reflow */
     banner.style.animation="banner_anim_out 5s ease-out 1";
