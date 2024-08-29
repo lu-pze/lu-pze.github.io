@@ -68,6 +68,9 @@ const NOF_GRAPHS_AT_STARTUP = 4;
 let next_graph_no_to_add = 0;
 let id_bank = 1;
 
+let start_date = new Date();
+let session_started_at = start_date.getTime();
+
 let min_10power = -2;
 let rate = 1.4;
 let precision = 4;
@@ -429,6 +432,7 @@ function addNewGraphClicked(event, graph_to_add){
     quiz_perhaps("Sorry, you cannot add new graphs during an assignment.");
     return;
   }
+  add_event("add_graph");
   achievement_done("add_graph");
   addNewGraph(event, graph_to_add);
 }
@@ -626,6 +630,7 @@ function removeAllGraphs (){
 }
 
 function removeGraph (linked_id){
+  add_event("remove_graph");
   let linked_button = document.getElementById("delete-graph_"+linked_id);
   let linked_equation = linked_button.parentElement;
   removeInformationTab(+linked_id);
@@ -688,6 +693,7 @@ function changeGraphDisplayStatus(event){
 }
 
 function updateFormulaAndDraw(input_element){
+  add_event("update_formula_and_draw");
   input_element.addEventListener('input',(ev) => {
     let input_element_id = ev.target.id;
     for(let i=0; i<bode_graphs.length; i++){
@@ -1770,6 +1776,7 @@ function show_answer (q_id){
 }
 
 function show_answer_to_task(task_id){
+  add_event("show_answer_to_task="+task_id);
   // Show a box with the text for the task_id task:
   let s="";
   s+=all_tasks[task_id].a;
@@ -1821,6 +1828,7 @@ function toolboxMenuToggle(event){
 }
 
 function infoToggle(event){
+  add_event("view_info");
   achievement_done("view_info");
   let toggleElement = document.querySelector('.info');
   toggleElement.classList.toggle('active');
@@ -1868,6 +1876,7 @@ function update_programming_language(id){
 }
 
 function get_python_script(id){
+  add_event("get_python_script");
   achievement_done("python_script");
   let current_graph;
   for(let i=0; i<bode_graphs.length; i++){
@@ -1940,6 +1949,7 @@ plt.show(block=False)
 
 
 function get_julia_script(id){
+  add_event("get_julia_script");
   let current_graph;
   for(let i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_id == id){
@@ -2008,6 +2018,7 @@ display(plot!())
 
 
 function get_matlab_script(id){
+  add_event("get_matlab_script");
   achievement_done("matlab_script");
   let current_graph;
   for(let i=0; i<bode_graphs.length; i++){
@@ -2161,6 +2172,7 @@ function toggle_quiz(){
 }
 
 function start_quiz(){
+  add_event("start_quiz");
   achievement_done("start_quiz");
   current_assignment="none";
   removeAllGraphs();
@@ -2259,9 +2271,11 @@ function next_quiz (){
     current_quiz = next_question_id;
   }
   quiz_questions_nof_done[current_quiz]+=1;
+  add_event("next_quiz="+current_quiz);
 
   if (current_quiz=="click_freq"){
     let level=quiz_difficulties[current_quiz];
+    add_event("level="+level);
     let last_value=quiz_freq;
     if (level < 6){
       quiz_freq = 0;
@@ -2299,6 +2313,7 @@ function next_quiz (){
 
   } else if (current_quiz=="click_time"){
     let level=quiz_difficulties[current_quiz];
+    add_event("level="+level);
     let last_value=quiz_time_to_click;
     if (level < 6){
       quiz_time_to_click = -1;
@@ -2322,6 +2337,7 @@ function next_quiz (){
 
   } else if (current_quiz=="click_nyquist_angle"){
     let level=quiz_difficulties[current_quiz];
+    add_event("level="+level);
     let last_value=quiz_nyquist_angle_to_click;
     if (level < 6){
       quiz_nyquist_angle_to_click = 1000;
@@ -2350,6 +2366,7 @@ function next_quiz (){
 
   } else if (current_quiz=="click_system"){
     let level=quiz_difficulties[current_quiz];
+    add_event("level="+level);
     let last_value=quiz_system_to_click;
     // Randomize the colors of the graphs:
     next_graph_no_to_add=Math.floor(Math.random()*5);
@@ -2459,6 +2476,7 @@ function next_quiz (){
 
   } else if (current_quiz=="click_wrong"){
     let level=quiz_difficulties[current_quiz];
+    add_event("level="+level);
     let last_value=quiz_click_wrong;
     // Control the colors of the graphs:
     let graph_color=Math.floor(5*Math.random());
@@ -2476,6 +2494,7 @@ function next_quiz (){
     while (quiz_click_wrong==last_value){
       quiz_click_wrong=Math.floor(Math.random()*4);
     }
+    add_event("quiz_click_wrong="+quiz_click_wrong);
     // What kind of system is a correct one?
     let correct_system_order=1;
     let wrong_system_order=1;
@@ -2761,6 +2780,7 @@ function update_quiz(){
 }
 
 function stop_quiz(){
+  add_event("stop_quiz");
   restart_lupze();
 }
 
@@ -2955,6 +2975,7 @@ function shoot_confetti() {
 }
 
 function quiz_correct (){
+  add_event("quiz_correct");
   quiz_nof_done += 1;
   quiz_nof_correct += 1;
   quiz_nof_tries += 1;
@@ -3014,6 +3035,7 @@ function quiz_perhaps (why_its_almost_wrong){
 }
 
 function quiz_incorrect (why_its_wrong){
+  add_event("quiz_incorrect");
   quiz_current_streak = 0;
   quiz_streaks[current_quiz] = 0; // The streak for this type of question.
   if (adaptive_difficulty_enabled==true){
@@ -3061,6 +3083,7 @@ function toggle_assignments(event){
 }
 
 function toggle_assignments_box(event){
+  add_event("view_assignments");
   achievement_done("view_assignments");
   let assignments_box = document.querySelector('.assignments_box');
   assignments_box.classList.toggle('active');
@@ -3072,6 +3095,7 @@ function task_done (which_one){
     if (all_assignments[current_assignment].tasks.includes(which_one)){
       if (!(done_tasks.includes(which_one))){
         // This is a task that hasn't been done before:
+        add_event("task_done="+which_one);
         done_tasks.push(which_one);
 
         // Trigger an animation with the text:
@@ -3296,6 +3320,7 @@ function update_assignments(){
 }
 
 function restart_lupze(){
+  add_event("restart_lupze");
   //location.reload();
   disable_questions();
   let quiz_text = document.getElementById("quiz_text");
@@ -3319,6 +3344,7 @@ function restart_lupze(){
 }
 
 function select_assignment (event){
+  add_event("select_assignment="+event.value);
   current_assignment = event.value;
   update_tasks();
   removeAllGraphs();
@@ -3536,6 +3562,7 @@ function toggle_sound(event){
 function achievement_done (which_one){
   if (!(done_achievements.includes(which_one))){
     // This is a new achievement
+    add_event("achievement_done="+which_one);
     done_achievements.push(which_one);
 
     if (gamification_enabled==true){
@@ -3950,6 +3977,7 @@ function setGraphDimensions(){
   let this_window_width=max(1295,windowWidth);  // Also present in style.css  "body{min-width: 1280px;}
   canvas_width = this_window_width - 380;
   canvas_height = windowHeight - 110;
+  add_event("set_graph_dimensions:windowWidth="+windowWidth+",windowHeight="+windowHeight);
 
   graph_bode_mag_width = (canvas_width - 100)*0.42;
   graph_bode_mag_height = (canvas_height-150)*0.48;
@@ -4793,6 +4821,8 @@ function mousePressed(event){
     text_color = color('hsb(0,0%,100%)');
 
     splash_screen_active=false;
+
+    add_event("banner_remove");
     return false;
   }
 
@@ -4801,6 +4831,7 @@ function mousePressed(event){
   }
 
   if (questions_enabled){
+    add_event("questions_removed");
     event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
     //// This is a question click. It's a one-time click.
     //let queue = [];
@@ -4897,6 +4928,7 @@ function mousePressed(event){
               we_need_faster_calculations_right_now=true;
               precision=SPEED_PRECISION;
             }
+            add_event("click_pole_zero_map="+i+",clicked_on_time_variable="+clicked_on_time_variable);
             if (current_quiz!="none"){
               quiz_clicked_pole_zero(clicked_on_pole_zero_graph_no,real,imaginary,clicked_on_time_variable);
               return false; // Cancel default actions
@@ -4994,6 +5026,7 @@ function mousePressed(event){
         }
       }
     }
+    add_event("click_step_response,clicked_on_time_variable="+clicked_on_time_variable);
     if ((current_assignment=="pid_controller")||(current_assignment=="pid_controller_S")||(current_assignment=="pid_controller_YL")||(current_assignment=="pid_controller_OL")){
       // Let's use fast precision:
       we_need_faster_calculations_right_now=true;
@@ -5148,6 +5181,7 @@ function mousePressed(event){
         }
       }
     }
+    add_event("click_bode_magnitude,clicked_on_time_variable="+clicked_on_time_variable);
     if ((current_assignment=="pid_controller")||(current_assignment=="pid_controller_S")||(current_assignment=="pid_controller_YL")||(current_assignment=="pid_controller_OL")){
       // Let's use fast precision:
       we_need_faster_calculations_right_now=true;
@@ -5181,6 +5215,7 @@ function mousePressed(event){
   } else if(((mouseX-graph_nyquist_x) > graph_nyquist_x_offset && ((mouseX-graph_nyquist_x) < graph_nyquist_width + graph_nyquist_x_offset)) &&
             ((mouseY-graph_nyquist_y-graph_nyquist_y_offset) > 0 && (mouseY-graph_nyquist_y-graph_nyquist_y_offset) < graph_nyquist_height)) {
     event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
+    add_event("click_nyquist");
     if (current_quiz!="none"){
       let origo_x = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
       let origo_y = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
@@ -5334,6 +5369,7 @@ function mousePressed(event){
         }
       }
     }
+    add_event("click_bode_phase,clicked_on_time_variable="+clicked_on_time_variable);
     if ((current_assignment=="pid_controller")||(current_assignment=="pid_controller_S")||(current_assignment=="pid_controller_YL")||(current_assignment=="pid_controller_OL")){
       // Let's use fast precision:
       we_need_faster_calculations_right_now=true;
@@ -5368,6 +5404,7 @@ function mousePressed(event){
 
 
 function mouseReleased(){
+  add_event("mouse_released");
   if (we_need_faster_calculations_right_now==true){
     // Let's stop using fast precision:
     we_need_faster_calculations_right_now=false;
@@ -6120,6 +6157,7 @@ function handle_questions(){
     let hover_answer = document.getElementById("hover_answer");
     let q_id=output[1];
     if (q_id!=last_hover_answer_id){
+      add_event("ask_a_question="+q_id);
       hover_answer.style.transform=null;
       let s="";
       if (q_id.startsWith("task_")){ // This is an answer connected to a task:
@@ -7952,6 +7990,7 @@ function trigger_banner(){
       banner.style.animation = 'none';
       banner.offsetHeight; /* trigger reflow */
       banner.style.animation="banner_anim_in 7s ease-out 1";
+      add_event("banner_enter");
     }
   }
 }
@@ -7964,15 +8003,121 @@ function remove_banner_if_needed(){
     banner.offsetHeight; /* trigger reflow */
     banner.style.animation="banner_anim_out 5s ease-out 1";
     banner.style.opacity = 0.0;
+    add_event("banner_removed");
   }
 }
 
 // --------------------- end of banner code
+// --------------------- start of improvement code
 
+let improvement_enabled = true;
+function opt_out_tracking() {
+  improvement_enabled = false;
+}
+
+var pending = [];
+var event_no = 0;
+var periodic_timer_id = 0;
+let client_id = Math.random()*2**31>>>0; // A pretty random 31-bit uint id
+let client_nick = "anon";
+
+function add_event (string) {
+  if (improvement_enabled == false) return;
+  let date_now = new Date();
+  let now = date_now.getTime();
+  let time_diff = now-session_started_at;
+  let mseconds_elapsed = Math.floor(time_diff);
+  let thestring = `E${event_no};T${mseconds_elapsed/1000};`;
+  let delay = 5000;
+  if (string !== "") {
+    string = string.replace(";","_");
+    thestring += "A" + string + ";";
+    if (periodic_timer_id !== 0) {
+      clearTimeout(periodic_timer_id);
+    }
+    periodic_timer_id = 0;
+    delay = 1500;
+  }
+  event_no++;
+  pending.push(thestring);
+  if (periodic_timer_id === 0) {
+    periodic_timer_id = setTimeout(periodic_send, delay);
+  }
+}
+
+var server_error = "";
+
+function periodic_send () {
+  periodic_timer_id = 0;
+  if (pending.length > 0) {
+    let date_now = new Date();
+    let now = date_now.getTime();
+    let time_diff = now-session_started_at;
+    let mseconds_elapsed = Math.floor(time_diff);
+    var XHR = new XMLHttpRequest();
+    var to_send = `T${mseconds_elapsed/1000};U${client_id};L${client_nick};`;
+    for (var pending_no = 0; pending_no < pending.length; pending_no++) {
+      to_send += pending[pending_no];
+    }
+    var urlEncodedData = `e=${encodeURIComponent(to_send).replace(/%20/g, "+")}`;
+    // Define what happens on successful data submission
+    XHR.addEventListener("load", (event) => {
+      // We got an answer.
+      //console.log("Got answer:" + event.target.response);
+      // Let's see if there is anything to erase from our pending queue:
+      if (event.target.status === 200) {
+        // HTTP OK
+        var response = event.target.response;
+        // console.log("RESP=" + response);
+        if (response.startsWith("ERROR")) {
+          server_error = response;
+        } else if (response.startsWith("E")) {
+          var done_up_until = -1;
+          var resplit = response.split(";");
+          for (var res in resplit) {
+            if (resplit[res].startsWith("E")) {
+              done_up_until = Number(resplit[res].substr(1).replace(/;/g, ""));
+            } else if (resplit[res].startsWith("CID")) {
+              client_id = Number(resplit[res].substr(3).replace(/;/g, ""));
+            }
+          }
+
+          // And now, remove all events in pending up until this number:
+          var done = false;
+          while (pending.length > 0 && done === false) {
+            if (Number(pending[0].substr(1, pending[0].indexOf(";") - 1)) <= done_up_until) {
+              pending.shift();
+            } else {
+              done = true;
+            }
+          }
+        }
+        // Now, if there's still events pending, let's setup another try to send it:
+        if (pending.length > 0) {
+          if (periodic_timer_id === 0) {
+            periodic_timer_id = setTimeout(periodic_send, 20000);
+          }
+        }
+      }
+    });
+    XHR.addEventListener("error", (event) => {
+      console.log("Error");
+      console.log(event);
+    });
+    // Helping making LU-PZE better:
+    XHR.open("POST", "https://livet.se/lu-pze.php", true);
+    XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    XHR.send(urlEncodedData);
+    //console.log("S:" + urlEncodedData);
+  }
+}
+
+// --------------------- end of improvement code
 
 let is_fullscreen = false;
 function toggle_fullscreen(){
   if (is_fullscreen == false){
+    add_event("go_fullscreen");
     achievement_done("go_fullscreen");
     openFullscreen();
   } else {
@@ -8041,6 +8186,7 @@ function setup (){
   footer_div.style.display="inline";
   let graph_information_div=document.getElementsByClassName("graph-information")[0];
   graph_information_div.style.display="inline";
+  add_event("setup="+start_date.toLocaleString().replace(" ",""));
 }
 
 function ready (){
@@ -8083,6 +8229,7 @@ function ready (){
     // Prevent the default right-click behavior
     event.preventDefault();
     questionsToggle();
+    add_event("ask_a_question");
     achievement_done("ask_a_question");
   });
   //document.addEventListener('mouseup', function(event) {
