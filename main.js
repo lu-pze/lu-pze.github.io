@@ -2684,6 +2684,7 @@ function next_quiz (){
   quiz_text_norepeat.offsetHeight; /* trigger reflow */
   quiz_text_norepeat.style.animation="quiz_fade 1s ease-out 1";
 
+  add_event("quiz_text="+quiz_text.innerHTML);
   redraw(); // Needed to get the title of the Dirac Impulse response correct
 }
 
@@ -2786,6 +2787,7 @@ function stop_quiz(){
 
 function set_difficulty_level(event){
   quiz_difficulty = +(event.value);
+  add_event("set_difficulty_level="+event.value);
   quiz_difficulties={};
   for (let question in quiz_questions){
     quiz_difficulties[quiz_questions[question]] = quiz_difficulty;
@@ -2831,6 +2833,7 @@ function quiz_clicked_nyquist(magnitude,angle){
 }
 function quiz_clicked(all){
   console.log("quiz clicked:where="+all.where+",graph_no="+all.graph_no+",time_variable="+all.time_variable+",real="+all.real+",imaginary="+all.imaginary+",time="+all.time+",amplitude="+all.amplitude+",frequency="+all.frequency+",magnitude="+all.magnitude+",phase="+all.phase);
+  add_event("quiz_clicked:where="+all.where+",graph_no="+all.graph_no+",time_variable="+all.time_variable+",real="+all.real+",imaginary="+all.imaginary+",time="+all.time+",amplitude="+all.amplitude+",frequency="+all.frequency+",magnitude="+all.magnitude+",phase="+all.phase);
 
   if (current_quiz=="click_freq"){
     if ((all.where=="Bmag")||(all.where=="Bmag_xaxis")||(all.where=="Bmag_yaxis")||(all.where=="Bphase")||(all.where=="Bphase_xaxis")||(all.where=="Bphase_yaxis")){
@@ -7984,6 +7987,12 @@ function prepare_banner(){
 function trigger_banner(){
   if (have_asked_questions==false){
     if (this_is_a_touch_device==false){
+      if (quiz_enabled==true) {
+        // Don't show the banner if a quiz is ongoing.
+        // Instead, schedule the banner to appear later.
+        setTimeout(trigger_banner,120*1000);
+        return;
+      }
       banner_is_visible=true;
       const banner=document.getElementById("banner");
       banner.innerHTML='<img src="images/Right_click_banner_small.webp" alt="Right click to ask questions!" class="banner" width="45%"><img src="images/Right_click_banner_small.webp" width="45%" style="visibility:hidden">';
