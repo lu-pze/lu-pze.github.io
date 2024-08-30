@@ -725,6 +725,7 @@ function updateFormulaAndDraw(input_element){
 
 let questions_enabled = false;
 function questionsToggle(event){
+  add_event("questions_toggle");
   if (questions_enabled){
     disable_questions();
     redraw_canvas_gain("all");
@@ -1760,6 +1761,7 @@ function disable_questions(){
 }
 
 function answerToggle(event){
+  add_event("answer_toggle");
   let toggleElement = document.querySelector('.answer');
   toggleElement.classList.toggle('active');
 }
@@ -1823,6 +1825,7 @@ function show_answer_to_task(task_id){
 // ---------------- end of questions and answer code
 
 function toolboxMenuToggle(event){
+  add_event("toolbox_toggle");
   let toggleElement = document.querySelector('.toolbox');
   toggleElement.classList.toggle('active');
 }
@@ -2172,8 +2175,29 @@ function toggle_quiz(){
 }
 
 let nof_quiz_started = 0;
+let quiz_start_time = null;
+let quiz_timer_div;
+let quiz_is_running = 0; //0:not_started, 1:running, 2:ended
+let quiz_seconds_left = 90;
+
+function quiz_countdown (){
+  if (quiz_is_running==1) {
+    quiz_seconds_left -= 1;
+    if (quiz_seconds_left < 0) {
+      quiz_seconds_left = 0;
+      quiz_is_running = 2;
+    }
+    quiz_timer_div.innerHTML="Time left: " + quiz_seconds_left + "s";
+    setTimeout(quiz_countdown, 1000);
+  }
+}
 
 function start_quiz(){
+  quiz_timer_div = document.getElementById("quiz_timer");
+  quiz_timer_div.innerHTML="Time left: 90s";
+  quiz_seconds_left = 90;
+  setTimeout(quiz_countdown, 1000);
+  quiz_is_running = 1;
   nof_quiz_started += 1;
   add_event("start_quiz");
   achievement_done("start_quiz");
@@ -2787,6 +2811,8 @@ function update_quiz(){
 }
 
 function stop_quiz(){
+  quiz_is_running = 0;
+  quiz_timer_div.innerHTML="";
   add_event("stop_quiz");
   restart_lupze();
 }
