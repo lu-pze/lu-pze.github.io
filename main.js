@@ -2171,11 +2171,17 @@ function toggle_quiz(){
   }
 }
 
+let nof_quiz_started = 0;
+
 function start_quiz(){
+  nof_quiz_started += 1;
   add_event("start_quiz");
   achievement_done("start_quiz");
   current_assignment="none";
   removeAllGraphs();
+  // Remove the "Take the initial quiz"-text:
+  let welcome_text=document.getElementById("welcome_text");
+  welcome_text.innerHTML='';
   update_tasks();
   //remove the assignments box:
   let assignments_box = document.querySelector('.assignments_box');
@@ -8170,7 +8176,11 @@ function initial_graph(){
   next_graph_no_to_add = graph_no;
 
   let welcome_text=document.getElementById("welcome_text");
-  welcome_text.innerHTML="";
+  if (nof_quiz_started == 0) {
+    welcome_text.innerHTML='<div class="yellow_hover" id="inital_quiz_button"><span onclick="toggle_quiz()" style="color:#b0b0b0;vertical-align:middle"><button type="button" id="initial_quiz_icon" style="padding:0 3px;margin-right:0px;background:none;border:none;margin-top:11px;" title="Start quiz"><svg width="27" height="27" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_school"/></svg> Take the initial quiz</button></span></div>';
+  } else {
+    welcome_text.innerHTML='';
+  }
 }
 
 // Called by p5:
