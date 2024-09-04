@@ -8462,5 +8462,13 @@ function ready (){
   //  disable_questions();
   //});
 
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      add_event("LU-PZE_hidden");
+    } else {
+      add_event("LU-PZE_visible");
+    }
+  });
+
   prepare_banner();
 }
