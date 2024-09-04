@@ -70,6 +70,7 @@ let id_bank = 1;
 
 let start_date = new Date();
 let session_started_at = start_date.getTime();
+let debug_mode = false;
 
 let min_10power = -2;
 let rate = 1.4;
@@ -2199,7 +2200,8 @@ function set_quiz_experience(event) {
 }
 
 function set_nickname(event) {
-  add_event("set_quiz_nickname="+event.value.replace(";","_").replace("\\","/"));
+  client_nick = event.value.replace(/[^A-ZÅÄÖa-zåäö0123456789]/g, '_')
+  add_event("set_quiz_nickname="+client_nick);
 }
 
 function start_quiz (){
@@ -2754,7 +2756,7 @@ function next_quiz (){
 
 let cap_grade=0;
 
-function update_quiz(){
+function update_quiz (){
   if (current_quiz == "none") return;
 //  let difficulty_geom=1;
 //  for (let question_no in quiz_questions){
@@ -2807,7 +2809,11 @@ function update_quiz(){
   s += "<br>";
 
   s +='<div class="quiz-container">';
-  s +='<input type="range" min="0" max="100" step="0.01" class="quiz-slider" id="difficulty_level" value="' + quiz_difficulty + '" style="width:100%" onchange="set_difficulty_level(this);next_quiz();">';
+  s +='<input type="range" min="0" max="100" step="0.01" class="quiz-slider" id="difficulty_level" value="' + quiz_difficulty + '" style="width:100%" onchange="set_difficulty_level(this);next_quiz();"';
+  if (debug_mode == false) {
+    s += " disabled";
+  }
+  s += '>';
   s +='<div class="quiz-labels">';
   s +='<label for="0"></label>';
   s +='<label for="12.5">&nbsp;Novice</label>';
@@ -2820,26 +2826,32 @@ function update_quiz(){
   s +='<label for="100"></label>';
   s +='</div>';
   s +='<center>';
-  s +='<input type="checkbox" id="adaptive_difficulty" ';
-  if (adaptive_difficulty_enabled==true){
-    s +='checked ';
+
+  if (debug_mode==true) {
+    s +='<input type="checkbox" id="adaptive_difficulty" ';
+    if (adaptive_difficulty_enabled==true){
+      s +='checked ';
+    }
+    s +='onchange="toggle_adaptive_difficulty(this);"><label for="adaptive_difficulty">Adaptive difficulty level</label>';
   }
-  s +='onchange="toggle_adaptive_difficulty(this);"><label for="adaptive_difficulty">Adaptive difficulty level</label>';
+
   s +='</center>';
   s +='</div>';
 
-  s += '<br><br><span style="color:#808080">Your stats:</span><br>';
-  for (let question in quiz_questions){
-    s += "<input type='checkbox' name='quiz_type' id='"+quiz_questions[question]+"' value='"+quiz_questions[question]+"' onchange='select_quiz_type(event);'";
-    if (enabled_quiz_types[quiz_questions[question]]==true){
-      s+=" checked";
-    }
-    s+="><label for='"+quiz_questions[question]+"'>";
+  if (debug_mode==true) {
+    s += '<br><br><span style="color:#808080">Your stats:</span><br>';
+    for (let question in quiz_questions){
+      s += "<input type='checkbox' name='quiz_type' id='"+quiz_questions[question]+"' value='"+quiz_questions[question]+"' onchange='select_quiz_type(event);'";
+      if (enabled_quiz_types[quiz_questions[question]]==true){
+        s+=" checked";
+      }
+      s+="><label for='"+quiz_questions[question]+"'>";
 
-    s += '<span style="color:#808080">' + quiz_questions[question] + ": " + quiz_difficulties[quiz_questions[question]].toFixed(1) + "</span><br>";
-    s += "</label>";
+      s += '<span style="color:#808080">' + quiz_questions[question] + ": " + quiz_difficulties[quiz_questions[question]].toFixed(1) + "</span><br>";
+      s += "</label>";
+    }
+    s += '<span style="color:#808080">Total: ' + quiz_difficulty.toFixed(1) + "</span><br>";
   }
-  s += '<span style="color:#808080">Total: ' + quiz_difficulty.toFixed(1) + "</span><br>";
 
   task_div.innerHTML = s;
 }
@@ -8112,9 +8124,11 @@ var pending = [];
 var event_no = 0;
 var periodic_timer_id = 0;
 let client_id = Math.random()*2**31>>>0; // A pretty random 31-bit uint id
-let client_nick = "anon";
+let client_nick = "";
+let client_place = "";
 
 function add_event (string) {
+  if (debug_mode) console.log("Event:"+string);
   if (improvement_enabled == false) return;
   let date_now = new Date();
   let now = date_now.getTime();
@@ -8148,7 +8162,7 @@ function periodic_send () {
     let time_diff = now-session_started_at;
     let mseconds_elapsed = Math.floor(time_diff);
     var XHR = new XMLHttpRequest();
-    var to_send = `T${mseconds_elapsed/1000};U${client_id};L${client_nick};`;
+    var to_send = `T${mseconds_elapsed/1000};U${client_id};L${client_place}_${client_nick};`;
     for (var pending_no = 0; pending_no < pending.length; pending_no++) {
       to_send += pending[pending_no];
     }
@@ -8161,7 +8175,7 @@ function periodic_send () {
       if (event.target.status === 200) {
         // HTTP OK
         var response = event.target.response;
-        // console.log("RESP=" + response);
+        if (debug_mode) console.log("RESP=" + response);
         if (response.startsWith("ERROR")) {
           server_error = response;
         } else if (response.startsWith("E")) {
@@ -8201,7 +8215,7 @@ function periodic_send () {
     XHR.open("POST", "https://livet.se/lu-pze.php", true);
     XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     XHR.send(urlEncodedData);
-    //console.log("S:" + urlEncodedData);
+    if (debug_mode) console.log("S:" + urlEncodedData);
   }
 }
 
@@ -8284,6 +8298,16 @@ function setup (){
   let graph_information_div=document.getElementsByClassName("graph-information")[0];
   graph_information_div.style.display="inline";
   add_event("setup="+start_date.toLocaleString().replace(" ",""));
+
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  if (urlParams.has('p')) {
+    let place = urlParams.get('p').replace(";","_").replace("\\","/");
+    client_place = place.replace(/[^A-ZÅÄÖa-zåäö0123456789]/g, '_')
+  }
+  if (urlParams.has('debug')) {
+    debug_mode = true;
+  }
 }
 
 function ready (){
