@@ -2187,9 +2187,11 @@ function quiz_countdown (){
     if (quiz_seconds_left < 0) {
       quiz_seconds_left = 0;
       quiz_is_running = 2;
+      quiz_time_is_up();
+    } else {
+      quiz_timer_div.innerHTML="Time left: " + quiz_seconds_left + "s";
+      setTimeout(quiz_countdown, 1000);
     }
-    quiz_timer_div.innerHTML="Time left: " + quiz_seconds_left + "s";
-    setTimeout(quiz_countdown, 1000);
   }
 }
 
@@ -2206,6 +2208,7 @@ function set_nickname(event) {
 
 function start_quiz (){
   quiz_is_running = 1;
+  quiz_longest_streak = 0;
 
   if (splash_screen_active){
     remove_banner();
@@ -2864,6 +2867,105 @@ function stop_quiz (){
   quiz_timer_div.innerHTML="";
   add_event("stop_quiz");
   restart_lupze();
+}
+
+function quiz_time_is_up (){
+  let quiz_intro_div = document.getElementById("quiz_intro");
+
+  let s = "";
+  s += '<center><button type="button" class="close-window" onclick="stop_quiz();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>';
+  s += '<br><br>';
+  s += '<img src="images/bell_small.webp" width="300px" style="margin:0;padding:0" onclick="stop_quiz()">';
+  s += '<h2>';
+  if (client_nick != "") {
+    s += client_nick + ', ';
+  }
+  s += 'Time\'s up!</h2><br>';
+
+
+  s += "You got " + quiz_nof_correct + " correct answers,<br>";
+  s += "with a longest streak of " + quiz_longest_streak + " correct answers.<br>";
+  s += "You answered " + quiz_nof_done + " questions in " + (quiz_nof_tries) + " clicks";
+  if(quiz_nof_tries > 0) s += ",<br>which is a " + (100*quiz_nof_done/quiz_nof_tries).toFixed(2) + "% accuracy.<br>";
+  else s += ".<br>";
+
+  s += '<div class="quiz-container">';
+  s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="experience_level" value="' + quiz_difficulty + '" style="width:100%" onchange="set_quiz_experience(this)" disabled>';
+  s += '<div class="quiz-labels">';
+  s += '<label for="0"></label>';
+  s += '<label for="12.5">&nbsp;Novice</label>';
+  s += '<label for="25"></label>';
+  s += '<label for="37.5"></label>';
+  s += '<label for="50">&nbsp;Intermediate</label>';
+  s += '<label for="62.5"></label>';
+  s += '<label for="75"></label>';
+  s += '<label for="87.5">&nbsp;Professor</label>';
+  s += '<label for="100"></label>';
+  s += '</div>';
+  s += '</div>';
+  s += "Your total result";
+  s += '<br><br>';
+
+//  s += '<span style="color:#808080"><br>';
+
+
+  // Sort according to quiz_difficulties[quiz_questions[question]]
+  // Create items array
+  var items = Object.keys(quiz_difficulties).map(function(key) {
+    return [key, quiz_difficulties[key]];
+  });
+  // Sort the array based on the second element
+  items.sort(function(first, second) {
+    return second[1] - first[1];
+  });
+
+  const quiz_explanation = {
+"click_freq":"reading log scale diagrams",
+"click_time":"clicking on linear x axes",
+"click_nyquist_angle":"identifying angles in the Nyquist diagram",
+"click_system":"understanding a system's order",
+"click_wrong":"finding the odd-one-out graph"};
+  // The results:
+  let res = "quiz_time_is_up.";
+  for (let position in items){
+    let question_id = items[position][0];
+    let difficulty_level = items[position][1];
+    res += question_id + "=" + difficulty_level.toFixed(1) + ",";
+  }
+  res += 'total='+quiz_difficulty.toFixed(1)+",";
+  res += 'nof_correct=' + quiz_nof_correct+",";
+  res += "longest_streak=" + quiz_longest_streak + ",";
+  res += "nof_questions=" + quiz_nof_done + ",";
+  if(quiz_nof_tries > 0) res += "accuracy=" + (100*quiz_nof_done/quiz_nof_tries).toFixed(2) + "%,";
+  res += "nof_clicks=" + (quiz_nof_tries) + ",";
+  res += "nof_quiz_started=" + nof_quiz_started + ".";
+  add_event(res);
+
+  let top_question_id = items[0][0];
+  let top_difficulty_level = items[0][1];
+  s += "You're ";
+  if (top_difficulty_level > 80) {
+    s += "really";
+  }
+  s += "good at " + quiz_explanation[top_question_id];
+  let bottom_question_id = items[items.length - 1][0];
+  let bottom_difficulty_level = items[items.length - 1][1];
+  s += ", but you could focus on learning more about " + quiz_explanation[bottom_question_id] + ".<br><br>";
+//  s += '<span style="color:#808080">Total: ' + quiz_difficulty.toFixed(1) + "</span><br>";
+  s += '</center>';
+
+
+  quiz_intro_div.innerHTML = s;
+
+  let toggleElement = document.querySelector('.quiz_intro');
+  toggleElement.classList.add('active');
+  let quiz_text = document.getElementById("quiz_text");
+  quiz_text.innerHTML="";
+  current_quiz="none";
+  removeAllGraphs();
+  let quiz_icon_svg = document.getElementById("quiz_icon_svg");
+  quiz_icon_svg.style.fill=null;
+  quiz_is_running = 0;
 }
 
 function set_difficulty_level(event){
