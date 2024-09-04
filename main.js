@@ -2231,13 +2231,13 @@ function start_quiz (){
   }
   removeAllGraphs();
 
-  let nickname_input_element = document.getElementById("nickname");
-  nickname_input_element.focus();
   if (nof_quiz_started > 0) {
     quiz_bell_clicked();
   } else {
     let toggleElement = document.querySelector('.quiz_intro');
     toggleElement.classList.add('active');
+    let nickname_input_element = document.getElementById("nickname");
+    nickname_input_element.focus();
     add_event("quiz_banner_shown");
   }
 }
