@@ -253,6 +253,10 @@ input{background:none}
 .answer{width:35%;padding:10px 20px 10px 20px;z-index:101;background-color:#d0d0d0f0;position:fixed;border-radius:20px;visibility:hidden;}
 .answer h2{color:#3030c0}
 .answer.active{visibility:visible;opacity:1;}
+.quiz_intro{width:35%;padding:10px 20px 10px 20px;left:42%;top:10%;transform: translate(-50%,0);z-index:101;font-family:"Lucida Console","Courier New",monospace;font-size:120%;font-weight:800;background-color:#d0e0d0f0;position:fixed;border-radius:20px;visibility:hidden}
+.quiz_intro h2{color:#3030c0}
+.quiz_intro.active{visibility:visible;opacity:1;}
+
 .banner{z-index:555;position:absolute;top:200px;left:25%}
 @keyframes banner_anim_in {
   from {transform:translateX(100%);opacity:1.0}
@@ -343,6 +347,30 @@ input{background:none}
         </div>
         <img src="images/bell_small.webp" width="384px" style="margin:0;padding:0">
       </div>
+
+      <div class="quiz_intro"><center><button type="button" class="close-window" onclick="stop_quiz();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
+<h2>Quiz time!</h2><br>
+Your nickname: <input type="text" id="nickname" name="nickname" size="12" style="font-size:26px; text-align:center; background:#fff" autofocus value="" oninput="set_nickname(this)"><br>
+<div class="quiz-container">
+<input type="range" min="0" max="100" step="1" class="quiz-slider" id="experience_level" value="50" style="width:100%" onchange="set_quiz_experience(this)">
+<div class="quiz-labels">
+<label for="0"></label>
+<label for="12.5">&nbsp;Novice</label>
+<label for="25"></label>
+<label for="37.5"></label>
+<label for="50">&nbsp;Intermediate</label>
+<label for="62.5"></label>
+<label for="75"></label>
+<label for="87.5">&nbsp;Professor</label>
+<label for="100"></label>
+</div>
+</div>
+Choose your Automatic Control experience level<br><br><br>
+Redo the quiz as many times as you want.<br>
+You've got 90 seconds.<br><br><br>
+Click the bell to start<br>
+<img src="images/bell_small.webp" width="300px" style="margin:0;padding:0" onclick="quiz_bell_clicked()">
+      </center></div>
 
       <div class="answer" onclick="answerToggle();">
 <button type="button" class="close-window"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>

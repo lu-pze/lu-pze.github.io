@@ -2192,28 +2192,34 @@ function quiz_countdown (){
   }
 }
 
-function start_quiz(){
-  quiz_timer_div = document.getElementById("quiz_timer");
-  quiz_timer_div.innerHTML="Time left: 90s";
-  quiz_seconds_left = 90;
-  setTimeout(quiz_countdown, 1000);
+let quiz_experience = 50;
+function set_quiz_experience(event) {
+  quiz_experience = +(event.value);
+  add_event("set_quiz_experience="+event.value);
+}
+
+function set_nickname(event) {
+  add_event("set_quiz_nickname="+event.value.replace(";","_").replace("\\","/"));
+}
+
+function start_quiz (){
   quiz_is_running = 1;
-  nof_quiz_started += 1;
-  add_event("start_quiz");
+
+  if (splash_screen_active){
+    remove_banner();
+  }
+
   achievement_done("start_quiz");
-  current_assignment="none";
-  removeAllGraphs();
+
   // Remove the "Take the initial quiz"-text:
   let welcome_text=document.getElementById("welcome_text");
   welcome_text.innerHTML='';
-  update_tasks();
+//  update_tasks();
   //remove the assignments box:
   let assignments_box = document.querySelector('.assignments_box');
   assignments_box.classList.remove('active');
   let assignment_icon_svg = document.getElementById("assignment_icon_svg");
   assignment_icon_svg.style.fill=null;
-  let quiz_icon_svg = document.getElementById("quiz_icon_svg");
-  quiz_icon_svg.style.fill="#5050ff";
   //removeAllGraphs();
   quiz_nof_done = 0;
   quiz_nof_tries = 0;
@@ -2223,11 +2229,39 @@ function start_quiz(){
     quiz_streaks[quiz_questions[question]] = 0;
     quiz_questions_nof_done[quiz_questions[question]]=0;
   }
+  removeAllGraphs();
+
+  let nickname_input_element = document.getElementById("nickname");
+  nickname_input_element.focus();
+  if (nof_quiz_started > 0) {
+    quiz_bell_clicked();
+  } else {
+    let toggleElement = document.querySelector('.quiz_intro');
+    toggleElement.classList.add('active');
+    add_event("quiz_banner_shown");
+  }
+}
+
+function quiz_bell_clicked (){
+  let toggleElement = document.querySelector('.quiz_intro');
+  toggleElement.classList.remove('active');
+  add_event("start_quiz");
+
+  let quiz_icon_svg = document.getElementById("quiz_icon_svg");
+  quiz_icon_svg.style.fill="#5050ff";
+
+  quiz_timer_div = document.getElementById("quiz_timer");
+  quiz_timer_div.innerHTML="Time left: 90s";
+  quiz_seconds_left = 90;
+
+  setTimeout(quiz_countdown, 1000);
+  nof_quiz_started += 1;
+  current_assignment="none";
+  removeAllGraphs();
   quiz_no=0;
   next_quiz();
   update_quiz();
 }
-
 
 function next_quiz (){
   let quiz_text = document.getElementById("quiz_text");
@@ -2776,13 +2810,13 @@ function update_quiz(){
   s +='<input type="range" min="0" max="100" step="0.01" class="quiz-slider" id="difficulty_level" value="' + quiz_difficulty + '" style="width:100%" onchange="set_difficulty_level(this);next_quiz();">';
   s +='<div class="quiz-labels">';
   s +='<label for="0"></label>';
-  s +='<label for="12.5">Kindergarten</label>';
-  s +='<label for="25">Elementary&nbsp;school</label>';
-  s +='<label for="37.5">High&nbsp;school</label>';
-  s +='<label for="50">University</label>';
-  s +='<label for="62.5">PhD&nbsp;candidate</label>';
-  s +='<label for="75">PhD&nbsp;student</label>';
-  s +='<label for="87.5">Professor</label>';
+  s +='<label for="12.5">&nbsp;Novice</label>';
+  s +='<label for="25"></label>';
+  s +='<label for="37.5"></label>';
+  s +='<label for="50">&nbsp;Intermediate</label>';
+  s +='<label for="62.5"></label>';
+  s +='<label for="75"></label>';
+  s +='<label for="87.5">&nbsp;Professor</label>';
   s +='<label for="100"></label>';
   s +='</div>';
   s +='<center>';
@@ -2810,8 +2844,11 @@ function update_quiz(){
   task_div.innerHTML = s;
 }
 
-function stop_quiz(){
+function stop_quiz (){
+  let toggleElement = document.querySelector('.quiz_intro');
+  toggleElement.classList.remove('active');
   quiz_is_running = 0;
+  quiz_timer_div = document.getElementById("quiz_timer");
   quiz_timer_div.innerHTML="";
   add_event("stop_quiz");
   restart_lupze();
@@ -3126,6 +3163,7 @@ function toggle_assignments_box(event){
 }
 
 function task_done (which_one){
+  if (quiz_is_running>0) return;
   if (assignments_enabled==true){
     if (all_assignments[current_assignment].tasks.includes(which_one)){
       if (!(done_tasks.includes(which_one))){
@@ -3365,6 +3403,9 @@ function restart_lupze(){
   current_assignment = "none";
   let assignment_icon_svg = document.getElementById("assignment_icon_svg");
   assignment_icon_svg.style.fill=null;
+  let toggleElement = document.querySelector('.quiz_intro');
+  toggleElement.classList.remove('active');
+  quiz_is_running = 0;
   update_tasks();
   removeAllGraphs();
   next_graph_no_to_add=0;
@@ -3594,6 +3635,7 @@ function toggle_sound(event){
 }
 
 function achievement_done (which_one){
+  if (quiz_is_running>0) return;
   if (!(done_achievements.includes(which_one))){
     // This is a new achievement
     add_event("achievement_done="+which_one);
@@ -4802,6 +4844,37 @@ function touchStarted(event){
   mousePressed(event);
 }
 
+function remove_banner (){
+  let pze_logo=document.getElementById("pze_logo");
+  pze_logo.style.animation = 'none';
+  pze_logo.offsetHeight; /* trigger reflow */
+  pze_logo.style.animation="pze_logo_anim_out 1s ease-out 1";
+  pze_logo.style.opacity=0;
+
+  let lu_logo=document.getElementById("lu_logo");
+  lu_logo.style.animation = 'none';
+  lu_logo.offsetHeight; /* trigger reflow */
+  lu_logo.style.animation="lu_logo_anim_out 1s ease-out 1";
+  lu_logo.style.opacity=0;
+
+  let explorer_1=document.getElementById("explorer_1");
+  explorer_1.style.animation = 'none';
+  explorer_1.offsetHeight; /* trigger reflow */
+  explorer_1.style.animation="explorer_1_anim_out 1s ease-out 1";
+  explorer_1.style.opacity=0;
+
+  let explorer_2=document.getElementById("explorer_2");
+  explorer_2.style.animation = 'none';
+  explorer_2.offsetHeight; /* trigger reflow */
+  explorer_2.style.animation="explorer_2_anim_out 1s ease-out 1";
+  explorer_2.style.opacity=0;
+
+  text_color = color('hsb(0,0%,100%)');
+  splash_screen_active=false;
+  add_event("banner_remove");
+}
+
+
 // p5.js: Browsers may have different default behaviors attached to various mouse events. To prevent any default behavior for this event, add "return false" to the end of the function.
 //function mouseClicked(){
 function mousePressed(event){
@@ -4818,45 +4891,25 @@ function mousePressed(event){
     init_jingle();
   }
 
+  let quizSplashElement = document.querySelector('.quiz_intro');
+  if (quizSplashElement.classList.contains('active')){
+    // The quiz spash screen is shown.
+    // Make sure that clicks go though to the range slider.
+    return true; // Propagate default actions
+  }
+
   if (splash_screen_active){
     // This first click is to get rid of the splash screen:
     event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
-    let pze_logo=document.getElementById("pze_logo");
-    pze_logo.style.animation = 'none';
-    pze_logo.offsetHeight; /* trigger reflow */
-    pze_logo.style.animation="pze_logo_anim_out 1s ease-out 1";
-    pze_logo.style.opacity=0;
-
-    let lu_logo=document.getElementById("lu_logo");
-    lu_logo.style.animation = 'none';
-    lu_logo.offsetHeight; /* trigger reflow */
-    lu_logo.style.animation="lu_logo_anim_out 1s ease-out 1";
-    lu_logo.style.opacity=0;
-
-    let explorer_1=document.getElementById("explorer_1");
-    explorer_1.style.animation = 'none';
-    explorer_1.offsetHeight; /* trigger reflow */
-    explorer_1.style.animation="explorer_1_anim_out 1s ease-out 1";
-    explorer_1.style.opacity=0;
-
-    let explorer_2=document.getElementById("explorer_2");
-    explorer_2.style.animation = 'none';
-    explorer_2.offsetHeight; /* trigger reflow */
-    explorer_2.style.animation="explorer_2_anim_out 1s ease-out 1";
-    explorer_2.style.opacity=0;
-
-    const first_time=200;
-    const delay=150;
-    setTimeout(initial_graph, first_time + 0*delay);
-    setTimeout(initial_graph, first_time + 1*delay);
-    setTimeout(initial_graph, first_time + 2*delay);
-    setTimeout(initial_graph, first_time + 3*delay);
-
-    text_color = color('hsb(0,0%,100%)');
-
-    splash_screen_active=false;
-
-    add_event("banner_remove");
+    remove_banner();
+    if (quiz_is_running == 0) {
+      const first_time=200;
+      const delay=150;
+      setTimeout(initial_graph, first_time + 0*delay);
+      setTimeout(initial_graph, first_time + 1*delay);
+      setTimeout(initial_graph, first_time + 2*delay);
+      setTimeout(initial_graph, first_time + 3*delay);
+    }
     return false;
   }
 
@@ -8256,16 +8309,16 @@ function ready (){
     //if (event.key=='F1'){
     //  toggle_quiz_enabled();
     //}
-    //if (event.key=='F2'){
-    //  start_quiz();
-    //}
+    if (event.key=='F2'){
+      start_quiz();
+    }
     //if (event.key=='F3'){
     //  quiz_correct();
     //  update_quiz();
     //}
-    if (event.key=='F1') select_assignment({value:"pid_controller"});
-    if (event.key=='F2') select_assignment({value:"pid_controller_YL"});
-    if (event.key=='F3') show_answer_to_task("PID_(T_d!=0)");
+    //if (event.key=='F1') select_assignment({value:"pid_controller"});
+    //if (event.key=='F2') select_assignment({value:"pid_controller_YL"});
+    //if (event.key=='F3') show_answer_to_task("PID_(T_d!=0)");
     if (event.key=='Escape') restart_lupze();
   });
 
