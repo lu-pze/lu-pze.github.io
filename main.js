@@ -4279,13 +4279,13 @@ function textPowerOfTen(input_power,x_pos,y_pos){
 
 let rad_phase_lower_bound;
 let rad_phase_upper_bound;
-function draw_bode_phase_T(T,i,pole_zero="pole"){
+function draw_bode_phase_T (T,i,pole_zero="pole"){
   let frequency = 1/Math.abs(T);
   let screen_x = (Math.log(frequency)/Math.log(10)+2) * graph_bode_phase_width/5;
   let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
   let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
   stroke(bode_graphs[i].bode_hue,240,360);
-  strokeWeight(3);
+  strokeWeight(line_stroke_weight);
   if (pole_zero=="pole") draw_X(screen_x,screen_y);
   else {
     noFill();
@@ -4300,7 +4300,7 @@ function draw_bode_mag_T(T,i,pole_zero="pole"){
   // Now we know the x position. Let's find out the y position:
   let screen_y = map(bode_graphs[i].bode_gain_array[Math.round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
   stroke(bode_graphs[i].bode_hue,240,360);
-  strokeWeight(3);
+  strokeWeight(line_stroke_weight);
   if (pole_zero=="pole") draw_X(screen_x,screen_y);
   else {
     noFill();
@@ -4558,18 +4558,20 @@ function draw_bode_responses(type){
 }
 
 function draw_X(screen_x,screen_y){
-  line(screen_x-6,screen_y-6,screen_x+6,screen_y+6);
-  line(screen_x+6,screen_y-6,screen_x-6,screen_y+6);
+  let line_length = 6 + 2*Math.log(line_stroke_weight);
+  line(screen_x-line_length,screen_y-line_length,screen_x+line_length,screen_y+line_length);
+  line(screen_x+line_length,screen_y-line_length,screen_x-line_length,screen_y+line_length);
 }
 
 function draw_O(screen_x,screen_y){
-  ellipse(screen_x,screen_y,15,15);
+  let radius = 15 + 3*Math.log(line_stroke_weight);
+  ellipse(screen_x,screen_y,radius,radius);
 }
 
 function draw_static_gain(k,i){
   let screen_y = map(k,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
   stroke(bode_graphs[i].bode_hue,240,360);
-  strokeWeight(0.5);
+  strokeWeight(0.4 * line_stroke_weight);
   line(0,screen_y,graph_step_response_width,screen_y);
 }
 
@@ -4582,7 +4584,7 @@ function draw_time_response_T(T,i,pole_zero="pole"){
   let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
   let screen_x = graph_step_response_width / 10 * Math.abs(T);
   stroke(bode_graphs[i].bode_hue,240,360);
-  strokeWeight(3);
+  strokeWeight(line_stroke_weight);
   if (pole_zero=="pole"){
     draw_X(screen_x,screen_y);
   } else {
@@ -4665,7 +4667,14 @@ function draw_time_responses(){
     }
   }
 
+  // Draw the response
+  for(let i=0; i<bode_graphs.length; i++){
+    if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_timeresponse_bool)){
+      bode_graphs[i].draw_timeresponse();
+    }
+  }
 
+  // Draw the time constants
   for(let i=0; i<bode_graphs.length; i++){
     if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_timeresponse_bool)){
       if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
@@ -4712,12 +4721,6 @@ function draw_time_responses(){
         } catch {}
       }
 
-    }
-  }
-
-  for(let i=0; i<bode_graphs.length; i++){
-    if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_timeresponse_bool)){
-      bode_graphs[i].draw_timeresponse();
     }
   }
 }
@@ -4845,7 +4848,7 @@ function draw_nyquist_responses(){
 let pole_zero_graph_x = [];
 let pole_zero_graph_y = [];
 
-function draw_pole_zeros(){
+function draw_pole_zeros (){
   pole_zero_width = graph_pole_zero_width;
   pole_zero_height = pole_zero_width;
   // Draw pole zeros for these graphs:
@@ -7728,7 +7731,7 @@ class bode_graph{
     endShape();
   }
 
-  draw_T_in_Nyquist(T_to_draw,pole_zero="pole"){
+  draw_T_in_Nyquist (T_to_draw,pole_zero="pole"){
     let T = range_slider_variables[variable_position[T_to_draw]];
     if (T != 0){
       let frequency = 1 / T;
@@ -7804,7 +7807,7 @@ class bode_graph{
     }
   }
 
-  draw_nyquist_X(frequency){
+  draw_nyquist_X (frequency){
     //let new_complex_array = this.bode_complex_array.map(x => x.conjugate());
     let new_complex_array = this.bode_complex_array;
     // This is the values that we have calculated in new_complex_array[x]:
@@ -7832,7 +7835,7 @@ class bode_graph{
           //console.log("screen_x="+screen_x);
           //console.log("screen_y="+screen_y);
           stroke(this.bode_hue,240,360);
-          strokeWeight(3);
+          strokeWeight(line_stroke_weight);
           draw_X(screen_x, screen_y);
           pop();
         } catch {};
@@ -7855,7 +7858,7 @@ class bode_graph{
         try {
           push();
           stroke(this.bode_hue,240,360);
-          strokeWeight(3);
+          strokeWeight(line_stroke_weight);
           draw_O(screen_x, screen_y);
           pop();
         } catch {};
@@ -8049,14 +8052,17 @@ class bode_graph{
   plot_pole(pole_x,pole_y){
     let screen_x = pole_zero_width/2 + (pole_x+1) * pole_zero_width/4;
     let screen_y = pole_zero_height/2 + pole_y * pole_zero_height/4;
-    line(screen_x-6,screen_y-6,screen_x+6,screen_y+6);
-    line(screen_x+6,screen_y-6,screen_x-6,screen_y+6);
+
+    let line_length = 6 + 2*Math.log(line_stroke_weight);
+    line(screen_x-line_length,screen_y-line_length,screen_x+line_length,screen_y+line_length);
+    line(screen_x+line_length,screen_y-line_length,screen_x-line_length,screen_y+line_length);
   }
 
   plot_zero(pole_x,pole_y){
+    let radius = 15 + 3*Math.log(line_stroke_weight);
     let screen_x = pole_zero_width/2 + (pole_x+1) * pole_zero_width/4;
     let screen_y = pole_zero_height/2 + pole_y * pole_zero_height/4;
-    ellipse(screen_x,screen_y,15,15);
+    ellipse(screen_x,screen_y,radius,radius);
   }
 }
 
@@ -8380,6 +8386,10 @@ function initial_graph(){
 // Called by p5:
 function setup (){
   setGraphDimensions();
+  // Setting the p5 line drawing type. Regardless of setting,
+  // there are artifacts in the TIME DELAY blue Nyquist diagram when the time delay is present,
+  // and the Preference "Line stroke weight" is large.
+  //strokeJoin(ROUND);  //mitered (MITER), beveled (BEVEL), or rounded (ROUND
   let canvas = createCanvas(canvas_width,canvas_height);
   canvas.parent('sketch_holder');
   colorMode(HSB,360);
