@@ -243,7 +243,7 @@ function createRangeSlider(event){
   // So table-based layout is a safer bet:
   slider.innerHTML =
   `<table><tr><td>
-        <span style="margin:0 0 0 10px;font-size:24px" id="variable_${variable_name}">a =</span>
+        <span style="margin:0 0 0 10px;font-size:120%" id="variable_${variable_name}">a =</span>
 </td><td class="value-wrapper">
         <input type="text" id="variable_${button_id}" value="">
 </td><td>
@@ -488,11 +488,7 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   //    (equation_string == GRAPH_TIME_DELAY.formula)){ // Make sure that hover doesn't make read-only graphs yellow:
   //  s += "background:none;";
   //}
-  let font_size=20;
-  //if (equation_string == GRAPH_ONE_POLE_WITH_PID_YR.formula){
-  //  font_size=14.5;
-  //}
-  s += `font-size: ${font_size}px;" title="${graph_name}">${mathfield_string}</math-field>`;
+  s += `font-size:115%;" title="${graph_name}">${mathfield_string}</math-field>`;
   // These are the GRAPHS that should have download code buttons:
   if ((equation_string == GRAPH_ONE_REAL_POLE.formula) ||
       (equation_string == GRAPH_TWO_REAL_POLES.formula) ||

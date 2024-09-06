@@ -24,6 +24,15 @@
     </script>
     <script type="text/javascript" src="main.js"></script>
 <style>
+/* 8px @ 768px increasing to 20px @ 2048px */
+/* 8px @ 768px increasing to 18px @ 2048px */
+:root {
+  font-size: clamp(8px, calc(0.5rem + (18 - 8) * ((100vw - 768px) / (2048 - 768))), 18px);
+  /* Note: The calc base value (0.5rem) MUST be stated in REM to maintain accessibility */
+  /* Where: calc = min_font_size_in_rem + (max_font_size - min_font_size) * ((100vw - min_viewport_including_px_unit) / (max_viewport - min_viewport)) */
+  /* Safari resize fix */
+  min-height: 0vw;
+}
 body{margin:0;min-width:1280px;background-color:#000;overflow-x:auto;overflow-y:auto;}
 body::-webkit-scrollbar {width:0;} /* Hide scrollbar width */
 .page{display:grid;grid-template-columns:1fr 380px;grid-template-rows:1fr 110px 40px;}
@@ -41,7 +50,7 @@ body::-webkit-scrollbar {width:0;} /* Hide scrollbar width */
 .graph-information-tabs input[type="radio"]:checked + label{background: #484848;}
 .graph-information-tabs{width:100%;height:33px;background-color:#202020;display:flex;flex-wrap: wrap;}
 .graph-information-tabs input[type="radio"]{display:none;}
-.graph-information-tabs label{font-family:Arial,sans-serif;font-size: 16px;font-weight: 500;display:flex;flex-direction: row;color: #999;padding: 7px 15px 0 15px;}
+.graph-information-tabs label{font-family:Arial,sans-serif;font-size:100%;font-weight:500;display:flex;flex-direction:row;color:#999;padding:7px 15px 0 15px;}
 .info-radio-buttons{position: relative;}
 .option-bar{background:linear-gradient(180deg,rgba(178,181,193,1) 0%,rgba(153,154,157,1) 100%);width:100%;height:48px}
 .option-button{color:#fff}
@@ -71,7 +80,7 @@ math-field::part(menu-toggle){display:none;}
 #tune_icon_svg:hover{fill:#d0d0ff;}
 .graph-tabs{width:100%;height:35px;display:flex;flex-wrap:wrap;}
 .graph-tabs input[type="radio"]{display: none;}
-.graph-tabs label{color: #fff;font-family:Arial,sans-serif;;font-size: 17px;font-weight: 400;padding: 7px 20px 0 20px;}
+.graph-tabs label{color: #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:400;padding:7px 20px 0 20px;}
 .graph-tabs input[type="radio"]:checked + label{text-shadow: 0 0 5px #7c7c7c;background: linear-gradient(-90deg, rgba(193,255,116,1) 0%, rgba(21,255,178,1) 100%);box-shadow: inset 0 0 10px rgba(115, 113, 113, 0.42);}
 .graph-tabs .vl {border-left: 2px solid #fff;height:100%}
 .graph-space{grid-column:1;grid-row:1}
@@ -93,51 +102,51 @@ math-field::part(menu-toggle){display:none;}
 .download-script:hover{background-color:#f8f890;transition:0s;}
 .copy-button{background:none;border:none;transition:all .4s ease-in;}
 .copy-button:hover{background-color:#f8f890;transition:0s;}
-.footer h1{text-align: center;font-weight:300;font-size:15px;margin:0;padding:10px 0 10px 0;color:#e7e6e6;}
+.footer h1{text-align: center;font-weight:300;font-size:90%;margin:0;padding:10px 0 10px 0;color:#e7e6e6;}
 .footer{font-family:Arial,sans-serif;}
 .footer-info{padding:0px 0px 0px 0px;}
 .footer-link{text-align:center;}
-.footer-link a{font-family:Arial,sans-serif;font-size:15px;padding:0 20px 0 0px;color:#e7e6e6;}
-.footer-link a:hover{font-family:Arial,sans-serif;font-size:15px;padding:0 20px 0 20px;color:#31fb56;}
+.footer-link a{font-family:Arial,sans-serif;font-size:90%;padding:0 20px 0 0px;color:#e7e6e6;}
+.footer-link a:hover{font-family:Arial,sans-serif;font-size:90%;padding:0 20px 0 20px;color:#31fb56;}
 .clickable-link{transition:all .4s ease-in;}
 .clickable-link:hover{background-color:#f8f890;transition:0s}
-.equation{display:flex;flex-direction:row;justify-content:start;position:relative;padding:6px 0 6px;width:100%;animation-duration:0.3s;animation-name:slidein;}
+.equation{display:flex;flex-direction:row;justify-content:start;position:relative;padding:2px 0 3px;width:100%;animation-duration:0.3s;animation-name:slidein;}
 .equations{display:flex;flex-direction:column;}
 .formula{width:73%;transition: all .4s ease-in;}
-.formula:hover{background-color: #f8f890;transition:0s}
-.eq-info{margin:10px;font-family:Arial,sans-serif;font-size:15px;transition:all .4s ease-in;}
+.formula:hover{background-color:#f8f890;transition:0s}
+.eq-info{margin:10px;font-family:Arial,sans-serif;font-size:85%;transition:all .4s ease-in;}
 .yellow_hover:hover{background-color:#f8f890;transition:0s}
-.welcome_text{margin:0px 10px 10px 0px;font-family:Arial,sans-serif;font-size:25px;font-weight:800;color:#5aa;text-align:center;}
+.welcome_text{margin:0px 10px 10px 0px;font-family:Arial,sans-serif;font-size:150%;font-weight:800;color:#5aa;text-align:center;}
 .show-graph{-webkit-appearance:none;border-radius:20px;margin-top:7px;margin-right:10px;margin-left:12px;width:40px;height:36px;}
 .show-graph:hover{opacity:0.60}
 .show-graph:checked{opacity:0.33}
-.delete-graph{float:inline-end;right:0px;top:6px;transition:all .4s ease-in;position:absolute;background:none;border:none;}
+.delete-graph{float:inline-end;right:0px;top:6px;transition:all .4s ease-in;position:absolute;background:none;border:none}
 .delete-graph:hover{background-color:#f8f890;transition:0s}
-.close-window{float:inline-end;right:0px;top:6px;transition:all .4s ease-in;position:absolute;background:none;border:none;}
+.close-window{float:inline-end;right:0px;top:6px;transition:all .4s ease-in;position:absolute;background:none;border:none}
 .close-window:hover{background-color:#f8f890;transition:0s}
 .slider-subwrapper{width:100%;position:relative;animation-duration:0.3s;animation-name:slidein;}
-.slider-bound{width:25px;margin:0 0 6px 0;padding:0;font-family:Garamond,'Times New Roman',Times,serif;font-size:14 px;border:none;transition:all .4s ease-in;}
+.slider-bound{width:25px;margin:0 0 0px 0;padding:0;font-family:Garamond,'Times New Roman',Times,serif;font-size:87%;border:none;transition:all .4s ease-in;}
 .slider-bound:hover{background-color: #f8f890;transition:0s}
-.slider{margin:2px 0px 2px 0;}
-.slider-wrapper hr{width:97%;margin-top:0;margin-bottom:0;}
-.equation-wrapper hr{width:97%;margin-top:0;margin-bottom:0;}
-.input-equation hr{width:97%;}
-.slider-buttons{display:flex;flex-direction:row;}
-.slider-subwrapper span{font-family:Garamond,'Times New Roman',Times,serif;font-size:19px;margin-left:15px;margin-right:20px;margin-top:22px;}
+.slider{margin:1px 0px 1px 0}
+.slider-wrapper hr{width:97%;margin-top:0;margin-bottom:0}
+.equation-wrapper hr{width:97%;margin-top:0;margin-bottom:0}
+.input-equation hr{width:97%}
+.slider-buttons{display:flex;flex-direction:row}
+.slider-subwrapper span{font-family:Garamond,'Times New Roman',Times,serif;font-size:118%;margin-left:15px;margin-right:20px;margin-top:22px;}
 .value-wrapper{margin:0}
-.value-wrapper input{font-family:Garamond,'Times New Roman',Times,serif;font-size:24px;border:none;width:60px;height:30px;transition: all .4s ease-in;}
-.value-wrapper:hover input{background-color: #f8f890;transition:0s}
+.value-wrapper input{font-family:Garamond,'Times New Roman',Times,serif;font-size:150%;border:none;width:60px;height:30px;transition: all .4s ease-in;}
+.value-wrapper:hover input{background-color:#f8f890;transition:0s}
 input{background:none}
-.functions-informations{display:flex;flex-direction:row;}
-.bode-information{display:flex;flex-direction:column;margin-top: 15px;margin-left: 15px;}
-.timerep-information{display:flex;flex-direction:column;margin-top: 15px;margin-left: 15px;}
+.functions-informations{display:flex;flex-direction:row}
+.bode-information{display:flex;flex-direction:column;margin-top:15px;margin-left:15px}
+.timerep-information{display:flex;flex-direction:column;margin-top:15px;margin-left:15px}
 /* math-bar is 380px wide. Need space for 3 icons. Use 360px. Each icon 110px. 360-3*110=30, so 15px spacing:*/
-.star_0{right:10px;bottom:18px;height:110px;width:110px;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;border-radius: 20%;border:2px solid #fff;box-shadow:4px 4px 10px #00000080;overflow:hidden;}
-.star_0_text{right:10px;bottom:18px;height:110px;width:110px;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;overflow:hidden;pointer-events:none;}
-.assignment_0{right:135px;bottom:18px;height:110px;width:110px;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;border-radius: 20%;border:2px solid #fff;box-shadow:4px 4px 10px #00000080;overflow:hidden;}
-.assignment_0_text{right:135px;bottom:18px;height:110px;width:110px;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;overflow:hidden;pointer-events:none;}
-.cap_0{right:260px;bottom:18px;height:110px;width:110px;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;border-radius: 20%;border:2px solid #fff;box-shadow:4px 4px 10px #00000080;overflow:hidden;}
-.cap_0_text{right:260px;bottom:18px;height:110px;width:110px;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;overflow:hidden;pointer-events:none;}
+.star_0{right:10px;bottom:9px;height:90px;width:90px;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;border-radius: 20%;border:2px solid #fff;box-shadow:4px 4px 10px #00000080;overflow:hidden;}
+.star_0_text{right:10px;bottom:9px;height:90px;width:90px;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;overflow:hidden;pointer-events:none;}
+.assignment_0{right:115px;bottom:9px;height:90px;width:90px;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;border-radius: 20%;border:2px solid #fff;box-shadow:4px 4px 10px #00000080;overflow:hidden;}
+.assignment_0_text{right:115px;bottom:9px;height:90px;width:90px;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;overflow:hidden;pointer-events:none;}
+.cap_0{right:220px;bottom:9px;height:90px;width:90px;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;border-radius: 20%;border:2px solid #fff;box-shadow:4px 4px 10px #00000080;overflow:hidden;}
+.cap_0_text{right:220px;bottom:9px;height:90px;width:90px;z-index:15;position:fixed;opacity:1.0;text-align:center;text-shadow: 1px 1px 0 #fff;font-family:Arial,sans-serif;font-size:100%;font-weight:800;overflow:hidden;pointer-events:none;}
 @keyframes new_badge_anim {
   0% {opacity:0%;transform:scale(2.0) rotate(120deg);}
   100% {opacity:100%;transform:scale(1.0) rotate(0deg);}}
@@ -219,7 +228,7 @@ input{background:none}
   0% {left:var(--left);top:var(--top);transform:translate(-50%,-50%) scale(0.0) rotate(0);opacity:1.0;fill:#808000;}
   10% {left:var(--left);top:var(--top);transform:translate(-50%,-50%) scale(1.0) rotate(0);opacity:1.0;fill:#a0a000;}
   100% {left:85%;top:3%;transform: translate(-50%,-50%) scale(0.1) rotate(360deg);opacity:0.0;fill:#ffff00;}}
-.achievement_text{width:15%;transform: translate(-50%,-50%) rotate(-5deg);z-index:50;color:#ffffff;position:absolute;font-family:"Lucida Console","Courier New",monospace;font-weight: 600;font-size: 150%;text-align:center;text-shadow: 1px 1px 3px #000000;opacity:0;pointer-events: none;}
+.achievement_text{width:15%;transform: translate(-50%,-50%) rotate(-5deg);z-index:50;color:#ffffff;position:absolute;font-family:"Lucida Console","Courier New",monospace;font-weight: 600;font-size:150%;text-align:center;text-shadow: 1px 1px 3px #000000;opacity:0;pointer-events: none;}
 @keyframes MoveToStar{
   from {left:var(--left);top:var(--top);opacity:1.0;transform:rotate(-5deg);color:#ffffff;}
   to {left:85%;top:3%;opacity:0.0;transform:rotate(10deg);color:#ffff00;}}
@@ -235,10 +244,10 @@ input{background:none}
 .range-wrapper span{color:#282828;font-weight: 400;}
 .input-equation{visibility: hidden;height: 0px;margin-top:0px}
 .input-equation.active{visibility: visible;height: 60px;margin-top:10px}
-.input-span{font-family:Garamond,'Times New Roman',Times,serif;font-size: 17px;}
+.input-span{font-family:Garamond,'Times New Roman',Times,serif;font-size:106%;}
 .sub-information{padding: 10px 0 10px 0;}
-.sub-information .value{font-family:Arial,sans-serif;font-size:20px;font-weight:500;color:#fff;}
-.sub-information .text{font-family:Arial,sans-serif;font-size: 17px;font-weight: 400;color:#999;}
+.sub-information .value{font-family:Arial,sans-serif;font-size:125%;font-weight:500;color:#fff;}
+.sub-information .text{font-family:Arial,sans-serif;font-size:106%;font-weight:400;color:#999;}
 @keyframes slidein {
   from {transform: scale(0);opacity: 0;}
   to   {transform: scale(1);opacity: 1;}}
@@ -350,7 +359,7 @@ input{background:none}
 
       <div class="quiz_intro" id="quiz_intro"><center><button type="button" class="close-window" onclick="stop_quiz();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
 <h2>Quiz time!</h2><br>
-Your nickname: <input type="text" id="nickname" name="nickname" size="12" style="font-size:26px; text-align:center; background:#fff" autofocus value="" oninput="set_nickname(this)"><br>
+Your nickname: <input type="text" id="nickname" name="nickname" size="12" style="font-size:162%;text-align:center;background:#fff" autofocus value="" oninput="set_nickname(this)"><br>
 <div class="quiz-container">
 <input type="range" min="0" max="100" step="1" class="quiz-slider" id="experience_level" value="50" style="width:100%" onchange="set_quiz_experience(this)">
 <div class="quiz-labels">
@@ -450,7 +459,7 @@ pex.tufvesson@control.lth.se</center><br></td>
 
       <div class="footer">
         <div class="footer-info">
-          <h1>LU-PZE: Lund University Pole-Zero Explorer - an Automatic Control Theory Playground. Have fun! / Frida</h1>
+          <h1>LU-PZE: Lund University Pole-Zero Explorer - an Automatic Control Theory Playground. Have fun! / Pex & Frida</h1>
        </div>
       </div>
       <div class="math-bar">
@@ -466,15 +475,15 @@ pex.tufvesson@control.lth.se</center><br></td>
           <button type="button" class="option-button" id="quiz_icon" style="float:right;padding:0 3px;margin-right:0px;background:none;border:none;margin-top:11px;display:none;" onclick="toggle_quiz()" title="Start quiz"><svg id="quiz_icon_svg" width="27" height="27" viewBox="0 0 24 24"><use href="#icon_school"/></svg></button>
         </div>
         <div class="equations">
-          <div class="input-equation" style="margin-bottom:0px;padding:10px 0 6px;">
-            <div class="sub-input-equation" style="display:flex;flex-direction:row;height:50px">
+          <div class="input-equation" style="margin-bottom:0px;padding:7px 0 7px;">
+            <div class="sub-input-equation" style="display:flex;flex-direction:row;height:40px">
               <span class="input-span" style="margin-left:10px;margin-top:12px;margin-right:16px">U(s)=</span>
-              <math-field class="formula" style="font-size:20px" id="input-formula">\frac{1}{s}</math-field>
-              <select id="input-choices" style="height:30px;margin-top:9px;margin-left:8px" onchange="updateInputFormulaFromList()">
+              <math-field class="formula" style="font-size:115%" id="input-formula">\frac{1}{s}</math-field>
+              <select id="input-choices" style="height:24px;margin-top:8px;margin-left:8px" onchange="updateInputFormulaFromList()">
                 <option value="Unit step">Unit Step</option>
                 <option value="Impulse">Dirac Impulse</option>
               </select>
-              <span class="input-span" style="margin-left:10px;margin-top:12px;margin-right:16px">→<span style='border-style:solid;border-width:1px;padding:3px 10px;margin:-1px'>G(s)</span>→&nbsp;Y(s)</span>
+              <span class="input-span" style="margin-left:10px;margin-top:10px;margin-right:16px">→<span style='border-style:solid;border-width:1px;padding:3px 7px;margin:-1px'>G(s)</span>→&nbsp;Y(s)</span>
             </div>
           </div>
           <div class="equation-wrapper">
@@ -487,14 +496,14 @@ pex.tufvesson@control.lth.se</center><br></td>
 <svg width="20" height="20" viewBox="0 0 24 24" fill="#b0b0b0" style="vertical-align:top"><use href="#icon_add"/></svg> or here to add next graph</span></center></div></div>
 
 <div class="welcome_text" id="welcome_text">
-<center><span onclick="opt_out_tracking();" style="color:#b0b0b0;vertical-align:middle;font-size:15px;font-weight:400">
+<center><span onclick="opt_out_tracking();" style="color:#b0b0b0;vertical-align:middle;font-size:93%;font-weight:400">
 <label><input type="checkbox" id="opt_out_tracking" value="" style="width:15px;height:15px;accent-color: #d0d0d0;" onclick="opt_out_tracking()" checked> help make LU-PZE better</label></span></center>
 <br>
 <br><br><br>Dear Adventurer,<br><br>This is your<br>Automatic Control<br>playground.<br><br><br>Left click/drag for actions<br>Right click for questions<br><br><br><i>Can you reach<br>the next level?</i>
-<br><br><br><br><span style="color:#b0b0b0;font-size:15px;font-family:Arial,sans-serif;font-weight:400;">Click to continue</span>
+<br><br><br><br><span style="color:#b0b0b0;font-size:93%;font-family:Arial,sans-serif;font-weight:400;">Click to continue</span>
 </div>
 <br>
-<center><div class="eq-info" id="quiz_timer" style="color:#b0b0b0;font-size:20px"></div></center>
+<center><div class="eq-info" id="quiz_timer" style="color:#b0b0b0;font-size:125%"></div></center>
 
       </div>
 
