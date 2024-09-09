@@ -8187,7 +8187,7 @@ function prepare_banner(){
 function trigger_banner(){
   if (have_asked_questions==false){
     if (this_is_a_touch_device==false){
-      if (quiz_enabled==true) {
+      if (quiz_is_running!=0) {
         // Don't show the banner if a quiz is ongoing.
         // Instead, schedule the banner to appear later.
         setTimeout(trigger_banner,120*1000);
