@@ -2175,7 +2175,7 @@ let nof_quiz_started = 0;
 let quiz_start_time = null;
 let quiz_timer_div;
 let quiz_is_running = 0; //0:not_started, 1:running, 2:ended
-let quiz_seconds_left = 90;
+let quiz_seconds_left = -1;
 
 function quiz_countdown (){
   if (quiz_is_running==1) {
@@ -2252,8 +2252,8 @@ function quiz_bell_clicked (){
   quiz_icon_svg.style.fill="#5050ff";
 
   quiz_timer_div = document.getElementById("quiz_timer");
-  quiz_timer_div.innerHTML="Time left: 90s";
   quiz_seconds_left = 90;
+  quiz_timer_div.innerHTML="Time left: " + quiz_seconds_left + "s";
 
   setTimeout(quiz_countdown, 1000);
   nof_quiz_started += 1;
@@ -8279,7 +8279,7 @@ function periodic_send () {
       if (event.target.status === 200) {
         // HTTP OK
         var response = event.target.response;
-        if (debug_mode) console.log("RESP=" + response);
+        //if (debug_mode) console.log("RESP=" + response);
         if (response.startsWith("ERROR")) {
           server_error = response;
         } else if (response.startsWith("E")) {
@@ -8319,7 +8319,7 @@ function periodic_send () {
     XHR.open("POST", "https://livet.se/lu-pze.php", true);
     XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     XHR.send(urlEncodedData);
-    if (debug_mode) console.log("S:" + urlEncodedData);
+    //if (debug_mode) console.log("S:" + urlEncodedData);
   }
 }
 
