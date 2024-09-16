@@ -2176,6 +2176,8 @@ let quiz_start_time = null;
 let quiz_timer_div;
 let quiz_is_running = 0; //0:not_started, 1:running, 2:ended
 let quiz_seconds_left = -1;
+let quiz_compete = false;
+let quiz_practice = false;
 
 function quiz_countdown (){
   if (quiz_is_running==1) {
@@ -2202,26 +2204,7 @@ function set_nickname(event) {
   add_event("set_quiz_nickname="+client_nick);
 }
 
-function start_quiz (){
-  quiz_is_running = 1;
-  quiz_longest_streak = 0;
-
-  if (splash_screen_active){
-    remove_splash_screen();
-  }
-
-  achievement_done("start_quiz");
-
-  // Remove the "Take the initial quiz"-text:
-  let welcome_text=document.getElementById("welcome_text");
-  welcome_text.innerHTML='';
-//  update_tasks();
-  //remove the assignments box:
-  let assignments_box = document.querySelector('.assignments_box');
-  assignments_box.classList.remove('active');
-  let assignment_icon_svg = document.getElementById("assignment_icon_svg");
-  assignment_icon_svg.style.fill=null;
-  //removeAllGraphs();
+function init_quiz (){
   quiz_nof_done = 0;
   quiz_nof_tries = 0;
   quiz_current_streak = 0;
@@ -2230,23 +2213,72 @@ function start_quiz (){
     quiz_streaks[quiz_questions[question]] = 0;
     quiz_questions_nof_done[quiz_questions[question]]=0;
   }
-  removeAllGraphs();
+}
 
-  if (nof_quiz_started > 0) {
-    quiz_lets_go_practice();
-  } else {
-    let toggleElement = document.querySelector('.quiz_intro');
-    toggleElement.classList.add('active');
+function start_quiz (){
+  quiz_is_running = 1;
+  quiz_longest_streak = 0;
+  if (splash_screen_active){
+    remove_splash_screen();
+  }
+  achievement_done("start_quiz");
+  // Remove the "Take the initial quiz"-text:
+  let welcome_text=document.getElementById("welcome_text");
+  welcome_text.innerHTML='';
+  //remove the assignments box:
+  let assignments_box = document.querySelector('.assignments_box');
+  assignments_box.classList.remove('active');
+  let assignment_icon_svg = document.getElementById("assignment_icon_svg");
+  assignment_icon_svg.style.fill=null;
+  removeAllGraphs();
+  let toggleElement = document.querySelector('.quiz_intro');
+  toggleElement.classList.add('active');
+  try {
+    // The nickname text input is only shown in the initial quiz window.
+    // So, this might fail, hence the "try":
     let nickname_input_element = document.getElementById("nickname");
     nickname_input_element.focus();
-    add_event("quiz_banner_shown");
+  } catch (e) {}
+  add_event("quiz_window_shown");
+}
+
+function quiz_lets_go_compete (){
+  add_event("start_quiz_compete");
+  quiz_compete = true;
+  quiz_practice = false;
+  quiz_is_running = 1;
+  removeAllGraphs();
+  quiz_nof_done = 0;
+  quiz_nof_tries = 0;
+  quiz_current_streak = 0;
+  quiz_longest_streak = 0;
+  quiz_nof_correct = 0;
+  quiz_difficulty = 50;
+  add_event("set_difficulty_level=50");
+  quiz_difficulties={};
+  for (let question in quiz_questions){
+    quiz_difficulties[quiz_questions[question]] = quiz_difficulty;
+    quiz_streaks[quiz_questions[question]] = 0;
+    quiz_questions_nof_done[quiz_questions[question]]=0;
+    if (enabled_quiz_types[quiz_questions[question]] == undefined){
+      enabled_quiz_types[quiz_questions[question]]=false;
+    }
   }
+  update_quiz();
+  quiz_lets_go();
 }
 
 function quiz_lets_go_practice (){
+  add_event("start_quiz_practice");
+  quiz_compete = false;
+  quiz_practice = true;
+  quiz_lets_go();
+}
+
+function quiz_lets_go (){
+  quiz_is_running = 1;
   let toggleElement = document.querySelector('.quiz_intro');
   toggleElement.classList.remove('active');
-  add_event("start_quiz");
 
   let quiz_icon_svg = document.getElementById("quiz_icon_svg");
   quiz_icon_svg.style.fill="#5050ff";
@@ -2869,14 +2901,14 @@ function quiz_time_is_up (){
   let quiz_intro_div = document.getElementById("quiz_intro");
 
   let s = "";
-  s += '<center><button type="button" class="close-window" onclick="stop_quiz();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>';
-  s += '<br><br>';
-  s += '<img src="images/bell_small.webp" width="300px" style="margin:0;padding:0" onclick="stop_quiz()">';
-  s += '<h2>';
+  s += '<center><h2>';
   if (client_nick != "") {
     s += client_nick + ', ';
   }
-  s += 'Time\'s up!</h2><br>';
+  s += 'Time\'s up!</h2>';
+  s += '<button type="button" class="close-window" onclick="stop_quiz();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>';
+  s += '<img src="images/bell_small.webp" width="300px" style="margin:0;padding:0">';
+  s += '<br>';
 
 
   s += "You got " + quiz_nof_correct + " correct answers,<br>";
@@ -2903,7 +2935,6 @@ function quiz_time_is_up (){
   s += '<br><br>';
 
 //  s += '<span style="color:#808080"><br>';
-
 
   if (quiz_nof_correct > 0) {
     // Sort according to quiz_difficulties[quiz_questions[question]]
@@ -2935,9 +2966,33 @@ function quiz_time_is_up (){
     res += "nof_questions=" + quiz_nof_done + ",";
     if(quiz_nof_tries > 0) res += "accuracy=" + (100*quiz_nof_done/quiz_nof_tries).toFixed(2) + "%,";
     res += "nof_clicks=" + (quiz_nof_tries) + ",";
-    res += "nof_quiz_started=" + nof_quiz_started + ".";
+    res += "nof_quiz_started=" + nof_quiz_started + ",";
+    res += "quiz_practice=" + quiz_practice + ",";
+    res += "quiz_compete=" + quiz_compete + ".";
     add_event(res);
-
+    if (quiz_compete == true) {
+      let date_now = new Date();
+      let now = date_now.getTime();
+      let time_diff = now-session_started_at;
+      let mseconds_elapsed = Math.floor(time_diff);
+      var XHR = new XMLHttpRequest();
+      var to_send = `T${mseconds_elapsed/1000};U${client_id};L${client_place}_${client_nick};`;
+      to_send += res;
+      var urlEncodedData = `e=${encodeURIComponent(to_send).replace(/%20/g, "+")}`;
+      XHR.addEventListener("load", (event) => {
+        console.log("OK");
+        console.log(event);
+        console.log(event.target.response);
+      });
+      XHR.addEventListener("error", (event) => {
+        console.log("Error");
+        console.log(event);
+      });
+      // Compete:
+      XHR.open("POST", "https://livet.se/lu-pze_compete.php", true);
+      XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      XHR.send(urlEncodedData);
+    }
     let top_question_id = items[0][0];
     let top_difficulty_level = items[0][1];
     s += "You're ";
@@ -2951,7 +3006,16 @@ function quiz_time_is_up (){
     //  s += '<span style="color:#808080">Total: ' + quiz_difficulty.toFixed(1) + "</span><br>";
   }
 
+  s += '<table width="90%"><tr><td width="20%" class="yellow_hover" onclick="stop_quiz()" align="center">';
+  s += '<br><span id="quiz_cancel_button" style="color:#b0b0b0;vertical-align:middle;margin:10px">I\'m done</span><br><br>';
+  s += '</td><td width="30%" class="yellow_hover" onclick="quiz_lets_go_practice()" align="center">';
+  s += '<br><span id="quiz_practice_button" style="color:#000000;vertical-align:middle;text-align:center;margin:10px" width="100%">Practice!</span><br><br>';
+  s += '</td><td width="40%" class="yellow_hover" onclick="quiz_lets_go_compete()" align="center">';
+  s += '<br><span id="quiz_compete_button" style="color:#000000;vertical-align:middle;margin:10px" width="100%">Let\'s go Compete!</span><br><br>';
+  s += '</td></tr></table>';
+
   s += '</center>';
+
 
 
   quiz_intro_div.innerHTML = s;
@@ -2966,6 +3030,7 @@ function quiz_time_is_up (){
   quiz_icon_svg.style.fill=null;
   quiz_is_running = 0;
 }
+
 
 function set_difficulty_level(event){
   quiz_difficulty = +(event.value);
@@ -3014,9 +3079,7 @@ function quiz_clicked_nyquist(magnitude,angle){
   quiz_clicked({where:"Nyq",magnitude:magnitude,phase:angle});
 }
 function quiz_clicked(all){
-  console.log("quiz clicked:where="+all.where+",graph_no="+all.graph_no+",time_variable="+all.time_variable+",real="+all.real+",imaginary="+all.imaginary+",time="+all.time+",amplitude="+all.amplitude+",frequency="+all.frequency+",magnitude="+all.magnitude+",phase="+all.phase);
   add_event("quiz_clicked:where="+all.where+",graph_no="+all.graph_no+",time_variable="+all.time_variable+",real="+all.real+",imaginary="+all.imaginary+",time="+all.time+",amplitude="+all.amplitude+",frequency="+all.frequency+",magnitude="+all.magnitude+",phase="+all.phase);
-
   if (current_quiz=="click_freq"){
     if ((all.where=="Bmag")||(all.where=="Bmag_xaxis")||(all.where=="Bmag_yaxis")||(all.where=="Bphase")||(all.where=="Bphase_xaxis")||(all.where=="Bphase_yaxis")){
       if (quiz_freq==0) quiz_correct();
@@ -8408,6 +8471,7 @@ function setup (){
   if (urlParams.has('debug')) {
     debug_mode = true;
   }
+  init_quiz();
 }
 
 function ready (){
