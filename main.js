@@ -2233,7 +2233,7 @@ function start_quiz (){
   removeAllGraphs();
 
   if (nof_quiz_started > 0) {
-    quiz_bell_clicked();
+    quiz_lets_go_practice();
   } else {
     let toggleElement = document.querySelector('.quiz_intro');
     toggleElement.classList.add('active');
@@ -2243,7 +2243,7 @@ function start_quiz (){
   }
 }
 
-function quiz_bell_clicked (){
+function quiz_lets_go_practice (){
   let toggleElement = document.querySelector('.quiz_intro');
   toggleElement.classList.remove('active');
   add_event("start_quiz");
@@ -2905,49 +2905,52 @@ function quiz_time_is_up (){
 //  s += '<span style="color:#808080"><br>';
 
 
-  // Sort according to quiz_difficulties[quiz_questions[question]]
-  // Create items array
-  var items = Object.keys(quiz_difficulties).map(function(key) {
-    return [key, quiz_difficulties[key]];
-  });
-  // Sort the array based on the second element
-  items.sort(function(first, second) {
-    return second[1] - first[1];
-  });
+  if (quiz_nof_correct > 0) {
+    // Sort according to quiz_difficulties[quiz_questions[question]]
+    // Create items array
+    var items = Object.keys(quiz_difficulties).map(function(key) {
+      return [key, quiz_difficulties[key]];
+    });
+    // Sort the array based on the second element
+    items.sort(function(first, second) {
+      return second[1] - first[1];
+    });
 
-  const quiz_explanation = {
+    const quiz_explanation = {
 "click_freq":"reading log scale diagrams",
 "click_time":"clicking on linear x axes",
 "click_nyquist_angle":"identifying angles in the Nyquist diagram",
 "click_system":"understanding a system's order",
 "click_wrong":"finding the odd-one-out graph"};
-  // The results:
-  let res = "quiz_time_is_up.";
-  for (let position in items){
-    let question_id = items[position][0];
-    let difficulty_level = items[position][1];
-    res += question_id + "=" + difficulty_level.toFixed(1) + ",";
-  }
-  res += 'total='+quiz_difficulty.toFixed(1)+",";
-  res += 'nof_correct=' + quiz_nof_correct+",";
-  res += "longest_streak=" + quiz_longest_streak + ",";
-  res += "nof_questions=" + quiz_nof_done + ",";
-  if(quiz_nof_tries > 0) res += "accuracy=" + (100*quiz_nof_done/quiz_nof_tries).toFixed(2) + "%,";
-  res += "nof_clicks=" + (quiz_nof_tries) + ",";
-  res += "nof_quiz_started=" + nof_quiz_started + ".";
-  add_event(res);
+    // The results:
+    let res = "quiz_time_is_up.";
+    for (let position in items){
+      let question_id = items[position][0];
+      let difficulty_level = items[position][1];
+      res += question_id + "=" + difficulty_level.toFixed(1) + ",";
+    }
+    res += 'total='+quiz_difficulty.toFixed(1)+",";
+    res += 'nof_correct=' + quiz_nof_correct+",";
+    res += "longest_streak=" + quiz_longest_streak + ",";
+    res += "nof_questions=" + quiz_nof_done + ",";
+    if(quiz_nof_tries > 0) res += "accuracy=" + (100*quiz_nof_done/quiz_nof_tries).toFixed(2) + "%,";
+    res += "nof_clicks=" + (quiz_nof_tries) + ",";
+    res += "nof_quiz_started=" + nof_quiz_started + ".";
+    add_event(res);
 
-  let top_question_id = items[0][0];
-  let top_difficulty_level = items[0][1];
-  s += "You're ";
-  if (top_difficulty_level > 80) {
-    s += "really";
+    let top_question_id = items[0][0];
+    let top_difficulty_level = items[0][1];
+    s += "You're ";
+    if (top_difficulty_level > 80) {
+      s += "really";
+    }
+    s += "good at " + quiz_explanation[top_question_id];
+    let bottom_question_id = items[items.length - 1][0];
+    let bottom_difficulty_level = items[items.length - 1][1];
+    s += ", but you could focus on learning more about " + quiz_explanation[bottom_question_id] + ".<br><br>";
+    //  s += '<span style="color:#808080">Total: ' + quiz_difficulty.toFixed(1) + "</span><br>";
   }
-  s += "good at " + quiz_explanation[top_question_id];
-  let bottom_question_id = items[items.length - 1][0];
-  let bottom_difficulty_level = items[items.length - 1][1];
-  s += ", but you could focus on learning more about " + quiz_explanation[bottom_question_id] + ".<br><br>";
-//  s += '<span style="color:#808080">Total: ' + quiz_difficulty.toFixed(1) + "</span><br>";
+
   s += '</center>';
 
 
@@ -4973,7 +4976,7 @@ function remove_splash_screen (){
 
   text_color = color('hsb(0,0%,100%)');
   splash_screen_active=false;
-  add_event("banner_remove");
+  add_event("splash_screen_remove");
 }
 
 

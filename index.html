@@ -358,7 +358,8 @@ input{background:none}
       </div>
 
       <div class="quiz_intro" id="quiz_intro"><center><button type="button" class="close-window" onclick="stop_quiz();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
-<h2>Quiz time!</h2><br>
+<h2>Quiz time!</h2>
+<img src="images/bell_small.webp" width="300px" style="margin:0;padding:0"><br><br>
 Your nickname: <input type="text" id="nickname" name="nickname" size="12" style="font-size:162%;text-align:center;background:#fff" autofocus value="" oninput="set_nickname(this)"><br>
 <div class="quiz-container">
 <input type="range" min="0" max="100" step="1" class="quiz-slider" id="experience_level" value="50" style="width:100%" onchange="set_quiz_experience(this)">
@@ -376,9 +377,14 @@ Your nickname: <input type="text" id="nickname" name="nickname" size="12" style=
 </div>
 State your Automatic Control experience level<br><br><br>
 Redo the quiz as many times as you want.<br>
-Can you reach Professor level in 90 seconds?<br><br><br>
-Click the bell to start<br>
-<img src="images/bell_small.webp" width="300px" style="margin:0;padding:0" onclick="quiz_bell_clicked()">
+Can you reach Professor level in 90 seconds?<br><br>
+
+<table width="90%"><tr><td width="20%" class="yellow_hover" onclick="stop_quiz()">
+<br><span id="quiz_cancel_button" style="color:#b0b0b0;vertical-align:middle;margin:10px">Cancel</span><br><br>
+</td><td width="30%" class="yellow_hover" onclick="quiz_lets_go_practice()">
+<br><span id="quiz_practice_button" style="color:#000000;vertical-align:middle;text-align:center;margin:10px" width="100%">Let's go!</span><br><br>
+</td></tr></table>
+
       </center></div>
 
       <div class="answer" onclick="answerToggle();">
