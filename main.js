@@ -3835,9 +3835,9 @@ function achievement_done (which_one){
       menu_star_div.style.animation="MenuStar 7s ease-in-out 0s 1";
     }
     update_achievements();
-  } else {
+//  } else {
     //   This achievement has already been completed. No need to do anything.
-    add_event("achievement_done_again="+which_one);
+    //add_event("achievement_done_again="+which_one);
   }
 }
 
