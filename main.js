@@ -2207,7 +2207,7 @@ function start_quiz (){
   quiz_longest_streak = 0;
 
   if (splash_screen_active){
-    remove_banner();
+    remove_splash_screen();
   }
 
   achievement_done("start_quiz");
@@ -3280,7 +3280,6 @@ function task_done (which_one){
         // This is a task that hasn't been done before:
         add_event("task_done="+which_one);
         done_tasks.push(which_one);
-
         // Trigger an animation with the text:
         let achievement_text_div = document.getElementById("achievement_text");
         let assignment_star_div = document.getElementById("assignment_star");
@@ -3318,8 +3317,9 @@ function task_done (which_one){
             show_answer_to_task(which_one);
           }
         }
-
-
+      } else {
+        // This task was already completed:
+        add_event("task_done_again="+which_one);
       }
     }
   }
@@ -3342,12 +3342,9 @@ const all_assignments={
   "one_zero_two_poles":{t:"5. Investigate a system with <b>one zero two poles</b>",tasks:["k4=1;T6=2.5;T7=1;T8=6","k4=0.75;T6=9.25;T7=0.5;T8=2","k4,T6,T7=1,T8=1.5_poles"],info:"With <b>one zero and two poles</b>, the phase response and the critical magnitude at -180 degrees needs to be considered when using a feedback loop."},
   "four_poles":{t:"6. Investigate a system with <b>four poles</b>",tasks:["gainm=5_phasex=2","phasemargin=45"],info:"A system with <b>four poles</b> gets a lot more phase shift, with a larger spin in the Nyquist diagram."},
   "pid_controller":{t:"7. Investigate a <b>PID controller</b> and <b>one pole</b>",tasks:["pid_help_PID","pid_help_YR","PID_(K>1)","PID_(T_i)>(T_1)","PID_(T_d!=0)","PID_(Td=0,T_1=1)","PID_(k_1)"],info:"This assignment is about using a PID controller with a first-order system."},
-
-
   //"pid_controller_S":{t:"8. EXPERIMENTAL: <b>PID controller</b> and <b>sensitivity</b>",tasks:["pid_help_PID","pid_help_YR","pid_help_S"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about understanding the sensitivity function. / Frida & Pex"},
   "pid_controller_YL":{t:"8. Investigate a <b>PID controller</b> and <b>load</b>",tasks:["pid_help_PID","pid_help_YR","pid_help_YL","PID_Load"],info:"This assignment is about using a PID controller with a load."},
   //"pid_controller_OL":{t:"10.EXPERIMENTAL: <b>PID controller</b> and <b>open-loop</b>",tasks:["pid_help_PID","pid_help_OPEN"],info:"WE'RE WORKING ON IT. Don't expect anything to make sense here right now. This assignment will be about understanding the open-loop transfer function when using a PID controller with a first-order system. / Frida & Pex"},
-
   "none":{t:"...<b>no assignment</b>",tasks:["impossible"],info:""},
 };
 let done_assignments={};
@@ -3404,8 +3401,6 @@ const all_tasks={
 "pid_help_YL":{t:"Read about the <b>Load disturbance transfer function G<sub>YL</sub></b>."},
 //"pid_help_OPEN":{t:"Read about the <b>open-loop formula G<sub>OL</sub></b>.",
 
-
-
 // #PID controller and one pole
 //Sol: K is increased.
 "PID_(K>1)":{t:"<b>Make the closed-loop system faster</b> by changing K while looking at the step response. How does changing the K parameter affect the step response of the closed-loop system?",a:`<h2>What happens when you change the proportional part P in the PID controller?</h2>Changing K affects the speed of the closed-loop system step response. Higher K means a faster step response and that the closed loop poles, not shown in any of the diagrams, are placed further away from the origin in the pole-zero map.`,placement:"DR"},
@@ -3422,12 +3417,8 @@ const all_tasks={
 //Sol: k1 changed.
 "PID_(k_1)":{t:"Change the k<sub>1</sub> parameter of the system to make the static gain of the closed-loop system anything else than 1. Change k<sub>1</sub> to 0.6.",a:`<h2>What about changing the static gain of the closed-loop transfer function G<sub>YR</sub>?</h2>No. You cannot do that. The reason is that the a static gain of 1.0 in the closed-loop step response means that the desired reference value is followed, which is what the PID controller is designed for. The system's static gain on the other hand show how the system changes when there is a step change in the input to the system. So even though both the system and the closed-loop system has a step change as input, the change is done on different signals: the reference value for the closed-loop system, and the system's input for the system.`},
 
-
 //Sol: Any PID parameter changed.
 "PID_Load":{t:"Can you change any of the PID controller parameters so that the static gain of the load disturbance is not 0? Why is it good thing that the step response for the load disturbance approaches 0.0 and not 1.0, as it does for the closed-loop system?",a:`<h2>What about changing the static gain of a load disturbance G<sub>YL</sub>?</h2>No. You cannot change it. A static gain of 0.0 means that the load disturbance is removed. For a step load disturbance, the PID controller can remove the disturbance. If the load disurbance were to be a ramp input (with a Laplace transform like 1/s^2), the load disturbance can no longer be removed. Try changing the input to a ramp function and see yourself!`},
-
-
-
 };
 let done_tasks=[];
 
@@ -3436,7 +3427,6 @@ function update_assignments(){
   let assignments_box = document.querySelector('.assignments_box');
   let s = "";
   s += '<br><button type="button" class="close-window" onclick="toggle_assignments_box();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>';
-
   s += "<center>";
   s += '<svg width="34" height="34" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_assignment"/></svg>';
   s += "&nbsp;Your Assignments";
@@ -3750,7 +3740,6 @@ function achievement_done (which_one){
     // This is a new achievement
     add_event("achievement_done="+which_one);
     done_achievements.push(which_one);
-
     if (gamification_enabled==true){
       // Trigger an animation with the text:
       let achievement_text_div = document.getElementById("achievement_text");
@@ -3773,17 +3762,16 @@ function achievement_done (which_one){
       if (sound_enabled==true){
         play_jingle();
       }
-
       // Let the menu star wiggle a little:
       let menu_star_div = document.getElementById("show_achievements");
       menu_star_div.style.animation = 'none';
       menu_star_div.offsetHeight; /* trigger reflow */
       menu_star_div.style.animation="MenuStar 7s ease-in-out 0s 1";
     }
-
     update_achievements();
-  //} else {
-  //   This achievement has already been completed. No need to do anything.
+  } else {
+    //   This achievement has already been completed. No need to do anything.
+    add_event("achievement_done_again="+which_one);
   }
 }
 
@@ -3916,6 +3904,7 @@ function reset_achievement(achievement_to_reset){
 
 function toggle_achievements(event){
   achievement_done("view_achievements");
+  add_event("view_achievements");
   let achievements_box = document.querySelector('.achievements_box');
   achievements_box.classList.toggle('active');
   update_achievements();
@@ -4957,7 +4946,7 @@ function touchStarted(event){
   mousePressed(event);
 }
 
-function remove_banner (){
+function remove_splash_screen (){
   let pze_logo=document.getElementById("pze_logo");
   pze_logo.style.animation = 'none';
   pze_logo.offsetHeight; /* trigger reflow */
@@ -4990,7 +4979,7 @@ function remove_banner (){
 
 // p5.js: Browsers may have different default behaviors attached to various mouse events. To prevent any default behavior for this event, add "return false" to the end of the function.
 //function mouseClicked(){
-function mousePressed(event){
+function mousePressed (event){
   // Audio API stuff. Can only initialize and play sound at user action, and clicking is one such action:
   if (sound_enabled==1){
     // https://webaudio.github.io/web-audio-api/#AudioBufferSourceNode
@@ -5014,7 +5003,7 @@ function mousePressed(event){
   if (splash_screen_active){
     // This first click is to get rid of the splash screen:
     event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
-    remove_banner();
+    remove_splash_screen();
     if (quiz_is_running == 0) {
       const first_time=200;
       const delay=150;
@@ -8180,11 +8169,11 @@ function findOmega180(input_array){
 
 let have_asked_questions=false;
 let banner_is_visible=false;
-function prepare_banner(){
+function prepare_banner (){
   setTimeout(trigger_banner,60*1000);
 }
 
-function trigger_banner(){
+function trigger_banner (){
   if (have_asked_questions==false){
     if (this_is_a_touch_device==false){
       if (quiz_is_running!=0) {
@@ -8204,7 +8193,7 @@ function trigger_banner(){
   }
 }
 
-function remove_banner_if_needed(){
+function remove_banner_if_needed (){
   if (banner_is_visible==true){
     banner_is_visible = false;
     banner.innerHTML='<img src="images/Right_click_banner_small.webp" alt="Right click to ask questions!" class="banner" width="45%">';
