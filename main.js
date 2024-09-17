@@ -2275,7 +2275,14 @@ function quiz_lets_go_practice (){
   quiz_lets_go();
 }
 
+// This is a list of answers during the quiz:
+let quiz_timeline = [];
+let quiz_started_at = null;
+
 function quiz_lets_go (){
+  quiz_timeline = [];
+  let start_date = new Date();
+  quiz_started_at = start_date.getTime();
   quiz_is_running = 1;
   let toggleElement = document.querySelector('.quiz_intro');
   toggleElement.classList.remove('active');
@@ -2968,7 +2975,15 @@ function quiz_time_is_up (){
     res += "nof_clicks=" + (quiz_nof_tries) + ",";
     res += "nof_quiz_started=" + nof_quiz_started + ",";
     res += "quiz_practice=" + quiz_practice + ",";
-    res += "quiz_compete=" + quiz_compete + ".";
+    res += "quiz_compete=" + quiz_compete + ",";
+    // Now pretty-print thq quiz_timeline list of answers:
+    let s="qt=[";
+    for (let i=0; i < quiz_timeline.length; i++) {
+      let answer = quiz_timeline[i];
+      s+="{t" + str(answer["t"]) + ",r" + str(answer["r"]) + ",q" + answer["q"] + ",a" + answer["a"] + "},";
+    }
+    s+="].";
+    res += s;
     add_event(res);
     if (quiz_compete == true) {
       let date_now = new Date();
@@ -2997,7 +3012,7 @@ function quiz_time_is_up (){
     let top_difficulty_level = items[0][1];
     s += "You're ";
     if (top_difficulty_level > 80) {
-      s += "really";
+      s += "really ";
     }
     s += "good at " + quiz_explanation[top_question_id];
     let bottom_question_id = items[items.length - 1][0];
@@ -3243,10 +3258,29 @@ function quiz_correct (){
     if (quiz_difficulties[current_quiz] > 100) quiz_difficulties[current_quiz] = 100.0;
     quiz_streaks[current_quiz] += 1; // The streak for this type of question.
   }
+  add_to_quiz_timeline(1);
   confetti_defaults.origin.x = mouseX / windowWidth;
   confetti_defaults.origin.y = mouseY / windowHeight;
   shoot_confetti();
   setTimeout(next_quiz, 50); // Make sure that the star animation starts rolling before updating graphs for the next quiz question.
+}
+
+function add_to_quiz_timeline (correct) {
+  let date_now = new Date();
+  let now = date_now.getTime();
+  let time_diff = now-quiz_started_at;
+  let mseconds_elapsed = Math.floor(time_diff);
+  let this_answer = {};
+  this_answer["t"] = mseconds_elapsed/1000;
+  let difficulty_mean=0;
+  for (let question_no in quiz_questions){
+    difficulty_mean += quiz_difficulties[quiz_questions[question_no]];
+  }
+  let quiz_result = difficulty_mean/quiz_questions.length;
+  this_answer["r"] = quiz_result;
+  this_answer["q"] = quiz_questions.indexOf(current_quiz); // The type of question, numbered by "quiz_questions" list
+  this_answer["a"] = correct;
+  quiz_timeline.push(this_answer);
 }
 
 function show_quiz_wrong_text(text){
@@ -3291,6 +3325,7 @@ function quiz_incorrect (why_its_wrong){
     if (quiz_difficulties[current_quiz] < 0) quiz_difficulties[current_quiz] = 0.0;
   }
   quiz_nof_tries += 1;
+  add_to_quiz_timeline(0);
   show_quiz_wrong_text(why_its_wrong);
   update_quiz(); // Show the new difficulty level
 }
