@@ -2971,19 +2971,19 @@ function quiz_time_is_up (){
     res += 'nof_correct=' + quiz_nof_correct+",";
     res += "longest_streak=" + quiz_longest_streak + ",";
     res += "nof_questions=" + quiz_nof_done + ",";
-    if(quiz_nof_tries > 0) res += "accuracy=" + (100*quiz_nof_done/quiz_nof_tries).toFixed(2) + "%,";
+    if (quiz_nof_tries > 0) res += "accuracy=" + (100*quiz_nof_done/quiz_nof_tries).toFixed(2) + "%,";
     res += "nof_clicks=" + (quiz_nof_tries) + ",";
     res += "nof_quiz_started=" + nof_quiz_started + ",";
     res += "quiz_practice=" + quiz_practice + ",";
     res += "quiz_compete=" + quiz_compete + ",";
     // Now pretty-print thq quiz_timeline list of answers:
-    let s="qt=[";
+    let st="qt=[";
     for (let i=0; i < quiz_timeline.length; i++) {
       let answer = quiz_timeline[i];
-      s+="{t" + str(answer["t"]) + ",r" + str(answer["r"]) + ",q" + answer["q"] + ",a" + answer["a"] + "},";
+      st+="{t" + str(answer["t"]) + ",r" + str(answer["r"]) + ",q" + answer["q"] + ",a" + answer["a"] + "},";
     }
-    s+="].";
-    res += s;
+    st+="].";
+    res += st;
     add_event(res);
     if (quiz_compete == true) {
       let date_now = new Date();
