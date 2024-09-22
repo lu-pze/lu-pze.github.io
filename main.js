@@ -2117,6 +2117,56 @@ function showInputFunction(input){
 }
 
 // ----------------------
+// Feedback
+
+let feedback_is_visible=0;
+
+function start_feedback () {
+  let toggleElement = document.querySelector('.feedback');
+  toggleElement.classList.add('active');
+  feedback_is_visible=1;
+  add_event("start_fb");
+}
+
+function stop_feedback () {
+  let toggleElement = document.querySelector('.feedback');
+  toggleElement.classList.remove('active');
+  feedback_is_visible=0;
+  add_event("stop_fb");
+}
+
+function done_feedback () {
+  add_event("done_fb");
+  stop_feedback();
+}
+
+function set_fb_quiz (event) {
+  add_event("set_fb_quiz="+event.value);
+}
+
+function set_fb_assignments (event) {
+  add_event("set_fb_assignments="+event.value);
+}
+
+function set_fb_achievements (event) {
+  add_event("set_fb_achievements="+event.value);
+}
+
+function set_fb_text (event) {
+  add_event("set_fb_text="+event.value);
+}
+
+function set_fb_liketext (event) {
+  add_event("set_fb_liketext="+event.value);
+}
+
+function set_fb_edu (event) {
+  add_event("set_fb_edu="+event.value);
+}
+
+
+
+// ----------------------
 // Quiz
 let quiz_enabled = false;
 
@@ -2194,7 +2244,7 @@ function quiz_countdown (){
 }
 
 let quiz_experience = 50;
-function set_quiz_experience(event) {
+function set_quiz_experience (event) {
   quiz_experience = +(event.value);
   add_event("set_quiz_experience="+event.value);
 }
@@ -3592,7 +3642,7 @@ function update_assignments(){
   assignments_box.innerHTML=s;
 }
 
-function restart_lupze(){
+function restart_lupze (){
   add_event("restart_lupze");
   //location.reload();
   disable_questions();
@@ -3607,6 +3657,9 @@ function restart_lupze(){
   let toggleElement = document.querySelector('.quiz_intro');
   toggleElement.classList.remove('active');
   quiz_is_running = 0;
+  let toggleElement2 = document.querySelector('.feedback');
+  toggleElement2.classList.remove('active');
+  feedback_is_visible=0;
   update_tasks();
   removeAllGraphs();
   next_graph_no_to_add=0;
@@ -5096,7 +5149,14 @@ function mousePressed (event){
 
   let quizSplashElement = document.querySelector('.quiz_intro');
   if (quizSplashElement.classList.contains('active')){
-    // The quiz spash screen is shown.
+    // The quiz splash screen is shown.
+    // Make sure that clicks go though to the range slider.
+    return true; // Propagate default actions
+  }
+
+  let fbElement = document.querySelector('.feedback');
+  if (fbElement.classList.contains('active')){
+    // The feedback screen is shown.
     // Make sure that clicks go though to the range slider.
     return true; // Propagate default actions
   }
