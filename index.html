@@ -266,8 +266,7 @@ input{background:none}
 .quiz_intro h2{color:#3030c0}
 .quiz_intro.active{visibility:visible;opacity:1;}
 
-.feedback{width:65%;padding:10px 20px 10px 20px;left:42%;top:10%;transform: translate(-50%,0);z-index:101;font-family:"Lucida Console","Courier New",monospace;font-size:120%;font-weight:800;background-color:#d0d0e0f0;position:fixed;border-radius:20px;visibility:hidden}
-.feedback h2{color:#3030c0}
+.feedback{width:35%;padding:10px 10px 10px 10px;left:42%;bottom:1%;transform: translate(-50%,0);z-index:101;font-family:"Lucida Console","Courier New",monospace;font-size:120%;font-weight:800;background-color:#e0e0c0f0;position:fixed;border-radius:20px;visibility:hidden}
 .feedback.active{visibility:visible;opacity:1;}
 
 .banner{z-index:555;position:absolute;top:200px;left:25%}
@@ -393,47 +392,12 @@ Can you reach Professor level in 90 seconds?<br><br>
 
 
 <div class="feedback" id="feedback"><center><button type="button" class="close-window" onclick="stop_feedback();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
-<h2>Help us make LU-PZE better!</h2>
-
-<table width="100%"><tr><td align="middle" width="60%">
+<div id="feedback_text">
 The quiz <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_school"/></svg> helped me:<br>
-<fieldset style="border:0"><label for="fb_quiz">Don't agree</label>
-<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_quiz" value="50" style="width:60%" onchange="set_fb_quiz(this)">
+<fieldset style="border:0"><label for="fb_quiz">Don't&nbsp;agree</label>
+<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_quiz" value="50" style="width:50%" onchange="set_fb_quiz(this)">
 <label for="fb_quiz">Agree</label></fieldset>
-
-The assignments <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_assignment"/></svg> helped me:<br>
-<fieldset style="border:0"><label for="fb_assignments">Don't agree</label>
-<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_assignments" value="50" style="width:60%" onchange="set_fb_assignments(this)">
-<label for="fb_assignments">Agree</label></fieldset>
-
-The achievements <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_star"/></svg> helped me:<br>
-<fieldset style="border:0"><label for="fb_achievements">Don't agree</label>
-<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_achievements" value="50" style="width:60%" onchange="set_fb_achievements(this)">
-<label for="fb_achievements">Agree</label></fieldset>
-
-<br>Suggestions for improvement:<br><textarea rows="3" cols="60" id="fb_text" name="fb_text" style="font-size:80%;text-align:left;background:#fff" oninput="set_fb_text(this)"></textarea><br>
-<br>Your nickname (optional): <input type="text" id="nickname" name="nickname" size="12" style="font-size:162%;text-align:center;background:#fff" value="" oninput="set_nickname(this)"><br>
-<br>
-
-</td><td align="left">
-<br>I study Automatic control:<br>
-<input type="radio" id="fb_edu" name="fb_edu" value="not_yet" onchange="set_fb_edu(this)">
-<label for="html">not yet.</label><br>
-<input type="radio" id="fb_edu" name="fb_edu" value="now" onchange="set_fb_edu(this)">
-<label for="html">right now!</label><br>
-<input type="radio" id="fb_edu" name="fb_edu" value="have_been" onchange="set_fb_edu(this)">
-<label for="html">I already did.</label><br><br>
-
-What did you like the most here:<br><textarea rows="5" cols="40" id="fb_liketext" name="fb_liketext" style="font-size:80%;text-align:left;background:#fff" oninput="set_fb_liketext(this)"></textarea><br>
-
-</td></tr></table>
-
-
-<table width="90%"><tr><td class="yellow_hover" onclick="stop_feedback()" align="center">
-<br><span id="fb_later_button" width="25%" style="color:#000000;vertical-align:middle;margin:10px">Later</span><br><br>
-</td><td width="50%" class="yellow_hover" onclick="done_feedback()" align="center">
-<br><span id="fb_done_button" style="color:#000000;vertical-align:middle;text-align:center;margin:10px" width="100%">Done!</span><br><br>
-</td></tr></table>
+</div>
       </center></div>
 
 
