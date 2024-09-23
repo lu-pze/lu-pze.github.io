@@ -2331,7 +2331,7 @@ function get_next_fb_text() {
     s += '<label><input type="radio" id="fb_edu" name="fb_edu" value="phd" onchange="set_fb_edu(this)">';
     s += 'I\'m an Automatic Control PhD student.</label><br>';
     s += '<label><input type="radio" id="fb_edu" name="fb_edu" value="professor" onchange="set_fb_edu(this)">';
-    s += 'I\'m an Automatic Control professor.</label><br>';
+    s += 'I\'m an Automatic Control Professor.</label><br>';
     s += '</td></tr></table>';
   } else if (fb_to_show_this_time=="fb_quiz_many"){
     s += '<table><tr><td>';
@@ -8707,6 +8707,7 @@ var periodic_timer_id = 0;
 let client_id = Math.random()*2**31>>>0; // A pretty random 31-bit uint id
 let client_nick = "";
 let client_place = "";
+let client_cookid = -1;
 
 function add_event (string) {
   if (debug_mode) console.log("Event:"+string);
@@ -8780,7 +8781,7 @@ function periodic_send () {
             }
           }
         }
-        // Now, if there's still events pending, let's setup another try to send it:
+        // Now, if there's still events pending, let's setup another try:
         if (pending.length > 0) {
           if (periodic_timer_id === 0) {
             periodic_timer_id = setTimeout(periodic_send, 20000);
@@ -8856,6 +8857,29 @@ function initial_graph(){
   }
 }
 
+function set_cookie(cname, cvalue, exdays) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  let expires = "expires="+ d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function get_cookie(cname) {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(';');
+  for(let i = 0; i <ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
 // Called by p5:
 function setup (){
   setGraphDimensions();
@@ -8892,6 +8916,14 @@ function setup (){
   }
   if (urlParams.has('debug')) {
     debug_mode = true;
+  }
+  client_cookid = get_cookie("cookid");
+  if (client_cookid=="") {
+    client_cookid = str(Math.random()*2**31>>>0); // A pretty random 31-bit uint id
+    add_event("set_cookid=" + client_cookid);
+    set_cookie("cookid", client_cookid, 50);
+  } else {
+    add_event("got_cookid=" + client_cookid);
   }
   init_quiz();
 }
