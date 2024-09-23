@@ -2158,6 +2158,15 @@ function stop_feedback () {
 
 // A list of all fb that are already answered:
 let done_fb = [];
+const fb_all_assignments={
+  "fb_one_pole":"I have learnt more about systems with one pole from this assignment:",
+  "fb_two_real_poles":"I have learnt more about systems with two real poles from this assignment:",
+  "fb_two_complex_poles":"I have learnt more about systems with two complex poles from this assignment:",
+  "fb_time_delay":"I have learnt more about systems with time delay from this assignment:",
+  "fb_one_zero_two_poles":"I have learnt more about systems with one zero and two poles from this assignment:",
+  "fb_four_poles":"I have learnt more about systems with four poles from this assignment:",
+  "fb_pid_controller":"I have learnt more about a PID controller with a one-pole system from this assignment:",
+  "fb_pid_controller_YL":"I have learnt more about a PID controller and a system with a load from this assignment:"};
 
 function get_next_fb_text() {
   let available_fb = [];
@@ -2186,7 +2195,7 @@ function get_next_fb_text() {
   if (nof_quiz_started >= 2) {
     available_fb.push("fb_quiz_many");
   }
-  if (nof_assignments_done >= 1) {
+  if (nof_assignments_done >= 2) {
     available_fb.push("fb_ass_new");
     available_fb.push("fb_ass_knowledge");
     available_fb.push("fb_ass_enjoy");
@@ -2234,6 +2243,16 @@ function get_next_fb_text() {
     available_fb.push("fb_good_learning");
     available_fb.push("fb_gamified");
   }
+
+  // Check which assignments are done, and enable fb for these:
+  for (let assignment_id in all_assignments){
+    if (done_assignments[assignment_id] == all_assignments[assignment_id].tasks.length){
+      available_fb.push("fb_"+assignment_id);
+    }
+  }
+
+
+
 
   // Don't show an fb that has already been answered:
   let fb_to_choose_from = available_fb.filter(element => !done_fb.includes(element));
@@ -2311,6 +2330,19 @@ function get_next_fb_text() {
     s += '<fieldset style="border:0"><label for="fb_polezero">Don\'t&nbsp;agree</label>';
     s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_polezero" value="50" style="width:60%" onchange="set_fb_polezero(this)">';
     s += '<label for="fb_polezero">Agree</label></fieldset>';
+
+  } else if ((fb_to_show_this_time=="fb_one_pole") ||
+             (fb_to_show_this_time=="fb_two_real_poles") ||
+             (fb_to_show_this_time=="fb_two_complex_poles") ||
+             (fb_to_show_this_time=="fb_time_delay") ||
+             (fb_to_show_this_time=="fb_one_zero_two_poles") ||
+             (fb_to_show_this_time=="fb_four_poles") ||
+             (fb_to_show_this_time=="fb_pid_controller") ||
+             (fb_to_show_this_time=="fb_pid_controller_YL")) {
+    s += fb_all_assignments[fb_to_show_this_time]+'<br>';
+    s += '<fieldset style="border:0"><label for="fb_all_assignments">Don\'t&nbsp;agree</label>';
+    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_all_assignments" value="50" style="width:60%" onchange="set_fb_all_assignments(\''+fb_to_show_this_time+'\',this)">';
+    s += '<label for="fb_all_assignments">Agree</label></fieldset>';
 
   } else if (fb_to_show_this_time=="fb_text"){
     s += 'Suggestions for improvement:<br><textarea rows="3" cols="60" id="fb_text" name="fb_text" style="font-size:80%;text-align:left;background:#fff" oninput="set_fb_text(this)"></textarea>';
@@ -2451,6 +2483,13 @@ function set_fb_nyquist (event) {
 function set_fb_polezero (event) {
   done_fb.push("fb_polezero");
   add_event("set_fb_polezero="+event.value);
+  stop_feedback();
+  start_feedback();
+}
+
+function set_fb_all_assignments (which_assignment, event) {
+  done_fb.push(which_assignment);
+  add_event(which_assignment+"="+event.value);
   stop_feedback();
   start_feedback();
 }
