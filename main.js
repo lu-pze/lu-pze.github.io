@@ -2180,6 +2180,9 @@ function get_next_fb_text() {
     available_fb.push("fb_quiz_knowledge");
     available_fb.push("fb_quiz_enjoy");
   }
+  if (nof_quiz_started >= 2) {
+    available_fb.push("fb_quiz_many");
+  }
   if (nof_assignments_done >= 1) {
     available_fb.push("fb_ass_new");
     available_fb.push("fb_ass_knowledge");
@@ -2284,6 +2287,15 @@ function get_next_fb_text() {
     s += 'I\'m an Automatic Control PhD student.</label><br>';
     s += '<label><input type="radio" id="fb_edu" name="fb_edu" value="professor" onchange="set_fb_edu(this)">';
     s += 'I\'m an Automatic Control professor.</label><br>';
+    s += '</td></tr></table>';
+  } else if (fb_to_show_this_time=="fb_quiz_many"){
+    s += '<table><tr><td>';
+    s += 'What makes you do more quizzes?<br>';
+    s += '<label><input type="radio" id="fb_quiz_many" name="fb_quiz_many" value="fun_compete" onchange="set_fb_quiz_many(this)">It’s fun to compete</label><br>';
+    s += '<label><input type="radio" id="fb_quiz_many" name="fb_quiz_many" value="good_practice" onchange="set_fb_quiz_many(this)">Good practice</label><br>';
+    s += '<label><input type="radio" id="fb_quiz_many" name="fb_quiz_many" value="challenge_myself" onchange="set_fb_quiz_many(this)">Fun to challenge myself</label><br>';
+    s += '<label><input type="radio" id="fb_quiz_many" name="fb_quiz_many" value="professor" onchange="set_fb_quiz_many(this)">Want to reach professor level</label><br>';
+    s += '<label><input type="radio" id="fb_quiz_many" name="fb_quiz_many" value="other" onchange="set_fb_quiz_many(this)">Other</label><br>';
     s += '</td></tr></table>';
   } else if (fb_to_show_this_time=="fb_liketext"){
     s += 'What did you like the most here:<br><textarea rows="5" cols="40" id="fb_liketext" name="fb_liketext" style="font-size:80%;text-align:left;background:#fff" oninput="set_fb_liketext(this)"></textarea>';
@@ -2395,6 +2407,12 @@ function set_fb_edu (event) {
   start_feedback();
 }
 
+function set_fb_quiz_many (event) {
+  done_fb.push("fb_quiz_many");
+  add_event("set_fb_quiz_many="+event.value);
+  stop_feedback();
+  start_feedback();
+}
 
 
 // ----------------------
