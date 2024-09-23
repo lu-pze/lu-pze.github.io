@@ -2119,7 +2119,7 @@ function showInputFunction(input){
 // ----------------------
 // Feedback
 
-const fb_popup_interval = 42;
+const fb_popup_interval = 12;
 let feedback_is_visible=0;
 
 function timer_feedback () {
@@ -2161,7 +2161,6 @@ let done_fb = [];
 
 function get_next_fb_text() {
   let available_fb = [];
-  available_fb.push("fb_edu");
 
 //  available_fb.push("fb_quiz");
 //  available_fb.push("fb_ass_new");
@@ -2207,6 +2206,12 @@ function get_next_fb_text() {
   let time_diff = now-session_started_at;
   let mseconds_elapsed = Math.floor(time_diff);
 
+
+  // Let these fb appear after 40 seconds:
+  if (mseconds_elapsed > 40*1000) {
+    available_fb.push("fb_edu");
+  }
+
   // Let these fb appear after 4 minutes:
   if (mseconds_elapsed > 4*60*1000) {
     available_fb.push("fb_questions");
@@ -2216,12 +2221,16 @@ function get_next_fb_text() {
   if (mseconds_elapsed > 6*60*1000) {
     available_fb.push("fb_bode");
     available_fb.push("fb_nyquist");
-    available_fb.push("fb_polezero");
   }
 
   // Let these fb appear after 8 minutes:
   if (mseconds_elapsed > 8*60*1000) {
     available_fb.push("fb_increased");
+    available_fb.push("fb_polezero");
+  }
+
+  // Let these fb appear after 10 minutes:
+  if (mseconds_elapsed > 10*60*1000) {
     available_fb.push("fb_good_learning");
     available_fb.push("fb_gamified");
   }
