@@ -2134,7 +2134,6 @@ function start_feedback () {
   let fb_text = get_next_fb_text();
   if (fb_text=="") {
     // No feedback question available right now. Just ignore.
-    add_event("no_fb_to_show");
     // There is nothing to show
     if (feedback_is_visible==1){
       stop_feedback();
@@ -2177,7 +2176,9 @@ function get_next_fb_text() {
 
 
   if (nof_quiz_started >= 1) {
-    available_fb.push("fb_quiz");
+    available_fb.push("fb_quiz_new");
+    available_fb.push("fb_quiz_knowledge");
+    available_fb.push("fb_quiz_enjoy");
   }
   if (nof_assignments_done >= 1) {
     available_fb.push("fb_ass_new");
@@ -2212,11 +2213,21 @@ function get_next_fb_text() {
   const fb_to_show_this_time = fb_to_choose_from[index_to_choose];
 
   let s="";
-  if (fb_to_show_this_time=="fb_quiz"){
-    s += 'The quiz <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_school"/></svg> helped me:<br>';
-    s += '<fieldset style="border:0"><label for="fb_quiz">Don\'t&nbsp;agree</label>';
-    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_quiz" value="50" style="width:50%" onchange="set_fb_quiz(this)">';
-    s += '<label for="fb_quiz">Agree</label></fieldset>';
+  if (fb_to_show_this_time=="fb_quiz_new"){
+    s += 'I learned something new from the quiz <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_school"/></svg>:<br>';
+    s += '<fieldset style="border:0"><label for="fb_quiz_new">Don\'t&nbsp;agree</label>';
+    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_quiz_new" value="50" style="width:50%" onchange="set_fb_quiz_new(this)">';
+    s += '<label for="fb_quiz_new">Agree</label></fieldset>';
+  } else if (fb_to_show_this_time=="fb_quiz_knowledge"){
+    s += 'The quiz <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_school"/></svg> has deepened my knowledge:<br>';
+    s += '<fieldset style="border:0"><label for="fb_quiz_knowledge">Don\'t&nbsp;agree</label>';
+    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_quiz_knowledge" value="50" style="width:50%" onchange="set_fb_quiz_knowledge(this)">';
+    s += '<label for="fb_quiz_knowledge">Agree</label></fieldset>';
+  } else if (fb_to_show_this_time=="fb_quiz_enjoy"){
+    s += 'I enjoyed doing the quiz <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_school"/></svg>:<br>';
+    s += '<fieldset style="border:0"><label for="fb_quiz_enjoy">Don\'t&nbsp;agree</label>';
+    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_quiz_enjoy" value="50" style="width:50%" onchange="set_fb_quiz_enjoy(this)">';
+    s += '<label for="fb_quiz_enjoy">Agree</label></fieldset>';
   } else if (fb_to_show_this_time=="fb_achievements"){
     s += 'The achievements <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_star"/></svg> motivate me to explore the webpage:<br>';
     s += '<fieldset style="border:0"><label for="fb_achievements">Don\'t&nbsp;agree</label>';
@@ -2289,9 +2300,23 @@ function done_feedback () {
   stop_feedback();
 }
 
-function set_fb_quiz (event) {
-  done_fb.push("fb_quiz");
-  add_event("set_fb_quiz="+event.value);
+function set_fb_quiz_new (event) {
+  done_fb.push("fb_quiz_new");
+  add_event("set_fb_quiz_new="+event.value);
+  stop_feedback();
+  start_feedback();
+}
+
+function set_fb_quiz_knowledge (event) {
+  done_fb.push("fb_quiz_knowledge");
+  add_event("set_fb_quiz_knowledge="+event.value);
+  stop_feedback();
+  start_feedback();
+}
+
+function set_fb_quiz_enjoy (event) {
+  done_fb.push("fb_quiz_enjoy");
+  add_event("set_fb_quiz_enjoy="+event.value);
   stop_feedback();
   start_feedback();
 }
