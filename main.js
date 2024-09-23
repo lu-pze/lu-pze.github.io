@@ -2164,11 +2164,11 @@ function get_next_fb_text() {
   let available_fb = [];
   available_fb.push("fb_edu");
 
-    available_fb.push("fb_quiz");
-    available_fb.push("fb_assignments");
-    available_fb.push("fb_achievements");
-    available_fb.push("fb_liketext");
-    available_fb.push("fb_text");
+//    available_fb.push("fb_quiz");
+//    available_fb.push("fb_assignments");
+//    available_fb.push("fb_achievements");
+//    available_fb.push("fb_liketext");
+//    available_fb.push("fb_text");
 
 
   if (nof_quiz_started >= 1) {
