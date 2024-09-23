@@ -4621,7 +4621,6 @@ function updateGraphInformation(){
   }
 }
 
-
 function windowResized(){
   setGraphDimensions();
   resizeCanvas(canvas_width,canvas_height);
@@ -8911,6 +8910,43 @@ function setup (){
     add_event("got_cookid=" + client_cookid);
   }
   setGraphDimensions();
+  try {
+    const gl = document.createElement('canvas').getContext('webgl');
+    if (gl) {
+      add_event("gpu="+gl.getParameter(gl.RENDERER));
+      if ((navigator.userAgent.toLowerCase().indexOf('firefox') >= 0)==false){
+        // This is not firefox, so we can ask for more:
+        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        add_event("gpu2="+gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+        add_event("gpu_vendor="+gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
+      }
+    }
+  } catch {}
+  try {
+    add_event("tz="+Intl.DateTimeFormat().resolvedOptions().timeZone);
+  } catch {}
+  try {
+    add_event("lang="+navigator.language);
+  } catch {}
+  try {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      add_event("theme=dark_mode");
+    } else {
+      add_event("theme=light_mode");
+    }
+  } catch {}
+  try {
+    add_event("nof_cores="+navigator.hardwareConcurrency);
+  } catch {}
+  try {
+    add_event("ram_gb="+navigator.deviceMemory); //0.25, 0.5, 1, 2, 4 or 8.
+  } catch {}
+  try {
+    add_event("platform="+navigator.platform);
+  } catch {}
+  try {
+    add_event("ref="+document.referrer);
+  } catch {}
   // Setting the p5 line drawing type. Regardless of setting,
   // there are artifacts in the TIME DELAY blue Nyquist diagram when the time delay is present,
   // and the Preference "Line stroke weight" is large.
