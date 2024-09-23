@@ -2184,7 +2184,7 @@ function get_next_fb_text() {
     available_fb.push("fb_ass_knowledge");
     available_fb.push("fb_ass_enjoy");
   }
-  if (achievement_score >= 0.40) {
+  if ((nof_times_achievements_window_opened>0) && (achievement_score >= 20)) {
     available_fb.push("fb_achievements");
   }
   if (done_fb.includes("fb_quiz") && done_fb.includes("fb_assignments") && done_fb.includes("fb_achievements")) {
@@ -2218,7 +2218,7 @@ function get_next_fb_text() {
     s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_quiz" value="50" style="width:50%" onchange="set_fb_quiz(this)">';
     s += '<label for="fb_quiz">Agree</label></fieldset>';
   } else if (fb_to_show_this_time=="fb_achievements"){
-    s += 'The achievements <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_star"/></svg> helped me:<br>';
+    s += 'The achievements <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_star"/></svg> motivate me to explore the webpage:<br>';
     s += '<fieldset style="border:0"><label for="fb_achievements">Don\'t&nbsp;agree</label>';
     s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_achievements" value="50" style="width:60%" onchange="set_fb_achievements(this)">';
     s += '<label for="fb_achievements">Agree</label></fieldset>';
@@ -2261,13 +2261,19 @@ function get_next_fb_text() {
   } else if (fb_to_show_this_time=="fb_nickname"){
     s += 'Your nickname (optional): <input type="text" id="nickname" name="nickname" size="12" style="font-size:162%;text-align:center;background:#fff" value="" oninput="set_nickname(this)">';
   } else if (fb_to_show_this_time=="fb_edu"){
-    s += 'I study Automatic control:<br>';
-    s += '<label><input type="radio" id="fb_edu" name="fb_edu" value="not_yet" onchange="set_fb_edu(this)">';
-    s += 'not yet.</label><br>';
-    s += '<label><input type="radio" id="fb_edu" name="fb_edu" value="now" onchange="set_fb_edu(this)">';
-    s += 'right now!</label><br>';
-    s += '<label><input type="radio" id="fb_edu" name="fb_edu" value="already_did" onchange="set_fb_edu(this)">';
-    s += 'I already did.</label>';
+    s += '<table><tr><td>';
+    s += 'Automatic control:<br>';
+    s += '<label><input type="radio" id="fb_edu" name="fb_edu" value="nothing" onchange="set_fb_edu(this)">';
+    s += 'I know nothing.</label><br>';
+    s += '<label><input type="radio" id="fb_edu" name="fb_edu" value="student" onchange="set_fb_edu(this)">';
+    s += 'I\'m studying it.</label><br>';
+    s += '<label><input type="radio" id="fb_edu" name="fb_edu" value="have_studied" onchange="set_fb_edu(this)">';
+    s += 'I have studied it.</label><br>';
+    s += '<label><input type="radio" id="fb_edu" name="fb_edu" value="phd" onchange="set_fb_edu(this)">';
+    s += 'I\'m an Automatic Control PhD student.</label><br>';
+    s += '<label><input type="radio" id="fb_edu" name="fb_edu" value="professor" onchange="set_fb_edu(this)">';
+    s += 'I\'m an Automatic Control professor.</label><br>';
+    s += '</td></tr></table>';
   } else if (fb_to_show_this_time=="fb_liketext"){
     s += 'What did you like the most here:<br><textarea rows="5" cols="40" id="fb_liketext" name="fb_liketext" style="font-size:80%;text-align:left;background:#fff" oninput="set_fb_liketext(this)"></textarea>';
     s += '<table width="90%"><tr><td width="50%" class="yellow_hover" onclick="done_fb_liketext()" align="center">';
@@ -4257,9 +4263,12 @@ function reset_achievement(achievement_to_reset){
   update_achievements();
 }
 
+let nof_times_achievements_window_opened = 0;
+
 function toggle_achievements(event){
   achievement_done("view_achievements");
   add_event("view_achievements");
+  nof_times_achievements_window_opened += 1;
   let achievements_box = document.querySelector('.achievements_box');
   achievements_box.classList.toggle('active');
   update_achievements();
