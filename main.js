@@ -4632,8 +4632,18 @@ function setGraphDimensions(){
   let this_window_width=max(1295,windowWidth);  // Also present in style.css  "body{min-width: 1280px;}
   canvas_width = this_window_width - 380;
   canvas_height = windowHeight - 110;
-  add_event("set_graph_dimensions:windowWidth="+windowWidth+",windowHeight="+windowHeight);
-
+  let screenCssPixelRatio = (window.outerWidth - 8) / window.innerWidth;
+  add_event("dim_sw="+window.screen.width);
+  add_event("dim_ww="+windowWidth);
+  add_event("dim_wsaw="+window.screen.availWidth);
+  add_event("dim_wiw="+window.innerWidth);
+  add_event("dim_sh="+window.screen.height);
+  add_event("dim_wh="+windowHeight);
+  add_event("dim_wsah="+window.screen.availHeight);
+  add_event("dim_wih="+window.innerHeight);
+  add_event("dim_dpr="+window.devicePixelRatio);
+  add_event("dim_scpr="+screenCssPixelRatio);
+  add_event("dim_wvvs="+window.visualViewport.scale);
   graph_bode_mag_width = (canvas_width - 100)*0.42;
   graph_bode_mag_height = (canvas_height-150)*0.48;
   graph_bode_mag_x = 0;
@@ -8882,6 +8892,24 @@ function get_cookie(cname) {
 
 // Called by p5:
 function setup (){
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  if (urlParams.has('p')) {
+    let place = urlParams.get('p').replace(";","_").replace("\\","/");
+    client_place = place.replace(/[^A-ZÅÄÖa-zåäö0123456789]/g, '_')
+  }
+  if (urlParams.has('debug')) {
+    debug_mode = true;
+  }
+  add_event("setup="+start_date.toLocaleString().replace(" ",""));
+  client_cookid = get_cookie("cookid");
+  if (client_cookid=="") {
+    client_cookid = str(Math.random()*2**31>>>0); // A pretty random 31-bit uint id
+    add_event("set_cookid=" + client_cookid);
+    set_cookie("cookid", client_cookid, 50);
+  } else {
+    add_event("got_cookid=" + client_cookid);
+  }
   setGraphDimensions();
   // Setting the p5 line drawing type. Regardless of setting,
   // there are artifacts in the TIME DELAY blue Nyquist diagram when the time delay is present,
@@ -8906,25 +8934,6 @@ function setup (){
   footer_div.style.display="inline";
   let graph_information_div=document.getElementsByClassName("graph-information")[0];
   graph_information_div.style.display="inline";
-  add_event("setup="+start_date.toLocaleString().replace(" ",""));
-
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
-  if (urlParams.has('p')) {
-    let place = urlParams.get('p').replace(";","_").replace("\\","/");
-    client_place = place.replace(/[^A-ZÅÄÖa-zåäö0123456789]/g, '_')
-  }
-  if (urlParams.has('debug')) {
-    debug_mode = true;
-  }
-  client_cookid = get_cookie("cookid");
-  if (client_cookid=="") {
-    client_cookid = str(Math.random()*2**31>>>0); // A pretty random 31-bit uint id
-    add_event("set_cookid=" + client_cookid);
-    set_cookie("cookid", client_cookid, 50);
-  } else {
-    add_event("got_cookid=" + client_cookid);
-  }
   init_quiz();
 }
 
