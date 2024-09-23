@@ -2164,18 +2164,25 @@ function get_next_fb_text() {
   let available_fb = [];
   available_fb.push("fb_edu");
 
-//    available_fb.push("fb_quiz");
-//    available_fb.push("fb_assignments");
-//    available_fb.push("fb_achievements");
-//    available_fb.push("fb_liketext");
-//    available_fb.push("fb_text");
+//  available_fb.push("fb_quiz");
+//  available_fb.push("fb_ass_new");
+//  available_fb.push("fb_ass_knowledge");
+//  available_fb.push("fb_ass_enjoy");
+//  available_fb.push("fb_achievements");
+//  available_fb.push("fb_liketext");
+//  available_fb.push("fb_text");
+//  available_fb.push("fb_increased");
+//  available_fb.push("fb_good_learning");
+//  available_fb.push("fb_gamified");
 
 
   if (nof_quiz_started >= 1) {
     available_fb.push("fb_quiz");
   }
   if (nof_assignments_done >= 1) {
-    available_fb.push("fb_assignments");
+    available_fb.push("fb_ass_new");
+    available_fb.push("fb_ass_knowledge");
+    available_fb.push("fb_ass_enjoy");
   }
   if (achievement_score >= 0.40) {
     available_fb.push("fb_achievements");
@@ -2185,6 +2192,18 @@ function get_next_fb_text() {
   }
   if (done_fb.includes("fb_liketext")) {
     available_fb.push("fb_text");
+  }
+
+  let date_now = new Date();
+  let now = date_now.getTime();
+  let time_diff = now-session_started_at;
+  let mseconds_elapsed = Math.floor(time_diff);
+
+  // Let these fb appear after 8 minutes:
+  if (mseconds_elapsed > 8*60*1000) {
+    available_fb.push("fb_increased");
+    available_fb.push("fb_good_learning");
+    available_fb.push("fb_gamified");
   }
 
   // Don't show an fb that has already been answered:
@@ -2198,16 +2217,42 @@ function get_next_fb_text() {
     s += '<fieldset style="border:0"><label for="fb_quiz">Don\'t&nbsp;agree</label>';
     s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_quiz" value="50" style="width:50%" onchange="set_fb_quiz(this)">';
     s += '<label for="fb_quiz">Agree</label></fieldset>';
-  } else if (fb_to_show_this_time=="fb_assignments"){
-    s += 'The assignments <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_assignment"/></svg> helped me:<br>';
-    s += '<fieldset style="border:0"><label for="fb_assignments">Don\'t&nbsp;agree</label>';
-    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_assignments" value="50" style="width:60%" onchange="set_fb_assignments(this)">';
-    s += '<label for="fb_assignments">Agree</label></fieldset>';
   } else if (fb_to_show_this_time=="fb_achievements"){
     s += 'The achievements <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_star"/></svg> helped me:<br>';
     s += '<fieldset style="border:0"><label for="fb_achievements">Don\'t&nbsp;agree</label>';
     s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_achievements" value="50" style="width:60%" onchange="set_fb_achievements(this)">';
     s += '<label for="fb_achievements">Agree</label></fieldset>';
+  } else if (fb_to_show_this_time=="fb_increased"){
+    s += 'This webpage increases my interest in Automatic Control:<br>';
+    s += '<fieldset style="border:0"><label for="fb_increased">Don\'t&nbsp;agree</label>';
+    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_increased" value="50" style="width:60%" onchange="set_fb_increased(this)">';
+    s += '<label for="fb_increased">Agree</label></fieldset>';
+  } else if (fb_to_show_this_time=="fb_good_learning"){
+    s += 'Interactive tools are good for learning:<br>';
+    s += '<fieldset style="border:0"><label for="fb_good_learning">Don\'t&nbsp;agree</label>';
+    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_good_learning" value="50" style="width:60%" onchange="set_fb_good_learning(this)">';
+    s += '<label for="fb_good_learning">Agree</label></fieldset>';
+  } else if (fb_to_show_this_time=="fb_gamified"){
+    s += 'Teaching in general should be more gamified:<br>';
+    s += '<fieldset style="border:0"><label for="fb_gamified">Don\'t&nbsp;agree</label>';
+    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_gamified" value="50" style="width:60%" onchange="set_fb_gamified(this)">';
+    s += '<label for="fb_gamified">Agree</label></fieldset>';
+  } else if (fb_to_show_this_time=="fb_ass_new"){
+    s += 'I learned something new from the assignments <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_assignment"/></svg>:<br>';
+    s += '<fieldset style="border:0"><label for="fb_ass_new">Don\'t&nbsp;agree</label>';
+    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_ass_new" value="50" style="width:60%" onchange="set_fb_ass_new(this)">';
+    s += '<label for="fb_ass_new">Agree</label></fieldset>';
+  } else if (fb_to_show_this_time=="fb_ass_knowledge"){
+    s += 'The assignments <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_assignment"/></svg> have deepened my knowledge:<br>';
+    s += '<fieldset style="border:0"><label for="fb_ass_knowledge">Don\'t&nbsp;agree</label>';
+    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_ass_knowledge" value="50" style="width:60%" onchange="set_fb_ass_(this)">';
+    s += '<label for="fb_ass_knowledge">Agree</label></fieldset>';
+  } else if (fb_to_show_this_time=="fb_ass_enjoy"){
+    s += 'I enjoy doing the assignments <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_assignment"/></svg>:<br>';
+    s += '<fieldset style="border:0"><label for="fb_ass_enjoy">Don\'t&nbsp;agree</label>';
+    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_ass_enjoy" value="50" style="width:60%" onchange="set_fb_ass_enjoy(this)">';
+    s += '<label for="fb_ass_enjoy">Agree</label></fieldset>';
+
   } else if (fb_to_show_this_time=="fb_text"){
     s += 'Suggestions for improvement:<br><textarea rows="3" cols="60" id="fb_text" name="fb_text" style="font-size:80%;text-align:left;background:#fff" oninput="set_fb_text(this)"></textarea>';
     s += '<table width="90%"><tr><td width="50%" class="yellow_hover" onclick="done_fb_text()" align="center">';
@@ -2217,18 +2262,19 @@ function get_next_fb_text() {
     s += 'Your nickname (optional): <input type="text" id="nickname" name="nickname" size="12" style="font-size:162%;text-align:center;background:#fff" value="" oninput="set_nickname(this)">';
   } else if (fb_to_show_this_time=="fb_edu"){
     s += 'I study Automatic control:<br>';
-    s += '<input type="radio" id="fb_edu" name="fb_edu" value="not_yet" onchange="set_fb_edu(this)">';
-    s += '<label for="html">not yet.</label><br>';
-    s += '<input type="radio" id="fb_edu" name="fb_edu" value="now" onchange="set_fb_edu(this)">';
-    s += '<label for="html">right now!</label><br>';
-    s += '<input type="radio" id="fb_edu" name="fb_edu" value="have_been" onchange="set_fb_edu(this)">';
-    s += '<label for="html">I already did.</label>';
+    s += '<label><input type="radio" id="fb_edu" name="fb_edu" value="not_yet" onchange="set_fb_edu(this)">';
+    s += 'not yet.</label><br>';
+    s += '<label><input type="radio" id="fb_edu" name="fb_edu" value="now" onchange="set_fb_edu(this)">';
+    s += 'right now!</label><br>';
+    s += '<label><input type="radio" id="fb_edu" name="fb_edu" value="already_did" onchange="set_fb_edu(this)">';
+    s += 'I already did.</label>';
   } else if (fb_to_show_this_time=="fb_liketext"){
     s += 'What did you like the most here:<br><textarea rows="5" cols="40" id="fb_liketext" name="fb_liketext" style="font-size:80%;text-align:left;background:#fff" oninput="set_fb_liketext(this)"></textarea>';
     s += '<table width="90%"><tr><td width="50%" class="yellow_hover" onclick="done_fb_liketext()" align="center">';
     s += '<span id="fb_done_button" style="color:#000000;vertical-align:middle;text-align:center;margin:10px" width="100%">Done!</span><br>';
     s += '</td></tr></table>';
   }
+
   return s;
 }
 
@@ -2244,16 +2290,51 @@ function set_fb_quiz (event) {
   start_feedback();
 }
 
-function set_fb_assignments (event) {
-  done_fb.push("fb_assignments");
-  add_event("set_fb_assignments="+event.value);
+function set_fb_achievements (event) {
+  done_fb.push("fb_achievements");
+  add_event("set_fb_achievements="+event.value);
   stop_feedback();
   start_feedback();
 }
 
-function set_fb_achievements (event) {
-  done_fb.push("fb_achievements");
-  add_event("set_fb_achievements="+event.value);
+function set_fb_increased (event) {
+  done_fb.push("fb_increased");
+  add_event("set_fb_increased="+event.value);
+  stop_feedback();
+  start_feedback();
+}
+
+function set_fb_good_learning (event) {
+  done_fb.push("fb_good_learning");
+  add_event("set_fb_good_learning="+event.value);
+  stop_feedback();
+  start_feedback();
+}
+
+function set_fb_gamified (event) {
+  done_fb.push("fb_gamified");
+  add_event("set_fb_gamified="+event.value);
+  stop_feedback();
+  start_feedback();
+}
+
+function set_fb_ass_new (event) {
+  done_fb.push("fb_ass_new");
+  add_event("set_fb_ass_new="+event.value);
+  stop_feedback();
+  start_feedback();
+}
+
+function set_fb_ass_knowledge (event) {
+  done_fb.push("fb_ass_knowledge");
+  add_event("set_fb_ass_knowledge="+event.value);
+  stop_feedback();
+  start_feedback();
+}
+
+function set_fb_ass_enjoy (event) {
+  done_fb.push("fb_ass_enjoy");
+  add_event("set_fb_ass_enjoy="+event.value);
   stop_feedback();
   start_feedback();
 }
