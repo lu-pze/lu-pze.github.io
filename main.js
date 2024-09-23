@@ -2173,6 +2173,10 @@ function get_next_fb_text() {
 //  available_fb.push("fb_increased");
 //  available_fb.push("fb_good_learning");
 //  available_fb.push("fb_gamified");
+//  available_fb.push("fb_questions");
+//  available_fb.push("fb_bode");
+//  available_fb.push("fb_nyquist");
+//  available_fb.push("fb_polezero");
 
 
   if (nof_quiz_started >= 1) {
@@ -2191,7 +2195,7 @@ function get_next_fb_text() {
   if ((nof_times_achievements_window_opened>0) && (achievement_score >= 20)) {
     available_fb.push("fb_achievements");
   }
-  if (done_fb.includes("fb_quiz") && done_fb.includes("fb_assignments") && done_fb.includes("fb_achievements")) {
+  if (done_fb.includes("fb_quiz") && done_fb.includes("fb_ass_new") && done_fb.includes("fb_achievements")) {
     available_fb.push("fb_liketext");
   }
   if (done_fb.includes("fb_liketext")) {
@@ -2202,6 +2206,18 @@ function get_next_fb_text() {
   let now = date_now.getTime();
   let time_diff = now-session_started_at;
   let mseconds_elapsed = Math.floor(time_diff);
+
+  // Let these fb appear after 4 minutes:
+  if (mseconds_elapsed > 4*60*1000) {
+    available_fb.push("fb_questions");
+  }
+
+  // Let these fb appear after 6 minutes:
+  if (mseconds_elapsed > 6*60*1000) {
+    available_fb.push("fb_bode");
+    available_fb.push("fb_nyquist");
+    available_fb.push("fb_polezero");
+  }
 
   // Let these fb appear after 8 minutes:
   if (mseconds_elapsed > 8*60*1000) {
@@ -2259,13 +2275,33 @@ function get_next_fb_text() {
   } else if (fb_to_show_this_time=="fb_ass_knowledge"){
     s += 'The assignments <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_assignment"/></svg> have deepened my knowledge:<br>';
     s += '<fieldset style="border:0"><label for="fb_ass_knowledge">Don\'t&nbsp;agree</label>';
-    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_ass_knowledge" value="50" style="width:60%" onchange="set_fb_ass_(this)">';
+    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_ass_knowledge" value="50" style="width:60%" onchange="set_fb_ass_knowledge(this)">';
     s += '<label for="fb_ass_knowledge">Agree</label></fieldset>';
   } else if (fb_to_show_this_time=="fb_ass_enjoy"){
     s += 'I enjoy doing the assignments <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_assignment"/></svg>:<br>';
     s += '<fieldset style="border:0"><label for="fb_ass_enjoy">Don\'t&nbsp;agree</label>';
     s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_ass_enjoy" value="50" style="width:60%" onchange="set_fb_ass_enjoy(this)">';
     s += '<label for="fb_ass_enjoy">Agree</label></fieldset>';
+  } else if (fb_to_show_this_time=="fb_questions"){
+    s += 'The right-click questions helped me:<br>';
+    s += '<fieldset style="border:0"><label for="fb_questions">Don\'t&nbsp;agree</label>';
+    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_questions" value="50" style="width:60%" onchange="set_fb_questions(this)">';
+    s += '<label for="fb_questions">Agree</label></fieldset>';
+  } else if (fb_to_show_this_time=="fb_bode"){
+    s += 'I have learned more about the relation between Bode plots and step responses:<br>';
+    s += '<fieldset style="border:0"><label for="fb_bode">Don\'t&nbsp;agree</label>';
+    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_bode" value="50" style="width:60%" onchange="set_fb_bode(this)">';
+    s += '<label for="fb_bode">Agree</label></fieldset>';
+  } else if (fb_to_show_this_time=="fb_nyquist"){
+    s += 'I have learned more about the relation between Nyquist diagrams and step responses:<br>';
+    s += '<fieldset style="border:0"><label for="fb_nyquist">Don\'t&nbsp;agree</label>';
+    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_nyquist" value="50" style="width:60%" onchange="set_fb_nyquist(this)">';
+    s += '<label for="fb_nyquist">Agree</label></fieldset>';
+  } else if (fb_to_show_this_time=="fb_polezero"){
+    s += 'I have learned more about the relation between pole-zero maps and step responses:<br>';
+    s += '<fieldset style="border:0"><label for="fb_polezero">Don\'t&nbsp;agree</label>';
+    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_polezero" value="50" style="width:60%" onchange="set_fb_polezero(this)">';
+    s += '<label for="fb_polezero">Agree</label></fieldset>';
 
   } else if (fb_to_show_this_time=="fb_text"){
     s += 'Suggestions for improvement:<br><textarea rows="3" cols="60" id="fb_text" name="fb_text" style="font-size:80%;text-align:left;background:#fff" oninput="set_fb_text(this)"></textarea>';
@@ -2378,6 +2414,34 @@ function set_fb_ass_knowledge (event) {
 function set_fb_ass_enjoy (event) {
   done_fb.push("fb_ass_enjoy");
   add_event("set_fb_ass_enjoy="+event.value);
+  stop_feedback();
+  start_feedback();
+}
+
+function set_fb_questions (event) {
+  done_fb.push("fb_questions");
+  add_event("set_fb_questions="+event.value);
+  stop_feedback();
+  start_feedback();
+}
+
+function set_fb_bode (event) {
+  done_fb.push("fb_bode");
+  add_event("set_fb_bode="+event.value);
+  stop_feedback();
+  start_feedback();
+}
+
+function set_fb_nyquist (event) {
+  done_fb.push("fb_nyquist");
+  add_event("set_fb_nyquist="+event.value);
+  stop_feedback();
+  start_feedback();
+}
+
+function set_fb_polezero (event) {
+  done_fb.push("fb_polezero");
+  add_event("set_fb_polezero="+event.value);
   stop_feedback();
   start_feedback();
 }
