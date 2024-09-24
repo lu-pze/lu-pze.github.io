@@ -33,13 +33,28 @@ function clean_input($str) {
   return $str;
 }
 
-if(isset($POST_VARS['e'])) {
+$filename = "/home/pex/web/se.livet/data/lu-pze/_highscores.txt";
+$f(isset($POST_VARS['e'])) {
   $e = clean_input($POST_VARS['e']);
-  $filename = "/home/pex/web/se.livet/data/lu-pze/_highscores.txt";
   $file = fopen($filename, "a");
   fwrite($file, $e."\n");
   fclose($file);
-  // Report back to javascript:
-  echo 'OKEY';
+}
+
+
+if (file_exists($filename)) {
+  $fileHandle = fopen($filename, 'r');
+  if ($fileHandle) {
+    $lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    for ($i = 0; $i < count($lines); $i++) {
+      $line = $lines[$i];
+      echo $line."\n";
+    }
+    fclose($fileHandle);
+  } else {
+    echo "Error: Unable to open the highscore file.";
+  }
+} else {
+  echo "Error: Highscore file does not exist.";
 }
 ?>
