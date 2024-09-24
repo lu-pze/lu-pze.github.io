@@ -3387,7 +3387,8 @@ function quiz_time_is_up (){
     res += "nof_quiz_started=" + nof_quiz_started + ",";
     res += "quiz_practice=" + quiz_practice + ",";
     res += "quiz_compete=" + quiz_compete + ",";
-    // Now pretty-print thq quiz_timeline list of answers:
+    res += "cookid=" + client_cookid + ",";
+    // Now pretty-print the quiz_timeline list of answers:
     let st="qt=[";
     for (let i=0; i < quiz_timeline.length; i++) {
       let answer = quiz_timeline[i];
