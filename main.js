@@ -2167,11 +2167,15 @@ const fb_all_assignments={
   "fb_four_poles":"I have learnt more about systems with four poles from this assignment:",
   "fb_pid_controller":"I have learnt more about a PID controller with a one-pole system from this assignment:",
   "fb_pid_controller_YL":"I have learnt more about a PID controller and a system with a load from this assignment:"};
+let have_done_a_compete_quiz = false;
 
 function get_next_fb_text() {
   let available_fb = [];
 
-//  available_fb.push("fb_quiz");
+//  available_fb.push("fb_quiz_new");
+//  available_fb.push("fb_quiz_knowledge");
+//  available_fb.push("fb_quiz_enjoy");
+//  available_fb.push("fb_quiz_highscore");
 //  available_fb.push("fb_ass_new");
 //  available_fb.push("fb_ass_knowledge");
 //  available_fb.push("fb_ass_enjoy");
@@ -2219,6 +2223,9 @@ function get_next_fb_text() {
   }
   if (done_fb.includes("fb_liketext")) {
     available_fb.push("fb_text");
+  }
+  if (have_done_a_compete_quiz == true) {
+    available_fb.push("fb_quiz_highscore");
   }
 
   let date_now = new Date();
@@ -2293,6 +2300,11 @@ function get_next_fb_text() {
     s += '<fieldset style="border:0"><label for="fb_quiz_enjoy">Don\'t&nbsp;agree</label>';
     s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_quiz_enjoy" value="50" style="width:50%" onchange="set_fb_quiz_enjoy(this)">';
     s += '<label for="fb_quiz_enjoy">Agree</label></fieldset>';
+  } else if (fb_to_show_this_time=="fb_quiz_highscore"){
+    s += 'The highscore table motivates me to do more quizzes <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_school"/></svg>:<br>';
+    s += '<fieldset style="border:0"><label for="fb_quiz_highscore">Don\'t&nbsp;agree</label>';
+    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_quiz_highscore" value="50" style="width:50%" onchange="set_fb_quiz_highscore(this)">';
+    s += '<label for="fb_quiz_highscore">Agree</label></fieldset>';
   } else if (fb_to_show_this_time=="fb_achievements"){
     s += 'The achievements <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_star"/></svg> motivate me to explore the webpage:<br>';
     s += '<fieldset style="border:0"><label for="fb_achievements">Don\'t&nbsp;agree</label>';
@@ -2439,6 +2451,13 @@ function set_fb_quiz_knowledge (event) {
 function set_fb_quiz_enjoy (event) {
   done_fb.push("fb_quiz_enjoy");
   add_event("set_fb_quiz_enjoy="+event.value);
+  stop_feedback();
+  start_feedback();
+}
+
+function set_fb_quiz_highscore (event) {
+  done_fb.push("fb_quiz_highscore");
+  add_event("set_fb_quiz_highscore="+event.value);
   stop_feedback();
   start_feedback();
 }
@@ -3574,6 +3593,7 @@ function quiz_time_is_up (){
     res += st;
     add_event(res);
     if (quiz_compete == true) {
+      have_done_a_compete_quiz = true;
       let date_now = new Date();
       let now = date_now.getTime();
       let time_diff = now-session_started_at;
