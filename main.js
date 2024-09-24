@@ -2644,6 +2644,9 @@ function start_quiz (){
   removeAllGraphs();
   let toggleElement = document.querySelector('.quiz_intro');
   toggleElement.classList.add('active');
+  let toggleElement2 = document.querySelector('.quiz_highscores');
+  toggleElement2.classList.add('active');
+  read_highscores();
   try {
     // The nickname text input is only shown in the initial quiz window.
     // So, this might fail, hence the "try":
@@ -2697,6 +2700,8 @@ function quiz_lets_go (){
   quiz_is_running = 1;
   let toggleElement = document.querySelector('.quiz_intro');
   toggleElement.classList.remove('active');
+  let toggleElement2 = document.querySelector('.quiz_highscores');
+  toggleElement2.classList.remove('active');
 
   let quiz_icon_svg = document.getElementById("quiz_icon_svg");
   quiz_icon_svg.style.fill="#5050ff";
@@ -3308,11 +3313,128 @@ function update_quiz (){
 function stop_quiz (){
   let toggleElement = document.querySelector('.quiz_intro');
   toggleElement.classList.remove('active');
+  let toggleElement2 = document.querySelector('.quiz_highscores');
+  toggleElement2.classList.remove('active');
   quiz_is_running = 0;
   quiz_timer_div = document.getElementById("quiz_timer");
   quiz_timer_div.innerHTML="";
   add_event("stop_quiz");
   restart_lupze();
+}
+
+function read_highscores () {
+  add_event("read_highscores");
+  var XHR = new XMLHttpRequest();
+  XHR.addEventListener("load", (event) => {
+    let raw=event.target.response;
+    let lines = raw.split('\n');
+    let high_total = {};
+    let high_longest_streak = {};
+    let high_nof_correct = {};
+    for(let i=0; i<lines.length; i++){
+      let line=lines[i];
+      if (line.startsWith("T")){
+        const place_name_re = new RegExp(/;L(.*?);/,"g");
+        let place_name = "_Anonymous";
+        const m=place_name_re.exec(line);
+        if (m) {
+          place_name = m[1];
+        }
+        let parts = place_name.split('_');
+        let place = parts[0];
+        let nickname = parts[1];
+
+        const total_re = new RegExp(/,total=([0-9.]+),/,"g");
+        let total = -1;
+        const m2=total_re.exec(line);
+        if (m2) {
+          let this_total = float(m2[1]);
+          if (nickname in high_total){
+            if (this_total > high_total[nickname]){
+              high_total[nickname] = this_total;
+            }
+          } else {
+            high_total[nickname] = this_total;
+          }
+        }
+
+        const longest_streak_re = new RegExp(/,longest_streak=([0-9.]+),/,"g");
+        const m3=longest_streak_re.exec(line);
+        if (m3) {
+          let this_longest_streak = float(m3[1]);
+          if (nickname in high_longest_streak){
+            if (this_longest_streak > high_longest_streak[nickname]){
+              high_longest_streak[nickname] = this_longest_streak;
+            }
+          } else {
+            high_longest_streak[nickname] = this_longest_streak;
+          }
+        }
+
+        const nof_correct_re = new RegExp(/,nof_correct=([0-9.]+),/,"g");
+        const m4=nof_correct_re.exec(line);
+        if (m4) {
+          let this_nof_correct = float(m4[1]);
+          if (nickname in high_nof_correct){
+            if (this_nof_correct > high_nof_correct[nickname]){
+              high_nof_correct[nickname] = this_nof_correct;
+            }
+          } else {
+            high_nof_correct[nickname] = this_nof_correct;
+          }
+        }
+      }
+    }
+    let high_total_sorted = Object.keys(high_total).map(function(nickname) {
+      return [nickname, high_total[nickname]];
+    });
+    // Sort the array based on the second element
+    high_total_sorted.sort(function(first, second) {
+      return second[1] - first[1];
+    });
+    let s="<h2>Highest score</h2>";
+    for (let row_no=0; row_no<high_total_sorted.length; row_no++) {
+      let row=high_total_sorted[row_no];
+      s += (row_no+1) +". "+row[0] + " " + row[1] + "<br>";
+    }
+
+    let high_longest_streak_sorted = Object.keys(high_longest_streak).map(function(nickname) {
+      return [nickname, high_longest_streak[nickname]];
+    });
+    // Sort the array based on the second element
+    high_longest_streak_sorted.sort(function(first, second) {
+      return second[1] - first[1];
+    });
+    s+="<h2>Longest streak</h2>";
+    for (let row_no=0; row_no<high_longest_streak_sorted.length; row_no++) {
+      let row=high_longest_streak_sorted[row_no];
+      s += (row_no+1) +". "+row[0] + " " + row[1] + "<br>";
+    }
+
+    let high_nof_correct_sorted = Object.keys(high_nof_correct).map(function(nickname) {
+      return [nickname, high_nof_correct[nickname]];
+    });
+    // Sort the array based on the second element
+    high_nof_correct_sorted.sort(function(first, second) {
+      return second[1] - first[1];
+    });
+    s+="<h2>Most answered questions</h2>";
+    for (let row_no=0; row_no<high_nof_correct_sorted.length; row_no++) {
+      let row=high_nof_correct_sorted[row_no];
+      s += (row_no+1) +". "+row[0] + " " + row[1] + "<br>";
+    }
+
+
+    let highscore_div = document.getElementById("quiz_highscores");
+    highscore_div.innerHTML=s;
+  });
+  XHR.addEventListener("error", (event) => {
+    console.log("Error");
+    console.log(event);
+  });
+  // Compete:
+  XHR.open("GET", "https://livet.se/lu-pze_compete.php", true);
+  XHR.send("");
 }
 
 function quiz_time_is_up (){
@@ -3410,6 +3532,7 @@ function quiz_time_is_up (){
         console.log("OK");
         console.log(event);
         console.log(event.target.response);
+        read_highscores();
       });
       XHR.addEventListener("error", (event) => {
         console.log("Error");
@@ -3449,6 +3572,8 @@ function quiz_time_is_up (){
 
   let toggleElement = document.querySelector('.quiz_intro');
   toggleElement.classList.add('active');
+  let toggleElement2 = document.querySelector('.quiz_highscores');
+  toggleElement2.classList.add('active');
   let quiz_text = document.getElementById("quiz_text");
   quiz_text.innerHTML="";
   current_quiz="none";
@@ -9037,7 +9162,7 @@ function ready (){
     //  toggle_quiz_enabled();
     //}
     if (event.key=='F2'){
-      start_feedback();
+      start_quiz();
     }
     //if (event.key=='F3'){
     //  quiz_correct();
