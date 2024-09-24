@@ -2193,6 +2193,9 @@ function get_next_fb_text() {
 //  available_fb.push("fb_four_poles");
 //  available_fb.push("fb_pid_controller");
 //  available_fb.push("fb_pid_controller_YL");
+//  available_fb.push("fb_bode2");
+//  available_fb.push("fb_nyquist2");
+//  available_fb.push("fb_polezero2");
 
 
   if (nof_quiz_started >= 1) {
@@ -2250,6 +2253,13 @@ function get_next_fb_text() {
   if (mseconds_elapsed > 13*60*1000) {
     available_fb.push("fb_good_learning");
     available_fb.push("fb_gamified");
+  }
+
+  // Let these fb appear after 20 minutes:
+  if (mseconds_elapsed > 20*60*1000) {
+    available_fb.push("fb_bode2");
+    available_fb.push("fb_nyquist2");
+    available_fb.push("fb_polezero2");
   }
 
   // Check which assignments are done, and enable fb for these:
@@ -2338,6 +2348,21 @@ function get_next_fb_text() {
     s += '<fieldset style="border:0"><label for="fb_polezero">Don\'t&nbsp;agree</label>';
     s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_polezero" value="50" style="width:60%" onchange="set_fb_polezero(this)">';
     s += '<label for="fb_polezero">Agree</label></fieldset>';
+  } else if (fb_to_show_this_time=="fb_bode2"){
+    s += 'I have learned more about the relation between Bode plots and step responses from this webpage:<br>';
+    s += '<fieldset style="border:0"><label for="fb_bode2">Don\'t&nbsp;agree</label>';
+    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_bode2" value="50" style="width:60%" onchange="set_fb_bode2(this)">';
+    s += '<label for="fb_bode2">Agree</label></fieldset>';
+  } else if (fb_to_show_this_time=="fb_nyquist2"){
+    s += 'I have learned more about the relation between Nyquist diagrams and Bode plots from this webpage:<br>';
+    s += '<fieldset style="border:0"><label for="fb_nyquist2">Don\'t&nbsp;agree</label>';
+    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_nyquist2" value="50" style="width:60%" onchange="set_fb_nyquist2(this)">';
+    s += '<label for="fb_nyquist2">Agree</label></fieldset>';
+  } else if (fb_to_show_this_time=="fb_polezero2"){
+    s += 'I have learned more about the relation between pole-zero maps and step responses from this webpage:<br>';
+    s += '<fieldset style="border:0"><label for="fb_polezero2">Don\'t&nbsp;agree</label>';
+    s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="fb_polezero2" value="50" style="width:60%" onchange="set_fb_polezero2(this)">';
+    s += '<label for="fb_polezero2">Agree</label></fieldset>';
 
   } else if ((fb_to_show_this_time=="fb_one_pole") ||
              (fb_to_show_this_time=="fb_two_real_poles") ||
@@ -2498,6 +2523,27 @@ function set_fb_polezero (event) {
 function set_fb_all_assignments (which_assignment, event) {
   done_fb.push(which_assignment);
   add_event(which_assignment+"="+event.value);
+  stop_feedback();
+  start_feedback();
+}
+
+function set_fb_bode2 (event) {
+  done_fb.push("fb_bode2");
+  add_event("set_fb_bode2="+event.value);
+  stop_feedback();
+  start_feedback();
+}
+
+function set_fb_nyquist2 (event) {
+  done_fb.push("fb_nyquist2");
+  add_event("set_fb_nyquist2="+event.value);
+  stop_feedback();
+  start_feedback();
+}
+
+function set_fb_polezero2 (event) {
+  done_fb.push("fb_polezero2");
+  add_event("set_fb_polezero2="+event.value);
   stop_feedback();
   start_feedback();
 }
