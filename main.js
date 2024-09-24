@@ -5559,7 +5559,8 @@ function draw_pole_zeros (){
          (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)||
          (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula)||
          (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula)||
-         (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula)){
+         (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula)||
+         (bode_graphs[i].bode_formula == GRAPH_PID.formula)){
         draw_position += 1;
       }
     }
@@ -5574,7 +5575,8 @@ function draw_pole_zeros (){
          (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)||
          (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula)||
          (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula)||
-         (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula)){
+         (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula)||
+         (bode_graphs[i].bode_formula == GRAPH_PID.formula)){
         pole_zero_graph_x[i] = graph_pole_zero_x;
         pole_zero_graph_y[i] = 30 + (pole_zero_height + 10) * draw_position;
         push();
@@ -5797,7 +5799,8 @@ function mousePressed (event){
       if ((bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula)||
           (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)||
           (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)||
-          (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula)){
+          (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula)||
+          (bode_graphs[i].bode_formula == GRAPH_PID.formula)){
         if(((mouseX-pole_zero_graph_x[i]) > 0) && ((mouseX-pole_zero_graph_x[i]) < pole_zero_width)){
           if(((mouseY-pole_zero_graph_y[i]) > 0) && ((mouseY-pole_zero_graph_y[i]) < pole_zero_height)){
             event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
@@ -5831,6 +5834,18 @@ function mousePressed (event){
                 clicked_on_time_variable = "T_6";
               } else {
                 clicked_on_time_variable = "T_7";
+              }
+            } else if (bode_graphs[i].bode_formula == GRAPH_PID.formula){
+              // See if the user clicked on T_i or T_d:
+              let T_i = range_slider_variables[variable_position["T_i"]];
+              let T_d = range_slider_variables[variable_position["T_d"]];
+              // If T is outside of the box, clamp it to the side of the box:
+              if ((1/T_i) > 3.2) T_i=1/3.2;
+              if ((1/T_d) > 3.2) T_d=1/3.2;
+              if (Math.abs(-1/T_i - real) < Math.abs(-1/T_d - real)){
+                clicked_on_time_variable = "T_i";
+              } else {
+                clicked_on_time_variable = "T_d";
               }
             }
             if ((current_assignment=="pid_controller")||(current_assignment=="pid_controller_S")||(current_assignment=="pid_controller_YL")||(current_assignment=="pid_controller_OL")){
@@ -6978,6 +6993,15 @@ function mouseDragged (){
               const EPS = 0.0677777;
               if (real > EPS) real=EPS;
               set_T_in_pz_map("T_5",real);
+              if (real>0){
+                achievement_done("drag_pole_to_right_half_plane");
+              }
+              redraw_canvas_gain(bode_graphs[i].bode_id);
+
+            } else if (bode_graphs[i].bode_formula == GRAPH_PID.formula){
+              achievement_done("drag_pole");
+              // Change T_i or T_d
+              set_T_in_pz_map(clicked_on_time_variable,real);
               if (real>0){
                 achievement_done("drag_pole_to_right_half_plane");
               }
@@ -8744,6 +8768,15 @@ class bode_graph{
       let T_5inv = 1/range_slider_variables[variable_position["T_5"]];
       if (T_5inv > 3.2) T_5inv=3.2;
       this.plot_pole(-T_5inv,0); // Should be T_1
+
+    } else if (this.bode_formula == GRAPH_PID.formula){
+      //pole_x = range_slider_variables[0];
+      let T_iinv = 1/range_slider_variables[variable_position["T_i"]];
+      if (T_iinv > 3.2) T_iinv=3.2;
+      this.plot_pole(-T_iinv,0); // Should be T_i
+      let T_dinv = 1/range_slider_variables[variable_position["T_d"]];
+      if (T_dinv > 3.2) T_dinv=3.2;
+      this.plot_pole(-T_dinv,0); // Should be T_d
     }
 
     noStroke();
