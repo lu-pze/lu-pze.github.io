@@ -2185,6 +2185,14 @@ function get_next_fb_text() {
 //  available_fb.push("fb_bode");
 //  available_fb.push("fb_nyquist");
 //  available_fb.push("fb_polezero");
+//  available_fb.push("fb_one_pole");
+//  available_fb.push("fb_two_real_poles");
+//  available_fb.push("fb_two_complex_poles");
+//  available_fb.push("fb_time_delay");
+//  available_fb.push("fb_one_zero_two_poles");
+//  available_fb.push("fb_four_poles");
+//  available_fb.push("fb_pid_controller");
+//  available_fb.push("fb_pid_controller_YL");
 
 
   if (nof_quiz_started >= 1) {
@@ -2203,7 +2211,7 @@ function get_next_fb_text() {
   if ((nof_times_achievements_window_opened>0) && (achievement_score >= 20)) {
     available_fb.push("fb_achievements");
   }
-  if (done_fb.includes("fb_quiz") && done_fb.includes("fb_ass_new") && done_fb.includes("fb_achievements")) {
+  if (done_fb.includes("fb_quiz_new") && done_fb.includes("fb_ass_new") && done_fb.includes("fb_achievements")) {
     available_fb.push("fb_liketext");
   }
   if (done_fb.includes("fb_liketext")) {
@@ -3910,6 +3918,13 @@ function toggle_assignments_box(event){
   update_assignments();
 }
 
+function close_assignments_box(event){
+  add_event("close_assignments");
+  let assignments_box = document.querySelector('.assignments_box');
+  assignments_box.classList.toggle('active');
+  update_assignments();
+}
+
 function task_done (which_one){
   if (quiz_is_running>0) return;
   if (assignments_enabled==true){
@@ -3955,9 +3970,6 @@ function task_done (which_one){
             show_answer_to_task(which_one);
           }
         }
-      } else {
-        // This task was already completed:
-        add_event("task_done_again="+which_one);
       }
     }
   }
@@ -4062,10 +4074,10 @@ let done_tasks=[];
 
 let nof_assignments_done=0;
 
-function update_assignments(){
+function update_assignments (){
   let assignments_box = document.querySelector('.assignments_box');
   let s = "";
-  s += '<br><button type="button" class="close-window" onclick="toggle_assignments_box();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>';
+  s += '<br><button type="button" class="close-window" onclick="close_assignments_box();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>';
   s += "<center>";
   s += '<svg width="34" height="34" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_assignment"/></svg>';
   s += "&nbsp;Your Assignments";
