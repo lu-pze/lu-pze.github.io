@@ -2235,19 +2235,19 @@ function get_next_fb_text() {
   }
 
   // Let these fb appear after 7 minutes:
-  if (mseconds_elapsed > 6*60*1000) {
+  if (mseconds_elapsed > 7*60*1000) {
     available_fb.push("fb_bode");
     available_fb.push("fb_nyquist");
-  }
-
-  // Let these fb appear after 10 minutes:
-  if (mseconds_elapsed > 8*60*1000) {
-    available_fb.push("fb_increased");
     available_fb.push("fb_polezero");
   }
 
-  // Let these fb appear after 13 minutes:
+  // Let these fb appear after 10 minutes:
   if (mseconds_elapsed > 10*60*1000) {
+    available_fb.push("fb_increased");
+  }
+
+  // Let these fb appear after 13 minutes:
+  if (mseconds_elapsed > 13*60*1000) {
     available_fb.push("fb_good_learning");
     available_fb.push("fb_gamified");
   }
