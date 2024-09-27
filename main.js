@@ -3402,8 +3402,11 @@ function read_highscores () {
     let raw=event.target.response;
     let lines = raw.split('\n');
     let high_total = {};
+    let high_total_nof_correct = {};
+    let high_total2 = {}; // =total + 0.01*nof_correct  to separate those having the same total.
     let high_longest_streak = {};
     let high_nof_correct = {};
+    let high_latest = {};
     for(let i=0; i<lines.length; i++){
       let line=lines[i];
       if (line.startsWith("T")){
@@ -3418,21 +3421,39 @@ function read_highscores () {
         let nickname = parts[1];
 
         const total_re = new RegExp(/,total=([0-9.]+),/,"g");
+        const longest_streak_re = new RegExp(/,longest_streak=([0-9.]+),/,"g");
+        const nof_correct_re = new RegExp(/,nof_correct=([0-9.]+),/,"g");
+//,#server_time=2024/09/27 14:37:16.
+        const server_time_re = new RegExp(/,#server_time=([0-9/ :]+)/,"g");
+
         let total = -1;
         const m2=total_re.exec(line);
+        const m3=longest_streak_re.exec(line);
+        const m4=nof_correct_re.exec(line);
+        const m5=server_time_re.exec(line);
         if (m2) {
           let this_total = float(m2[1]);
+          let this_nof_correct = 0;
+          if (m4) {
+            this_nof_correct = float(m4[1]);
+          }
           if (nickname in high_total){
             if (this_total > high_total[nickname]){
               high_total[nickname] = this_total;
+              high_total_nof_correct[nickname] = this_nof_correct;
+            }
+          } else if (this_total == high_total[nickname]){
+            // Make sure to grab the highest nof_correct for this highest score:
+            if (high_total_nof_correct[nickname] < this_nof_correct) {
+              high_total_nof_correct[nickname] = this_nof_correct;
             }
           } else {
             high_total[nickname] = this_total;
+            high_total_nof_correct[nickname] = this_nof_correct;
           }
+          high_total2[nickname] = high_total[nickname] + 0.01*high_total_nof_correct[nickname];
         }
 
-        const longest_streak_re = new RegExp(/,longest_streak=([0-9.]+),/,"g");
-        const m3=longest_streak_re.exec(line);
         if (m3) {
           let this_longest_streak = float(m3[1]);
           if (nickname in high_longest_streak){
@@ -3444,8 +3465,6 @@ function read_highscores () {
           }
         }
 
-        const nof_correct_re = new RegExp(/,nof_correct=([0-9.]+),/,"g");
-        const m4=nof_correct_re.exec(line);
         if (m4) {
           let this_nof_correct = float(m4[1]);
           if (nickname in high_nof_correct){
@@ -3456,19 +3475,43 @@ function read_highscores () {
             high_nof_correct[nickname] = this_nof_correct;
           }
         }
+
+        if (m5) {
+          let this_server_time = m5[1];
+          if (nickname in high_latest){
+            if (this_server_time > high_latest[nickname]){
+              high_latest[nickname] = this_server_time;
+            }
+          } else {
+            high_latest[nickname] = this_server_time;
+          }
+        }
+
       }
     }
-    let high_total_sorted = Object.keys(high_total).map(function(nickname) {
-      return [nickname, high_total[nickname]];
+    console.log("high_total2:");
+    console.log(high_total2);
+    let high_total_sorted = Object.keys(high_total2).map(function(nickname) {
+      return [nickname, high_total2[nickname]];
     });
     // Sort the array based on the second element
     high_total_sorted.sort(function(first, second) {
       return second[1] - first[1];
     });
+    console.log(high_total_sorted);
     let s="<h2>Highest score</h2>";
+    let prev_score = -1;
     for (let row_no=0; row_no<high_total_sorted.length; row_no++) {
       let row=high_total_sorted[row_no];
-      s += (row_no+1) +". "+row[0] + " " + row[1] + "<br>";
+      let this_nickname = row[0];
+      let this_score = high_total[this_nickname].toFixed(1);
+      if (prev_score != this_score) {
+        s += str(row_no+1).padStart(2," ").replace(" ","&nbsp;") +". ";
+        prev_score = this_score;
+      } else {
+        s += "&nbsp;&nbsp;&nbsp;&nbsp;";
+      }
+      s += this_score.padStart(5,' ').replace(" ","&nbsp;") + " " + this_nickname + ", after "+high_total_nof_correct[this_nickname]+" questions<br>";
     }
 
     let high_longest_streak_sorted = Object.keys(high_longest_streak).map(function(nickname) {
@@ -3479,9 +3522,18 @@ function read_highscores () {
       return second[1] - first[1];
     });
     s+="<h2>Longest streak</h2>";
+    let prev_streak = -1;
     for (let row_no=0; row_no<high_longest_streak_sorted.length; row_no++) {
       let row=high_longest_streak_sorted[row_no];
-      s += (row_no+1) +". "+row[0] + " " + row[1] + "<br>";
+      let this_nickname = row[0];
+      let this_streak = row[1];
+      if (prev_streak != this_streak) {
+        s += str(row_no+1).padStart(2," ").replace(" ","&nbsp;") +". ";
+        prev_streak = this_streak;
+      } else {
+        s += "&nbsp;&nbsp;&nbsp;&nbsp;";
+      }
+      s += str(this_streak).padStart(2," ").replace(" ","&nbsp;") + " " + this_nickname + "<br>";
     }
 
     let high_nof_correct_sorted = Object.keys(high_nof_correct).map(function(nickname) {
@@ -3492,10 +3544,36 @@ function read_highscores () {
       return second[1] - first[1];
     });
     s+="<h2>Most answered questions</h2>";
+    let prev_nof_correct = -1;
     for (let row_no=0; row_no<high_nof_correct_sorted.length; row_no++) {
       let row=high_nof_correct_sorted[row_no];
-      s += (row_no+1) +". "+row[0] + " " + row[1] + "<br>";
+      let this_nickname = row[0];
+      let this_nof_correct = row[1];
+      if (prev_nof_correct != this_nof_correct) {
+        s += str(row_no+1).padStart(2," ").replace(" ","&nbsp;") +". ";
+        prev_nof_correct = this_nof_correct;
+      } else {
+        s += "&nbsp;&nbsp;&nbsp;&nbsp;";
+      }
+      s += str(this_nof_correct).padStart(2," ").replace(" ","&nbsp;") + " " + this_nickname + "<br>";
     }
+
+
+    let high_latest_sorted = Object.keys(high_latest).map(function(nickname) {
+      return [nickname, high_latest[nickname]];
+    });
+    // Sort the array based on the second element
+    high_latest_sorted.sort(function(first, second) {
+      return (second[1] < first[1]) ? -1 : (second[1] > first[1]) ? 1 : 0;
+    });
+    s+="<h2>Latest quizzers</h2>";
+    for (let row_no=0; row_no<high_latest_sorted.length; row_no++) {
+      let row=high_latest_sorted[row_no];
+      let this_nickname = row[0];
+      let this_server_time = row[1];
+      s += str(this_server_time) + " " + this_nickname + "<br>";
+    }
+
 
 
     let highscore_div = document.getElementById("quiz_highscores");
