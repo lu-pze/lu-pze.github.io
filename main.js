@@ -4286,6 +4286,21 @@ function update_assignments (){
   assignments_box.innerHTML=s;
 }
 
+function remove_all_windows (){
+  let toggleElement = document.querySelector('.quiz_intro');
+  toggleElement.classList.remove('active');
+  let toggleElement4 = document.querySelector('.quiz_highscores');
+  toggleElement4.classList.remove('active');
+  let toggleElement2 = document.querySelector('.feedback');
+  toggleElement2.classList.remove('active');
+  let toggleElement3 = document.querySelector('.toolbox');
+  toggleElement3.classList.remove('active');
+  let toggleElement5 = document.querySelector('.info');
+  toggleElement5.classList.remove('active');
+  let achievements_box = document.querySelector('.achievements_box');
+  achievements_box.classList.remove('active');
+}
+
 function restart_lupze (){
   add_event("restart_lupze");
   //location.reload();
@@ -4296,13 +4311,10 @@ function restart_lupze (){
   let quiz_icon_svg = document.getElementById("quiz_icon_svg");
   quiz_icon_svg.style.fill=null;
   current_assignment = "none";
+  remove_all_windows();
   let assignment_icon_svg = document.getElementById("assignment_icon_svg");
   assignment_icon_svg.style.fill=null;
-  let toggleElement = document.querySelector('.quiz_intro');
-  toggleElement.classList.remove('active');
   quiz_is_running = 0;
-  let toggleElement2 = document.querySelector('.feedback');
-  toggleElement2.classList.remove('active');
   feedback_is_visible=0;
   update_tasks();
   removeAllGraphs();
