@@ -337,7 +337,7 @@ input{background:none}
 
     <div class="page">
       <div class="toolbox">
-        <button type="button" class="close-window" onclick="toolboxMenuToggle();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
+        <button type="button" class="close-window" onclick="hide_settings();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
         <div class="graphic-preferences">
           <span style="font-weight:500;color:#777777"><b>Preferences</b></span><br><br>
           <div class="expression-wrapper">
@@ -414,7 +414,7 @@ The quiz <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vert
       </div>
 
       <div class="info">
-<button type="button" class="close-window" onclick="infoToggle();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
+<button type="button" class="close-window" onclick="hide_info();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
 <center><h2>LU-PZE: Lund University Pole-Zero Explorer</h2></center>
 <center>- <i>an Automatic Control theory playground</i></center><br>
 <hr>
@@ -436,10 +436,10 @@ The sliders and values are yours to play with.<br>
 Any value can be changed.<br>
 Click and drag anything.<br>
 ...and your task is to figure out how these graphs are related.<br>
-<div class="yellow_hover"><span onclick="toggle_assignments_box();">
+<div class="yellow_hover"><span onclick="view_assignments();">
 The <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_assignment"/></svg> Assignments can guide you,<br>
 </span></div>
-<div class="yellow_hover"><span onclick="toggle_achievements();">
+<div class="yellow_hover"><span onclick="view_achievements();">
 or the <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_star"/></svg> Achievements can inspire you.<br>
 </span></div>
 <div class="yellow_hover"><span onclick="toggle_fullscreen();">
@@ -473,9 +473,9 @@ pex.tufvesson@control.lth.se</center><br></td>
       <div class="explorer_2" id="explorer_2"><img src="images/explorer_2.webp" height="70%"></div>
       </div>
 
-      <div class="star_0"><img id="star_0" src="images/star_0.webp" height="100%" onclick="toggle_achievements()" title="Show achievements"></div>
+      <div class="star_0"><img id="star_0" src="images/star_0.webp" height="100%" onclick="view_achievements()" title="Show achievements"></div>
       <div class="star_0_text" id="star_0_text"></div>
-      <div class="assignment_0"><img id="assignment_0" src="images/assignment_0.webp" height="100%" onclick="toggle_assignments_box()" title="Show assignments"></div>
+      <div class="assignment_0"><img id="assignment_0" src="images/assignment_0.webp" height="100%" onclick="view_assignments()" title="Show assignments"></div>
       <div class="assignment_0_text" id="assignment_0_text"></div>
       <div class="cap_0"><img id="cap_0" src="images/cap_0.webp" height="100%" onclick="toggle_quiz()" title="Start quiz"></div>
       <div class="cap_0_text" id="cap_0_text"></div>
@@ -494,11 +494,11 @@ pex.tufvesson@control.lth.se</center><br></td>
           <button type="button" class="add-graph" style="background:none;border:none;margin-left:5px;margin-top:5px" title="Add graph"><svg id="add_icon_svg" width="38" height="38" viewBox="0 0 24 24"><use href="#icon_add"/></svg></button>
           <button type="button" class="option-button" style="float:right;padding:0 3px;margin-right:10px;background:none;border:none;margin-top:9px" title="Preferences"><svg id="tune_icon_svg" width="27" height="27" viewBox="0 0 24 24"><use href="#icon_tune"/></svg></button>
           <button type="button" class="option-button" style="float:right;padding:0 3px;margin-right:0px;background:none;border:none;margin-top:9px" onclick="restart_lupze()" title="Reload app"><svg id="restart_icon_svg" width="27" height="27" viewBox="0 0 24 24"><use href="#icon_restart_alt"/></svg></button>
-          <button type="button" class="option-button" style="float:right;padding:0 3px;margin-right:0px;background:none;border:none;margin-top:11px" onclick="infoToggle()" title="Info screen"><svg id="info_icon_svg" width="27" height="27" viewBox="0 0 24 24"><use href="#icon_info"/></svg></button>
+          <button type="button" class="option-button" style="float:right;padding:0 3px;margin-right:0px;background:none;border:none;margin-top:11px" onclick="view_info()" title="Info screen"><svg id="info_icon_svg" width="27" height="27" viewBox="0 0 24 24"><use href="#icon_info"/></svg></button>
           <button type="button" class="option-button" style="float:right;padding:0 3px;margin-right:0px;background:none;border:none;margin-top:11px" onclick="questionsToggle()" title="Show questions"><svg id="questions_icon_svg" width="27" height="27" viewBox="0 0 24 24"><use href="#icon_help"/></svg></button>
           <button type="button" class="option-button" style="float:right;padding:0 3px;margin-right:0px;background:none;border:none;margin-top:11px" onclick="toggle_fullscreen()" title="Toggle Fullscreen"><svg id="fullscreen_icon_svg" width="27" height="27" viewBox="0 0 24 24"><use href="#icon_fullscreen"/></svg></button>
-          <button type="button" class="option-button" id="show_achievements" style="float:right;padding:0 3px;margin-right:0px;background:none;border:none;margin-top:11px;display:none" onclick="toggle_achievements()" title="Show achievements"><svg id="star_icon_svg" width="27" height="27" viewBox="0 0 24 24"><use href="#icon_star"/></svg></button>
-          <button type="button" class="option-button" id="show_assignments" style="float:right;padding:0 3px;margin-right:0px;background:none;border:none;margin-top:11px;display:none" onclick="toggle_assignments_box()" title="Show assignments"><svg id="assignment_icon_svg" width="27" height="27" viewBox="0 0 24 24"><use href="#icon_assignment"/></svg></button>
+          <button type="button" class="option-button" id="show_achievements" style="float:right;padding:0 3px;margin-right:0px;background:none;border:none;margin-top:11px;display:none" onclick="view_achievements()" title="Show achievements"><svg id="star_icon_svg" width="27" height="27" viewBox="0 0 24 24"><use href="#icon_star"/></svg></button>
+          <button type="button" class="option-button" id="show_assignments" style="float:right;padding:0 3px;margin-right:0px;background:none;border:none;margin-top:11px;display:none" onclick="view_assignments()" title="Show assignments"><svg id="assignment_icon_svg" width="27" height="27" viewBox="0 0 24 24"><use href="#icon_assignment"/></svg></button>
           <button type="button" class="option-button" id="quiz_icon" style="float:right;padding:0 3px;margin-right:0px;background:none;border:none;margin-top:11px;display:none;" onclick="toggle_quiz()" title="Start quiz"><svg id="quiz_icon_svg" width="27" height="27" viewBox="0 0 24 24"><use href="#icon_school"/></svg></button>
         </div>
         <div class="equations">

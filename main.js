@@ -1821,17 +1821,27 @@ function show_answer_to_task(task_id){
 
 // ---------------- end of questions and answer code
 
-function toolboxMenuToggle(event){
-  add_event("toolbox_toggle");
-  let toggleElement = document.querySelector('.toolbox');
-  toggleElement.classList.toggle('active');
+function view_settings (event){
+  add_event("view_settings");
+  remove_all_windows();
+  let settings_element = document.querySelector('.toolbox');
+  settings_element.classList.add('active');
+}
+function hide_settings (event){
+  add_event("hide_settings");
+  remove_all_windows();
 }
 
-function infoToggle(event){
+function view_info (event){
   add_event("view_info");
   achievement_done("view_info");
+  remove_all_windows();
   let toggleElement = document.querySelector('.info');
   toggleElement.classList.toggle('active');
+}
+function hide_info (event){
+  add_event("hide_info");
+  remove_all_windows();
 }
 
 const copy_code = async () => {
@@ -2709,9 +2719,7 @@ function start_quiz (){
   // Remove the "Take the initial quiz"-text:
   let welcome_text=document.getElementById("welcome_text");
   welcome_text.innerHTML='';
-  //remove the assignments box:
-  let assignments_box = document.querySelector('.assignments_box');
-  assignments_box.classList.remove('active');
+  remove_all_windows();
   let assignment_icon_svg = document.getElementById("assignment_icon_svg");
   assignment_icon_svg.style.fill=null;
   removeAllGraphs();
@@ -2726,7 +2734,7 @@ function start_quiz (){
     let nickname_input_element = document.getElementById("nickname");
     nickname_input_element.focus();
   } catch (e) {}
-  add_event("quiz_window_shown");
+  add_event("view_quiz");
 }
 
 function quiz_lets_go_compete (){
@@ -3388,6 +3396,7 @@ function stop_quiz (){
   toggleElement.classList.remove('active');
   let toggleElement2 = document.querySelector('.quiz_highscores');
   toggleElement2.classList.remove('active');
+  add_event("hide_quiz");
   quiz_is_running = 0;
   quiz_timer_div = document.getElementById("quiz_timer");
   quiz_timer_div.innerHTML="";
@@ -3489,8 +3498,6 @@ function read_highscores () {
 
       }
     }
-    console.log("high_total2:");
-    console.log(high_total2);
     let high_total_sorted = Object.keys(high_total2).map(function(nickname) {
       return [nickname, high_total2[nickname]];
     });
@@ -3498,7 +3505,6 @@ function read_highscores () {
     high_total_sorted.sort(function(first, second) {
       return second[1] - first[1];
     });
-    console.log(high_total_sorted);
     let s="<h2>Highest score</h2>";
     let prev_score = -1;
     for (let row_no=0; row_no<high_total_sorted.length; row_no++) {
@@ -4042,7 +4048,7 @@ function select_quiz_type(event){
 let assignments_enabled = false;
 let current_assignment = "none";
 
-function toggle_assignments(event){
+function toggle_assignments (event){
   if (assignments_enabled == false){
     assignments_enabled = true;
     let show_assignments_icon = document.getElementById("show_assignments");
@@ -4054,19 +4060,17 @@ function toggle_assignments(event){
   }
 }
 
-function toggle_assignments_box(event){
+function view_assignments (event){
   add_event("view_assignments");
   achievement_done("view_assignments");
+  remove_all_windows();
   let assignments_box = document.querySelector('.assignments_box');
-  assignments_box.classList.toggle('active');
+  assignments_box.classList.add('active');
   update_assignments();
 }
-
-function close_assignments_box(event){
-  add_event("close_assignments");
-  let assignments_box = document.querySelector('.assignments_box');
-  assignments_box.classList.toggle('active');
-  update_assignments();
+function hide_assignments (event){
+  add_event("hide_assignments");
+  remove_all_windows();
 }
 
 function task_done (which_one){
@@ -4221,7 +4225,7 @@ let nof_assignments_done=0;
 function update_assignments (){
   let assignments_box = document.querySelector('.assignments_box');
   let s = "";
-  s += '<br><button type="button" class="close-window" onclick="close_assignments_box();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>';
+  s += '<br><button type="button" class="close-window" onclick="hide_assignments();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>';
   s += "<center>";
   s += '<svg width="34" height="34" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_assignment"/></svg>';
   s += "&nbsp;Your Assignments";
@@ -4299,6 +4303,8 @@ function remove_all_windows (){
   toggleElement5.classList.remove('active');
   let achievements_box = document.querySelector('.achievements_box');
   achievements_box.classList.remove('active');
+  let assignments_box = document.querySelector('.assignments_box');
+  assignments_box.classList.remove('active');
 }
 
 function restart_lupze (){
@@ -4671,7 +4677,7 @@ function update_achievements (){
 
   let achievements_box = document.querySelector('.achievements_box');
   let s = "";
-  s += '<br><button type="button" class="close-window" onclick="toggle_achievements();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>';
+  s += '<br><button type="button" class="close-window" onclick="hide_achievements();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>';
 
   s += "<center>";
   s += "<svg width='28' height='28' viewBox='0 0 24 24' style='vertical-align:middle'><use href='#icon_star'/></svg>";
@@ -4714,13 +4720,18 @@ function reset_achievement(achievement_to_reset){
 
 let nof_times_achievements_window_opened = 0;
 
-function toggle_achievements(event){
+function view_achievements (event){
   achievement_done("view_achievements");
   add_event("view_achievements");
+  remove_all_windows();
   nof_times_achievements_window_opened += 1;
   let achievements_box = document.querySelector('.achievements_box');
   achievements_box.classList.toggle('active');
   update_achievements();
+}
+function hide_achievements (event){
+  add_event("hide_achievements");
+  remove_all_windows();
 }
 
 
@@ -9343,7 +9354,7 @@ function ready (){
   let add_button = document.getElementsByClassName("add-graph")[0];
   add_button.addEventListener('click',addNewGraphClicked);
   let setting_button = document.getElementsByClassName("option-button")[0];
-  setting_button.addEventListener('click',toolboxMenuToggle);
+  setting_button.addEventListener('click',view_settings);
   let input_equation = document.getElementsByClassName("input-equation")[0].getElementsByClassName("formula")[0];
   input_equation.addEventListener('input',updateInputFormula);
   // Make sure that input function selector is visible:
