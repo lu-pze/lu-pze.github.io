@@ -2738,6 +2738,13 @@ function start_quiz (){
 }
 
 function quiz_lets_go_compete (){
+  if (client_nick == "") {
+    add_event("tried_start_quiz_compete_but_no_nickname");
+    let nickname_area = document.getElementById("nickname_area");
+    nickname_area.style.background = "#ff0000";
+
+    return;
+  }
   add_event("start_quiz_compete");
   quiz_compete = true;
   quiz_practice = false;
@@ -3727,6 +3734,10 @@ function quiz_time_is_up (){
     s += ", but you could focus on learning more about " + quiz_explanation[bottom_question_id] + ".<br><br>";
     //  s += '<span style="color:#808080">Total: ' + quiz_difficulty.toFixed(1) + "</span><br>";
   }
+
+  s += '<div id="nickname_area">';
+  s += 'Your nickname: <input type="text" id="nickname" name="nickname" size="12" style="font-size:162%;text-align:center;background:#fff" autofocus value="" oninput="set_nickname(this)"><br>';
+  s += '</div>';
 
   s += '<table width="90%"><tr><td width="20%" class="yellow_hover" onclick="stop_quiz()" align="center">';
   s += '<br><span id="quiz_cancel_button" style="color:#b0b0b0;vertical-align:middle;margin:10px">I\'m done</span><br><br>';
