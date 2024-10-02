@@ -3523,8 +3523,9 @@ function read_highscores () {
       } else {
         s += "&nbsp;&nbsp;&nbsp;&nbsp;";
       }
+      s += this_score.padStart(5,' ').replace(" ","&nbsp;") + " ";
       s += (places[this_nickname] + "      ").substr(0,6).replaceAll(" ","&nbsp;") + "&nbsp;";//"FRTF05&nbsp;";
-      s += this_score.padStart(5,' ').replace(" ","&nbsp;") + " " + this_nickname + ", after "+high_total_nof_correct[this_nickname]+" questions<br>";
+      s += this_nickname + ", after "+high_total_nof_correct[this_nickname]+" questions<br>";
     }
 
     let high_longest_streak_sorted = Object.keys(high_longest_streak).map(function(nickname) {
@@ -3584,7 +3585,9 @@ function read_highscores () {
       let row=high_latest_sorted[row_no];
       let this_nickname = row[0];
       let this_server_time = row[1];
-      s += str(this_server_time) + " " + this_nickname + "<br>";
+      s += str(this_server_time) + " ";
+      s += (places[this_nickname] + "      ").substr(0,6).replaceAll(" ","&nbsp;") + "&nbsp;";//"FRTF05&nbsp;";
+      s += this_nickname + "<br>";
     }
 
 
