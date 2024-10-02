@@ -3428,19 +3428,11 @@ function read_highscores () {
       let line=lines[i];
       if (line.startsWith("T")){
         const place_name_re = new RegExp(/;L(.*?);/,"g");
-        let place_name = "_Anonymous";
+        let placename = "_Anonymous";
         const m=place_name_re.exec(line);
         if (m) {
-          place_name = m[1];
+          placename = m[1];
         }
-        // This doesn't work for nicknames like "__":
-        //let parts = place_name.split('_');
-        // So split at the first "_":
-        let i = place_name.indexOf('_');
-        let parts = [place_name.slice(0,i), place_name.slice(i+1)];
-        let place = parts[0];
-        let nickname = parts[1];
-        places[nickname] = place;
 
         const total_re = new RegExp(/,total=([0-9.]+),/,"g");
         const longest_streak_re = new RegExp(/,longest_streak=([0-9.]+),/,"g");
@@ -3459,53 +3451,53 @@ function read_highscores () {
           if (m4) {
             this_nof_correct = float(m4[1]);
           }
-          if (nickname in high_total){
-            if (this_total > high_total[nickname]){
-              high_total[nickname] = this_total;
-              high_total_nof_correct[nickname] = this_nof_correct;
+          if (placename in high_total){
+            if (this_total > high_total[placename]){
+              high_total[placename] = this_total;
+              high_total_nof_correct[placename] = this_nof_correct;
             }
-          } else if (this_total == high_total[nickname]){
+          } else if (this_total == high_total[placename]){
             // Make sure to grab the highest nof_correct for this highest score:
-            if (high_total_nof_correct[nickname] < this_nof_correct) {
-              high_total_nof_correct[nickname] = this_nof_correct;
+            if (high_total_nof_correct[placename] < this_nof_correct) {
+              high_total_nof_correct[placename] = this_nof_correct;
             }
           } else {
-            high_total[nickname] = this_total;
-            high_total_nof_correct[nickname] = this_nof_correct;
+            high_total[placename] = this_total;
+            high_total_nof_correct[placename] = this_nof_correct;
           }
-          high_total2[nickname] = high_total[nickname] + 0.01*high_total_nof_correct[nickname];
+          high_total2[placename] = high_total[placename] + 0.01*high_total_nof_correct[placename];
         }
 
         if (m3) {
           let this_longest_streak = float(m3[1]);
-          if (nickname in high_longest_streak){
-            if (this_longest_streak > high_longest_streak[nickname]){
-              high_longest_streak[nickname] = this_longest_streak;
+          if (placename in high_longest_streak){
+            if (this_longest_streak > high_longest_streak[placename]){
+              high_longest_streak[placename] = this_longest_streak;
             }
           } else {
-            high_longest_streak[nickname] = this_longest_streak;
+            high_longest_streak[placename] = this_longest_streak;
           }
         }
 
         if (m4) {
           let this_nof_correct = float(m4[1]);
-          if (nickname in high_nof_correct){
-            if (this_nof_correct > high_nof_correct[nickname]){
-              high_nof_correct[nickname] = this_nof_correct;
+          if (placename in high_nof_correct){
+            if (this_nof_correct > high_nof_correct[placename]){
+              high_nof_correct[placename] = this_nof_correct;
             }
           } else {
-            high_nof_correct[nickname] = this_nof_correct;
+            high_nof_correct[placename] = this_nof_correct;
           }
         }
 
         if (m5) {
           let this_server_time = m5[1];
-          if (nickname in high_latest){
-            if (this_server_time > high_latest[nickname]){
-              high_latest[nickname] = this_server_time;
+          if (placename in high_latest){
+            if (this_server_time > high_latest[placename]){
+              high_latest[placename] = this_server_time;
             }
           } else {
-            high_latest[nickname] = this_server_time;
+            high_latest[placename] = this_server_time;
           }
         }
 
@@ -3522,8 +3514,12 @@ function read_highscores () {
     let prev_score = -1;
     for (let row_no=0; row_no<high_total_sorted.length; row_no++) {
       let row=high_total_sorted[row_no];
-      let this_nickname = row[0];
-      let this_score = high_total[this_nickname].toFixed(1);
+      let this_placename = row[0];
+      let i = this_placename.indexOf('_');
+      let parts = [this_placename.slice(0,i), this_placename.slice(i+1)];
+      let this_place = parts[0];
+      let this_nickname = parts[1];
+      let this_score = high_total[this_placename].toFixed(1);
       if (prev_score != this_score) {
         s += str(row_no+1).padStart(2," ").replace(" ","&nbsp;") +". ";
         prev_score = this_score;
@@ -3531,8 +3527,8 @@ function read_highscores () {
         s += "&nbsp;&nbsp;&nbsp;&nbsp;";
       }
       s += this_score.padStart(5,' ').replace(" ","&nbsp;") + " ";
-      s += (places[this_nickname] + "      ").substr(0,6).replaceAll(" ","&nbsp;") + "&nbsp;";//"FRTF05&nbsp;";
-      s += this_nickname + ", after "+high_total_nof_correct[this_nickname]+" questions<br>";
+      s += (this_place + "      ").substr(0,6).replaceAll(" ","&nbsp;") + "&nbsp;";//"FRTF05&nbsp;";
+      s += this_nickname + ", after "+high_total_nof_correct[this_placename]+" questions<br>";
     }
 
     let high_longest_streak_sorted = Object.keys(high_longest_streak).map(function(nickname) {
@@ -3546,7 +3542,11 @@ function read_highscores () {
     let prev_streak = -1;
     for (let row_no=0; row_no<Math.min(10,high_longest_streak_sorted.length); row_no++) {
       let row=high_longest_streak_sorted[row_no];
-      let this_nickname = row[0];
+      let this_placename = row[0];
+      let i = this_placename.indexOf('_');
+      let parts = [this_placename.slice(0,i), this_placename.slice(i+1)];
+      let this_place = parts[0];
+      let this_nickname = parts[1];
       let this_streak = row[1];
       if (prev_streak != this_streak) {
         s += str(row_no+1).padStart(2," ").replace(" ","&nbsp;") +". ";
@@ -3555,7 +3555,7 @@ function read_highscores () {
         s += "&nbsp;&nbsp;&nbsp;&nbsp;";
       }
       s += str(this_streak).padStart(2," ").replace(" ","&nbsp;") + " ";
-      s += (places[this_nickname] + "      ").substr(0,6).replaceAll(" ","&nbsp;") + "&nbsp;";//"FRTF05&nbsp;";
+      s += (this_place + "      ").substr(0,6).replaceAll(" ","&nbsp;") + "&nbsp;";//"FRTF05&nbsp;";
       s += this_nickname + "<br>";
     }
 
@@ -3570,7 +3570,11 @@ function read_highscores () {
     let prev_nof_correct = -1;
     for (let row_no=0; row_no<Math.min(15,high_nof_correct_sorted.length); row_no++) {
       let row=high_nof_correct_sorted[row_no];
-      let this_nickname = row[0];
+      let this_placename = row[0];
+      let i = this_placename.indexOf('_');
+      let parts = [this_placename.slice(0,i), this_placename.slice(i+1)];
+      let this_place = parts[0];
+      let this_nickname = parts[1];
       let this_nof_correct = row[1];
       if (prev_nof_correct != this_nof_correct) {
         s += str(row_no+1).padStart(2," ").replace(" ","&nbsp;") +". ";
@@ -3579,7 +3583,7 @@ function read_highscores () {
         s += "&nbsp;&nbsp;&nbsp;&nbsp;";
       }
       s += str(this_nof_correct).padStart(2," ").replace(" ","&nbsp;") + " ";
-      s += (places[this_nickname] + "      ").substr(0,6).replaceAll(" ","&nbsp;") + "&nbsp;";//"FRTF05&nbsp;";
+      s += (this_place + "      ").substr(0,6).replaceAll(" ","&nbsp;") + "&nbsp;";//"FRTF05&nbsp;";
       s += this_nickname + "<br>";
     }
 
@@ -3594,14 +3598,16 @@ function read_highscores () {
     s+="<h2>Latest quizzers</h2>";
     for (let row_no=0; row_no<Math.min(10,high_latest_sorted.length); row_no++) {
       let row=high_latest_sorted[row_no];
-      let this_nickname = row[0];
+      let this_placename = row[0];
+      let i = this_placename.indexOf('_');
+      let parts = [this_placename.slice(0,i), this_placename.slice(i+1)];
+      let this_place = parts[0];
+      let this_nickname = parts[1];
       let this_server_time = row[1];
       s += str(this_server_time) + " ";
-      s += (places[this_nickname] + "      ").substr(0,6).replaceAll(" ","&nbsp;") + "&nbsp;";//"FRTF05&nbsp;";
+      s += (this_place + "      ").substr(0,6).replaceAll(" ","&nbsp;") + "&nbsp;";//"FRTF05&nbsp;";
       s += this_nickname + "<br>";
     }
-
-
 
     let highscore_div = document.getElementById("quiz_highscores");
     highscore_div.innerHTML=s;
