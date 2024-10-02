@@ -3547,7 +3547,9 @@ function read_highscores () {
       } else {
         s += "&nbsp;&nbsp;&nbsp;&nbsp;";
       }
-      s += str(this_streak).padStart(2," ").replace(" ","&nbsp;") + " " + this_nickname + "<br>";
+      s += str(this_streak).padStart(2," ").replace(" ","&nbsp;") + " ";
+      s += (places[this_nickname] + "      ").substr(0,6).replaceAll(" ","&nbsp;") + "&nbsp;";//"FRTF05&nbsp;";
+      s += this_nickname + "<br>";
     }
 
     let high_nof_correct_sorted = Object.keys(high_nof_correct).map(function(nickname) {
@@ -3569,7 +3571,9 @@ function read_highscores () {
       } else {
         s += "&nbsp;&nbsp;&nbsp;&nbsp;";
       }
-      s += str(this_nof_correct).padStart(2," ").replace(" ","&nbsp;") + " " + this_nickname + "<br>";
+      s += str(this_nof_correct).padStart(2," ").replace(" ","&nbsp;") + " ";
+      s += (places[this_nickname] + "      ").substr(0,6).replaceAll(" ","&nbsp;") + "&nbsp;";//"FRTF05&nbsp;";
+      s += this_nickname + "<br>";
     }
 
 
