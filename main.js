@@ -3416,6 +3416,7 @@ function read_highscores () {
     let high_longest_streak = {};
     let high_nof_correct = {};
     let high_latest = {};
+    let places = {};
     for(let i=0; i<lines.length; i++){
       let line=lines[i];
       if (line.startsWith("T")){
@@ -3425,9 +3426,14 @@ function read_highscores () {
         if (m) {
           place_name = m[1];
         }
-        let parts = place_name.split('_');
+        // This doesn't work for nicknames like "__":
+        //let parts = place_name.split('_');
+        // So split at the first "_":
+        let i = place_name.indexOf('_');
+        let parts = [place_name.slice(0,i), place_name.slice(i+1)];
         let place = parts[0];
         let nickname = parts[1];
+        places[nickname] = place;
 
         const total_re = new RegExp(/,total=([0-9.]+),/,"g");
         const longest_streak_re = new RegExp(/,longest_streak=([0-9.]+),/,"g");
@@ -3517,6 +3523,7 @@ function read_highscores () {
       } else {
         s += "&nbsp;&nbsp;&nbsp;&nbsp;";
       }
+      s += (places[this_nickname] + "      ").substr(0,6).replaceAll(" ","&nbsp;") + "&nbsp;";//"FRTF05&nbsp;";
       s += this_score.padStart(5,' ').replace(" ","&nbsp;") + " " + this_nickname + ", after "+high_total_nof_correct[this_nickname]+" questions<br>";
     }
 
@@ -3529,7 +3536,7 @@ function read_highscores () {
     });
     s+="<h2>Longest streak</h2>";
     let prev_streak = -1;
-    for (let row_no=0; row_no<high_longest_streak_sorted.length; row_no++) {
+    for (let row_no=0; row_no<Math.min(10,high_longest_streak_sorted.length); row_no++) {
       let row=high_longest_streak_sorted[row_no];
       let this_nickname = row[0];
       let this_streak = row[1];
@@ -3551,7 +3558,7 @@ function read_highscores () {
     });
     s+="<h2>Most answered questions</h2>";
     let prev_nof_correct = -1;
-    for (let row_no=0; row_no<high_nof_correct_sorted.length; row_no++) {
+    for (let row_no=0; row_no<Math.min(15,high_nof_correct_sorted.length); row_no++) {
       let row=high_nof_correct_sorted[row_no];
       let this_nickname = row[0];
       let this_nof_correct = row[1];
@@ -3573,7 +3580,7 @@ function read_highscores () {
       return (second[1] < first[1]) ? -1 : (second[1] > first[1]) ? 1 : 0;
     });
     s+="<h2>Latest quizzers</h2>";
-    for (let row_no=0; row_no<high_latest_sorted.length; row_no++) {
+    for (let row_no=0; row_no<Math.min(10,high_latest_sorted.length); row_no++) {
       let row=high_latest_sorted[row_no];
       let this_nickname = row[0];
       let this_server_time = row[1];
