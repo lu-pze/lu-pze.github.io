@@ -929,8 +929,9 @@ By analyzing Bode plots, you can identify resonance frequencies, damping ratios,
 //Some automatic control engineers use decibel dB scale on their Bode magnitude plots instead of decimal magnitude numbers. Give me pros and cons of using decibel scale vs. log-scaled numbers.
   "Bode_mag":{q:"Why use logarithmic scale in the Bode magnitude plot?",pos:function(){return {visible:true,x:graph_bode_mag_x+graph_bode_mag_x_offset,y:graph_bode_mag_y+graph_bode_mag_y_offset-10};},
   a:`Magnitude, in this context, refers to the ratio of output signal amplitude to input signal amplitude, typically expressed as a real value, or in decibels (dB). Using log-scale magnitude allows engineers to compare signal levels across different frequencies on a logarithmic scale, which is more intuitive and easier to interpret.
-Some automatic control engineers use the decibel (dB) scale on their Bode magnitude plots instead of decimal magnitude numbers.<br>
-<b>Using Log-Scaled Numbers:</b>Pros:<ul>
+Some automatic control engineers use the decibel (dB) scale on their Bode magnitude plots instead of decimal magnitude numbers.<br><br>
+<b>Using Log-Scaled Numbers:</b><br><br>Pros:
+<ul>
 <li>Direct Representation: Log-scaled numbers provide a direct representation of the logarithmic relationship between input and output signals, which can be beneficial for those with a strong mathematical background.<br>
 <li>Simplicity in Conversion: Converting log-scaled numbers back to linear magnitude is straightforward, requiring basic exponentiation.<br>
 <li>Simplicity in Visualization: For those familiar with logarithmic scales, log-scaled numbers may offer simpler visualization and interpretation of the frequency response.<br>
@@ -938,7 +939,7 @@ Some automatic control engineers use the decibel (dB) scale on their Bode magnit
 Cons:<ul>
 <li>Less Intuitive: Log-scaled numbers may be less intuitive for engineers without a strong mathematical background or experience with logarithmic scales, making interpretation more challenging.<br>
 <li>Limited Direct Comparison: Direct comparison of gain values at different frequencies may be less straightforward compared to dB, potentially complicating the identification of critical system characteristics.<br>
-</ul><b>Using Decibel (dB) Scale:</b>Pros:<ul>
+</ul><b>Using Decibel (dB) Scale:</b><br><br>Pros:<ul>
 <li>Logarithmic Representation: dB scale provides a logarithmic representation of magnitude, compressing a wide range of values into a more manageable scale. This simplifies visualization and interpretation of the frequency response over a broad range of frequencies.<br>
 <li>Relative Sensitivity: dB scale emphasizes relative changes in magnitude rather than absolute values, making it easier to focus on significant changes in gain or attenuation, which is crucial in control systems where small changes can have significant effects.<br>
 <li>Ease of Interpretation: dB values are more intuitive for many engineers, particularly those with backgrounds in signal processing or telecommunications. They provide a standardized way to express signal levels and system gains across different frequencies.<br>
