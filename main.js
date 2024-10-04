@@ -800,11 +800,11 @@ In summary, the choice between using degrees and radians depends on the context 
         <li><b>Electronics:</b> LC Circuit (Tank Circuit) - A classic example where the electric charge oscillates between an inductor (<em>L</em>) and capacitor (<em>C</em>), described by d<sup>2</sup>q/dt<sup>2</sup> + q/(LC) = 0.</li>
         <li><b>Automotive:</b> Suspension System - Represents the vehicle's dynamics, where the oscillatory behavior models comfort and handling.</li>
         <li><b>Mechatronics:</b> Robotic Arm Joints - The positioning control typically involves second-order dynamics to describe the movement.</li>
-        <li><b>Physics:</b> Mass-Spring-Damper System - A fundamental second-order system, described by m*d<sup>2</sup>x/dt<sup>2</sup> + c*dx/dt + kx = F(t), where m, c, and k are mass, damping coefficient, and spring constant, respectively.</li>
+        <li><b>Physics:</b> Mass-Spring-Damper System - A fundamental second-order system, described by m&middot;d<sup>2</sup>x/dt<sup>2</sup> + c&middot;dx/dt + kx = F(t), where m, c, and k are mass, damping coefficient, and spring constant, respectively.</li>
         <li><b>Chemical Engineering:</b> Temperature Control in a Chemical Reactor - Where the temperature control loop can be approximated by a second-order system to maintain optimal reaction conditions.</li>
         <li><b>Electrical Engineering:</b> RLC Circuits - Used in filters, tuners, and frequency discriminators, representing a resistive (R), inductive (L), and capacitive (C) elements.</li>
         <li><b>Aerospace:</b> Attitude Control Systems - Governs the orientation of aircraft or spacecraft, often modelled with second-order dynamics.</li>
-        <li><b>Mechanics:</b> Pendulum Dynamics (Small Angle Approximation) - Described by d<sup>2</sup>&theta;/dt<sup>2</sup> + g/l * &theta; = 0, where g is the acceleration due to gravity and l is the pendulum length.</li>
+        <li><b>Mechanics:</b> Pendulum Dynamics (Small Angle Approximation) - Described by d<sup>2</sup>&theta;/dt<sup>2</sup> + g/l &middot; &theta; = 0, where g is the acceleration due to gravity and l is the pendulum length.</li>
         <li><b>Marine Engineering:</b> Ship Roll Dynamics - Explains how ships stabilize after being tilted by waves, displaying second-order characteristics.</li>
         <li><b>Mathematics:</b> Differential Equations - Many natural phenomena and engineering problems are modeled as second-order linear differential equations.</li>
         <li><b>Heating, Ventilation, and Air Conditioning (HVAC):</b> Temperature Control Systems - Regulate the building's climate using feedback mechanisms akin to second-order systems.</li>
@@ -833,11 +833,11 @@ In summary, the choice between using degrees and radians depends on the context 
         <li><b>Electronics:</b> LC Circuit (Tank Circuit) - A classic example where the electric charge oscillates between an inductor (<em>L</em>) and capacitor (<em>C</em>), described by d<sup>2</sup>q/dt<sup>2</sup> + q/(LC) = 0.</li>
         <li><b>Automotive:</b> Suspension System - Represents the vehicle's dynamics, where the oscillatory behavior models comfort and handling.</li>
         <li><b>Mechatronics:</b> Robotic Arm Joints - The positioning control typically involves second-order dynamics to describe the movement.</li>
-        <li><b>Physics:</b> Mass-Spring-Damper System - A fundamental second-order system, described by m*d<sup>2</sup>x/dt<sup>2</sup> + c*dx/dt + kx = F(t), where m, c, and k are mass, damping coefficient, and spring constant, respectively.</li>
+        <li><b>Physics:</b> Mass-Spring-Damper System - A fundamental second-order system, described by m&middot;d<sup>2</sup>x/dt<sup>2</sup> + c&middot;dx/dt + kx = F(t), where m, c, and k are mass, damping coefficient, and spring constant, respectively.</li>
         <li><b>Chemical Engineering:</b> Temperature Control in a Chemical Reactor - Where the temperature control loop can be approximated by a second-order system to maintain optimal reaction conditions.</li>
         <li><b>Electrical Engineering:</b> RLC Circuits - Used in filters, tuners, and frequency discriminators, representing a resistive (R), inductive (L), and capacitive (C) elements.</li>
         <li><b>Aerospace:</b> Attitude Control Systems - Governs the orientation of aircraft or spacecraft, often modelled with second-order dynamics.</li>
-        <li><b>Mechanics:</b> Pendulum Dynamics (Small Angle Approximation) - Described by d<sup>2</sup>&theta;/dt<sup>2</sup> + g/l * &theta; = 0, where g is the acceleration due to gravity and l is the pendulum length.</li>
+        <li><b>Mechanics:</b> Pendulum Dynamics (Small Angle Approximation) - Described by d<sup>2</sup>&theta;/dt<sup>2</sup> + g/l &middot; &theta; = 0, where g is the acceleration due to gravity and l is the pendulum length.</li>
         <li><b>Marine Engineering:</b> Ship Roll Dynamics - Explains how ships stabilize after being tilted by waves, displaying second-order characteristics.</li>
         <li><b>Mathematics:</b> Differential Equations - Many natural phenomena and engineering problems are modeled as second-order linear differential equations.</li>
         <li><b>Heating, Ventilation, and Air Conditioning (HVAC):</b> Temperature Control Systems - Regulate the building's climate using feedback mechanisms akin to second-order systems.</li>
@@ -1592,10 +1592,7 @@ The PID controller is usually connected in a feedback loop as in the image above
 </math-field><br>
   And the poles would be:<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
-  s = \\frac{-1000 \\pm \\sqrt{1000^2 - 4 \\cdot 1000 \\cdot 5000}}{2 \\cdot 1000}
-</math-field><br>
-<math-field read-only style='vertical-align:bottom;display:inline-block'>
-  s = \\frac{-1000 \\pm \\sqrt{-16000000}}{2000}
+  s = \\frac{-1000 \\pm \\sqrt{1000^2 - 4 \\cdot 1000 \\cdot 5000}}{2 \\cdot 1000} = \\frac{-1000 \\pm \\sqrt{-16000000}}{2000}
 </math-field><br>
   This illustrates a system with complex conjugate poles, indicating an underdamped system typical for making the car suspension comfortable by allowing it to \"bounce\" slightly before settling. Notice, however, in this example and the given values, the calculation gives real poles, and we will end up with the transfer function for two real poles.`},
 
@@ -1613,27 +1610,27 @@ The PID controller is usually connected in a feedback loop as in the image above
       return {visible:false};
     }
   },a:`Let's derive the transfer function G(s) of a system with complex-valued poles, using the example of a pendulum's dynamics under the small angle approximation. This is a fundamental concept in automatic control theory, which helps us understand system behavior in response to inputs. We'll start with the pendulum's differential equation and proceed step-by-step.
-  <h3>Differential Equation</h3>
+  <h3>Step 1: Differential Equation</h3>
   For a simple pendulum under the small angle approximation, the equation of motion is given as follows:<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
   \\frac{d^2\\theta}{dt^2} + \\frac{g}{l}\\theta = 0,
 </math-field><br>
   where: &theta; is the angular displacement (in radians), g is the acceleration due to gravity m/s<sup>2</sup>, l is the length of the pendulum (m).<br>
 
-  <h3>Laplace Transform</h3>
+  <h3>Step 2: Laplace Transform</h3>
   To find the transfer function G(s), we first apply the Laplace transform to the differential equation. The Laplace transform of a derivative transforms derivatives into algebraic terms, making the equation easier to manipulate.
-  Given a function f(t), the Laplace transform of its second derivative is s<sup>2</sup>F(s) - s*f(0) - f'(0), where F(s) is the Laplace transform of f(t). Assuming zero initial conditions &theta;(0)=0 and d&theta;/dt(0)=0, which is common in control theory for simplicity, the Laplace transform of our differential equation becomes:<br>
+  Given a function f(t), the Laplace transform of its second derivative is s<sup>2</sup>&middot;F(s) - s&middot;f(0) - f'(0), where F(s) is the Laplace transform of f(t). Assuming zero initial conditions &theta;(0)=0 and d&theta;/dt(0)=0, which is common in control theory for simplicity, the Laplace transform of our differential equation becomes:<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
   s^2\\Theta(s) + \\frac{g}{l}\\Theta(s) = 0,
 </math-field><br>
   where &Theta;(s) is the Laplace transform of &theta;(t).
 
-  <h3>Rearranging the equation</h3>
+  <h3>Step 3: Rearranging the equation</h3>
   Collecting terms, we express the above equation as:<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
   (s^2 + \\frac{g}{l})\\Theta(s) = 0.
 </math-field><br>
-  To find the transfer function G(s), we usually express the equation in the form of &Theta;(s) = G(s) * Input(s). However, in our case, the equation represents natural dynamics without an explicit input. For educational purposes, if we consider a modified equation that includes an input, such as a torque or a force F(t) that influences &theta;(t), we could write:<br>
+  To find the transfer function G(s), we usually express the equation in the form of &Theta;(s) = G(s) &middot; Input(s). However, in our case, the equation represents natural dynamics without an explicit input. For educational purposes, if we consider a modified equation that includes an input, such as a torque or a force F(t) that influences &theta;(t), we could write:<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
   \\frac{d^2\\theta}{dt^2} + \\frac{g}{l}\\theta = F(t),
 </math-field><br>
@@ -1643,13 +1640,11 @@ The PID controller is usually connected in a feedback loop as in the image above
 </math-field><br>
   From this point, we can express &Theta;(s) in terms of F(s) and derive the transfer function.
 
-  <h3>Transfer Function</h3>
+  <h3>Step 4: Transfer Function</h3>
   The transfer function G(s) is defined as the ratio of the output (in this case, &Theta;(s)) to the input F(s), determined under the assumption of zero initial conditions. So, we have:<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
   G(s) = \\frac{\\Theta(s)}{F(s)} = \\frac{1}{s^2 + \\frac{g}{l}}.
 </math-field><br>
-
-  <h3>Complex Poles</h3>
   The characteristic equation of the system is the denominator of G(s), which is:<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
   s^2 + \\frac{g}{l} = 0.
