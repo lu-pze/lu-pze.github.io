@@ -3515,6 +3515,9 @@ function read_highscores () {
       let parts = [this_placename.slice(0,i), this_placename.slice(i+1)];
       let this_place = parts[0];
       let this_nickname = parts[1];
+      if (this_nickname.length>19) {
+        this_nickname = this_nickname.substr(0,16)+"...";
+      }
       let this_score = high_total[this_placename].toFixed(1);
       if (prev_score != this_score) {
         s += str(row_no+1).padStart(2," ").replace(" ","&nbsp;") +". ";
@@ -3543,6 +3546,9 @@ function read_highscores () {
       let parts = [this_placename.slice(0,i), this_placename.slice(i+1)];
       let this_place = parts[0];
       let this_nickname = parts[1];
+      if (this_nickname.length>24) {
+        this_nickname = this_nickname.substr(0,21)+"...";
+      }
       let this_streak = row[1];
       if (prev_streak != this_streak) {
         s += str(row_no+1).padStart(2," ").replace(" ","&nbsp;") +". ";
@@ -3571,6 +3577,9 @@ function read_highscores () {
       let parts = [this_placename.slice(0,i), this_placename.slice(i+1)];
       let this_place = parts[0];
       let this_nickname = parts[1];
+      if (this_nickname.length>24) {
+        this_nickname = this_nickname.substr(0,21)+"...";
+      }
       let this_nof_correct = row[1];
       if (prev_nof_correct != this_nof_correct) {
         s += str(row_no+1).padStart(2," ").replace(" ","&nbsp;") +". ";
@@ -3599,6 +3608,9 @@ function read_highscores () {
       let parts = [this_placename.slice(0,i), this_placename.slice(i+1)];
       let this_place = parts[0];
       let this_nickname = parts[1];
+      if (this_nickname.length>24) {
+        this_nickname = this_nickname.substr(0,21)+"...";
+      }
       let this_server_time = row[1];
       s += str(this_server_time) + " ";
       s += (this_place + "      ").substr(0,6).replaceAll(" ","&nbsp;") + "&nbsp;";//"FRTF05&nbsp;";
