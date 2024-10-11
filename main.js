@@ -3448,6 +3448,7 @@ function read_highscores () {
             this_nof_correct = float(m4[1]);
           }
           let this_score = this_total + 0.01*this_nof_correct;
+          if (placename.includes("Pex")) this_score -= 0.001;
 //          console.log(placename + ":total=" + this_total + ",nofc=" + this_nof_correct + ",score=" + this_score);
           if (placename in high_total){
             if (this_score > high_total2[placename]){
@@ -3458,7 +3459,6 @@ function read_highscores () {
           } else if (this_score == high_total2[placename]){
             // Make sure to grab the highest nof_correct for this highest score:
             if (high_total_nof_correct[placename] < this_nof_correct) {
-              console.log("REPLACED NOFC");
               high_total_nof_correct[placename] = this_nof_correct;
             }
           } else {
