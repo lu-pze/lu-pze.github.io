@@ -3447,21 +3447,25 @@ function read_highscores () {
           if (m4) {
             this_nof_correct = float(m4[1]);
           }
+          let this_score = this_total + 0.01*this_nof_correct;
+//          console.log(placename + ":total=" + this_total + ",nofc=" + this_nof_correct + ",score=" + this_score);
           if (placename in high_total){
-            if (this_total > high_total[placename]){
+            if (this_score > high_total2[placename]){
               high_total[placename] = this_total;
+              high_total2[placename] = this_score;
               high_total_nof_correct[placename] = this_nof_correct;
             }
-          } else if (this_total == high_total[placename]){
+          } else if (this_score == high_total2[placename]){
             // Make sure to grab the highest nof_correct for this highest score:
             if (high_total_nof_correct[placename] < this_nof_correct) {
+              console.log("REPLACED NOFC");
               high_total_nof_correct[placename] = this_nof_correct;
             }
           } else {
             high_total[placename] = this_total;
+            high_total2[placename] = this_score;
             high_total_nof_correct[placename] = this_nof_correct;
           }
-          high_total2[placename] = high_total[placename] + 0.01*high_total_nof_correct[placename];
         }
 
         if (m3) {
