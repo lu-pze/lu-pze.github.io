@@ -3286,7 +3286,15 @@ function next_quiz (){
   let quiz_text_norepeat = document.getElementById("quiz_text_norepeat");
   quiz_text_norepeat.style.animation = 'none';
   quiz_text_norepeat.offsetHeight; /* trigger reflow */
-  quiz_text_norepeat.style.animation="quiz_fade 1s ease-out 1";
+  if (light_mode == "dark") {
+    quiz_text_norepeat.style.color="#bfbfffc0";
+    quiz_text_norepeat.style.animation="quiz_fade 1s ease-out 1";
+    quiz_text_norepeat.style.textShadow="10px 10px 40px #000000ff";
+  } else {
+    quiz_text_norepeat.style.color="#202080c0";
+    quiz_text_norepeat.style.animation="quiz_fade_light_mode 1s ease-out 1";
+    quiz_text_norepeat.style.textShadow="10px 10px 40px #ffffffff";
+  }
 
   add_event("quiz_text="+quiz_text.innerHTML);
   redraw(); // Needed to get the title of the Dirac Impulse response correct
@@ -4899,12 +4907,15 @@ function changeStrokeWeight(event){
   redraw();
 }
 
-function changeColorMode(event){
+let light_mode = "dark";
+
+function changeColorMode (event){
   let checkbox_value = document.getElementById("color-mode-checkbox").checked;
   let graph_information_tabs = document.getElementsByClassName("graph-information-tabs")[0];
   let graph_information = document.getElementsByClassName("graph-information")[0];
   if(!checkbox_value){
     // Set to dark mode:
+    light_mode = "dark";
     background_color = color('hsb(0, 0%, 4%)');
     line_color = color('hsb(0, 0%, 22%)'); // Grey graph lines
     text_color = color('hsb(0, 0%, 100%)');
@@ -4920,6 +4931,7 @@ function changeColorMode(event){
     }
   } else {
     // Set to light mode:
+    light_mode = "light";
     background_color = color('hsb(0, 0%, 100%)');
     line_color = color('hsb(0, 0%, 64%)');
     text_color = color('hsb(0, 0%, 5%)');

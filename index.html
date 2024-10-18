@@ -90,6 +90,10 @@ math-field::part(menu-toggle){display:none;}
   from {opacity:0.2;transform:translate(-50%,-50%) rotate(20deg) scale(0.3);color:#2020ffff;}
   to {opacity:1.0;transform:translate(-50%,-50%) rotate(-3deg) scale(1);color:#bfbfffc0;}}
 .quiz_text{}
+@keyframes quiz_fade_light_mode {
+  from {opacity:0.2;transform:translate(-50%,-50%) rotate(20deg) scale(0.3);color:#8080ffff;}
+  to {opacity:1.0;transform:translate(-50%,-50%) rotate(-3deg) scale(1);color:#202080c0;}}
+.quiz_text{}
 @keyframes quiz_fade_repeat {
   0% {transform:rotate(2deg)}
   10% {transform:rotate(0deg)}
@@ -187,7 +191,7 @@ input{background:none}
   100% {opacity:0.0}}
 .toolbox{padding:20px 20px 10px 20px;right:10px;top:120px;z-index:1;box-shadow:0 0 15px #cccccc;background-color:#ddd;position:absolute;visibility:hidden;font-family:Arial,sans-serif;font-weight:400;color:#8b8b8b;}
 .toolbox.active{visibility: visible;opacity: 1;}
-.info{padding:20px 20px 10px 20px;right:10px;top:120px;z-index:1;box-shadow: 0 0 15px #cccccc;background-color:#d0d0d0f0;position: absolute;visibility: hidden;}
+.info{width:50%;padding:20px 20px 10px 20px;right:10px;top:120px;z-index:1;box-shadow:0 0 15px #cccccc;background-color:#d0d0d0f0;position:absolute;visibility:hidden;}
 .info.active{visibility:visible;opacity:1;}
 .download_script_box{padding:20px 20px 10px 20px;right:10px;top:120px;z-index:1;box-shadow: 0 0 15px #cccccc;background-color:#d0d0d0f0;position: absolute;visibility: hidden;font-family:"Lucida Console","Courier New",monospace;font-weight:600;}
 .download_script_box.active{visibility: visible;opacity: 1;}
@@ -420,34 +424,27 @@ The quiz <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vert
 <center><h2>LU-PZE: Lund University Pole-Zero Explorer</h2></center>
 <center>- <i>an Automatic Control theory playground</i></center><br>
 <hr>
-<center>This webapp is a tool for understanding transfer functions<br>
-commonly found in automatic control theory.<br></center>
+<center>This webapp is a tool for understanding transfer functions commonly found in automatic control theory.<br></center>
 <hr>
-Initially, you see four different transfer functions, each with its own color.<br>
-They are visualized as:<br>
-* Upper left plot is the <b>Bode magnitude plot</b> |G(s)|,<br>for a range of angular frequencies.<br>
-* Lower left plot is the <b>Bode phase plot</b> arg(G(s)),<br>for the same range of angular frequencies.<br>
-* Upper middle plot is the <b>Step input response</b> graph.<br>If you want to see the impulse response,<br>
-use the "Unit step" selector in the upper right corner.<br>
+Initially, you see four different transfer functions, each with its own color. They are visualized as:<br>
+* Upper left plot is the <b>Bode magnitude plot</b> |G(s)|, for a range of angular frequencies.<br>
+* Lower left plot is the <b>Bode phase plot</b> arg(G(s)), for the same range of angular frequencies.<br>
+* Upper middle plot is the <b>Step input response</b> graph. If you want to see the impulse response, use the "Unit step" selector in the upper right corner.<br>
 * Lower middle plot is the <b>Nyquist diagram</b>.<br>
-* The right <b>Pole-zero map</b> is the location of the<br>
-poles and zeros in the s-plane.<br>
+* The right <b>Pole-zero map</b> is the location of the poles and zeros in the s-plane.<br>
 <hr>
 Additional transfer functions can be summoned by clicking the <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_add"/></svg> at the top.<br>
-The sliders and values are yours to play with.<br>
-Any value can be changed.<br>
-Click and drag anything.<br>
-...and your task is to figure out how these graphs are related.<br>
-<div class="yellow_hover"><span onclick="view_assignments();">
-The <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_assignment"/></svg> Assignments can guide you,<br>
-</span></div>
-<div class="yellow_hover"><span onclick="view_achievements();">
-or the <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_star"/></svg> Achievements can inspire you.<br>
-</span></div>
-<div class="yellow_hover"><span onclick="toggle_fullscreen();">
-Press fullscreen icon <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_fullscreen"/></svg> to see more.<br>
-</span></div>
-If you get lost, click the reload icon <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_restart_alt"/></svg> at the top right!<br>
+The sliders and values are yours to play with. Any value can be changed. Click and drag anything ...and your task is to figure out how these graphs are related. 
+<span class="yellow_hover"><span onclick="view_assignments();">
+The <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_assignment"/></svg> Assignments can guide you, 
+</span></span>
+<span class="yellow_hover"><span onclick="view_achievements();">
+or the <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_star"/></svg> Achievements can inspire you. 
+</span></span>
+<span class="yellow_hover"><span onclick="toggle_fullscreen();">
+Press fullscreen icon <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_fullscreen"/></svg> to see more. 
+</span></span>
+If you get lost, click the reload icon <svg width="20" height="20" viewBox="0 0 24 24" fill="#000" style="vertical-align:middle"><use href="#icon_restart_alt"/></svg> at the top right! 
 Reloading the page in your browser will clear achievements, assignments and tasks.
 <hr>
 Full source code is available at <a href="https://github.com/lu-pze/lu-pze.github.io" target="_blank">GitHub</a>.<br>
@@ -465,7 +462,6 @@ pex.tufvesson@control.lth.se</center><br></td>
 
 <td><img src="images/balloon_boy_small.webp" height="128px" style="margin:0 0 0 30px"></td>
 </tr></table></center>
-<br>
       </div>
 
       <div class="cropped">
