@@ -3518,7 +3518,11 @@ function read_highscores () {
     high_total_sorted.sort(function(first, second) {
       return second[1] - first[1];
     });
-    let s="<h2>Highest score</h2>";
+    let s="<h2>High score last 3 months</h2>";
+    //let date2 = new Date("2025/06/04 11:00:00");
+    let date2 = new Date();
+    // Subtract 6 months from the current date
+    date2.setMonth(date2.getMonth() - 3);
     let prev_score = -1;
     for (let row_no=0; row_no<high_total_sorted.length; row_no++) {
       let row=high_total_sorted[row_no];
@@ -3530,6 +3534,8 @@ function read_highscores () {
       if (this_nickname.length>19) {
         this_nickname = this_nickname.substr(0,16)+"...";
       }
+      let date1 = new Date(high_latest[this_placename]);
+      if (date1 < date2) continue;
       let this_score = high_total[this_placename].toFixed(1);
       if (prev_score != this_score) {
         s += str(row_no+1).padStart(2," ").replace(" ","&nbsp;") +". ";
@@ -3540,6 +3546,56 @@ function read_highscores () {
       s += this_score.padStart(5,' ').replace(" ","&nbsp;") + " ";
       s += (this_place + "      ").substr(0,6).replaceAll(" ","&nbsp;") + "&nbsp;";//"FRTF05&nbsp;";
       s += this_nickname + ", after "+high_total_nof_correct[this_placename]+" questions<br>";
+    }
+
+    let high_latest_sorted = Object.keys(high_latest).map(function(nickname) {
+      return [nickname, high_latest[nickname]];
+    });
+    // Sort the array based on the second element
+    high_latest_sorted.sort(function(first, second) {
+      return (second[1] < first[1]) ? -1 : (second[1] > first[1]) ? 1 : 0;
+    });
+    s+="<h2>Latest quizzers</h2>";
+    for (let row_no=0; row_no<Math.min(10,high_latest_sorted.length); row_no++) {
+      let row=high_latest_sorted[row_no];
+      let this_placename = row[0];
+      let i = this_placename.indexOf('_');
+      let parts = [this_placename.slice(0,i), this_placename.slice(i+1)];
+      let this_place = parts[0];
+      let this_nickname = parts[1];
+      if (this_nickname.length>24) {
+        this_nickname = this_nickname.substr(0,21)+"...";
+      }
+      let this_server_time = row[1];
+      s += str(this_server_time) + " ";
+      s += (this_place + "      ").substr(0,6).replaceAll(" ","&nbsp;") + "&nbsp;";//"FRTF05&nbsp;";
+      s += this_nickname + "<br>";
+    }
+
+    s+="<h2>Legends</h2>";
+    prev_score = -1;
+    for (let row_no=0; row_no<high_total_sorted.length; row_no++) {
+      let row=high_total_sorted[row_no];
+      let this_placename = row[0];
+      let i = this_placename.indexOf('_');
+      let parts = [this_placename.slice(0,i), this_placename.slice(i+1)];
+      let this_place = parts[0];
+      let this_nickname = parts[1];
+      if (this_nickname.length>19) {
+        this_nickname = this_nickname.substr(0,16)+"...";
+      }
+      if (high_total[this_placename] < 99.99) continue;
+      let this_score = high_total[this_placename].toFixed(1);
+      let date1 = new Date(high_latest[this_placename]);
+      if (prev_score != this_score) {
+        s += str(row_no+1).padStart(2," ").replace(" ","&nbsp;") +". ";
+        prev_score = this_score;
+      } else {
+        s += "&nbsp;&nbsp;&nbsp;&nbsp;";
+      }
+      s += this_score.padStart(5,' ').replace(" ","&nbsp;") + " ";
+      s += (this_place + "      ").substr(0,6).replaceAll(" ","&nbsp;") + "&nbsp;";//"FRTF05&nbsp;";
+      s += this_nickname + ", "+high_total_nof_correct[this_placename]+" questions, "+date1.toLocaleString('en-US', { month: 'short' })+" "+date1.getFullYear().toString()+"<br>";
     }
 
     let high_longest_streak_sorted = Object.keys(high_longest_streak).map(function(nickname) {
@@ -3604,30 +3660,6 @@ function read_highscores () {
       s += this_nickname + "<br>";
     }
 
-
-    let high_latest_sorted = Object.keys(high_latest).map(function(nickname) {
-      return [nickname, high_latest[nickname]];
-    });
-    // Sort the array based on the second element
-    high_latest_sorted.sort(function(first, second) {
-      return (second[1] < first[1]) ? -1 : (second[1] > first[1]) ? 1 : 0;
-    });
-    s+="<h2>Latest quizzers</h2>";
-    for (let row_no=0; row_no<Math.min(10,high_latest_sorted.length); row_no++) {
-      let row=high_latest_sorted[row_no];
-      let this_placename = row[0];
-      let i = this_placename.indexOf('_');
-      let parts = [this_placename.slice(0,i), this_placename.slice(i+1)];
-      let this_place = parts[0];
-      let this_nickname = parts[1];
-      if (this_nickname.length>24) {
-        this_nickname = this_nickname.substr(0,21)+"...";
-      }
-      let this_server_time = row[1];
-      s += str(this_server_time) + " ";
-      s += (this_place + "      ").substr(0,6).replaceAll(" ","&nbsp;") + "&nbsp;";//"FRTF05&nbsp;";
-      s += this_nickname + "<br>";
-    }
 
     let highscore_div = document.getElementById("quiz_highscores");
     highscore_div.innerHTML=s;
