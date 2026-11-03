@@ -40,7 +40,7 @@ const GRAPH_ONE_ZERO = {name:"One zero", mf:"T_4s+0.5", formula:"T_4*s+0.5"};
 //const GRAPH_ONE_POLE_WITH_PID_YR = {name:"One pole with PID R->Y", mf:"\\frac{K k_1 (1 + T_i s + T_iT_ds^2)}{K k_1 + T_i (1 + K k_1)s + T_i (T_1 + K k_1 T_d)s^2}", formula:"(K*k_1*(1 + T_i*s + T_i*T_d*s*s)) / (K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)*s*s)"};
 const GRAPH_ONE_POLE_WITH_PID_YR = {name:"One pole with PID R->Y", mf:"G_{YR} = \\frac{G_{PID} \\cdot G}{1 + G_{PID} \\cdot G}", formula:"(K*k_1*(1 + T_i*s + T_i*T_d*s*s)) / (K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)*s*s)"};
 const GRAPH_PID = {name:"PID controller", mf:"G_{PID}=K \\left(1 + \\frac{1}{s T_i} + s T_d \\right)}", formula:"K + K / (s * T_i) + K * T_d * s"};
-const GRAPH_ONE_POLE_WITH_PID_S = {name:"One pole with PID Sensitivity", mf:"S = \\frac{1}{1 + G_{PID} \\cdot G}", formula:"(s*T_i*(1+T_1*s))/(K*k_1 + (K*k_1*T_i + T_1)*s + T_i*(T_1 + K*k_1*T_d)*s*s)"};
+const GRAPH_ONE_POLE_WITH_PID_S = {name:"One pole with PID Sensitivity", mf:"S = \\frac{1}{1 + G_{PID} \\cdot G}", formula:"(s*T_i*(1+T_1*s))/(K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)*s*s)"};
 const GRAPH_ONE_POLE_WITH_PID_YL = {name:"One pole with PID Load", mf:"G_{YL} = \\frac{G}{1 + G_{PID} \\cdot G}", formula:"(k_1*T_i*s)/(K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)s*s)"};
 const GRAPH_ONE_POLE_WITH_PID_OPEN = {name:"One pole with PID open-loop", mf:"G_{OL} = G_{PID} \\cdot G", formula:"(K*k_1*(1 + T_i*s + T_i*T_d*s*s))/(T_i*(s+T_1*s*s))"};
 

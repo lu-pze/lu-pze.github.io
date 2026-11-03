@@ -619,7 +619,7 @@ Let's multiply by sT<sub>i</sub> in both the nominator and denominator:<br>
   </math-field><br>
 And we collect the terms:<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
-      S(s) = \\frac{sT_i(1 + T_1 s)}{K k_1 + (K k_1 T_i + T_1) s + T_i (T_1 + K k_1 T_d) s^2}
+      S(s) = \\frac{sT_i(1 + T_1 s)}{K k_1 + T_i (1 + K k_1) s + T_i (T_1 + K k_1 T_d) s^2}
   </math-field>`},
 
 

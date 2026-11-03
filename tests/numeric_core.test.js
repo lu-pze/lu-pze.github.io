@@ -95,4 +95,25 @@ describe('numeric core', () => {
     array.forEach((y, i) => expect(y).toBeCloseTo(2 * (1 - Math.exp(-(i * step_t) / 1.5)), 6));
     expect(array[array.length - 1]).toBeCloseTo(2, 1);
   });
+
+  // The PID presets are hand-simplified polynomial fractions; check each against
+  // its block-diagram definition with G = k_1/(1+T_1 s), G_PID = K(1 + 1/(sT_i) + sT_d).
+  test.each([
+    ['GRAPH_PID', (G, C) => C],
+    ['GRAPH_ONE_POLE_WITH_PID_OPEN', (G, C) => math.multiply(C, G)],
+    ['GRAPH_ONE_POLE_WITH_PID_YR', (G, C) => math.divide(math.multiply(C, G), math.add(1, math.multiply(C, G)))],
+    ['GRAPH_ONE_POLE_WITH_PID_S', (G, C) => math.divide(1, math.add(1, math.multiply(C, G)))],
+    ['GRAPH_ONE_POLE_WITH_PID_YL', (G, C) => math.divide(G, math.add(1, math.multiply(C, G)))],
+  ])('%s matches its block-diagram definition', (preset_name, definition) => {
+    const { k_1, T_1, K, T_i, T_d } = SLIDERS;
+    const binding = window.bind_formula(global_value(preset_name).formula);
+    for (const s of [math.complex(0, 0.3), math.complex(0, 2), math.complex(-0.4, 1.7), math.complex(1, -3)]) {
+      const G = math.divide(k_1, math.add(1, math.multiply(T_1, s)));
+      const C = math.multiply(K, math.add(1, math.divide(1, math.multiply(s, T_i)), math.multiply(s, T_d)));
+      const expected = definition(G, C);
+      const actual = math.complex(window.evaluate_formula(binding, s));
+      expect(actual.re).toBeCloseTo(expected.re, 10);
+      expect(actual.im).toBeCloseTo(expected.im, 10);
+    }
+  });
 });
