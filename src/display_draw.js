@@ -821,37 +821,23 @@ let pole_zero_graph_x = [];
 let pole_zero_graph_y = [];
 
 function draw_pole_zeros (){
-  pole_zero_width = graph_pole_zero_width;
-  pole_zero_height = pole_zero_width;
-  // Draw pole zeros for these graphs:
-  let draw_position = 0;
-
-  // Find out the last pole zero graph:
+  // Count the pole-zero maps to draw:
+  let nof_maps = 0;
   for(let i=0; i<bode_graphs.length; i++){
-    if(bode_graphs[i].bode_displaybool){
-      if((bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula)||
-         (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)||
-         (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)||
-         (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula)||
-         (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula)||
-         (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula)||
-         (bode_graphs[i].bode_formula == GRAPH_PID.formula)){
-        draw_position += 1;
-      }
+    if(bode_graphs[i].bode_displaybool && bode_graphs[i].has_pole_zero_map()){
+      nof_maps += 1;
     }
   }
-  let last_graph = draw_position;
+  // The maps are square and stacked from y = 30, 10 pixels apart, with the axis labels (40 pixels)
+  // below the last one. Shrink them when they would not all fit in the canvas:
+  pole_zero_width = Math.min(graph_pole_zero_width, (canvas_height - 30 - 40) / nof_maps - 10);
+  pole_zero_height = pole_zero_width;
+  let last_graph = nof_maps;
 
-  draw_position = 0;
+  let draw_position = 0;
   for(let i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_displaybool){
-      if((bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula)||
-         (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)||
-         (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)||
-         (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula)||
-         (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula)||
-         (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula)||
-         (bode_graphs[i].bode_formula == GRAPH_PID.formula)){
+      if(bode_graphs[i].has_pole_zero_map()){
         pole_zero_graph_x[i] = graph_pole_zero_x;
         pole_zero_graph_y[i] = 30 + (pole_zero_height + 10) * draw_position;
         push();

@@ -535,3 +535,160 @@ describe('stability margins', () => {
     expect(graph.bode_gain_margin).toBeUndefined();
   });
 });
+
+describe('computed pole-zero maps', () => {
+  const sorted = (roots) => [...roots].sort((a, b) => a.re - b.re || a.im - b.im);
+  const expect_roots = (actual, expected, digits = 9) => {
+    expect(actual).toHaveLength(expected.length);
+    sorted(actual).forEach((root, k) => {
+      expect(root.re).toBeCloseTo(sorted(expected)[k].re, digits);
+      expect(root.im).toBeCloseTo(sorted(expected)[k].im, digits);
+    });
+  };
+
+  describe('polynomial_roots', () => {
+    test('first order', () => expect_roots(window.polynomial_roots([2, 1]), [{ re: -2, im: 0 }]));
+    test('complex pair', () => expect_roots(window.polynomial_roots([1, 0, 1]), [{ re: 0, im: -1 }, { re: 0, im: 1 }]));
+    test('a repeated root (1+s)^4 is found to about 1e-3', () => {
+      expect_roots(window.polynomial_roots([1, 4, 6, 4, 1]), [-1, -1, -1, -1].map((re) => ({ re, im: 0 })), 2);
+    });
+    test('a negligible leading coefficient is dropped', () => {
+      expect_roots(window.polynomial_roots([2, 1, 1e-20]), [{ re: -2, im: 0 }]);
+    });
+    test('a constant has no roots', () => expect(window.polynomial_roots([3])).toEqual([]));
+  });
+
+  describe('poles_and_zeros', () => {
+    test('the delay e^(-L*s) is split off: 3/(1+s)*e^(-L*s) has one pole at -1', () => {
+      set_sliders({ L: 0.5 });
+      const result = window.poles_and_zeros(window.bind_formula(global_value('GRAPH_TIME_DELAY').formula));
+      expect_roots(result.poles, [{ re: -1, im: 0 }]);
+      expect(result.zeros).toEqual([]);
+    });
+
+    test('PID closed loop R->Y: the closed-loop poles and the zeros of the PID', () => {
+      const [K, k_1, T_i, T_d, T_1] = [1.2, 2, 2, 0.3, 1.5];
+      set_sliders({ K, k_1, T_i, T_d, T_1 });
+      const quadratic = (c0, c1, c2) => {
+        const disc = c1 * c1 - 4 * c2 * c0;
+        if (disc >= 0) return [(-c1 - Math.sqrt(disc)) / (2 * c2), (-c1 + Math.sqrt(disc)) / (2 * c2)].map((re) => ({ re, im: 0 }));
+        return [-1, 1].map((sign) => ({ re: -c1 / (2 * c2), im: sign * Math.sqrt(-disc) / (2 * c2) }));
+      };
+      const result = window.poles_and_zeros(window.bind_formula(global_value('GRAPH_ONE_POLE_WITH_PID_YR').formula));
+      expect_roots(result.poles, quadratic(K * k_1, T_i * (1 + K * k_1), T_i * (T_1 + K * k_1 * T_d)));
+      expect_roots(result.zeros, quadratic(1, T_i, T_i * T_d));
+    });
+
+    test('null for a formula that is not rational or has an unset slider', () => {
+      set_sliders({});
+      expect(window.poles_and_zeros(window.bind_formula('1/(1+sqrt(s))'))).toBeNull();
+      expect(window.poles_and_zeros(window.bind_formula('k_1/(1+s)'))).toBeNull();
+      expect(window.poles_and_zeros(window.bind_formula('1/(1+'))).toBeNull();
+      set_sliders({ k_1: 1, T_1: NaN }); // e.g. an unparsable number typed in a slider field
+      expect(window.poles_and_zeros(window.bind_formula('k_1/(1+T_1*s)'))).toBeNull();
+    });
+  });
+
+  test.each([
+    [-1, 0, -1, 0],
+    [-10, 0, -3.2, 0],
+    [5, 0, 1.2, 0],
+    [-6.4, 2, -3.2, 1], // scaled towards the origin, keeping the direction
+    [-1, 4.4, -0.5, 2.2],
+    [-1, -4.4, -0.5, -2.2],
+    [2.4, 1, 1.2, 0.5],
+  ])('pole_zero_map_position(%d, %d) = (%d, %d)', (re, im, x, y) => {
+    const [px, py] = window.pole_zero_map_position(re, im);
+    expect(px).toBeCloseTo(x, 12);
+    expect(py).toBeCloseTo(y, 12);
+  });
+
+  describe('which graphs get a map', () => {
+    beforeEach(() => set_globals({ graph_bode_mag_width: 100, min_10power: -2, x_case_gain: 5 }));
+    const graph_for = (formula, sliders) => {
+      set_sliders(sliders);
+      const graph = window.eval(`new bode_graph(1, ${JSON.stringify(formula)})`);
+      graph.get_complex_p5();
+      return graph;
+    };
+
+    test('a typed formula gets a computed map', () => {
+      const graph = graph_for('(1)/((1+s)(1+0.5s))', {});
+      expect_roots(graph.bode_poles_zeros.poles, [{ re: -2, im: 0 }, { re: -1, im: 0 }]);
+      expect(graph.has_pole_zero_map()).toBe(true);
+    });
+
+    test('a preset with a parameter map keeps it and computes nothing', () => {
+      const graph = graph_for(global_value('GRAPH_ONE_REAL_POLE').formula, { k_1: 1, T_1: 1 });
+      expect(graph.bode_poles_zeros).toBeNull();
+      expect(graph.has_pole_zero_map()).toBe(true);
+    });
+
+    test('a quiz ghost graph gets no computed map', () => {
+      const graph = graph_for('(1)/((1+s)(1+0.5s))', {});
+      graph.bode_display_pole_zero_bool = false;
+      expect(graph.has_pole_zero_map()).toBe(false);
+    });
+
+    test('addNewGraph marks quiz ghost graphs, and only those, as having no computed map', () => {
+      const graphs = global_value('bode_graphs');
+      const saved = graphs.slice();
+      const add_event = window.add_event;
+      window.add_event = () => {};
+      try {
+        set_sliders({});
+        window.addNewGraph(null, { name: 'GhostMPTNIE_Ghost', mf: '\\frac{1}{1+s}', formula: '1/(1+s)' });
+        window.addNewGraph(null, { name: 'Mine', mf: '\\frac{1}{1+s}', formula: '1/(1+s)' });
+        const [ghost, mine] = graphs.slice(-2);
+        expect(ghost.graph_name).toBe('Ghost');
+        expect(ghost.bode_display_pole_zero_bool).toBe(false);
+        expect(mine.bode_display_pole_zero_bool).toBe(true);
+      } finally {
+        window.add_event = add_event;
+        graphs.splice(0, graphs.length, ...saved);
+      }
+    });
+
+    test('a formula without poles and zeros to show gets no map', () => {
+      expect(graph_for('k_1/(1+s)', {}).has_pole_zero_map()).toBe(false);
+      expect(graph_for('1/(1+sqrt(s))', {}).has_pole_zero_map()).toBe(false);
+    });
+  });
+
+  describe('draw_pole_zeros layout', () => {
+    let saved_graphs;
+    beforeAll(() => { saved_graphs = global_value('bode_graphs').slice(); });
+    afterEach(() => {
+      const graphs = global_value('bode_graphs');
+      graphs.splice(0, graphs.length, ...saved_graphs);
+    });
+    const layout = (count) => {
+      set_globals({ graph_bode_mag_width: 100, min_10power: -2, x_case_gain: 5, canvas_height: 690,
+        graph_pole_zero_width: 156, graph_pole_zero_x: 1000 });
+      set_sliders({});
+      const graphs = global_value('bode_graphs');
+      graphs.length = 0;
+      for (let i = 0; i < count; i++) {
+        const graph = window.eval(`new bode_graph(${i}, "1/(1+${i + 1}s)")`);
+        graph.get_complex_p5();
+        graphs.push(graph);
+      }
+      window.draw_pole_zeros();
+      return { size: global_value('pole_zero_width'), y: global_value('pole_zero_graph_y').slice(0, count) };
+    };
+
+    test('maps keep their size when they fit', () => {
+      const { size, y } = layout(2);
+      expect(size).toBe(156);
+      expect(y).toEqual([30, 30 + 166]);
+    });
+
+    test('maps shrink so that all of them and the axis labels fit in the canvas', () => {
+      const { size, y } = layout(6);
+      expect(size).toBeLessThan(156);
+      expect(global_value('pole_zero_height')).toBe(size);
+      expect(y[5] + size + 40).toBeLessThanOrEqual(690);
+      expect(y[1] - y[0]).toBeCloseTo(size + 10, 9);
+    });
+  });
+});

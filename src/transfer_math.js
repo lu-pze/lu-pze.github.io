@@ -145,7 +145,9 @@ function getTimeValues(binding,time,time_delay){
 // Polynomials are arrays of coefficients in ascending powers of s: [a_0, a_1, ...].
 function poly_add(a, b, sign){
   const sum = [];
-  for (let k = 0; k < Math.max(a.length, b.length); k++) sum.push((a[k] || 0) + sign * (b[k] || 0));
+  // Missing coefficients are 0; not "|| 0", which would also turn NaN into 0.
+  const at = (p, k) => k < p.length ? p[k] : 0;
+  for (let k = 0; k < Math.max(a.length, b.length); k++) sum.push(at(a, k) + sign * at(b, k));
   return sum;
 }
 
@@ -312,6 +314,40 @@ function time_response(input, formula, times){
   } catch(error){
     const rest = {code: split.node.compile(), scope: binding.scope};
     return times.map((t) => getTimeValues(rest, t == 0 ? 0.00001 : t, split.delay));
+  }
+}
+
+// Roots of a polynomial (ascending coefficients) as [{re, im}], from the eigenvalues of its
+// companion matrix (as BOWDE does; math.polynomialRoot only handles degree 3 and below).
+// A repeated root comes out spread by about 1e-3 relative, which does not show in the map.
+function polynomial_roots(coefficients){
+  const c = poly_trim(coefficients);
+  const degree = c.length - 1;
+  if (degree < 1) return [];
+  const companion = [];
+  for (let row = 0; row < degree; row++){
+    companion.push(new Array(degree).fill(0));
+    if (row > 0) companion[row][row - 1] = 1;
+    companion[row][degree - 1] = -c[row]/c[degree];
+  }
+  return math.eigs(companion).values.map((value) => {
+    const root = math.complex(value);
+    return {re: root.re, im: root.im};
+  });
+}
+
+// Poles and zeros of a bound formula, {poles: [{re, im}], zeros: [{re, im}]}, or null when it is
+// not a rational function of s (a delay e^(-L*s) is split off first: it has neither), when a
+// slider is unset (binding null) or when the formula cannot be parsed.
+function poles_and_zeros(binding){
+  if (binding === null || binding.node === null) return null;
+  try{
+    const split = split_time_delay(binding.node, binding.scope);
+    const rational = to_rational(split.node, binding.scope);
+    if (![...rational.num, ...rational.den].every(Number.isFinite)) return null;
+    return {poles: polynomial_roots(rational.den), zeros: polynomial_roots(rational.num)};
+  } catch(error){
+    return null;
   }
 }
 

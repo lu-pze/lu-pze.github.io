@@ -1,5 +1,12 @@
 'use strict';
 
+// Presets whose pole-zero map is drawn from their slider values (and partly dragged with the
+// mouse, see graph_has_pole_zero_map). Every other graph gets a display-only map with computed
+// poles and zeros, if it has any (see has_pole_zero_map).
+const PARAMETER_POLE_ZERO_MAP_FORMULAS = [GRAPH_ONE_REAL_POLE.formula, GRAPH_TWO_REAL_POLES.formula,
+  GRAPH_TWO_COMPLEX_POLES.formula, GRAPH_ONE_ZERO.formula, GRAPH_ONE_ZERO_TWO_POLES.formula,
+  GRAPH_FOUR_POLES.formula, GRAPH_PID.formula];
+
 class bode_graph{
   constructor(a,b){
     this.bode_id = a;
@@ -20,6 +27,8 @@ class bode_graph{
     this.bode_display_nyquist_bool = true;
     this.bode_display_information_bool = true;
     this.bode_display_equation_bool = true;
+    this.bode_display_pole_zero_bool = true; // false for quiz ghosts: their poles could give answers away
+    this.bode_poles_zeros = null; // {poles, zeros} for a computed pole-zero map, see get_complex_p5
     this.bode_min_nyquist_x = 10000;
     this.bode_max_nyquist_x = -10000;
     this.bode_min_nyquist_y = 10000;
@@ -93,6 +102,18 @@ class bode_graph{
     this.bode_phase_margin = omegaZero[0];
     this.bode_gain_crossover_freq = omegaZero[1];
     this.bode_phase_crossover_freq = omega180[1];
+    this.bode_poles_zeros = this.has_parameter_pole_zero_map() ? null : poles_and_zeros(binding);
+  }
+
+  has_parameter_pole_zero_map(){
+    return PARAMETER_POLE_ZERO_MAP_FORMULAS.includes(this.bode_formula);
+  }
+
+  // Whether this graph gets a pole-zero map at all: presets with a parameter map always do,
+  // other graphs when they have computed poles or zeros and are not quiz ghosts.
+  has_pole_zero_map(){
+    if (this.has_parameter_pole_zero_map()) return true;
+    return this.bode_display_pole_zero_bool && this.bode_poles_zeros !== null;
   }
 
 
@@ -593,9 +614,9 @@ class bode_graph{
       textAlign(CENTER);
       fill(text_color);
       for(let x=0; x<=4; x++){
-        text((x-3).toFixed(1),x*graph_pole_zero_width/4,pole_zero_height+20);
+        text((x-3).toFixed(1),x*pole_zero_width/4,pole_zero_height+20);
       }
-      text("Real axis [1/s]",graph_pole_zero_width/2,pole_zero_height+35);
+      text("Real axis [1/s]",pole_zero_width/2,pole_zero_height+35);
       pop();
     }
     if (this.bode_formula == GRAPH_ONE_REAL_POLE.formula){
@@ -622,26 +643,7 @@ class bode_graph{
       if (z <= 1){
         bode_3_real = -z*w;
         bode_3_imaginary = w * Math.sqrt(1-z*z);
-        let tmp_x = bode_3_real;
-        let tmp_y = bode_3_imaginary;
-        if (tmp_x < -3.2){
-          // We need to scale down the y-axis just as much as we're scaling on x axis:
-          let scale = tmp_x / -3.2;
-          tmp_y = tmp_y / scale;
-          tmp_x=-3.2;
-        }
-        if (tmp_y < -2.2){
-          // We need to scale down the x-axis just as much as we're scaling on y axis:
-          let scale = tmp_y / -2.2;
-          tmp_x = tmp_x / scale;
-          tmp_y=-2.2;
-        }
-        if (tmp_y > 2.2){
-          // We need to scale down the x-axis just as much as we're scaling on y axis:
-          let scale = tmp_y / 2.2;
-          tmp_x = tmp_x / scale;
-          tmp_y=2.2;
-        }
+        let [tmp_x, tmp_y] = pole_zero_map_position(bode_3_real, bode_3_imaginary);
         // Since these are complex, let's draw a line from origo as well:
         stroke(line_color);
         strokeWeight(1);
@@ -705,6 +707,15 @@ class bode_graph{
       let T_dinv = 1/range_slider_variables[variable_position["T_d"]];
       if (T_dinv > 3.2) T_dinv=3.2;
       this.plot_pole(-T_dinv,0); // Should be T_d
+
+    } else if (this.bode_poles_zeros !== null){
+      // Display-only map: computed poles (X) and zeros (O).
+      for (const pole of this.bode_poles_zeros.poles){
+        this.plot_pole(...pole_zero_map_position(pole.re, pole.im));
+      }
+      for (const zero of this.bode_poles_zeros.zeros){
+        this.plot_zero(...pole_zero_map_position(zero.re, zero.im));
+      }
     }
 
     noStroke();
@@ -712,7 +723,7 @@ class bode_graph{
     textAlign(CENTER);
     let grey_color = color('hsb(0, 0%, 50%)');
     fill(grey_color,360,360);
-    text(this.graph_name,graph_pole_zero_width/2,pole_zero_height-7);
+    text(this.graph_name,pole_zero_width/2,pole_zero_height-7);
   }
 
   plot_pole(pole_x,pole_y){
@@ -730,4 +741,29 @@ class bode_graph{
     let screen_y = pole_zero_height/2 + pole_y * pole_zero_height/4;
     ellipse(screen_x,screen_y,radius,radius);
   }
+}
+
+// Where a pole or zero at re + im*j is drawn in a pole-zero map (real axis -3..1, imaginary -2..2).
+// A point outside is moved to just outside the edge (real -3.2..1.2, imaginary -2.2..2.2): a real
+// point along the axis, a complex point towards the origin, keeping its direction.
+function pole_zero_map_position(re, im){
+  let x = re;
+  let y = im;
+  if (x < -3.2){
+    y = y / (x / -3.2);
+    x = -3.2;
+  }
+  if (x > 1.2){
+    y = y / (x / 1.2);
+    x = 1.2;
+  }
+  if (y < -2.2){
+    x = x / (y / -2.2);
+    y = -2.2;
+  }
+  if (y > 2.2){
+    x = x / (y / 2.2);
+    y = 2.2;
+  }
+  return [x, y];
 }

@@ -388,6 +388,7 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   if (enable_string[10]==".") new_bode_graph.bode_display_equation_bool = false;
   if (graph_name.startsWith("Ghost")){
     new_bode_graph.graph_name = graph_name.substr(12);
+    new_bode_graph.bode_display_pole_zero_bool = false;
   }
 
   let yes_add_range_sliders = true;
