@@ -97,7 +97,7 @@ const all_achievements={
   "python_script":"Get <svg width='20' height='20' viewBox='0 0 24 24' style='vertical-align:middle'><use href='#icon_ios_share'/></svg> the Python script for any transfer function",
   "matlab_script":"Get <svg width='20' height='20' viewBox='0 0 24 24' style='vertical-align:middle'><use href='#icon_ios_share'/></svg> the MATLAB script for any transfer function",
   "change_L":"Change time delay L in the <b>time delay</b> transfer function",
-  "low_z":"Make damping factor z for <b>two complex poles</b> less than 0.1",
+  "low_z":"Make relative damping z for <b>two complex poles</b> less than 0.1",
   "T2_T3_far_apart":"Separate <b>two real poles'</b> time constants a factor 100 apart",
   "k_above_or_equal_100":"Change a transfer function to have a magnitude k≥100",
   "set_input_to_ramp":"Change the input to a ramp function"

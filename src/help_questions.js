@@ -14,6 +14,22 @@ function questionsToggle(event){
     handle_questions();
   }
 }
+// Shared by the answers for two real poles and two complex poles:
+const HELP_SECOND_ORDER_EXAMPLES = `<ul>
+        <li><b>Physics:</b> Mass-spring-damper system - The fundamental second-order system, described by m&middot;d<sup>2</sup>x/dt<sup>2</sup> + c&middot;dx/dt + kx = F(t), where m, c, and k are mass, damping coefficient, and spring constant, respectively. A weak damper gives complex poles, a strong damper gives real poles.</li>
+        <li><b>Electrical Engineering:</b> RLC circuits - Used in filters and radio tuners, with a resistor (R), an inductor (L), and a capacitor (C). A small R gives complex poles and a resonance, a large R gives real poles.</li>
+        <li><b>Automotive:</b> Suspension system - The car body on its springs and shock absorbers is a mass-spring-damper system. It is usually designed with complex poles and moderate damping, as a compromise between comfort and road holding.</li>
+        <li><b>Mechanics:</b> Pendulum dynamics (small angle approximation) - Described by d<sup>2</sup>&theta;/dt<sup>2</sup> + g/l &middot; &theta; = 0, where g is the acceleration due to gravity and l is the pendulum length. Without friction, the poles lie on the imaginary axis and the pendulum swings forever.</li>
+        <li><b>Marine Engineering:</b> Ship roll dynamics - A ship tilted by a wave rolls back and forth with a damped oscillation.</li>
+        <li><b>Acoustics:</b> Loudspeakers - The cone mass, the stiffness of its suspension, and the damping give a mechanical resonance at the low end of the frequency range.</li>
+        <li><b>Gadgets:</b> Gyroscopes in smartphones - MEMS gyroscopes contain a tiny vibrating mass, a resonating second-order system. A rotation of the phone is sensed through the Coriolis force acting on that mass.</li>
+        <li><b>Process Engineering:</b> Two tanks in series, where the first tank drains into the second - Each tank is a first-order system, and together they give two real poles.</li>
+        <li><b>Thermal Engineering:</b> An electric radiator heating a room - The radiator and the room each store heat, which gives two real poles.</li>
+        <li><b>Biomedical Engineering:</b> Two-compartment models of a drug, first absorbed from the stomach and then eliminated from the blood - Two real poles.</li>
+        <li><b>Mechatronics:</b> A DC motor positioning a robot arm joint - The angle responds to the voltage as K/(s(1+Ts)): one pole at the origin (an integrator) and one real pole.</li>
+        <li><b>Aerospace:</b> The attitude of a spacecraft, or the tilt of a drone - The angle responds to the applied torque as a double integrator, 1/(Js<sup>2</sup>), with both poles at the origin.</li>
+    </ul>`;
+
 const all_questions={
   "seconds":{q:"Why are we using seconds as time unit?",pos:function(){return {visible:true,x:graph_step_response_x+graph_step_response_width+graph_step_response_x_offset,y:graph_step_response_y+graph_step_response_height+graph_step_response_y_offset+20}},
     a:`In automatic control systems, particularly in the context of time-domain analysis, the unit of seconds is commonly used on the time axis for several reasons:<br><br>
@@ -27,7 +43,7 @@ Overall, using seconds on the time axis in automatic control simplifies analysis
   "degrees":{q:"Degrees vs. radians - which is it?",pos:function(){return {visible:true,x:graph_bode_phase_x+graph_bode_phase_x_offset,y:graph_bode_phase_y+graph_bode_phase_y_offset-20}},
     a:`In automatic control theory, particularly in the context of frequency domain analysis and Bode plots, the choice between using degrees and radians depends on the conventions of the specific analysis or system, as well as personal preference. However, there are some general guidelines:<br><br>
 1. <b>Phase Angle (φ)</b>:<br>
-   - Degrees: Degrees are commonly used to represent phase angles in Bode plots, especially in introductory or practical contexts. Phase angles are often more intuitively understood in degrees, ranging from -180° to 180°.<br>
+   - Degrees: Degrees are commonly used to represent phase angles in Bode plots, especially in introductory or practical contexts. Phase angles are often more intuitively understood in degrees. Note that the Bode phase curve is not limited to -180°...180°: the phase is drawn continuously, so four poles give -360° at high frequencies, and a time delay makes the phase decrease without limit.<br>
    - Radians: Radians can also be used to represent phase angles, particularly in more advanced or theoretical analyses. In mathematical calculations and advanced control theory, radians are preferred due to their natural connection with trigonometric functions and calculus.<br>
 2. <b>Frequency (ω)</b>:<br>
    - Radians per Second (rad/s): Frequency in control theory is typically expressed in radians per second. This convention aligns with the use of Laplace transforms and complex numbers in control system analysis. Radians per second are favored because they provide a direct relationship with angular frequency, facilitating mathematical manipulation and analysis.<br>
@@ -43,96 +59,47 @@ In summary, the choice between using degrees and radians depends on the context 
       }
     }
     return {visible:false}
-  },a:`<ul>
-      <li><strong>Electronics</strong>: RC (Resistor-Capacitor) Low Pass Filter - Governed by the equation V<sub>out</sub> = V<sub>in</sub> * (1 - e<sup>-t/RC</sup>)</li>
-      <li><strong>Thermal Engineering</strong>: Temperature control of a room using a heater - Where the room temperature's rate of change is proportional to the difference between the ambient and desired temperatures.</li>
-      <li><strong>Mechanics</strong>: Viscous damping in a mechanical shock absorber - Can be modeled as a first-order system where the force is proportional to the velocity.</li>
-      <li><strong>Chemistry</strong>: Chemical reactors in which the reaction rate is of first-order with respect to a reactant concentration.</li>
-      <li><strong>Physics</strong>: Charging of a capacitor through a resistor - Described by the equation q(t) = Q(1 - e<sup>-t/RC</sup>), where q(t) is the charge at time t.</li>
-      <li><strong>Mathematics</strong>: Solutions of first-order linear differential equations used to model diverse physical phenomena.</li>
-      <li><strong>Biomedical Engineering</strong>: Modeling the rate of absorption of a drug into the bloodstream.</li>
-      <li><strong>Automobiles</strong>: The cruise control system in a vehicle, adjusting the throttle position to maintain a constant speed.</li>
-      <li><strong>Aeronautics</strong>: The altitude hold mode in autopilot systems, maintaining a set altitude by adjusting flight control surfaces.</li>
-      <li><strong>Household Appliances</strong>: Thermostat control for heating systems, maintaining a target temperature within a room.</li>
-      <li><strong>Environmental Engineering</strong>: Modeling the dilution of pollutants in a river, assuming first-order decay of pollutant concentration.</li>
-      <li><strong>Electrical Engineering</strong>: Current control in a DC motor, governed by the motor's inductance and resistance.</li>
-      <li><strong>Robotics</strong>: Position control of a robotic arm's single joint, where the position is controlled by varying the input voltage.</li>
-      <li><strong>Optics</strong>: The response of a photodetector circuit, where the output voltage changes as a function of light intensity.</li>
-      <li><strong>Fluid Dynamics</strong>: The flow of fluid in a pipe with a constant cross-sectional area, where the flow rate stabilizes due to frictional forces.</li>
-      <li><strong>Sound Engineering</strong>: High-pass filters used in audio systems to attenuate lower frequencies while allowing higher frequencies to pass through.</li>
-      <li><strong>Signal Processing</strong>: Exponential moving average filter, often used to smooth out time series data.</li>
-      <li><strong>Telecommunications</strong>: The tuning circuit in a radio receiver, selecting a particular frequency while filtering out others.</li>
-      <li><strong>Marine Engineering</strong>: Control of a ship's velocity by adjusting its propeller speed.</li>
-      <li><strong>Space Exploration</strong>: Orientation control in satellites using reaction wheels, adjusting the satellite's angular position.</li>
-      </ul>
-  This list provides a glance into the incredible diversity of applications for first-order systems across engineering disciplines, illustrating the fundamental role that principles of automatic control theory play in technological advancements and everyday applications.`},
+  },a:`A system with one pole (a first-order system) is the simplest dynamic system. It is described by only two numbers: the static gain k and the time constant T. Its step response rises exponentially towards k and reaches 63% of the final value after the time T. Many real processes behave approximately like this, so it is a good first model. Some examples:
+  <ul>
+      <li><strong>Electronics</strong>: RC (Resistor-Capacitor) low-pass filter, with the time constant T = RC. The step response is V<sub>out</sub> = V<sub>in</sub> (1 - e<sup>-t/RC</sup>).</li>
+      <li><strong>Thermal Engineering</strong>: A room heated by a heater. The rate of change of the room temperature depends on the heating power and on the difference between the room temperature and the outdoor temperature.</li>
+      <li><strong>Mechanics</strong>: A mass moving against viscous friction, where the friction force is proportional to the velocity. The velocity responds to an applied force as a first-order system.</li>
+      <li><strong>Chemistry</strong>: Chemical reactors in which the reaction rate is of first order with respect to a reactant concentration.</li>
+      <li><strong>Biomedical Engineering</strong>: The concentration of a drug in the bloodstream, modelled with one compartment.</li>
+      <li><strong>Automobiles</strong>: The speed of a car as a response to the engine force, where the speed is limited by friction and air drag. This is the process that a cruise control system controls.</li>
+      <li><strong>Environmental Engineering</strong>: The concentration of a pollutant in a well-mixed lake with inflow and outflow.</li>
+      <li><strong>Electrical Engineering</strong>: The current in a DC motor winding, governed by the motor's inductance and resistance (with the motor held at constant speed).</li>
+      <li><strong>Fluid Dynamics</strong>: The water level in a tank with an outflow at the bottom, around an operating point.</li>
+      <li><strong>Signal Processing</strong>: The exponential moving average filter, often used to smooth out time series data.</li>
+      <li><strong>Marine Engineering</strong>: The velocity of a ship as a response to the propeller thrust.</li>
+      </ul>`},
 
 
 
 
 //curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For an automatic control theory student, make a list of tweny examples of second-order systems from various engineering fields such as electronics, chemistry, physics, mechanics, mathematics, household appliances, and gadgets. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
-  "TWO_REAL_POLES_pz":{q:"Why do we study systems with two poles?",pos:function(){
+  "TWO_REAL_POLES_pz":{q:"Why do we study systems with two real poles?",pos:function(){
     for(let i=0; i<bode_graphs.length; i++){
       if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)){
         return {visible:true,x:pole_zero_graph_x[i]+graph_pole_zero_width/2,y:pole_zero_graph_y[i]+graph_pole_zero_width/2};
       }
     }
     return {visible:false}
-  },a:`<ul>
-        <li><b>Electronics:</b> LC Circuit (Tank Circuit) - A classic example where the electric charge oscillates between an inductor (<em>L</em>) and capacitor (<em>C</em>), described by d<sup>2</sup>q/dt<sup>2</sup> + q/(LC) = 0.</li>
-        <li><b>Automotive:</b> Suspension System - Represents the vehicle's dynamics, where the oscillatory behavior models comfort and handling.</li>
-        <li><b>Mechatronics:</b> Robotic Arm Joints - The positioning control typically involves second-order dynamics to describe the movement.</li>
-        <li><b>Physics:</b> Mass-Spring-Damper System - A fundamental second-order system, described by m&middot;d<sup>2</sup>x/dt<sup>2</sup> + c&middot;dx/dt + kx = F(t), where m, c, and k are mass, damping coefficient, and spring constant, respectively.</li>
-        <li><b>Chemical Engineering:</b> Temperature Control in a Chemical Reactor - Where the temperature control loop can be approximated by a second-order system to maintain optimal reaction conditions.</li>
-        <li><b>Electrical Engineering:</b> RLC Circuits - Used in filters, tuners, and frequency discriminators, representing a resistive (R), inductive (L), and capacitive (C) elements.</li>
-        <li><b>Aerospace:</b> Attitude Control Systems - Governs the orientation of aircraft or spacecraft, often modelled with second-order dynamics.</li>
-        <li><b>Mechanics:</b> Pendulum Dynamics (Small Angle Approximation) - Described by d<sup>2</sup>&theta;/dt<sup>2</sup> + g/l &middot; &theta; = 0, where g is the acceleration due to gravity and l is the pendulum length.</li>
-        <li><b>Marine Engineering:</b> Ship Roll Dynamics - Explains how ships stabilize after being tilted by waves, displaying second-order characteristics.</li>
-        <li><b>Mathematics:</b> Differential Equations - Many natural phenomena and engineering problems are modeled as second-order linear differential equations.</li>
-        <li><b>Heating, Ventilation, and Air Conditioning (HVAC):</b> Temperature Control Systems - Regulate the building's climate using feedback mechanisms akin to second-order systems.</li>
-        <li><b>Household Appliances:</b> Washing Machine Balance Control - Ensures stability during the spin cycle, a problem of dynamic balancing and vibration control.</li>
-        <li><b>Gadgets:</b> Gyroscopes in Smartphones - Employed for orientation detection, involving principles of angular momentum and second-order control for accuracy.</li>
-        <li><b>Renewable Energy:</b> Wind Turbine Pitch Control - Adjusts the blade pitch to optimize efficiency and regulate power output, a second-order control challenge.</li>
-        <li><b>Biomedical Engineering:</b> Drug Delivery Systems - The kinetics of drug absorption and effects can sometimes be modeled as second-order processes.</li>
-        <li><b>Optics:</b> Laser Cavity Control - Stability and precision in the laser output are managed through feedback that closely resembles second-order dynamics.</li>
-        <li><b>Acoustics:</b> Loudspeaker Systems - The mechanical and electrical aspects of speaker design often involve second-order dynamic models.</li>
-        <li><b>Robotics:</b> Drone Stabilization - The flight control systems for drones, ensuring stable operation, leverage second-order dynamics.</li>
-        <li><b>Information Technology:</b> Packet Switching in Network Routers - While primarily a function of software, the control of data flow can be conceptually understood through second-order system analogies.</li>
-        <li><b>Environmental Engineering:</b> Pollution Dispersion Models - The spread and dissipation of pollutants in ecosystems can be described using principles akin to second-order systems.</li>
-    </ul>Note that some of the systems described above may have complex poles, having a damped oscillating system response.`},
+  },a:`Two real poles appear when two first-order systems are connected in series, or when a system has two energy stores and a lot of damping. The step response has no overshoot. In contrast to a single pole, it starts with zero slope, which makes it look slower and S-shaped. The pole closest to the origin (the largest time constant) dominates the response. Some examples of second-order systems:
+  ` + HELP_SECOND_ORDER_EXAMPLES},
 
 
 
 //curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For an automatic control theory student, make a list of tweny examples of second-order systems from various engineering fields such as electronics, chemistry, physics, mechanics, mathematics, household appliances, and gadgets. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
-  "TWO_COMPLEX_POLES_pz":{q:"Why do we study systems with two poles?",pos:function(){
+  "TWO_COMPLEX_POLES_pz":{q:"Why do we study systems with two complex poles?",pos:function(){
     for(let i=0; i<bode_graphs.length; i++){
       if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)){
         return {visible:true,x:pole_zero_graph_x[i]+graph_pole_zero_width/2,y:pole_zero_graph_y[i]+graph_pole_zero_width/2};
       }
     }
     return {visible:false}
-  },a:`<ul>
-        <li><b>Electronics:</b> LC Circuit (Tank Circuit) - A classic example where the electric charge oscillates between an inductor (<em>L</em>) and capacitor (<em>C</em>), described by d<sup>2</sup>q/dt<sup>2</sup> + q/(LC) = 0.</li>
-        <li><b>Automotive:</b> Suspension System - Represents the vehicle's dynamics, where the oscillatory behavior models comfort and handling.</li>
-        <li><b>Mechatronics:</b> Robotic Arm Joints - The positioning control typically involves second-order dynamics to describe the movement.</li>
-        <li><b>Physics:</b> Mass-Spring-Damper System - A fundamental second-order system, described by m&middot;d<sup>2</sup>x/dt<sup>2</sup> + c&middot;dx/dt + kx = F(t), where m, c, and k are mass, damping coefficient, and spring constant, respectively.</li>
-        <li><b>Chemical Engineering:</b> Temperature Control in a Chemical Reactor - Where the temperature control loop can be approximated by a second-order system to maintain optimal reaction conditions.</li>
-        <li><b>Electrical Engineering:</b> RLC Circuits - Used in filters, tuners, and frequency discriminators, representing a resistive (R), inductive (L), and capacitive (C) elements.</li>
-        <li><b>Aerospace:</b> Attitude Control Systems - Governs the orientation of aircraft or spacecraft, often modelled with second-order dynamics.</li>
-        <li><b>Mechanics:</b> Pendulum Dynamics (Small Angle Approximation) - Described by d<sup>2</sup>&theta;/dt<sup>2</sup> + g/l &middot; &theta; = 0, where g is the acceleration due to gravity and l is the pendulum length.</li>
-        <li><b>Marine Engineering:</b> Ship Roll Dynamics - Explains how ships stabilize after being tilted by waves, displaying second-order characteristics.</li>
-        <li><b>Mathematics:</b> Differential Equations - Many natural phenomena and engineering problems are modeled as second-order linear differential equations.</li>
-        <li><b>Heating, Ventilation, and Air Conditioning (HVAC):</b> Temperature Control Systems - Regulate the building's climate using feedback mechanisms akin to second-order systems.</li>
-        <li><b>Household Appliances:</b> Washing Machine Balance Control - Ensures stability during the spin cycle, a problem of dynamic balancing and vibration control.</li>
-        <li><b>Gadgets:</b> Gyroscopes in Smartphones - Employed for orientation detection, involving principles of angular momentum and second-order control for accuracy.</li>
-        <li><b>Renewable Energy:</b> Wind Turbine Pitch Control - Adjusts the blade pitch to optimize efficiency and regulate power output, a second-order control challenge.</li>
-        <li><b>Biomedical Engineering:</b> Drug Delivery Systems - The kinetics of drug absorption and effects can sometimes be modeled as second-order processes.</li>
-        <li><b>Optics:</b> Laser Cavity Control - Stability and precision in the laser output are managed through feedback that closely resembles second-order dynamics.</li>
-        <li><b>Acoustics:</b> Loudspeaker Systems - The mechanical and electrical aspects of speaker design often involve second-order dynamic models.</li>
-        <li><b>Robotics:</b> Drone Stabilization - The flight control systems for drones, ensuring stable operation, leverage second-order dynamics.</li>
-        <li><b>Information Technology:</b> Packet Switching in Network Routers - While primarily a function of software, the control of data flow can be conceptually understood through second-order system analogies.</li>
-        <li><b>Environmental Engineering:</b> Pollution Dispersion Models - The spread and dissipation of pollutants in ecosystems can be described using principles akin to second-order systems.</li>
-    </ul>Note that some of the systems described above may have real poles, having a damped system response without oscillation.`},
+  },a:`Two complex poles give a damped oscillation in the step response and, for low damping, a resonance peak in the Bode magnitude plot. Systems that store energy in two ways and exchange it back and forth behave like this, for example a mass and a spring, or an inductor and a capacitor. The form k<sub>3</sub>w<sup>2</sup>/(s<sup>2</sup>+2zws+w<sup>2</sup>) describes such a system with three numbers: the static gain k<sub>3</sub>, the natural frequency w (&omega;<sub>n</sub>), and the relative damping z (&zeta;). Some examples of second-order systems:
+  ` + HELP_SECOND_ORDER_EXAMPLES},
 
 
 
@@ -145,12 +112,19 @@ In summary, the choice between using degrees and radians depends on the context 
       }
     }
     return {visible:false}
-  },a:`<b>DC Motor Speed Control System</b>: A direct current (DC) motor's speed can be controlled through voltage adjustments. The mathematical model of a DC motor might result in a transfer function with one zero and two poles when considering the electrical dynamics (voltage-to-current) and mechanical dynamics (torque-to-speed). This system showcases how input voltage changes can affect the steady-state speed and transient performance, such as overshoot and settling time.<br>
-<b>Mass-Spring-Damper System</b>: This classic mechanical system comprises a mass attached to a spring and a damper, where the force applied to the mass is countered by the spring's restoring force and the damper's resistive force. The system's transfer function, relating force to displacement, often features one zero and two poles, demonstrating natural frequencies, damping ratios, and resonance phenomena.<br>
-<b>Thermal System for a Heated Tank</b>: Consider a tank where liquid is heated through an electric heater and cooled by the surrounding environment. The dynamics of heating (considering the heater power as input and the liquid temperature as output) might be represented by a transfer function with one zero and two poles, revealing how heat transfer rates, heat capacity, and environmental interaction influence temperature control and stability.<br><br>
-Many physical and engineering systems can be approximated or modeled accurately enough with one zero and two poles. This simplification aids in the conceptual understanding and practical application of control theory without overwhelming complexity.<br>
-These systems provide a clear view of how the pole and zero locations affect the system's response, including factors like stability, settling time, overshoot, and steady-state error.<br><br>
-With a relatively simple system configuration, various feedback control techniques (like PID control, lead or lag compensators) can be applied and analyzed, offering lessons on how control actions modify system behavior.`},
+  },a:`A zero does not add dynamics of its own, but it changes the shape of the response. A common way to get a zero is two parallel paths whose outputs are added, for example a fast and a slow process: a/(1+T<sub>6</sub>s) + b/(1+T<sub>7</sub>s) has one zero and two poles. With k<sub>4</sub>(1+T<sub>8</sub>s)/((1+T<sub>6</sub>s)(1+T<sub>7</sub>s)), the zero is at s = -1/T<sub>8</sub>:<br><br>
+<b>T<sub>8</sub> &gt; 0, zero in the left half-plane</b>: The zero makes the response faster. If the zero is closer to the origin than the poles (T<sub>8</sub> larger than T<sub>6</sub> and T<sub>7</sub>), the step response overshoots even though both poles are real. Examples:
+<ul>
+<li><b>Mass-spring-damper, from force to velocity</b>: s/(ms<sup>2</sup>+cs+k), with the zero at the origin. From force to position there is no zero.</li>
+<li><b>DC motor, from voltage to current</b>: the electrical and mechanical dynamics give two poles, and the mechanical part (Js+b) shows up as a zero. From voltage to speed there is no zero.</li>
+<li><b>A first-order process controlled by a PI controller</b>: the closed-loop transfer function G<sub>YR</sub> (with T<sub>d</sub>=0) is Kk<sub>1</sub>(1+T<sub>i</sub>s)/(Kk<sub>1</sub>+T<sub>i</sub>(1+Kk<sub>1</sub>)s+T<sub>i</sub>T<sub>1</sub>s<sup>2</sup>), where the zero comes from the controller.</li>
+</ul>
+<b>T<sub>8</sub> &lt; 0, zero in the right half-plane</b>: The system is <i>non-minimum phase</i>. The step response first goes in the wrong direction (inverse response), which happens when two parallel paths have opposite signs and the faster one wins at first. Such systems are harder to control, because a controller that reacts too fast is fooled by the initial wrong-way response. Examples:
+<ul>
+<li><b>The water level in a steam boiler drum</b>: when more cold feedwater is added, steam bubbles collapse and the level first drops (shrink), before it rises.</li>
+<li><b>The altitude of an aircraft</b>: when the pilot pulls the elevator, the tail is pushed down, and the aircraft loses a little altitude before it starts to climb.</li>
+</ul>
+Try dragging the zero in the pole-zero map from the left half-plane to the right half-plane and watch the step response.`},
 //In automatic control theory, studying systems with one zero and two poles provides insights into the dynamics of a wide range of physical and engineering applications. Such configurations often occur in practical systems and offer a balance between simplicity and the ability to capture significant dynamic behaviors. This focus allows for the exploration of essential concepts such as stability, transient response, and steady-state accuracy within a manageable framework, facilitating the understanding and design of feedback control systems.
 //In summary, studying systems with one zero and two poles in automatic control theory is a foundational step that bridges theoretical concepts with practical applications, encouraging a deep understanding of how various control strategies can be employed to achieve desired system behaviors in a wide range of real-world scenarios.
 
@@ -164,7 +138,7 @@ With a relatively simple system configuration, various feedback control techniqu
   "Nyquist":{q:"Why is the Nyquist diagram useful?",pos:function(){return {visible:true,x:graph_nyquist_x+graph_nyquist_x_offset+graph_nyquist_width/2,y:graph_nyquist_y+graph_nyquist_y_offset+graph_nyquist_height/2};},
   a:`Imagine you're driving a car and you want to maintain a steady speed. The car's cruise control system adjusts the throttle based on feedback from your speedometer. If the control system is unstable, it might overcorrect, causing the car to speed up and slow down unpredictably.<br><br>
 The Nyquist diagram helps you understand and predict the stability of such control systems. It plots the frequency response of a system on a complex plane, providing insights into how system dynamics change with frequency.<br><br>
-By analyzing the Nyquist plot, you can determine if a control system is stable or if it's prone to oscillations or instability. This information is crucial for designing reliable and effective control systems for various applications, such as aircraft autopilots, robotic arms, or temperature controllers in industrial processes.
+The key point is -1 in the complex plane. If we draw the Nyquist curve of the open-loop transfer function G<sub>OL</sub>(i&omega;), the closed-loop system becomes unstable if the curve passes on the wrong side of -1. This is the Nyquist stability criterion: for a stable open-loop system, the closed loop is stable if the curve does not encircle -1. The distance from the curve to -1 shows how close to instability the system is, and the gain and phase margins can be read directly in the diagram. This information is crucial for designing reliable and effective control systems for various applications, such as aircraft autopilots, robotic arms, or temperature controllers in industrial processes.
 <h3>Nyquist curve drawing</h3>
 The Nyquist curve is constituted of the complex number G(i&omega;) drawn in the complex plane for &omega; in [0,∞]. Assume that the process is described by the first-order transfer function<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
@@ -182,10 +156,10 @@ Most processes have low-pass characteristics. This means that the
 output signal of the process is affected by low frequency inputs,
 whereas high frequency signals are damped out. Since the distance
 between the origin and points on the Nyquist curve describes the gain
-of process, it is normal that the Nyquist curve approaches the origin
+of the process, it is normal that the Nyquist curve approaches the origin
 for high frequencies.
 The phase shift between in- and output does usually increase with the
-frequency. This is the explanation to the commonly found spiral shapes in the Nyquist diagram.`},
+frequency. This explains the spiral shapes commonly found in the Nyquist diagram, for example for systems with a time delay.`},
 
 
 //Who invented the Bode plots, and why are they essential for Automatic control theory? Give an answer with vivid examples of Automatic control theory, with correct automatic control vocabulary while keeping the rest of the english simple.
@@ -196,7 +170,7 @@ frequency. This is the explanation to the commonly found spiral shapes in the Ny
 //Who invented the Bode plots, and why are they essential for Automatic control theory? Give an answer with vivid examples of Automatic control theory, with correct automatic control vocabulary while keeping the rest of the english simple.
   "Bode_plots":{q:"Why are Bode plots useful?",pos:function(){return {visible:true,x:graph_bode_mag_x+graph_bode_mag_x_offset+graph_bode_mag_width/2,y:graph_bode_mag_y+graph_bode_mag_y_offset+graph_bode_mag_height/2};},
   a:`Imagine you're designing a sound system for a concert hall. You want to ensure that the system delivers clear and balanced sound across a wide range of frequencies. Bode plots help engineers understand how the system responds to different frequencies, allowing them to optimize its performance.<br><br>
-Bode plots display the magnitude and phase of a system's frequency response on logarithmic scales. This makes it easier to visualize how a system amplifies or attenuates signals at different frequencies and how it shifts the phase of those signals.<br><br>
+Bode plots display the magnitude and phase of a system's frequency response against a logarithmic frequency axis. This makes it easier to visualize how a system amplifies or attenuates signals at different frequencies and how it shifts the phase of those signals.<br><br>
 The Bode plot features two curves, |G(i&omega;)|
 and arg G(i&omega;) as functions of &omega;.
 The magnitude plot is drawn in a logarithmic scale, whereas the phase shift/argument is drawn in a linear scale. The frequency axis is
@@ -210,27 +184,13 @@ By analyzing Bode plots, you can identify resonance frequencies, damping ratios,
 //Why does the Bode magnitude plot use magnitude instead of amplitude in automatic control? Give an answer with vivid examples of Automatic control theory, with correct automatic control vocabulary while keeping the rest of the english simple.
 //Some automatic control engineers use decibel dB scale on their Bode magnitude plots instead of decimal magnitude numbers. Give me pros and cons of using decibel scale vs. log-scaled numbers.
   "Bode_mag":{q:"Why use logarithmic scale in the Bode magnitude plot?",pos:function(){return {visible:true,x:graph_bode_mag_x+graph_bode_mag_x_offset,y:graph_bode_mag_y+graph_bode_mag_y_offset-10};},
-  a:`Magnitude, in this context, refers to the ratio of output signal amplitude to input signal amplitude, typically expressed as a real value, or in decibels (dB). Using log-scale magnitude allows engineers to compare signal levels across different frequencies on a logarithmic scale, which is more intuitive and easier to interpret.
-Some automatic control engineers use the decibel (dB) scale on their Bode magnitude plots instead of decimal magnitude numbers.<br><br>
-<b>Using Log-Scaled Numbers:</b><br><br>Pros:
+  a:`The magnitude |G(i&omega;)| is the ratio of the output amplitude to the input amplitude when a sinusoid with frequency &omega; is sent through the system. There are three good reasons for drawing it on a logarithmic scale:
 <ul>
-<li>Direct Representation: Log-scaled numbers provide a direct representation of the logarithmic relationship between input and output signals, which can be beneficial for those with a strong mathematical background.<br>
-<li>Simplicity in Conversion: Converting log-scaled numbers back to linear magnitude is straightforward, requiring basic exponentiation.<br>
-<li>Simplicity in Visualization: For those familiar with logarithmic scales, log-scaled numbers may offer simpler visualization and interpretation of the frequency response.<br>
+<li><b>Products become sums</b>: For systems connected in series, the transfer functions are multiplied, G(s)=G<sub>1</sub>(s)G<sub>2</sub>(s). Since log|G<sub>1</sub>G<sub>2</sub>| = log|G<sub>1</sub>| + log|G<sub>2</sub>|, the magnitude curves can simply be added, just like the phase curves.</li>
+<li><b>Straight-line asymptotes</b>: With logarithmic axes for both magnitude and frequency, each pole and zero gives an asymptote that is a straight line. Above the corner frequency, a pole bends the curve down by a slope of -1 (a factor 10 per decade of frequency) and a zero bends it up by +1. This makes it possible to sketch Bode plots by hand.</li>
+<li><b>Wide range</b>: Gains from 0.001 to 1000 fit in one readable plot.</li>
 </ul>
-Cons:<ul>
-<li>Less Intuitive: Log-scaled numbers may be less intuitive for engineers without a strong mathematical background or experience with logarithmic scales, making interpretation more challenging.<br>
-<li>Limited Direct Comparison: Direct comparison of gain values at different frequencies may be less straightforward compared to dB, potentially complicating the identification of critical system characteristics.<br>
-</ul><b>Using Decibel (dB) Scale:</b><br><br>Pros:<ul>
-<li>Logarithmic Representation: dB scale provides a logarithmic representation of magnitude, compressing a wide range of values into a more manageable scale. This simplifies visualization and interpretation of the frequency response over a broad range of frequencies.<br>
-<li>Relative Sensitivity: dB scale emphasizes relative changes in magnitude rather than absolute values, making it easier to focus on significant changes in gain or attenuation, which is crucial in control systems where small changes can have significant effects.<br>
-<li>Ease of Interpretation: dB values are more intuitive for many engineers, particularly those with backgrounds in signal processing or telecommunications. They provide a standardized way to express signal levels and system gains across different frequencies.<br>
-<li>Direct Comparison: dB allows for direct comparison of gain values at different frequencies, simplifying the identification of critical system characteristics such as bandwidth, gain margin, and resonance frequencies.<br>
-<li>Consistency with Standards: dB is consistent with industry standards and practices in fields like telecommunications and audio engineering, facilitating communication and collaboration among professionals.<br>
-</ul>Cons:<ul>
-<li>Complex Conversion: Converting dB values back to linear magnitude can be more complex compared to log-scaled numbers, especially for those less familiar with the dB scale.</li>
-<li>Potential Misinterpretation: Some individuals may misinterpret dB values if they are not familiar with the scale, leading to errors in analysis or design.
-</ul>`},
+Some engineers label the magnitude axis in decibel (dB) instead, where |G|<sub>dB</sub> = 20&middot;log<sub>10</sub>|G|. This is the same curve on the same logarithmic scale, only with different numbers on the axis: a gain of 10 is 20 dB, a gain of 1 is 0 dB, a gain of 0.1 is -20 dB, and a slope of -1 is -20 dB/decade. LU-PZE labels the axis with the gain values themselves (0.1, 1, 10, ...).`},
 //Too long, so removed: While both decibel (dB) scale and log-scaled numbers have their advantages and disadvantages, the choice between them often depends on the engineer's background, preferences, and the specific requirements of the analysis or design task at hand.
 
 
@@ -247,11 +207,11 @@ For small values of &omega; the function is given by<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
 \\arg G(i\\omega) \\rightarrow 0
 </math-field><br>
-For large values of &omega; the functions is given by<br>
+For large values of &omega; the function is given by<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
 \\arg G(i\\omega) \\rightarrow n\\frac{\\pi}{2}
 </math-field><br>
-The corner frequency is defined as &omega;=1/T.
+The corner frequency is defined as &omega;=1/T, where the phase is n&middot;45&deg;. Use n=1 for a zero (the phase goes from 0&deg; to +90&deg;) and n=-1 for a pole (from 0&deg; to -90&deg;). For a product of factors, such as G(s)=1/((1+T<sub>1</sub>s)(1+T<sub>2</sub>s)), the phase curves are added: arg G = -arctan(&omega;T<sub>1</sub>) - arctan(&omega;T<sub>2</sub>).
 
 <h3>Bode phase for a time delay G(s)&nbsp;=&nbsp;e<sup>-sL</sup></h3>
 This transfer function describes a pure time delay.
@@ -260,6 +220,7 @@ If one sends a sinusoid through such a process, it outputs a sinusoid with the s
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
 \\arg G(i\\omega) = \\arg e^{-i\\omega L} =-\\omega L
 </math-field><br>
+in radians, or -&omega;L&middot;180&deg;/&pi; in degrees. The phase decreases without limit as &omega; grows, which is why time delays are hard to control.
   `},
 
 
@@ -267,22 +228,20 @@ If one sends a sinusoid through such a process, it outputs a sinusoid with the s
 //Why is the step input response of a automatic control transfer function important? What can I learn from it? Give an answer with vivid examples of Automatic control theory, with correct automatic control vocabulary while keeping the rest of the english simple.
 //Who invented the Bode plots, and why are they essential for Automatic control theory? Give an answer with vivid examples of Automatic control theory, with correct automatic control vocabulary while keeping the rest of the english simple.
   "Step_response":{q:"Why is the step input response important?",pos:function(){return {visible:true,x:graph_step_response_x+graph_step_response_x_offset+graph_step_response_width/2,y:graph_step_response_y+graph_step_response_y_offset+graph_step_response_height/2};},
-  a:`Imagine you're driving a car with cruise control. When you press the accelerator pedal to set a new speed, the car's cruise control system adjusts the throttle to reach the desired speed smoothly and without overshooting. The step input response of the cruise control system shows how quickly and accurately the car reaches the new speed and how stable the system is during this transition.<br><br>
-The step input response of a transfer function is important because it provides valuable insights into how a control system behaves when subjected to a sudden change in its input signal.<br><br>
-By analyzing the step input response, engineers can determine several key characteristics of the control system:<br>
-1. <b>Rise Time</b>: This is the time it takes for the system's output to reach a certain percentage (usually 90% or 95%) of its final value after the step input is applied. A shorter rise time indicates a faster response.<br>
-2. <b>Settling Time</b>: This is the time it takes for the system's output to settle within a certain tolerance band around its final value and stay there. A shorter settling time indicates a faster response and better stability.<br>
-3. <b>Overshoot</b>: This is the maximum deviation of the system's output from its final value during the transient response. Excessive overshoot can lead to oscillations or instability in the system.<br>
-4. <b>Steady-State Error</b>: This is the difference between the desired output and the actual output of the system once it has settled. Minimizing steady-state error is important for achieving accurate and precise control.<br><br>
-By analyzing these characteristics, you can evaluate the performance and stability of the control system and make necessary adjustments to improve its behavior. For example, if the system exhibits excessive overshoot or slow settling time, you may need to tune the controller parameters to achieve better response.<br><br>
-The step input response of an automatic control transfer function is crucial for understanding and optimizing the dynamic behavior of control systems, ensuring they respond quickly, accurately, and stably to changes in their inputs.`},
+  a:`Imagine you're driving a car with cruise control. When you raise the set speed with the cruise control button, the controller adjusts the throttle to reach the new speed. The step response shows how quickly and accurately the car reaches the new speed, and whether it overshoots or oscillates on the way.<br><br>
+The step response shows how a system behaves after a sudden change of its input signal. From it, we can read several key characteristics:<br>
+1. <b>Rise Time</b> T<sub>r</sub>: Draw the tangent to the step response where it is steepest (at the inflection point). The rise time is the time between where this tangent crosses zero and where it reaches the final value. Equivalently, T<sub>r</sub> = (final value)/(maximum slope). A shorter rise time means a faster response. (Other textbooks use the time from 10% to 90% of the final value instead.)<br>
+2. <b>Settling Time</b>: The time it takes for the output to enter a tolerance band around its final value (often &plusmn;2% or &plusmn;5%) and stay there.<br>
+3. <b>Overshoot</b>: How far the output goes past its final value, usually given in percent of the final value. Overshoot is a sign of low damping, for example complex poles close to the imaginary axis.<br>
+4. <b>Static gain and steady-state error</b>: The final value of the step response equals the static gain G(0) of the system. For a closed-loop system, the difference between the reference and the final value of the output is the steady-state error. Integral action in the controller removes it.<br><br>
+If a controlled system has too much overshoot or a slow settling time, we can tune the controller parameters to get a better response.`},
 
 
 
 //In automatic control and a resonant second order system, what is the damping factor? Give an answer with vivid examples of resonating systems, with correct automatic control vocabulary while keeping the rest of the english simple.
 
 //curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For an automatic control theory student, show how we get the damping factor &zeta; of a two-pole system with complex valued poles when we start with the differential equation, and compute the laplace transform and pole locations in the s-plane. Use an example such as a Mass-Spring-Damper System, described by m*d^2x/dt^2 + c*dx/dt + kx = F(t), where m, c, and k are mass, damping coefficient, and spring constant, respectively.</li>. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
-  "Damping_factor_z":{q:"What is the damping factor (&zeta; or z)?",pos:function(){
+  "Damping_factor_z":{q:"What is the relative damping (&zeta; or z)?",pos:function(){
     let span = document.getElementById('variable_z');
     if (span!=null){
       let rect = span.getBoundingClientRect();
@@ -292,44 +251,44 @@ The step input response of an automatic control transfer function is crucial for
     } else {
       return {visible:false};
     }
-  },a:`Let's imagine a bell as an example of a resonating system. When you strike a bell, it produces a ringing sound that gradually fades away. The damping factor determines how quickly the sound fades. If the bell has high damping, the sound dies down rapidly. But if the damping is low, the sound lingers for longer.<br><br>
-The damping factor (often called z or the Greek letter zeta &zeta;) of a resonant second-order system measures how fast the system's oscillations fade away over time. It's like the system's ability to dampen or reduce its vibrations.<br><br>
-Damping is crucial for ensuring stable and controlled behavior of systems. If a resonant system has insufficient damping, it can lead to excessive oscillations or even instability. Engineers adjust the damping factor to strike a balance between stability and responsiveness in control systems, just like tuning a bell to produce the desired sound.
-<h3>How do we calculate the damping factor?</h3>
-Let's walk through an example of computing the damping factor (&zeta;) of a Mass-Spring-Damper System, which is a common two-pole system in automatic control theory. Given is the differential equation for the Mass-Spring-Damper System:<br>
+  },a:`Let's imagine a bell as an example of a resonating system. When you strike a bell, it produces a ringing sound that gradually fades away. The damping determines how quickly the sound fades. If the bell has high damping, the sound dies down rapidly. But if the damping is low, the sound lingers for longer.<br><br>
+The relative damping, also called the damping ratio (written z, or the Greek letter zeta &zeta;), of a second-order system measures how fast the system's oscillations fade away. In the transfer function k<sub>3</sub>w<sup>2</sup>/(s<sup>2</sup>+2zws+w<sup>2</sup>):
+<ul>
+<li>z = 0: no damping, the poles lie on the imaginary axis and the system oscillates forever.</li>
+<li>0 &lt; z &lt; 1: complex poles, a damped oscillation. The lower z, the larger the overshoot and the resonance peak.</li>
+<li>z = 1: two equal real poles, the fastest response without overshoot.</li>
+<li>z &gt; 1: two different real poles, slower and without overshoot.</li>
+</ul>
+In the pole-zero map, z = cos(&phi;), where &phi; is the angle between a pole and the negative real axis.
+<h3>How do we calculate the relative damping?</h3>
+Let's walk through an example of computing the relative damping (&zeta;) of a Mass-Spring-Damper System, which is a common two-pole system in automatic control theory. Given is the differential equation for the Mass-Spring-Damper System:<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
 m\\frac{d^2x}{dt^2} + c\\frac{dx}{dt} + kx = F(t)
   </math-field><br>
 where m is the mass, c is the damping coefficient, k is the spring constant, and F(t) is the input force as a function of time.
 
-<h4>Step 1: Express in Standard Form</h4>
-First, we express this second-order differential equation in a standard form by assuming F(t) = 0 (homogeneous solution).<br>
+<h4>Step 1: Apply Laplace Transform</h4>
+Applying the Laplace transform and assuming zero initial conditions, we get:<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
-m\\frac{d^2x}{dt^2} + c\\frac{dx}{dt} + kx = 0
-  </math-field>
-
-<h4>Step 2: Apply Laplace Transform</h4>
-Applying the Laplace transform and assuming zero initial conditions (for simplicity), we get:<br>
-  <math-field read-only style='vertical-align:bottom;display:inline-block'>
-ms^2X(s) + csX(s) + kX(s) = 0
+ms^2X(s) + csX(s) + kX(s) = F(s) \\quad\\Rightarrow\\quad G(s)=\\frac{X(s)}{F(s)}=\\frac{1}{ms^2+cs+k}
   </math-field><br>
-Rearranging terms gives us the characteristic equation:<br>
+The poles are the roots of the denominator, the characteristic equation:<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
 ms^2 + cs + k = 0
   </math-field>
 
-<h4>Step 3: Compute Pole Locations</h4>
+<h4>Step 2: Compute Pole Locations</h4>
 The roots of the characteristic equation will give us the pole locations in the s-plane. These roots can be calculated using the quadratic formula:<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
 s = \\frac{-c \\pm \\sqrt{c^2 - 4mk}}{2m}
   </math-field>
 
-<h4>Step 4: Damping Factor &zeta;</h4>
-The damping factor &zeta; is a non-dimensional measure that describes how oscillations in a system decay after a disturbance. The general form for the roots when there are complex-valued poles (underdamped system) is:<br>
+<h4>Step 3: Relative Damping &zeta;</h4>
+The relative damping &zeta; is a dimensionless number that describes how oscillations in a system decay. Dividing the characteristic equation by m gives the standard form s<sup>2</sup> + 2&zeta;&omega;<sub>n</sub>s + &omega;<sub>n</sub><sup>2</sup> = 0, with the roots<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
 s = -\\zeta\\omega_n \\pm \\omega_n\\sqrt{\\zeta^2 - 1}
   </math-field><br>
-where &omega;<sub>n</sub> = √(k/m) is the natural frequency of the system. Comparing this with the roots obtained from the quadratic formula, we can deduce:<br>
+which for complex poles (&zeta; &lt; 1, an underdamped system) is s = -&zeta;&omega;<sub>n</sub> &plusmn; i&omega;<sub>n</sub>√(1-&zeta;<sup>2</sup>). Here &omega;<sub>n</sub> = √(k/m) is the natural frequency of the system. Comparing this with the roots obtained from the quadratic formula, we can deduce:<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
 \\zeta = \\frac{c}{2\\sqrt{mk}}
   </math-field><br>
@@ -338,12 +297,12 @@ As an example, assume a mass-spring-damper system with m=1&nbsp;kg, c=2&nbsp;Ns/
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
 \\omega_n = \\sqrt{\\frac{k}{m}} = \\sqrt{5} \\, \\text{rad/s}
   </math-field><br>
-Then, calculate the damping factor &zeta;:<br>
+Then, calculate the relative damping &zeta;:<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
 \\zeta = \\frac{c}{2\\sqrt{mk}} = \\frac{2}{2\\sqrt{1 \\times 5}} = \\frac{2}{2\\sqrt{5}} = \\frac{1}{\\sqrt{5}}
   </math-field><br>
 
-This calculates the damping factor of the system, showing us a direct measure of how quickly perturbations or oscillations will die out. Now you know how to take a differential equation representing a Mass-Spring-Damper System, convert it into its Laplace form to find its characteristic equation, then find the system's pole locations and, importantly, compute its damping factor. This process is fundamental in control theory for designing and analyzing system responses.`},
+which is approximately 0.45. The poles are s = -1 &plusmn; 2i.`},
 
 
 //curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"Respond using HTML and LaTeX. In automatic control theory, what is the definition of phase margin? Give me three vivid examples where the phase margin is crucial. Answer with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
@@ -357,14 +316,13 @@ This calculates the damping factor of the system, showing us a direct measure of
     } else {
       return {visible:false};
     }
-  },a:`<b>Phase margin</b> is defined as the amount of additional phase lag at the gain crossover frequency that would lead to the system becoming unstable. The gain crossover frequency is the frequency at which the magnitude of the open-loop transfer function equals 1.0 (which sometimes is refered to as 0 dB). The phase margin is a measure of system stability; a higher phase margin indicates a more stable system. It is usually expressed in degrees.<br><br>
+  },a:`<b>Phase margin</b> is defined as the amount of additional phase lag at the gain crossover frequency that would lead to the system becoming unstable. The gain crossover frequency is the frequency at which the magnitude of the open-loop transfer function equals 1.0 (0 dB). The phase margin is a measure of robustness: a larger phase margin means that the system is further from instability, and usually gives less overshoot. It is usually expressed in degrees, and a common rule of thumb is 30°-60°.<br><br>
 Mathematically, the phase margin can be expressed as<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>PhaseMargin = 180^\\circ + \\phi(\\omega_{gc})</math-field><br>
 where &phi;(&omega;<sub>gc</sub>) is the phase of the open-loop transfer function at the gain crossover frequency &omega;<sub>gc</sub>.<br><br>
 <b>Aircraft Autopilot Systems</b>: Stability is paramount in aircraft control systems to ensure smooth and safe flight operations. The phase margin plays a critical role in the design of autopilot systems, where it ensures that even with the presence of uncertainties in aircraft dynamics or external disturbances (like wind gusts), the system remains stable and can maintain or return to the desired flight path. A sufficiently high phase margin is needed to account for these uncertainties and provide a buffer against instability.<br>
 <b>Industrial Robot Arms</b>: In robotic systems used for manufacturing or assembly, precise and stable control of robotic arms is essential for accuracy and efficiency. The phase margin is crucial in tuning the control systems that govern these robotic arms, making sure they can follow desired trajectories smoothly without oscillating or veering off course. This is especially important when the robotic arms are performing high-speed movements or delicate operations, where stability translates into safety and precision.<br>
-<b>Automotive Cruise Control Systems</b>: Modern vehicles often come equipped with cruise control systems that automatically adjust the vehicle's speed to maintain a set speed. The stability of these control systems is heavily dependent on having an adequate phase margin. A good phase margin ensures that the vehicle smoothly accelerates or decelerates to the desired speed without excessive overshoot, undershoot, or oscillations, thereby enhancing both comfort and safety for passengers and other road users.<br><br>
-In each of these examples, the phase margin ensures that the control system is sufficiently robust to handle deviations from ideal conditions without sacrificing performance or safety.`},
+<b>Automotive Cruise Control Systems</b>: Modern vehicles often come equipped with cruise control systems that automatically adjust the vehicle's speed to maintain a set speed. The stability of these control systems is heavily dependent on having an adequate phase margin. A good phase margin ensures that the vehicle smoothly accelerates or decelerates to the desired speed without excessive overshoot, undershoot, or oscillations, thereby enhancing both comfort and safety for passengers and other road users.`},
 
 
 
@@ -379,13 +337,9 @@ In each of these examples, the phase margin ensures that the control system is s
     } else {
       return {visible:false};
     }
-  },a:`<p>The <strong>phase crossover frequency</strong> (often denoted as &omega;<sub>pc</sub>) refers to the frequency at which the phase angle of the open-loop transfer function of a system crosses through -180°. This is a crucial parameter in analyzing and designing control systems, especially when dealing with stability and performance characteristics as per the Nyquist stability criterion. At the phase crossover frequency, the phase margin of the system is determined, which is a measure of the system's tolerance to gain changes before becoming unstable.</p>
-  <ul>
-  <li><strong>Aerospace Control Systems:</strong> In the design of flight control systems for aircraft, the phase crossover frequency is vital in ensuring that the aircraft responds appropriately to pilot inputs without entering into oscillatory or unstable behavior. A well-designed phase crossover frequency helps in maintaining the aircraft's stability and maneuverability, especially during critical maneuvers.</li>
-  <li><strong>Process Control in Chemical Plants:</strong> In chemical process control, maintaining the desired reaction conditions precisely is critical for both safety and product quality. The phase crossover frequency plays a key role in the design of control systems that regulate temperature, pressure, and flow rates within reactors. A poorly chosen phase crossover frequency can lead to system instability, leading to over-correction and oscillations, or even catastrophic failures in worst-case scenarios.</li>
-  <li><strong>Automotive Cruise Control Systems:</strong> The phase crossover frequency is also critical in the design of cruise control systems, ensuring that the vehicle can maintain a set speed regardless of varying load conditions (like climbing hills or carrying additional passengers). An optimal phase crossover frequency ensures that the system provides smooth acceleration and deceleration, enhancing both comfort and fuel efficiency, without leading to instability that could cause uncomfortable ride experiences or loss of control.</li>
-  </ul>
-The phase crossover frequency is a fundamental concept in automatic control theory that influences the stability and performance of a wide variety of systems. Its proper determination is essential for the design of robust and effective control systems in numerous practical applications.`},
+  },a:`<p>The <strong>phase crossover frequency</strong> (often denoted as &omega;<sub>pc</sub>) is the frequency at which the phase of the open-loop transfer function crosses -180°. At this frequency, a sinusoid that goes around the feedback loop comes back with opposite sign, so the negative feedback acts as positive feedback.</p>
+<p>The <b>gain margin</b> is read at the phase crossover frequency: for an open-loop stable system, if the open-loop gain |G<sub>OL</sub>(i&omega;<sub>pc</sub>)| is less than 1, the closed loop is stable, and the gain margin 1/|G<sub>OL</sub>(i&omega;<sub>pc</sub>)| tells how much the gain can be increased before the closed-loop system becomes unstable. (The phase margin, in contrast, is read at the gain crossover frequency, where |G<sub>OL</sub>| = 1.)</p>
+<p>In the Nyquist diagram, the phase crossover frequency is where the curve crosses the negative real axis. Not all systems have one: a system with only one or two stable poles, no zeros in the right half-plane, and no time delay never crosses -180°, so its gain margin is infinite. Extra poles and time delays add phase lag, which moves the phase crossover frequency down.</p>`},
 
 
 //curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"In automatic control theory, what is the definition of gain margin? Give me three vivid examples where the gain margin is crucial. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
@@ -402,20 +356,20 @@ The phase crossover frequency is a fundamental concept in automatic control theo
   },a:`<p>The <strong>gain margin</strong> is a measure of the stability of a system. Specifically, it is the amount by which the system's open-loop gain can be increased before the system becomes unstable. The gain margin is calculated as:</p>
   <p>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
-  \\text{Gain Margin} = \\frac{1}{|G(j\\omega_{pc})|}
+  \\text{Gain Margin} = \\frac{1}{|G(i\\omega_{pc})|}
   </math-field>
+  or, in decibel,
     <math-field read-only style='vertical-align:bottom;display:inline-block'>
-  \\text{or in decibel scale, } Gain Margin_{dB} = 20 \\log_{10} \\left( \\frac{1}{|G(j\\omega_{pc})|} \\right)
-  </math-field><br><br>
-  <p>where |G(j&omega;<sub>pc</sub>)| is the magnitude of the open-loop transfer function G at the phase crossover frequency &omega;<sub>pc</sub>, where the phase angle is -180°.</p>
+  \\text{Gain Margin}_{\\text{dB}} = 20 \\log_{10} \\left( \\frac{1}{|G(i\\omega_{pc})|} \\right)
+  </math-field></p>
+  <p>where |G(i&omega;<sub>pc</sub>)| is the magnitude of the open-loop transfer function G at the phase crossover frequency &omega;<sub>pc</sub>, where the phase angle is -180°. LU-PZE shows the gain margin as a plain factor, not in dB. A common rule of thumb is a gain margin of 2-6 (6-16 dB).</p>
   <ul>
   <li><strong>Aircraft Control Systems:</strong> In aircraft, ensuring the stability of control systems like autopilots is crucial for safety. A significant gain margin allows for changes in aircraft dynamics due to different flight conditions (speed, altitude) without risking instability. For instance, abrupt maneuvers or changes in aerodynamic conditions could potentially push the system towards instability. A healthy gain margin ensures there's enough 'buffer' to handle such variations without compromising control.</li>
 
   <li><strong>Automotive Cruise Control:</strong> Cruise control systems maintain a vehicle's speed without manual input by adjusting the throttle position. Variations in vehicle load (e.g., passengers or cargo) and road inclinations can alter system dynamics. A sufficient gain margin ensures that the system can accommodate such changes and maintain speed without becoming unstable, avoiding oscillations or erratic speed adjustments.</li>
 
   <li><strong>Chemical Process Control:</strong> In chemical plants, the control of processes such as reactor temperatures, pressure, and flow rates is vital. These processes are highly sensitive to operating conditions. A control system with an adequate gain margin ensures stability even as the process dynamics change with varying reactant concentrations, temperature, or pressure. This is particularly crucial in ensuring consistent product quality and preventing potentially hazardous conditions.</li>
-  </ul>
-The gain margin is a fundamental measure in ensuring the stability of control systems across a variety of applications. By providing a quantifiable buffer against changes that could lead to instability, it plays a critical role in the design and analysis of robust control systems.`},
+  </ul>`},
 
 
 //curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"In automatic control theory, why is -180 degree on the y axis in the Bode phase plot important? Give me three vivid examples when feedback control goes wrong and the catastrophic results. Give your answer in HTML and LaTeX formatting, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
@@ -425,19 +379,21 @@ The gain margin is a fundamental measure in ensuring the stability of control sy
     let screen_y = map(angle,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
     return {visible:true,x:graph_bode_phase_x+graph_bode_phase_x_offset,y:graph_bode_phase_y+graph_bode_phase_y_offset+screen_y}
   } else return {visible:false};},
-  a:`<b>Tacoma Narrows Bridge Collapse (1940)</b>
-  <p>The Tacoma Narrows Bridge collapse is a classic example of a physical system falling into catastrophic oscillation due to inadequate damping and feedback. The bridge entered a resonance condition under wind forces, which matched one of its natural frequencies. The aerodynamic feedback, supposed to dampen the motion, instead led to destructive oscillations because the dynamic response of the bridge was not correctly anticipated in the design.</p>
-<b>Chernobyl Nuclear Disaster (1986)</b>
-  <p>At Chernobyl, a series of operator errors compounded by a reactor design vulnerable to runaway conditions due to positive feedback led to an explosion and catastrophic meltdown. The reactor's design, which had a positive void coefficient, meant that an increase in temperature led to increased reactor power, a classic example of positive feedback leading to instability, contrary to the desired negative feedback for controlling nuclear reactions.</p>
-<b>Air France Flight 447 Crash (2009)</b>
-  <p>The crash of Air France Flight 447 offers a modern example where feedback control systems may have contributed to catastrophe. In this case, the aircraft's pitot tubes iced over, feeding incorrect airspeed data to the flight computers. The automated control systems, misled by this data, made inappropriate control commands that the pilots struggled to correct, ultimately leading to a fatal stall.</p>
-The Bode phase plot is an essential tool for analyzing and designing control systems. A point of critical importance on this plot is the -180-degree mark on the y-axis. This angle is particularly significant because:
+  a:`In a negative feedback loop, the measured output is subtracted from the reference. A phase lag of -180° means that a sinusoid comes back around the loop with opposite sign, so the subtraction turns into an addition: the negative feedback becomes positive feedback. If the loop gain at that frequency is 1 or more, an oscillation can build up by itself, and the closed-loop system becomes unstable.
 <ul>
-<li><b>Phase Margin:</b> The -180-degree phase angle is pivotal in determining the phase margin of the system. The phase margin is the amount of additional phase lag at the crossover frequency (where the gain is 1 or 0 dB in the magnitude plot) that will bring the system to the verge of instability. A phase margin close to zero or negative indicates a system that could be unstable or exhibit poor transient behavior.
-<li><b>Stability Criterion:</b> According to the Nyquist Stability Criterion, for a system to be stable, the closed-loop frequency response should not encircle the point (-1, j0) in the complex plane. A phase shift of -180 degrees combined with a gain greater than one at this phase shift means the system output will be in phase opposition to the input, potentially leading to positive feedback loop instead of the desired negative feedback. This creates the risk of undamped oscillations or instability.
-<li><b>Feedback Control:</b> In a negative feedback loop, the goal is generally to subtract the feedback signal from the input signal. If the phase lag reaches -180 degrees at a frequency where the gain is higher than 1, then the feedback becomes positive instead, amplifying errors rather than correcting them, leading to potential instability.
+<li><b>Phase margin:</b> The phase margin is the distance from the phase curve to -180° at the gain crossover frequency (where the gain is 1, or 0 dB). A phase margin close to zero gives large overshoot and weakly damped oscillations, and a negative phase margin means an unstable closed loop.</li>
+<li><b>Gain margin:</b> The gain margin is read at the frequency where the phase curve crosses -180°.</li>
+<li><b>Nyquist stability criterion:</b> The -180° crossing is where the Nyquist curve of the open-loop transfer function crosses the negative real axis. For an open-loop stable system, the closed loop is stable if this curve does not encircle the point -1.</li>
 </ul>
-The -180-degree mark on a Bode phase plot is crucial for ensuring the stability of control systems by avoiding conditions that turn negative feedback into positive feedback, potentially causing undamped oscillations and instability. These examples elucidate the dire consequences of neglecting or miscalculating feedback control in engineering systems.`},
+Some examples where feedback went wrong:<br><br>
+<b>Audio feedback</b>
+  <p>When a microphone is held close to a loudspeaker, the sound goes around the loop microphone &rarr; amplifier &rarr; loudspeaker &rarr; air &rarr; microphone. At a frequency where the sound comes back in phase with itself and the loop gain is larger than 1, the sound builds up into a loud howl. Turning down the amplifier gain (increasing the gain margin) stops it.</p>
+<b>JAS 39 Gripen (1989 and 1993)</b>
+  <p>Two early Gripen fighter aircraft crashed after pilot-induced oscillations: the pilot and the aircraft's flight control system formed a feedback loop that started to oscillate. Rate limits on the control surfaces added phase lag in the loop, so the pilot's corrections came too late and made the oscillation larger. The flight control laws were redesigned after the crashes.</p>
+<b>Tacoma Narrows Bridge Collapse (1940)</b>
+  <p>The bridge collapsed in a fairly steady wind of about 65 km/h. It was not a matter of the wind "matching" a natural frequency of the bridge. The twisting of the deck changed the airflow around it, and the changed airflow pushed the deck to twist even more (aeroelastic flutter). This feedback acted like negative damping, so the oscillation grew until the bridge broke.</p>
+<b>Chernobyl Nuclear Disaster (1986)</b>
+  <p>The RBMK reactor had a positive void coefficient: when steam bubbles (voids) formed in the cooling water, the reactor power increased, which produced even more steam. Operating the reactor at low power during a test made this positive feedback dominate, which led to a power surge and an explosion.</p>`},
 
 
 //curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"In automatic control theory, why is a transfer function with a time delay difficult to use feedback control with? Give me three vivid examples of systems with time delays. Give your answer in HTML and LaTeX formatting, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
@@ -451,19 +407,20 @@ The -180-degree mark on a Bode phase plot is crucial for ensuring the stability 
     } else {
       return {visible:false};
     }
-  },a:`<p>A transfer function with a time delay presents significant challenges for feedback control implementation. Time delay in a system, often denoted as <i>L</i> or &tau;, effectively means that the system's output response to a control action is not instant but delayed by a certain time duration. This attribute complicates the use of feedback control for several reasons:</p>
-<ul><li><b>Predictability:</b> The presence of a time delay makes the system's response less predictable. Feedback control relies on correcting errors by adjusting inputs based on the difference between the desired and actual outputs. A delay disrupts this dynamic, as adjustments made by the controller will not have an immediate effect, making it harder to stabilize the system.</li>
-<li><b>Stability:</b> Time delays can introduce or exacerbate stability issues. In feedback systems, the controller's actions based on delayed information can lead to overcompensation, initiating oscillatory or even unstable behavior.</li>
-<li><b>Performance:</b> Achieving desired performance metrics (like settling time, overshoot, and bandwidth) becomes more challenging with time delays since the delay limits how quickly and accurately the system can respond to changes.</li>
-</ul>Examples of systems with time delays:
-<ol><li><b>Networked Control Systems:</b> In systems where the control loops are closed via communication networks (such as the Internet), delays inherent in the network transmission can significantly affect the control performance, making it difficult to ensure stability and responsiveness.</li>
-<li><b>Chemical Process Control:</b> Many processes in chemical engineering, such as distillation columns or chemical reactors, have inherent time delays due to the time it takes for heat, mass transfer, or chemical reactions to occur. Controlling these processes accurately requires accounting for these delays.</li>
-<li><b>Automotive Engine Control:</b> There is a time delay between the moment the fuel injector is activated and when the increased engine power is realized. This delay must be considered in the engine control system to ensure optimal performance and fuel efficiency.</li>
+  },a:`<p>A time delay, often denoted L (or &tau;), means that the output does not react at all to a control action until the time L has passed: y(t) = u(t-L), and the transfer function is e<sup>-sL</sup>. This makes feedback control difficult for several reasons:</p>
+<ul><li><b>Phase lag without limit:</b> The delay does not change the gain (|e<sup>-i&omega;L</sup>| = 1), but it adds the phase lag -&omega;L, which grows without limit with the frequency. The phase therefore reaches -180° at some frequency, which limits how high the gain crossover frequency can be, and so how fast the closed-loop system can be. A rule of thumb is that the gain crossover frequency must be below about 1/L.</li>
+<li><b>Stability:</b> A controller that acts on old information tends to overcorrect. If the controller gain is too high, this leads to oscillations or instability.</li>
+<li><b>Performance:</b> No controller can react to a disturbance faster than the delay allows. A step disturbance always gives an error during at least the time L.</li>
+</ul>A pure delay is perfectly predictable, though. If a good model of the process is available, a Smith predictor can compensate for the known delay.<br><br>
+Examples of systems with time delays:
+<ol><li><b>Transport delays:</b> Material that travels on a conveyor belt or fluid that flows through a long pipe reaches the sensor after a delay. A classic example is the shower: when you turn the tap, it takes a few seconds before the water at the new temperature reaches you, and it is easy to overcorrect.</li>
+<li><b>Networked control systems:</b> When the control loop is closed via a communication network, the network transmission adds a delay.</li>
+<li><b>Remote control of vehicles in space:</b> A radio signal takes between about 3 and 22 minutes to reach Mars, so the rovers there cannot be steered directly from Earth and must drive partly on their own.</li>
 </ol>`},
 
 
 //curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"In automatic control theory, in a system with two complex poles, what is the resonance frequency and what options do we have to deal with it? Give me three vivid examples of systems with resonance, both good and bad ones. Give your answer in HTML with LaTeX for mathematical formulas, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
-  "resonance_frequency_w":{q:"What about the resonance frequency w?",pos:function(){
+  "resonance_frequency_w":{q:"What is the natural frequency w?",pos:function(){
     let span = document.getElementById('variable_w');
     if (span!=null){
       let rect = span.getBoundingClientRect();
@@ -473,22 +430,27 @@ The -180-degree mark on a Bode phase plot is crucial for ensuring the stability 
     } else {
       return {visible:false};
     }
-  },a:`<h3>Beneficial Resonance</h3>
+  },a:`In the transfer function k<sub>3</sub>w<sup>2</sup>/(s<sup>2</sup>+2zws+w<sup>2</sup>), w is the <em>natural frequency</em> &omega;<sub>n</sub> (sometimes called the undamped natural frequency). In the pole-zero map, w is the distance from the poles to the origin. Increasing w moves the poles radially outwards and makes the system faster, without changing the shape of the step response. In the Bode plot, w is the corner frequency.<br><br>
+The <em>resonance frequency</em> &omega;<sub>r</sub>, where the Bode magnitude has its peak, is close to w but not equal to it:<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+\\omega_r = w\\sqrt{1-2z^2}
+</math-field><br>
+This only applies when z &lt; 1/√2 &asymp; 0.71. With more damping than that, there is no resonance peak, even though the poles can still be complex. The lower the relative damping z, the closer &omega;<sub>r</sub> is to w, and the higher the peak.
+<h3>Beneficial Resonance</h3>
       <ul>
           <li><strong>Musical Instruments:</strong> The body of a violin acts as a resonator, amplifying the sound at certain frequencies, which enriches the music's quality and volume.</li>
           <li><strong>Radio Receivers:</strong> Tuning a receiver to resonate at a specific frequency allows it to selectively pick up the desired radio signal amidst numerous other signals.</li>
       </ul>
       <h3>Harmful Resonance</h3>
       <ul>
-          <li><strong>Tacoma Narrows Bridge (1940):</strong> Due to resonance, the bridge experienced drastic oscillations in windy conditions, ultimately leading to its collapse. This classic example highlights the critical importance of considering resonance in engineering design.</li>
-          <li><strong>Building Vibrations:</strong> Buildings that resonate with seismic or wind-induced vibrations can suffer from structural damage. This necessitates careful design to avoid resonant frequencies that could coincide with environmental forces.</li>
+          <li><strong>Buildings and bridges:</strong> Structures that are excited by earthquakes, wind, machines, or marching people near their resonance frequency can get large oscillations and structural damage. The Millennium Bridge in London (2000) started to sway sideways when crowds walked on it, and had to be closed and fitted with dampers.</li>
+          <li><strong>Machines:</strong> A washing machine with an unbalanced load shakes the most when the drum speed passes the resonance frequency of the machine on its springs.</li>
       </ul>
-  A system with two complex poles exhibits a phenomenon known as <em>resonance</em>. The resonance frequency, often denoted as &omega;<sub>r</sub>, is a specific frequency at which the system's output amplitude significantly increases. This frequency is closely related to the natural frequency of the system but is affected by damping.</p>
       <p>To manage or mitigate the effects of resonance, there are several strategies we can employ:</p>
       <ol>
-          <li><strong>Damping Increase:</strong> By increasing the damping ratio of the system, the peak of the resonance can be reduced, making the system less sensitive to variations around the resonance frequency.</li>
-          <li><strong>Feedback Control:</strong> Implementing a feedback control strategy can help regulate the system's response, including at the resonance frequency, ensuring stability and desired performance.</li>
-          <li><strong>Tuning:</strong> Adjusting the system parameters (such as spring constants or masses in mechanical systems) can shift the resonance frequency away from the operating range, thus minimizing its impact.</li>
+          <li><strong>Damping Increase:</strong> By increasing the relative damping of the system, the peak of the resonance can be reduced.</li>
+          <li><strong>Feedback Control:</strong> A feedback controller can add damping to a weakly damped system.</li>
+          <li><strong>Tuning:</strong> Adjusting the system parameters (such as spring constants or masses in mechanical systems) can shift the resonance frequency away from the frequencies of the disturbances.</li>
       </ol>`},
 
 
@@ -559,7 +521,7 @@ To simplify further, we can multiply both numerator and denominator by (1+T<sub>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
 G_{YR}(s) = \\frac{K (1 + \\frac{1}{sT_i} + sT_d) \\cdot k_1}{(1 + T_1s) + K (1 + \\frac{1}{sT_i} + sT_d) \\cdot k_1}
   </math-field><br>
-Let's multiply the nominator and denominator by sT<sub>i</sub>:<br>
+Let's multiply the numerator and denominator by sT<sub>i</sub>:<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
 G_{YR}(s) = \\frac{K (sT_i + 1 + s^2 T_i T_d) \\cdot k_1}{(s T_i + T_1 T_i s^2) + K (s T_i + 1 + s^2 T_i T_d) \\cdot k_1}
   </math-field><br>
@@ -584,7 +546,7 @@ This gives us the closed-loop transfer function G<sub>YR</sub>(s) for the given 
     } else {
       return {visible:false};
     }
-  },a:`The sensitivity function, S(s), measures the system's sensitivity to changes in the open loop gain. For a system with one pole controlled by a Proportional-Integral-Derivative (PID) controller, S(s) can be defined as follows:</p>
+  },a:`The sensitivity function, S(s), tells how sensitive the closed-loop system is to changes in the process: a relative change in G gives a relative change in G<sub>YR</sub> that is S times as large. It is also the transfer function from a disturbance added at the process output to the output y. For a system with one pole controlled by a PID controller, it is defined as:
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
       S(s) = \\frac{1}{1 + G_{PID}(s)G(s)}
   </math-field><br>
@@ -609,11 +571,11 @@ and the formula for the sensitivity function above gives us:<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
       S(s) = \\frac{1}{1 + K \\left(1 + \\frac{1}{sT_i} + sT_d\\right) \\cdot \\frac{k_1}{1+T_1s}}
   </math-field><br>
-Let's multiply by 1+T<sub>1</sub>s in both the nominator and denominator:<br>
+Let's multiply by 1+T<sub>1</sub>s in both the numerator and denominator:<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
       S(s) = \\frac{1 + T_1s}{1 + T_1s + K \\left(1 + \\frac{1}{sT_i} + sT_d\\right) \\cdot k_1}
   </math-field><br>
-Let's multiply by sT<sub>i</sub> in both the nominator and denominator:<br>
+Let's multiply by sT<sub>i</sub> in both the numerator and denominator:<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
       S(s) = \\frac{sT_i + T_1 T_i s^2}{s T_i + T_1 T_i s^2 + K (T_i s + 1 + T_iT_d s^2) \\cdot k_1}
   </math-field><br>
@@ -635,9 +597,7 @@ And we collect the terms:<br>
     } else {
       return {visible:false};
     }
-  },a:`Understanding the impact of a load (or a disturbance) on the system is vital for designing an effective control strategy. To manage the system effectively, the transfer function of the controlled system, or plant, G(s), is combined with the transfer function of the PID controller, G<sub>PID</sub>(s), to analyze the overall system behavior.</p>
-      <p>When a load or disturbance influences the system, it impacts the output directly. To comprehend this effect, the transfer function from the load to the output is derived. This function elucidates how disturbances affect the system's output, aiding in designing the PID controller to mitigate these effects, ensuring the system's output remains stable and tracks the desired setpoint effectively.</p>
-      <p>Let's denote the transfer function from the load to the output as G<sub>YL</sub>. This function is critical because it provides insight into the system's robustness and sensitivity to external disturbances. By minimizing the impact of G<sub>YL</sub>, the PID controller helps maintain the system's performance even in the presence of unexpected loads or disturbances.</p>
+  },a:`<p>A load disturbance L is a disturbance that enters at the process input, added to the control signal u. Examples are a hill for a car with cruise control, or an opened window for a room temperature controller. The transfer function G<sub>YL</sub> from the load to the output tells how much such a disturbance affects the output y, and how quickly the controller removes the effect. A good controller makes |G<sub>YL</sub>| small.</p>
       For a first order system with transfer function G(s) being controlled by a PID controller, the goal is to adjust the PID parameters K, T<sub>i</sub>, and T<sub>d</sub> to achieve a balance where the system remains stable, achieves the desired speed of response, and minimizes the effect of any load or disturbance on the output.
 <h3>How do we get the load-to-output transfer function G<sub>YL</sub>?</h3>
   By combining the transfer function for our system (also known as plant, or process):<br>
@@ -656,15 +616,15 @@ we end up with:<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
 G_{YL} = \\frac{\\frac{k_1}{1+T_1s}}{1 + K \\left(1 + \\frac{1}{sT_i} + sT_d\\right) \\cdot \\frac{k_1}{1+T_1s}}
   </math-field><br>
-Let's multiply nominator and denominator with 1+T<sub>1</sub>s:<br>
+Let's multiply numerator and denominator with 1+T<sub>1</sub>s:<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
 G_{YL} = \\frac{k_1}{(1+T_1s) + K \\left(1 + \\frac{1}{sT_i} + sT_d\\right) \\cdot k_1}
   </math-field><br>
-Let's multiply nominator and denominator with sT<sub>i</sub>:<br>
+Let's multiply numerator and denominator with sT<sub>i</sub>:<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
 G_{YL} = \\frac{k_1 s T_i}{(1+T_1s)sT_i + K \\left(sT_i + 1 + sT_isT_d\\right) \\cdot k_1}
   </math-field><br>
-Let's get rid of the paranthesis in the denominator:<br>
+Let's get rid of the parentheses in the denominator:<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
 G_{YL} = \\frac{k_1 T_i s}{sT_i + T_1T_is^2 + Kk_1T_is + Kk_1 + Kk_1T_iT_ds^2}
   </math-field><br>
@@ -672,7 +632,7 @@ Let's group our terms:<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
 G_{YL} = \\frac{k_1 T_i s}{Kk_1 + T_i(1 + Kk_1)s + T_i(T_1 + Kk_1T_d)s^2}
   </math-field><br>
-...and we end up with an expression where we can insert our coefficients, and we can see that this is a second-order transfer function, since the largest power of s in the denominator is 2.
+...and we end up with an expression where we can insert our coefficients, and we can see that this is a second-order transfer function, since the largest power of s in the denominator is 2. Note the factor s in the numerator: G<sub>YL</sub>(0) = 0, so the integral action in the controller removes the effect of a constant load disturbance completely in steady state.
       `},
 
 
@@ -689,15 +649,14 @@ G_{YL} = \\frac{k_1 T_i s}{Kk_1 + T_i(1 + Kk_1)s + T_i(T_1 + Kk_1T_d)s^2}
     } else {
       return {visible:false};
     }
-  },a:`The open-loop transfer function, denoted as G<sub>OL</sub>(s) = G<sub>PID</sub>(s) * G(s), is a fundamental concept when using a PID (Proportional-Integral-Derivative) controller to manage a first order system represented by its transfer function G(s). This function provides crucial insights into the behavior of the control system before the feedback loop is closed. Here are several aspects one can learn from G<sub>OL</sub>(s):</p>
+  },a:`The open-loop transfer function, G<sub>OL</sub>(s) = G<sub>PID</sub>(s)&middot;G(s), is the product of everything in the feedback loop. Even though the closed-loop behavior is what we care about, it is easier to study G<sub>OL</sub>(s), and from it we can learn:
   <ul>
-      <li><strong>System Type and Order:</strong> By examining G<sub>OL</sub>(s), we can identify the overall order and type of the system. The order is determined by the highest power of s in the denominator of G<sub>OL</sub>(s), which influences the system's response time and stability. The type, defined by the number of integrators (or poles at the origin), affects the system's ability to track step, ramp, and parabolic inputs without steady-state error.</li>
-      <li><strong>Stability:</strong> The roots of the denominator of G<sub>OL</sub>(s), also known as the poles of the system, can be analyzed to assess stability. In general, for a system to be stable, all poles must have negative real parts (lie in the left half of the s-plane). This assessment is crucial before applying feedback.</li>
+      <li><strong>System Type and Order:</strong> By examining G<sub>OL</sub>(s), we can identify the overall order and type of the system. The order is determined by the highest power of s in the denominator of G<sub>OL</sub>(s). The type, defined by the number of integrators (poles at the origin), decides whether the closed-loop system can follow step, ramp, and parabolic references without steady-state error. Here, the integral part of the PID controller gives one pole at s=0, so a step reference is followed without steady-state error.</li>
+      <li><strong>Closed-loop stability:</strong> The poles of G<sub>OL</sub>(s) do not decide whether the closed loop is stable (here, G<sub>OL</sub> even has a pole at s=0). Instead, the Nyquist curve or the Bode plot of G<sub>OL</sub>(s) is used with the Nyquist criterion: for an open-loop stable system, the closed loop is stable if the Nyquist curve of G<sub>OL</sub> does not encircle -1. The closed-loop poles are the roots of 1 + G<sub>OL</sub>(s) = 0.</li>
       <li><strong>Gain and Phase Margins:</strong> G<sub>OL</sub>(s) can be used to calculate the gain and phase margins, which are indicators of how much the system's gain or phase can change before the system becomes unstable. These margins are essential for designing a robust control system that can tolerate certain levels of model inaccuracies and disturbances.</li>
-      <li><strong>Frequency Response:</strong> From G<sub>OL</sub>(s), the frequency response of the system can be derived, which shows how the system responds to different frequencies of input signals. This is particularly useful for understanding the resonance frequencies and the bandwidth of the system, which are critical for ensuring the desired speed of response without excessive oscillations or noise amplification.</li>
-      <li><strong>PID Tuning Insights:</strong> The incorporation of G<sub>PID</sub>(s) in G<sub>OL</sub>(s) helps in tuning the PID controller's parameters (Proportional, Integral, and Derivative gains). By altering these gains and analyzing the resulting open-loop transfer function, one can achieve desired transient response characteristics (like settling time, overshoot) and steady-state performance (like steady-state error).</li>
+      <li><strong>Frequency Response:</strong> From G<sub>OL</sub>(s), the frequency response of the system can be derived, which shows how the system responds to different frequencies of input signals. The gain crossover frequency of G<sub>OL</sub> is roughly the bandwidth of the closed-loop system, so it tells how fast the closed loop will be. A high gain of G<sub>OL</sub> at high frequencies means that measurement noise is amplified.</li>
+      <li><strong>PID Tuning Insights:</strong> The incorporation of G<sub>PID</sub>(s) in G<sub>OL</sub>(s) helps in tuning the PID controller's parameters K, T<sub>i</sub>, and T<sub>d</sub>. By altering these parameters and analyzing the resulting open-loop transfer function, one can achieve desired transient response characteristics (like settling time, overshoot) and steady-state performance (like steady-state error).</li>
       </ul>
-  Understanding these aspects through the analysis of G<sub>OL</sub>(s) is pivotal for designing and implementing effective PID control strategies in automatic control systems.
 <h3>How do we get the open-loop transfer function G<sub>OL</sub>?</h3>
   By combining the transfer function for our system (also known as plant, or process):<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
@@ -723,7 +682,7 @@ Grouping the terms:<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
  G_{OL}(s) = \\frac{Kk_1(1 + T_is + T_iT_ds^2)}{T_i(s+T_1s^2)}
   </math-field><br>
-...and we end up with our open-loop transfer function. The reason you would want to simplify the expression as shown above is to get a formula that can be used by inserting our constants, and also to see the structure of the nominator and denominator polynomials - this is a second-order transfer function, since the highest power of s in the denominator is 2.`},
+...and we end up with our open-loop transfer function. The reason you would want to simplify the expression as shown above is to get a formula that can be used by inserting our constants, and also to see the structure of the numerator and denominator polynomials - this is a second-order transfer function, since the highest power of s in the denominator is 2.`},
 
 
 //curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"In automatic control theory, why do we use PID controllers, what is the transfer function of a PID-controller? Explain why the introduction of the PID controller was such a revolution using three vivid examples. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
@@ -749,14 +708,14 @@ and process output y (the measured variable). The transfer function of a PID con
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
  G_{PID}(s) = K \\left(1 + \\frac{1}{sT_i} + sT_d\\right)
   </math-field><br>
-  Where: G<sub>PID</sub>(s) is the transfer function in the Laplace domain, K is the gain of the controller, T<sub>i</sub> is the time constant of the integral term, T<sub>d</sub> is the time constant of the derivative term, and s is the complex frequency variable in the Laplace transform.<br><br>
+  Where: G<sub>PID</sub>(s) is the transfer function in the Laplace domain, K is the gain of the controller, T<sub>i</sub> is the integral time, T<sub>d</sub> is the derivative time, and s is the complex frequency variable in the Laplace transform.<br><br>
 <center><img src="images/PID_control_loop_v2.svg" width="80%"></center><br>
 The PID controller is usually connected in a feedback loop as in the image above, responding to the error e, and producing a suitable input signal U to the system trying to make the output Y as similar to the reference signal R as possible.<br><br>
-  The introduction of the PID controller was revolutionary in the field of automatic control theory for several reasons:
+  The PID controller has been used for about a century. One of the first analyses was by Nicolas Minorsky in 1922, for the automatic steering of ships. It is still by far the most common controller in industry. Some examples:
   <h3>Improved Stability and Performance in Industrial Control Systems</h3>
-  <div>The introduction of PID controllers allowed for significant improvements in the stability and performance of industrial control systems. For example, in a chemical processing plant, maintaining the temperature at a specific point is crucial for the quality of the product. A PID controller can take the temperature readings (process variable), compare it to the desired setpoint, and adjust the heat input (control variable) proportionally (P), based on the accumulated error over time (I), and anticipating future trends (D). This fine-tuned control prevents overshoot and helps maintain the temperature within a very narrow range, leading to consistent product quality.</div>
+  <div>The introduction of PID controllers allowed for significant improvements in the stability and performance of industrial control systems. For example, in a chemical processing plant, maintaining the temperature at a specific point is crucial for the quality of the product. A PID controller can take the temperature readings (process variable), compare it to the desired setpoint, and adjust the heat input (control variable) proportionally (P), based on the accumulated error over time (I), and on how fast the error changes (D), which acts like a short-term prediction of the error. Well-tuned control limits the overshoot and helps maintain the temperature within a very narrow range, leading to consistent product quality.</div>
   <h3>Automation in Automotive Systems</h3>
-  <div>PID controllers have been fundamental in the automation of various systems within the automotive industry, notably in cruise control. Traditional systems could struggle with maintaining a set speed over varying terrains. Through the application of PID control, a vehicle can automatically adjust the throttle position to maintain the set speed as closely as possible, considering changes in road gradient and load. For example, when driving uphill, the controller anticipates the need for more power and adjusts accordingly, ensuring smoother rides and enhanced fuel efficiency.</div>
+  <div>PID controllers have been fundamental in the automation of various systems within the automotive industry, notably in cruise control. Traditional systems could struggle with maintaining a set speed over varying terrains. Through the application of PID control, a vehicle can automatically adjust the throttle position to maintain the set speed as closely as possible, considering changes in road gradient and load. For example, when the car starts driving uphill, the speed drops below the set speed, and the controller opens the throttle. The integral part keeps increasing the throttle until the speed error is gone, even though the hill needs more power than flat road.</div>
   <h3>Flight Control Systems</h3>
   <div>In aerospace, the precision and reliability of PID controllers have enabled advancements in flight control systems. Automatic altitude control is a pertinent example. A PID controller can continuously adjust the aircraft's control surfaces to maintain a target altitude, taking into account the varying aerodynamic forces and disturbances. This capability is crucial not only for passenger comfort but also for reducing pilot workload, especially during long-haul flights or when flying through turbulent weather conditions.</div><br>`},
 //  In conclusion, the PID controller's ability to combine real-time error correction with predictive and historical data makes it a versatile and powerful tool in automatic control theory. Its widespread adoption across various industries underscores its importance in enhancing control system performance, stability, and efficiency.
@@ -776,44 +735,36 @@ The PID controller is usually connected in a feedback loop as in the image above
     } else {
       return {visible:false};
     }
-  },a:`To explain how to derive the transfer function G(s) of a one-pole system, let’s consider a simplified example in the context of heating water, a common process in automatic control systems. The goal is to understand how the temperature of the water changes in response to some heating input.<br><br>
-  Our starting point is the first-order differential equation that represents the dynamic behavior of the system. In this case, it involves the rate of temperature change in the water in relation to the heating power applied.<br><br>
-
-  Let’s say the differential equation is:<br>
+  },a:`Let's derive the transfer function G(s) of a one-pole system, using the example of heating water in a tank. The water is heated with the power P(t), and it loses heat to the surroundings, which have the constant temperature &theta;<sub>a</sub>.<br><br>
+  <h3>Step 1: Differential Equation</h3>
+  The energy balance says that the stored heat changes with the heating power minus the heat loss:<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
-  \\frac{dT}{dt} = K \\cdot P(t)
+  C\\frac{d\\theta}{dt} = P(t) - \\frac{\\theta(t)-\\theta_a}{R}
   </math-field><br>
-
   where,<br>
-  - T is the temperature of the water,<br>
-  - t is time,<br>
-  - K is a constant that combines the properties of the water and the heating element (like the heat transfer coefficient),<br>
-  - P(t) is the heating power applied, a function of time.<br><br>
-
-  <h3>Step 1: Laplace Transform</h3>
-  The first step is to apply the Laplace transform to both sides of the differential equation. The Laplace transform of a function f(t), designated as F(s), translates the function from the time domain into the complex frequency domain, represented by s.<br><br>
-  The Laplace transform of dT/dt is sT(s) - T(0), where T(s) is the Laplace transform of T(t), and T(0) represents the initial condition (initial temperature of the water, which we'll assume to be zero for simplicity).
-
-  Hence, after applying the Laplace transform, our equation becomes:<br>
+  - &theta; is the temperature of the water,<br>
+  - C is the heat capacity of the water (J/K),<br>
+  - R is the thermal resistance between the water and the surroundings (K/W),<br>
+  - P(t) is the heating power (W).<br><br>
+  Let y(t) = &theta;(t) - &theta;<sub>a</sub> be the temperature above the surroundings. Multiplying by R gives<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
-  sT(s) = K \\cdot P(s)
-  </math-field><br>
-  Note: We have dropped the initial condition for simplicity, assuming it to be zero.
-
-  <h3>Step 2: Transfer Function</h3>
-
-  The transfer function, G(s), of a system is defined as the ratio of the output (in the Laplace domain) to the input (also in the Laplace domain), under the assumption of zero initial conditions. In our example, the output is T(s), and the input is P(s).<br><br>
-
-  From the Laplace-transformed equation, rearrange for G(s):<br>
-  <math-field read-only style='vertical-align:bottom;display:inline-block'>
-  G(s) = \\frac{T(s)}{P(s)} = \\frac{K}{s}
+  RC\\frac{dy}{dt} + y(t) = R\\,P(t)
   </math-field><br>
 
-  This denotes that the system has a simple pole at s = 0, indicating that the system's response will have characteristics akin to a first-order system, such as an exponential rise or decay depending on the input.<br><br>
+  <h3>Step 2: Laplace Transform</h3>
+  The Laplace transform of dy/dt is sY(s) - y(0). We assume that the water starts at the temperature of the surroundings, y(0) = 0, which gives<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+  RCs\\,Y(s) + Y(s) = R\\,P(s)
+  </math-field><br>
 
-  In controlling the temperature of the water, G(s) gives us crucial information on how the system will respond to various inputs. By understanding the transfer function, control strategies, such as PID (Proportional-Integral-Derivative) control, can be designed and implemented to achieve desired temperature regulation accurately and efficiently.
-
-  This example illustrates the fundamental steps of deriving the transfer function of a one-pole (first-order) system, moving from a time-domain differential equation to a frequency-domain representation, crucial for analyzing and designing control systems in automatic control theory.`},
+  <h3>Step 3: Transfer Function</h3>
+  The transfer function G(s) is the ratio of the output to the input in the Laplace domain, with zero initial conditions:<br>
+  <math-field read-only style='vertical-align:bottom;display:inline-block'>
+  G(s) = \\frac{Y(s)}{P(s)} = \\frac{R}{1+RCs} = \\frac{k_1}{1+T_1s}
+  </math-field><br>
+  with the static gain k<sub>1</sub> = R and the time constant T<sub>1</sub> = RC. The pole is at s = -1/T<sub>1</sub>.<br><br>
+  If the heater is switched on with a constant power P<sub>0</sub>, the temperature rises as y(t) = k<sub>1</sub>P<sub>0</sub>(1 - e<sup>-t/T<sub>1</sub></sup>): it approaches k<sub>1</sub>P<sub>0</sub> and has reached 63% of that after the time T<sub>1</sub>. A better insulated tank (larger R) gets both a higher final temperature and a longer time constant.<br><br>
+  Without any heat loss (R &rarr; &infin;), the equation becomes C d&theta;/dt = P(t), and the transfer function becomes 1/(Cs), an integrator with the pole at s = 0. Then the temperature would keep rising for as long as the heater is on.`},
 
 
 //curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For an automatic control theory student, show how we get the transfer function G(s) of a two-pole system with real valued poles when we start with the differential equation. Use an example of suspension system in a car. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
@@ -827,10 +778,10 @@ The PID controller is usually connected in a feedback loop as in the image above
     } else {
       return {visible:false};
     }
-  },a:`Let's walk through the process of deriving the transfer function G(s) for a two-pole system, taking a car suspension system as an illustrative example. In an automatic control context, a suspension system aims to minimize the impact of road bumps on the car's body, enhancing passenger comfort. This system can be simplified to a mass-spring-damper model.
+  },a:`Let's walk through the process of deriving the transfer function G(s) for a two-pole system, taking a car suspension system as an illustrative example. In an automatic control context, a suspension system aims to minimize the impact of road bumps on the car's body, enhancing passenger comfort. This system can be simplified to a mass-spring-damper model. Whether the two poles become real or complex depends on how strong the damping is.
 
   <h3>Step 1: Define the Physical System</h3>
-  Consider a car suspension system simplified as: m is the mass of the car body, c is the damping coefficient (represents the shock absorber), k is the spring constant. The external force on the system, F(t), is due to road irregularities. The displacement of the mass from its equilibrium position is x(t).
+  Consider a car suspension system simplified as: m is the mass of the car body, c is the damping coefficient (represents the shock absorber), k is the spring constant. The input is an external force F(t) acting on the car body. (Road bumps really move the wheel, which acts on the body through the spring and the damper, but a force input keeps the example simple.) The displacement of the mass from its equilibrium position is x(t).
 
   <h3>Step 2: Write the Differential Equation</h3>
   The dynamics of the system can be captured by the second-order differential equation derived from Newton's second law of motion:
@@ -867,16 +818,21 @@ The PID controller is usually connected in a feedback loop as in the image above
   s = \\frac{-c \\pm \\sqrt{c^2 - 4mk}}{2m}
 </math-field><br>
 
-  As an example, let's say our suspension system has mass m=1000&nbsp;kg, damping coefficient c=1000&nbsp;Ns/m, and spring constant k=5000&nbsp;N/m.
+  The poles are real when c<sup>2</sup> &gt; 4mk, that is, when the damping is strong, and complex when the damping is weak.<br><br>
+  As an example, let's say our suspension system has mass m=1000&nbsp;kg, damping coefficient c=6000&nbsp;Ns/m, and spring constant k=5000&nbsp;N/m.
   Then the transfer function becomes:<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
-  G(s) = \\frac{1}{1000s^2 + 1000s + 5000}
+  G(s) = \\frac{1}{1000s^2 + 6000s + 5000}
 </math-field><br>
-  And the poles would be:<br>
+  And the poles are:<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
-  s = \\frac{-1000 \\pm \\sqrt{1000^2 - 4 \\cdot 1000 \\cdot 5000}}{2 \\cdot 1000} = \\frac{-1000 \\pm \\sqrt{-16000000}}{2000}
+  s = \\frac{-6000 \\pm \\sqrt{6000^2 - 4 \\cdot 1000 \\cdot 5000}}{2 \\cdot 1000} = \\frac{-6000 \\pm 4000}{2000}
 </math-field><br>
-  This illustrates a system with complex conjugate poles, indicating an underdamped system typical for making the car suspension comfortable by allowing it to "bounce" slightly before settling. Notice, however, in this example and the given values, the calculation gives real poles, and we will end up with the transfer function for two real poles.`},
+  that is, two real poles at s = -1 and s = -5. Factoring the denominator, 1000s<sup>2</sup> + 6000s + 5000 = 1000(s+1)(s+5) = 5000(1+s)(1+0.2s), gives the form used in LU-PZE:<br>
+<math-field read-only style='vertical-align:bottom;display:inline-block'>
+  G(s) = \\frac{0.0002}{(1+s)(1+0.2s)} = \\frac{k_2}{(1+T_2s)(1+T_3s)}
+</math-field><br>
+  with k<sub>2</sub> = 1/k = 0.0002&nbsp;m/N, T<sub>2</sub> = 1&nbsp;s and T<sub>3</sub> = 0.2&nbsp;s. Such a strongly damped suspension would feel stiff. Real car suspensions have weaker damping and complex poles, so that the car "bounces" slightly before settling, as in the "Two complex poles" example.`},
 
 
 
@@ -891,53 +847,33 @@ The PID controller is usually connected in a feedback loop as in the image above
     } else {
       return {visible:false};
     }
-  },a:`Let's derive the transfer function G(s) of a system with complex-valued poles, using the example of a pendulum's dynamics under the small angle approximation. This is a fundamental concept in automatic control theory, which helps us understand system behavior in response to inputs. We'll start with the pendulum's differential equation and proceed step-by-step.
+  },a:`Let's derive the transfer function G(s) of a system with complex-valued poles, using the example of a pendulum with small swings.
   <h3>Step 1: Differential Equation</h3>
-  For a simple pendulum under the small angle approximation, the equation of motion is given as follows:<br>
+  For a pendulum with friction, driven by an input u(t), the equation of motion under the small angle approximation (sin &theta; &asymp; &theta;) is:<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
-  \\frac{d^2\\theta}{dt^2} + \\frac{g}{l}\\theta = 0,
+  \\frac{d^2\\theta}{dt^2} + d\\frac{d\\theta}{dt} + \\frac{g}{l}\\theta = u(t),
 </math-field><br>
-  where: &theta; is the angular displacement (in radians), g is the acceleration due to gravity m/s<sup>2</sup>, l is the length of the pendulum (m).<br>
+  where &theta; is the angle (in radians), g is the acceleration due to gravity (m/s<sup>2</sup>), l is the length of the pendulum (m), d describes the friction (1/s), and u(t) is the applied torque divided by the moment of inertia ml<sup>2</sup>.<br>
 
   <h3>Step 2: Laplace Transform</h3>
-  To find the transfer function G(s), we first apply the Laplace transform to the differential equation. The Laplace transform of a derivative transforms derivatives into algebraic terms, making the equation easier to manipulate.
-  Given a function f(t), the Laplace transform of its second derivative is s<sup>2</sup>&middot;F(s) - s&middot;f(0) - f'(0), where F(s) is the Laplace transform of f(t). Assuming zero initial conditions &theta;(0)=0 and d&theta;/dt(0)=0, which is common in control theory for simplicity, the Laplace transform of our differential equation becomes:<br>
+  The Laplace transform of the second derivative is s<sup>2</sup>&Theta;(s) - s&theta;(0) - &theta;'(0), where &Theta;(s) is the Laplace transform of &theta;(t). With zero initial conditions, &theta;(0)=0 and d&theta;/dt(0)=0, we get:<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
-  s^2\\Theta(s) + \\frac{g}{l}\\Theta(s) = 0,
+  s^2\\Theta(s) + ds\\Theta(s) + \\frac{g}{l}\\Theta(s) = U(s).
 </math-field><br>
-  where &Theta;(s) is the Laplace transform of &theta;(t).
 
-  <h3>Step 3: Rearranging the equation</h3>
-  Collecting terms, we express the above equation as:<br>
+  <h3>Step 3: Transfer Function</h3>
+  The transfer function is the ratio of the output &Theta;(s) to the input U(s):<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
-  (s^2 + \\frac{g}{l})\\Theta(s) = 0.
+  G(s) = \\frac{\\Theta(s)}{U(s)} = \\frac{1}{s^2 + ds + \\frac{g}{l}}.
 </math-field><br>
-  To find the transfer function G(s), we usually express the equation in the form of &Theta;(s) = G(s) &middot; Input(s). However, in our case, the equation represents natural dynamics without an explicit input. For educational purposes, if we consider a modified equation that includes an input, such as a torque or a force F(t) that influences &theta;(t), we could write:<br>
-<math-field read-only style='vertical-align:bottom;display:inline-block'>
-  \\frac{d^2\\theta}{dt^2} + \\frac{g}{l}\\theta = F(t),
-</math-field><br>
-  and the Laplace transform would give us (assuming F(t) is the input):<br>
-<math-field read-only style='vertical-align:bottom;display:inline-block'>
-  s^2\\Theta(s) + \\frac{g}{l}\\Theta(s) = F(s).
-</math-field><br>
-  From this point, we can express &Theta;(s) in terms of F(s) and derive the transfer function.
+  Comparing with the form used in LU-PZE, k<sub>3</sub>w<sup>2</sup>/(s<sup>2</sup>+2zws+w<sup>2</sup>), we see that the natural frequency is w = √(g/l), the relative damping is z = d/(2w), and the static gain is k<sub>3</sub> = 1/w<sup>2</sup> = l/g.
 
-  <h3>Step 4: Transfer Function</h3>
-  The transfer function G(s) is defined as the ratio of the output (in this case, &Theta;(s)) to the input F(s), determined under the assumption of zero initial conditions. So, we have:<br>
+  <h3>Step 4: Poles</h3>
+  The poles are the roots of s<sup>2</sup> + 2zws + w<sup>2</sup> = 0:<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
-  G(s) = \\frac{\\Theta(s)}{F(s)} = \\frac{1}{s^2 + \\frac{g}{l}}.
+  s = -zw \\pm iw\\sqrt{1-z^2}.
 </math-field><br>
-  The characteristic equation of the system is the denominator of G(s), which is:<br>
-<math-field read-only style='vertical-align:bottom;display:inline-block'>
-  s^2 + \\frac{g}{l} = 0.
-</math-field><br>
-  Solving for s, we find the poles of the system:<br>
-<math-field read-only style='vertical-align:bottom;display:inline-block'>
-  s = \\pm\\sqrt{-\\frac{g}{l}} = \\pm j\\sqrt{\\frac{g}{l}}.
-</math-field><br>
-  These are complex-valued poles, indicating the oscillatory nature of the pendulum’s motion. The presence of j (the imaginary unit) indicates that the system will exhibit sinusoidal oscillations, with a frequency dependent on √(g/l).<br><br>
-
-  By transforming the differential equation of a pendulum into the s-domain, we obtained the transfer function G(s), revealing complex poles which indicate the oscillatory response of the system. This approach using Laplace transforms is pivotal in control theory, allowing the analysis and design of control systems based on the system’s dynamics represented by its transfer function.`},
+  For z &lt; 1 (little friction), these are complex-valued poles, and the pendulum swings with a damped oscillation. Without friction (d = 0, z = 0), the poles are s = &plusmn;i√(g/l) on the imaginary axis, and the pendulum swings forever. For a pendulum of length l = 1&nbsp;m, w = √9.81 &asymp; 3.1&nbsp;rad/s, which gives a period of 2&pi;/w &asymp; 2.0&nbsp;s.`},
 
 
 
@@ -952,26 +888,21 @@ The PID controller is usually connected in a feedback loop as in the image above
     } else {
       return {visible:false};
     }
-  },a:`The Laplace transform of a function f(t), where t represents time and f(t) is a time-domain function, is given by:<br>
+  },a:`The Laplace transform of a function f(t), where t represents time, is given by:<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
-F(s) = \\mathcal{L}\\{f(t)\\} = \\int_{0}^{-\\infty} e^{-st}f(t) dt
+F(s) = \\mathcal{L}\\{f(t)\\} = \\int_{0}^{\\infty} e^{-st}f(t)\\, dt
 </math-field><br>
-Here, s is a complex frequency variable, and F(s) is the Laplace transform of f(t), representing the function in the s-domain. A one-pole system can be described by a first-order differential equation. For example, the time-domain representation might look like f(t) = e<sup>-at</sup>, where a is a constant. The Laplace transform of f(t) is:<br>
+Here, s is a complex frequency variable, and F(s) is the Laplace transform of f(t), representing the function in the s-domain.<br><br>
+A time delay L means that the output is the input delayed by L: y(t) = u(t-L). We assume that u(t) = 0 for t &lt; 0, so that y(t) = 0 for t &lt; L. Substituting &tau; = t - L in the Laplace integral gives the time shift theorem:<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
-F(s) = \\mathcal{L}\\{e^{-at}\\} = \\frac{1}{s+a}
+Y(s) = \\int_{L}^{\\infty} e^{-st}u(t-L)\\, dt = e^{-sL}\\int_{0}^{\\infty} e^{-s\\tau}u(\\tau)\\, d\\tau = e^{-sL}\\,U(s)
 </math-field><br>
-
-Now, let's introduce a time delay. If our system has a time delay T<sub>d</sub>, the output signal is delayed by T<sub>d</sub> units in time. For a generic function f(t), the time-delayed function is f(t - T<sub>d</sub>).
-
-The Laplace transform of a time-delayed function f(t-T<sub>d</sub>) can be derived using a shift theorem and is given by:<br>
+So the transfer function of a pure time delay is e<sup>-sL</sup>.<br><br>
+For systems in series, the transfer functions are multiplied. The example in LU-PZE is a one-pole system with static gain 3 and time constant 1&nbsp;s, followed by the time delay L:<br>
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
-F(s, T_d) = e^{-T_ds}\\mathcal{L}\\{f(t)\\}
+G(s) = \\frac{3}{1+s}e^{-Ls}
 </math-field><br>
-
-Assume our one-pole system's time-domain function with a time delay T<sub>d</sub> is f(t-T<sub>d</sub>) = e<sup>-a(t-T<sub>d</sub>)</sup>. To find the Laplace transform of this time-delayed function, we'd apply the formula for a time-delayed function:<br>
-<math-field read-only style='vertical-align:bottom;display:inline-block'>
-F(s, T_d) = e^{-T_ds}\\mathcal{L}\\{e^{-at}\\} = e^{-T_ds} \\cdot \\frac{1}{s+a}
-</math-field><br>
+Its step response is the step response of 3/(1+s), 3(1-e<sup>-t</sup>), shifted L seconds to the right: nothing at all happens during the first L seconds.
 `},
 
 //To describe the process of obtaining the Laplace transform of a time delay in a one-pole system, we'll begin with the basics and then move into the specific scenario you're asking about. Time delays are common in control systems and understanding their impact is crucial for designing effective controllers.\n\n### What is a Time Delay?\n\nIn automatic control, a time delay (often denoted as \\(T_d\\) or \\(\\tau\\)) represents a period during which the response of a system is deferred. This can occur due to physical limitations, processing times, or transport phenomena among others. Time delays are especially critical in control theory because they can significantly affect the stability and performance of control systems.\n\n
