@@ -16,9 +16,13 @@ const MATHLIVE = {
 
 let math;
 
+// Sets the given slider values and unsets all others. Also fills variable_position (normally done
+// in setup()), which the closed-form time responses read.
 function set_sliders(values) {
   const alphabet = global_value('range_slider_alphabet');
   const variables = global_value('range_slider_variables');
+  const variable_position = global_value('variable_position');
+  alphabet.forEach((name, i) => { variable_position[name] = i; });
   for (let i = 1; i < variables.length; i++) variables[i] = SENTINEL;
   for (const [name, value] of Object.entries(values)) variables[alphabet.indexOf(name)] = value;
 }
@@ -195,10 +199,10 @@ describe('bode_graph with formulas the old code got wrong', () => {
     expect(edited.bode_phase_margin).toBeCloseTo(preset.bode_phase_margin, 10);
   });
 
-  test('the time response of a Gaver-Stehfest formula is unchanged', () => {
+  test('Gaver-Stehfest evaluation of a compiled formula is unchanged', () => {
     set_sliders({ k_5: 1.5, T_5: 0.7 });
-    const graph = window.eval(`new bode_graph(1, ${JSON.stringify(global_value('GRAPH_FOUR_POLES').formula)})`);
-    graph.get_timevalues_p5();
+    const binding = window.bind_formula('(1/s)*(' + global_value('GRAPH_FOUR_POLES').formula + ')');
+    const times = Array.from({ length: 75 }, (_, i) => i === 0 ? 0.00001 : (i * 4 / 300) * 10);
     // Gaver-Stehfest N=10 of 1.5/(s(1+0.7s)^4), evaluated the old way.
     const V = [1 / 12, -385 / 12, 1279, -46871 / 3, 505465 / 6, -473915 / 2, 1127735 / 3, -1020215 / 3, 328125 / 2, -65625 / 2];
     const ln2 = 0.69314718056;
@@ -206,9 +210,206 @@ describe('bode_graph with formulas the old code got wrong', () => {
       const s = (j + 1) * ln2 / t;
       return sum + v * (1 / s) * (1.5 / Math.pow(1 + 0.7 * s, 4));
     }, 0);
-    graph.bode_timerep_array.forEach((y, i) => {
-      const t = i === 0 ? 0.00001 : (i * 4 / 300) * 10;
-      expect(y).toBeCloseTo(gaver(t), 6);
+    times.forEach((t) => expect(window.getTimeValues(binding, t, 0)).toBeCloseTo(gaver(t), 6));
+  });
+});
+
+describe('to_rational', () => {
+  const parse = (formula) => math.parse(window.insert_explicit_multiplication(formula));
+
+  test('a product of first-order factors gives ascending coefficients', () => {
+    const rational = window.to_rational(parse('k_2/((1+T_2s)(1+T_3s))'), { k_2: 3, T_2: 1, T_3: 0.4 });
+    expect(rational.num).toEqual([3]);
+    expect(rational.den[0]).toBeCloseTo(1, 14);
+    expect(rational.den[1]).toBeCloseTo(1.4, 14);
+    expect(rational.den[2]).toBeCloseTo(0.4, 14);
+  });
+
+  test('integer powers, negative powers, subtraction and unary minus', () => {
+    const rational = window.to_rational(parse('-(s-2)^2*s^(-1)'), {});
+    // -(s^2-4s+4)/s
+    expect(rational.num).toEqual([-4, 4, -1]);
+    expect(rational.den).toEqual([0, 1]);
+  });
+
+  test.each([
+    ['sqrt(s)'], ['s^0.5'], ['1/(s+i)'], ['e^(-L*s)'], ['s^s'], ['q*s'],
+    ['(1+s)^51'], // more than MAX_RATIONAL_EXPONENT
+  ])('%s is not a rational function of s', (formula) => {
+    expect(() => window.to_rational(parse(formula), { e: Math.E, L: 1 })).toThrow('not a rational function of s');
+  });
+});
+
+describe('split_time_delay', () => {
+  const split = (formula, scope) => window.split_time_delay(math.parse(window.insert_explicit_multiplication(formula)), scope);
+  const rest_at = (result, s) => result.node.compile().evaluate({ s, e: Math.E });
+
+  test.each([
+    ['3/(1+s)*e^(-L*s)', 0.5],
+    ['(3)/(1+s)e^(-Ls)', 0.5],
+    ['e^(-sL)*(3)/(1+s)', 0.5],
+    ['3*exp(-2L*s)/(1+s)', 1],
+    ['(1/s)*(3/(1+s)*e^(-L*s))', 0.5], // the input signal in front
+  ])('%s: delay %d', (formula, delay) => {
+    const result = split(formula, { L: 0.5, e: Math.E });
+    expect(result.delay).toBeCloseTo(delay, 14);
+    const expected = formula.startsWith('(1/s)') ? 3 / (2 * 3) : 3 / 3;
+    expect(rest_at(result, 2)).toBeCloseTo(expected, 14);
+  });
+
+  test('a negative delay is ignored, as before', () => {
+    expect(split('3/(1+s)*e^(-L*s)', { L: -1, e: Math.E }).delay).toBe(0);
+  });
+
+  test('an exponent with a constant term is not a delay', () => {
+    expect(split('e^(1-L*s)/(1+s)', { L: 0.5, e: Math.E }).delay).toBe(0);
+  });
+
+  test('a delay inside a sum is not a delay of the whole formula', () => {
+    const result = split('1+e^(-L*s)', { L: 0.5, e: Math.E });
+    expect(result.delay).toBe(0);
+  });
+});
+
+describe('time_response', () => {
+  const times = Array.from({ length: 76 }, (_, k) => k * 0.04 * 3);
+
+  test('lightly damped complex poles (zeta = 0.1) are exact, unlike Gaver-Stehfest', () => {
+    set_sliders({ k_3: 1, w: 1, z: 0.1 });
+    const response = window.time_response('1/s', MATHLIVE.two_complex_poles, times);
+    const wd = Math.sqrt(1 - 0.01);
+    times.forEach((t, k) => {
+      expect(response[k]).toBeCloseTo(1 - Math.exp(-0.1 * t) / wd * Math.sin(wd * t + Math.acos(0.1)), 9);
     });
+  });
+
+  test('four equal real poles (a repeated pole) are exact', () => {
+    set_sliders({ k_5: 1.5, T_5: 0.7 });
+    const response = window.time_response('1/s', global_value('GRAPH_FOUR_POLES').formula, times);
+    times.forEach((t, k) => {
+      const u = t / 0.7;
+      expect(response[k]).toBeCloseTo(1.5 * (1 - Math.exp(-u) * (1 + u + u * u / 2 + u * u * u / 6)), 9);
+    });
+  });
+
+  test('a time delay shifts the response, also between two samples', () => {
+    set_sliders({ L: 0.5 });
+    const response = window.time_response('1/s', MATHLIVE.time_delay, times);
+    times.forEach((t, k) => {
+      expect(response[k]).toBeCloseTo(t < 0.5 ? 0 : 3 * (1 - Math.exp(-(t - 0.5))), 9);
+    });
+  });
+
+  test('impulses at t = 0 are left out of an improper response', () => {
+    set_sliders({ T_4: 2 });
+    // step of T_4*s + 0.5 is T_4*delta(t) + 0.5
+    const response = window.time_response('1/s', global_value('GRAPH_ONE_ZERO').formula, times);
+    response.forEach((y) => expect(y).toBeCloseTo(0.5, 12));
+  });
+
+  test('the polynomial part of an improper fraction is divided out: (s+2)/(s+1) = 1 + 1/(s+1)', () => {
+    set_sliders({});
+    const response = window.time_response('1', '(s+2)/(s+1)', times);
+    times.forEach((t, k) => expect(response[k]).toBeCloseTo(Math.exp(-t), 12));
+  });
+
+  test('a leading coefficient that is only float residue is dropped', () => {
+    set_sliders({});
+    // (1+0.1s)(1+0.2s) - 0.02s^2 leaves about 3.5e-18 s^2, so this is 1/(1+0.3s)
+    const response = window.time_response('1/s', '1/((1+0.1s)(1+0.2s)-0.02s^2)', times);
+    times.forEach((t, k) => expect(response[k]).toBeCloseTo(1 - Math.exp(-t / 0.3), 9));
+  });
+
+  test('a constant denominator gives no response after t = 0', () => {
+    // 2/(1+0*s): only an impulse at t = 0
+    expect(window.rational_impulse_response({ num: [2], den: [1, 0] }, 0, times)).toEqual(times.map(() => 0));
+  });
+
+  test('a ramp input integrates the step response', () => {
+    set_sliders({ k_1: 2, T_1: 1.5 });
+    const response = window.time_response('(1)/(s^2)', MATHLIVE.one_real_pole, times);
+    times.forEach((t, k) => expect(response[k]).toBeCloseTo(2 * (t - 1.5 * (1 - Math.exp(-t / 1.5))), 9));
+  });
+
+  test('an unstable pole grows', () => {
+    set_sliders({ k_1: 1, T_1: -2 });
+    const response = window.time_response('1', MATHLIVE.one_real_pole, times);
+    times.forEach((t, k) => expect(response[k]).toBeCloseTo(-0.5 * Math.exp(t / 2), 9));
+  });
+
+  test('returns null when a slider is unset', () => {
+    set_sliders({ k_1: 1 });
+    expect(window.time_response('1/s', MATHLIVE.one_real_pole, times)).toBeNull();
+  });
+
+  test('a formula that is not rational still gets the Gaver-Stehfest response', () => {
+    set_sliders({ L: 0.3 });
+    const formula = '(1)/(1+sqrt(s))e^(-Ls)';
+    const response = window.time_response('1/s', formula, times);
+    const binding = window.bind_formula('(1/s)*((1)/(1+sqrt(s)))');
+    times.forEach((t, k) => {
+      expect(response[k]).toBeCloseTo(window.getTimeValues(binding, t === 0 ? 0.00001 : t, 0.3), 12);
+    });
+  });
+});
+
+describe('one real pole: closed-form impulse response', () => {
+  beforeEach(() => {
+    set_globals({ graph_step_response_width: 300, max_x_timerep: 10, precision: 4, input_formula: '1' });
+  });
+  const impulse_graph = (k_1, T_1) => {
+    set_sliders({ k_1, T_1 });
+    const graph = window.eval(`new bode_graph(1, ${JSON.stringify(global_value('GRAPH_ONE_REAL_POLE').formula)})`);
+    graph.get_timevalues_p5();
+    return graph;
+  };
+  const t_at = (i) => (i * 4 / 300) * 10;
+
+  test('h(t) = k_1/T_1 * e^(-t/T_1), with axis bounds from h(0)', () => {
+    const graph = impulse_graph(-2, 1.5);
+    graph.bode_timerep_array.forEach((y, i) => expect(y).toBeCloseTo(-2 / 1.5 * Math.exp(-t_at(i) / 1.5), 12));
+    expect([graph.bode_min_timerep, graph.bode_max_timerep]).toEqual([-2 / 1.5, 0]);
+  });
+
+  test('a negative T_1 grows with the sign of k_1/T_1, axis capped at 20', () => {
+    const graph = impulse_graph(1, -2);
+    graph.bode_timerep_array.forEach((y, i) => expect(y).toBeCloseTo(-0.5 * Math.exp(t_at(i) / 2), 9));
+    expect([graph.bode_min_timerep, graph.bode_max_timerep]).toEqual([-20, 0]);
+    const positive = impulse_graph(-1, -2);
+    expect([positive.bode_min_timerep, positive.bode_max_timerep]).toEqual([0, 20]);
+    const zero = impulse_graph(0, -2); // k_1 = 0 keeps the old axis, as k_1 <= 0 did
+    expect([zero.bode_min_timerep, zero.bode_max_timerep]).toEqual([-20, 0]);
+  });
+
+  test('T_1 = 0 is a constant gain: nothing after t = 0', () => {
+    const graph = impulse_graph(2, 0);
+    expect(graph.bode_timerep_array.every((y) => y === 0)).toBe(true);
+    expect([graph.bode_min_timerep, graph.bode_max_timerep]).toEqual([0, 0]);
+  });
+});
+
+describe('bode_graph time responses agree with the closed forms', () => {
+  beforeEach(() => {
+    set_globals({ graph_bode_mag_width: 400, graph_step_response_width: 300, min_10power: -2,
+      x_case_gain: 5, max_x_timerep: 10, precision: 4 });
+  });
+
+  // The MathLive form of a preset takes the general path; the preset itself uses its closed form.
+  test.each([
+    ['one_real_pole', 'GRAPH_ONE_REAL_POLE', '1/s'],
+    ['one_real_pole', 'GRAPH_ONE_REAL_POLE', '1'],
+    ['two_real_poles', 'GRAPH_TWO_REAL_POLES', '1/s'],
+    ['two_real_poles', 'GRAPH_TWO_REAL_POLES', '1'],
+    ['two_complex_poles', 'GRAPH_TWO_COMPLEX_POLES', '1/s'],
+    ['two_complex_poles', 'GRAPH_TWO_COMPLEX_POLES', '1'],
+  ])('%s (%s), input %s', (key, preset_name, input) => {
+    set_sliders({ k_1: 2, T_1: 1.5, k_2: 3, T_2: 1, T_3: 0.4, k_3: 2, w: 3, z: 0.3 });
+    set_globals({ input_formula: input });
+    const general = window.eval(`new bode_graph(1, ${JSON.stringify(MATHLIVE[key])})`);
+    const closed = window.eval(`new bode_graph(2, ${JSON.stringify(global_value(preset_name).formula)})`);
+    general.get_timevalues_p5();
+    closed.get_timevalues_p5();
+    expect(general.bode_timerep_array).toHaveLength(closed.bode_timerep_array.length);
+    general.bode_timerep_array.forEach((y, i) => expect(y).toBeCloseTo(closed.bode_timerep_array[i], 9));
   });
 });

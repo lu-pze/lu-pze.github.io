@@ -142,35 +142,24 @@ class bode_graph{
           }
         }
       } else if (input_formula=="1"){      // Dirac Impulse response:
+        // k_1/(1+T_1*s) = (k_1/T_1)/(s+1/T_1), so h(t) = k_1/T_1 * e^(-t/T_1).
+        // With T_1 = 0 the system is the constant k_1: only an impulse at t = 0, so 0 after it.
         have_a_solution = true;
         this.bode_timerep_array = []
+        let h_0 = (T_1 == 0) ? 0 : k_1 / T_1;
+        for(let x=0; x<graph_step_response_width; x+=precision){
+          let t = map(x,0,graph_step_response_width,0,max_x_timerep);
+          let math_y = (T_1 == 0) ? 0 : h_0 * Math.exp(-t / T_1);
+          this.bode_timerep_array.push(math_y);
+        }
         if (T_1 >= 0){
-          for(let x=0; x<graph_step_response_width; x+=precision){
-            let t = map(x,0,graph_step_response_width,0,max_x_timerep);
-            let math_y = k_1 * Math.exp(-t / T_1);
-            this.bode_timerep_array.push(math_y);
-          }
-          if (k_1 > 0){
-            this.bode_max_timerep = k_1;
-            this.bode_min_timerep = 0;
-          } else {
-            this.bode_max_timerep = 0;
-            this.bode_min_timerep = k_1;
-          }
+          // Decays from h_0 towards 0:
+          this.bode_max_timerep = Math.max(h_0, 0);
+          this.bode_min_timerep = Math.min(h_0, 0);
         } else {
-          // Negative T:
-          for(let x=0; x<graph_step_response_width; x+=precision){
-            let t = map(x,0,graph_step_response_width,0,max_x_timerep);
-            let math_y = -k_1/T_1 * Math.exp(-t / T_1);
-            this.bode_timerep_array.push(math_y);
-          }
-          if (k_1 > 0){
-            this.bode_max_timerep = 20;
-            this.bode_min_timerep = 0;
-          } else {
-            this.bode_max_timerep = 0;
-            this.bode_min_timerep = -20;
-          }
+          // Negative T: grows without bound, so the axis is capped at 20 as before:
+          this.bode_max_timerep = (h_0 > 0) ? 20 : 0;
+          this.bode_min_timerep = (h_0 > 0) ? 0 : -20;
         }
       }
 
@@ -324,52 +313,24 @@ class bode_graph{
 
 
     if (have_a_solution == false){
-      // We could not calculate an exact value, let's use
-      // Inverse Laplace approximation by Gaver-Stehfest.
-      // Will not be an exact solution for complex poles.
-      // https://dl.acm.org/doi/10.1145/361953.361969.
-      // https://mpmath.org/doc/current/calculus/inverselaplace.html
-      // https://inverselaplace.org/
-
-      let time_delay = 0.0;
-      if (formula_to_use.includes("*e^(-L*s)"))
-      {
-        // Remove the time from the formula, and add the time delay afterwards
-        formula_to_use = formula_to_use.substr(0,formula_to_use.length-9);
-        time_delay = range_slider_variables[variable_position["L"]];
-        if (time_delay < 0.0) time_delay = 0.0;
+      // No closed form for this formula: time_response solves it exactly when it is a rational
+      // function of s (times a delay), and falls back to Gaver-Stehfest otherwise.
+      let sample_times = [];
+      for(let x=0; x<graph_step_response_width; x+=precision){
+        sample_times.push(map(x,0,graph_step_response_width,0,max_x_timerep));
       }
-      // This is how the time delay formula looks "after manual edit":
-      if (formula_to_use.includes("e^(-Ls)"))
-      {
-        // Remove the time from the formula, and add the time delay afterwards
-        formula_to_use = formula_to_use.substr(0,formula_to_use.length-7);
-        time_delay = range_slider_variables[variable_position["L"]];
-        if (time_delay < 0.0) time_delay = 0.0;
-      }
-      //console.log("Calculate:" + formula_to_use + " with time delay " + time_delay);
-
-      const binding = bind_formula("(" + input_formula + ")*(" + formula_to_use + ")");
-      if(binding !== null){
+      const response = time_response(input_formula, formula_to_use, sample_times);
+      if(response !== null){
         this.bode_max_timerep = -100000;
         this.bode_min_timerep = 100000;
-        this.bode_timerep_array = []
-        for(let x=0; x<graph_step_response_width; x+=precision){
-          let math_x = map(x,0,graph_step_response_width,0,max_x_timerep);
-          let math_y;
-          if(x != 0){
-            math_y = getTimeValues(binding,math_x,time_delay);
-          }
-          else{
-            math_y = getTimeValues(binding,0.00001,time_delay);
-          }
+        this.bode_timerep_array = response;
+        for(const math_y of response){
           if(math_y > this.bode_max_timerep){
             this.bode_max_timerep = math_y;
           }
           if(math_y < this.bode_min_timerep){
             this.bode_min_timerep = math_y;
           }
-          this.bode_timerep_array.push(math_y);
         }
       }
     }

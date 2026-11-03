@@ -73,23 +73,23 @@ function compile_formula(formula){
   if (compiled === undefined){
     const node = math.parse(insert_explicit_multiplication(formula));
     const symbols = new Set(node.filter((child) => child.isSymbolNode).map((child) => child.name));
-    compiled = {code: node.compile(), symbols: [...symbols]};
+    compiled = {node: node, code: node.compile(), symbols: [...symbols]};
     if (compiled_formulas.size >= MAX_COMPILED_FORMULAS) compiled_formulas.clear();
     compiled_formulas.set(formula, compiled);
   }
   return compiled;
 }
 
-// Compiles a formula and binds the current slider values of the variables it uses.
-// Returns null when one of those sliders has no value yet (18012001).
-// A formula that cannot be parsed gets a binding whose evaluation throws, so getComplexValues
-// returns 0 for it, as it did before formulas were compiled.
+// Compiles a formula and binds the current slider values of the variables it uses:
+// {node, code, scope}. Returns null when one of those sliders has no value yet (18012001).
+// A formula that cannot be parsed gets a binding whose evaluation throws (and no node), so
+// getComplexValues returns 0 for it, as it did before formulas were compiled.
 function bind_formula(formula){
   let compiled;
   try{
     compiled = compile_formula(formula);
   } catch(error){
-    return {code: {evaluate: () => { throw error; }}, scope: {}};
+    return {node: null, code: {evaluate: () => { throw error; }}, scope: {}};
   }
   const scope = {};
   for (const name of compiled.symbols){
@@ -98,7 +98,7 @@ function bind_formula(formula){
     if (range_slider_variables[position] == 18012001) return null;
     scope[name] = Number(range_slider_variables[position]);
   }
-  return {code: compiled.code, scope: scope};
+  return {node: compiled.node, code: compiled.code, scope: scope};
 }
 
 // The bound formula's value at s (a number or a math.complex).
@@ -140,6 +140,179 @@ function getTimeValues(binding,time,time_delay){
     sum += v[j]*evaluate_formula(binding, new_s);
   }
   return ln2 * sum/time_to_use;
+}
+
+// Polynomials are arrays of coefficients in ascending powers of s: [a_0, a_1, ...].
+function poly_add(a, b, sign){
+  const sum = [];
+  for (let k = 0; k < Math.max(a.length, b.length); k++) sum.push((a[k] || 0) + sign * (b[k] || 0));
+  return sum;
+}
+
+function poly_multiply(a, b){
+  const product = new Array(a.length + b.length - 1).fill(0);
+  for (let i = 0; i < a.length; i++){
+    for (let j = 0; j < b.length; j++) product[i + j] += a[i] * b[j];
+  }
+  return product;
+}
+
+// Drops leading coefficients that are 0 or negligible next to the largest one (1e-12 of it).
+function poly_trim(a){
+  const largest = Math.max(...a.map(Math.abs));
+  let degree = a.length - 1;
+  while (degree > 0 && Math.abs(a[degree]) <= 1e-12 * largest) degree--;
+  return a.slice(0, degree + 1);
+}
+
+// Highest exponent accepted in s^n; larger ones are not plotted as rational functions.
+const MAX_RATIONAL_EXPONENT = 50;
+
+function not_rational(){
+  return new Error('not a rational function of s');
+}
+
+// A parsed formula as a ratio of polynomials in s, {num, den}, with the slider values from
+// `scope`. This is math.rationalize's job, but rationalize takes ~160 ms for (1+0.7s)^4 and throws
+// on the PID closed-loop formulas, which is too slow and fragile for dragging. Throws "not a
+// rational function of s" for functions (sqrt, exp), non-integer powers, the imaginary unit and
+// unknown symbols. Common factors are not cancelled.
+function to_rational(node, scope){
+  if (node.isParenthesisNode) return to_rational(node.content, scope);
+  if (node.isConstantNode && typeof node.value == 'number') return {num: [node.value], den: [1]};
+  if (node.isSymbolNode){
+    if (node.name == 's') return {num: [0,1], den: [1]};
+    if (typeof scope[node.name] == 'number') return {num: [scope[node.name]], den: [1]};
+    throw not_rational();
+  }
+  if (!node.isOperatorNode) throw not_rational();
+  const args = node.args.map((arg) => to_rational(arg, scope));
+  const [a, b] = args;
+  switch (node.fn){
+    case 'unaryPlus': return a;
+    case 'unaryMinus': return {num: a.num.map((c) => -c), den: a.den};
+    case 'add': return {num: poly_add(poly_multiply(a.num, b.den), poly_multiply(b.num, a.den), 1), den: poly_multiply(a.den, b.den)};
+    case 'subtract': return {num: poly_add(poly_multiply(a.num, b.den), poly_multiply(b.num, a.den), -1), den: poly_multiply(a.den, b.den)};
+    case 'multiply': return {num: poly_multiply(a.num, b.num), den: poly_multiply(a.den, b.den)};
+    case 'divide': return {num: poly_multiply(a.num, b.den), den: poly_multiply(a.den, b.num)};
+    case 'pow': {
+      const exponent_num = poly_trim(b.num);
+      const exponent_den = poly_trim(b.den);
+      if (exponent_num.length != 1 || exponent_den.length != 1) throw not_rational();
+      const exponent = exponent_num[0] / exponent_den[0];
+      if (!Number.isInteger(exponent) || Math.abs(exponent) > MAX_RATIONAL_EXPONENT) throw not_rational();
+      let power = {num: [1], den: [1]};
+      for (let k = 0; k < Math.abs(exponent); k++) power = {num: poly_multiply(power.num, a.num), den: poly_multiply(power.den, a.den)};
+      return exponent >= 0 ? power : {num: power.den, den: power.num};
+    }
+    default: throw not_rational();
+  }
+}
+
+const strip_parentheses = (node) => node.isParenthesisNode ? strip_parentheses(node.content) : node;
+
+// The delay L of a factor e^(-L*s) or exp(-L*s), or null when the node is not such a factor.
+function delay_of_factor(node, scope){
+  let exponent = null;
+  const base = node.isOperatorNode && node.fn == 'pow' ? strip_parentheses(node.args[0]) : null;
+  if (base && base.isSymbolNode && base.name == 'e') exponent = node.args[1];
+  if (node.isFunctionNode && node.fn.name == 'exp' && node.args.length == 1) exponent = node.args[0];
+  if (exponent === null) return null;
+  let rational;
+  try{
+    rational = to_rational(exponent, scope);
+  } catch(error){
+    return null;
+  }
+  const num = poly_trim(rational.num);
+  const den = poly_trim(rational.den);
+  // The exponent must be c*s: degree 1, no constant term, constant denominator.
+  if (num.length != 2 || num[0] != 0 || den.length != 1) return null;
+  return -num[1] / den[0];
+}
+
+// Splits time-delay factors e^(-L*s) off a parsed formula: {node: the rest, delay: the total L}.
+// A factor counts when the rest of the formula is multiplied by it, also in the numerator of a
+// division; inside a sum it stays where it is. A negative delay is ignored (set to 0), as before.
+function split_time_delay(node, scope){
+  if (node.isParenthesisNode){
+    const inner = split_time_delay(node.content, scope);
+    return {node: new math.ParenthesisNode(inner.node), delay: inner.delay};
+  }
+  if (node.isOperatorNode && node.fn == 'multiply' && node.args.length == 2){
+    const left = split_time_delay(node.args[0], scope);
+    const right = split_time_delay(node.args[1], scope);
+    return {node: new math.OperatorNode('*', 'multiply', [left.node, right.node]), delay: left.delay + right.delay};
+  }
+  if (node.isOperatorNode && node.fn == 'divide'){
+    const numerator = split_time_delay(node.args[0], scope);
+    return {node: new math.OperatorNode('/', 'divide', [numerator.node, node.args[1]]), delay: numerator.delay};
+  }
+  const delay = delay_of_factor(node, scope);
+  if (delay === null) return {node: node, delay: 0};
+  return {node: new math.ConstantNode(1), delay: Math.max(0, delay)};
+}
+
+// y(t) at `times` (evenly spaced, starting at 0) of the impulse response of num/den, delayed by
+// `delay`. Uses the controllable canonical state-space form (A, B, C) of the strictly proper part:
+// y(t) = C*e^(A*t)*B, stepped with Phi = e^(A*dt), which is exact for repeated, complex and
+// unstable poles alike. The polynomial part of an improper num/den (impulses at t = 0) is left out.
+// Throws when the coefficients are not finite.
+function rational_impulse_response(rational, delay, times){
+  const den = poly_trim(rational.den);
+  const order = den.length - 1;
+  const leading = den[order];
+  if (leading == 0 || ![...den, ...rational.num].every(Number.isFinite)) throw not_rational();
+  if (order == 0) return times.map(() => 0);
+  // Remainder of num divided by den, over a monic den.
+  const remainder = rational.num.map((c) => c / leading);
+  const monic = den.map((c) => c / leading);
+  for (let k = remainder.length - 1; k >= order; k--){
+    const factor = remainder[k];
+    for (let j = 0; j <= order; j++) remainder[k - order + j] -= factor * monic[j];
+  }
+  const C = remainder.slice(0, order);
+  while (C.length < order) C.push(0);
+  const A = [];
+  for (let row = 0; row < order; row++){
+    A.push(new Array(order).fill(0));
+    if (row < order - 1) A[row][row + 1] = 1;
+  }
+  for (let col = 0; col < order; col++) A[order - 1][col] = -monic[col];
+  const exp_A = (t) => math.expm(math.matrix(A.map((row) => row.map((c) => c * t)))).toArray();
+  const multiply = (M, v) => M.map((row) => row.reduce((sum, c, j) => sum + c * v[j], 0));
+  const dt = times.length > 1 ? times[1] - times[0] : 0;
+  const phi = exp_A(dt);
+  let state = null;
+  return times.map((t) => {
+    if (t < delay) return 0;
+    if (state === null){
+      // First sample after the delay: start from e^(A*(t-L))*B, which may lie between two samples.
+      const B = new Array(order).fill(0);
+      B[order - 1] = 1;
+      state = multiply(exp_A(t - delay), B);
+    } else {
+      state = multiply(phi, state);
+    }
+    return C.reduce((sum, c, j) => sum + c * state[j], 0);
+  });
+}
+
+// The response at `times` (evenly spaced, starting at 0) of `formula` to the input signal `input`,
+// both formula text in s ("1/s" is a unit step). Exact when (input)*(formula) is a rational function
+// of s times a delay e^(-L*s); otherwise Gaver-Stehfest on the rest of the formula, as before, with
+// t = 0 replaced by 0.00001. Returns null when a slider the formulas use has no value.
+function time_response(input, formula, times){
+  const binding = bind_formula("(" + input + ")*(" + formula + ")");
+  if (binding === null) return null;
+  if (binding.node === null) return times.map((t) => getTimeValues(binding, t, 0)); // throws, as before
+  const split = split_time_delay(binding.node, binding.scope);
+  try{
+    return rational_impulse_response(to_rational(split.node, binding.scope), split.delay, times);
+  } catch(error){
+    const rest = {code: split.node.compile(), scope: binding.scope};
+    return times.map((t) => getTimeValues(rest, t == 0 ? 0.00001 : t, split.delay));
+  }
 }
 
 function findOmegaZero(binding,input_array){
