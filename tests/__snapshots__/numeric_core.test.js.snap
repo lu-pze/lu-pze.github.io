@@ -16,7 +16,7 @@ exports[`numeric core every preset graph keeps its numeric behaviour 1`] = `
       -184.086,
     ],
     "gain_crossover_freq": 0.677247,
-    "gain_margin": 8.5388,
+    "gain_margin": 8.51937,
     "nyquist_bounds": [
       -0.519724,
       1.49927,
@@ -35,8 +35,8 @@ exports[`numeric core every preset graph keeps its numeric behaviour 1`] = `
       -6.22605,
       -6.26512,
     ],
-    "phase_crossover_freq": 1.43017,
-    "phase_margin": 77.1564,
+    "phase_crossover_freq": 1.42857,
+    "phase_margin": 78.5426,
     "phase_range": [
       -6.2773,
       -0.0279995,
@@ -228,7 +228,7 @@ exports[`numeric core every preset graph keeps its numeric behaviour 1`] = `
       -6.37199,
       -6.37486,
     ],
-    "gain_crossover_freq": 1.46276,
+    "gain_crossover_freq": 1.46275,
     "gain_margin": undefined,
     "nyquist_bounds": [
       0.48,
@@ -249,7 +249,7 @@ exports[`numeric core every preset graph keeps its numeric behaviour 1`] = `
       -0.00843253,
     ],
     "phase_crossover_freq": undefined,
-    "phase_margin": 119.903,
+    "phase_margin": 120.042,
     "phase_range": [
       -1.5658,
       -0.00274453,
@@ -294,7 +294,7 @@ exports[`numeric core every preset graph keeps its numeric behaviour 1`] = `
       -1.56869,
     ],
     "phase_crossover_freq": undefined,
-    "phase_margin": 119.998,
+    "phase_margin": 120,
     "phase_range": [
       -1.57011,
       -0.0149989,
@@ -329,7 +329,7 @@ exports[`numeric core every preset graph keeps its numeric behaviour 1`] = `
       46.0206,
       56.0206,
     ],
-    "gain_crossover_freq": 0.433015,
+    "gain_crossover_freq": 0.433013,
     "gain_margin": undefined,
     "nyquist_bounds": [
       0.5,
@@ -350,7 +350,7 @@ exports[`numeric core every preset graph keeps its numeric behaviour 1`] = `
       1.57001,
     ],
     "phase_crossover_freq": undefined,
-    "phase_margin": 240.057,
+    "phase_margin": -120,
     "phase_range": [
       0.0399787,
       1.57054,
@@ -385,7 +385,7 @@ exports[`numeric core every preset graph keeps its numeric behaviour 1`] = `
       -29.8985,
       -39.8971,
     ],
-    "gain_crossover_freq": 2.63882,
+    "gain_crossover_freq": 2.63881,
     "gain_margin": undefined,
     "nyquist_bounds": [
       0.0000059318,
@@ -406,7 +406,7 @@ exports[`numeric core every preset graph keeps its numeric behaviour 1`] = `
       -1.56526,
     ],
     "phase_crossover_freq": undefined,
-    "phase_margin": 122.365,
+    "phase_margin": 122.567,
     "phase_range": [
       -1.569,
       -0.0069998,
@@ -487,7 +487,7 @@ exports[`numeric core every preset graph keeps its numeric behaviour 1`] = `
       -40.4576,
     ],
     "gain_crossover_freq": 2.82843,
-    "gain_margin": 2.14126,
+    "gain_margin": 2.06897,
     "nyquist_bounds": [
       -0.879386,
       2.99951,
@@ -506,8 +506,8 @@ exports[`numeric core every preset graph keeps its numeric behaviour 1`] = `
       -13.8617,
       -15.1683,
     ],
-    "phase_crossover_freq": 3.70616,
-    "phase_margin": 28.7946,
+    "phase_crossover_freq": 3.67319,
+    "phase_margin": 28.4428,
     "phase_range": [
       -15.6837,
       -0.0149997,
@@ -542,7 +542,7 @@ exports[`numeric core every preset graph keeps its numeric behaviour 1`] = `
       -54.8881,
       -74.8939,
     ],
-    "gain_crossover_freq": 4.96256,
+    "gain_crossover_freq": 4.96258,
     "gain_margin": undefined,
     "nyquist_bounds": [
       -1.28071,
@@ -563,7 +563,7 @@ exports[`numeric core every preset graph keeps its numeric behaviour 1`] = `
       -3.1359,
     ],
     "phase_crossover_freq": undefined,
-    "phase_margin": 29.2348,
+    "phase_margin": 29.7527,
     "phase_range": [
       -3.13974,
       -0.00200002,
@@ -619,7 +619,7 @@ exports[`numeric core every preset graph keeps its numeric behaviour 1`] = `
       -3.13052,
     ],
     "phase_crossover_freq": undefined,
-    "phase_margin": 76.5646,
+    "phase_margin": 75.9473,
     "phase_range": [
       -3.13799,
       -0.0139996,

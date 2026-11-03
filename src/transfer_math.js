@@ -315,57 +315,85 @@ function time_response(input, formula, times){
   }
 }
 
-function findOmegaZero(binding,input_array){
-  if (binding === null) return NaN;
-  let a_bound = min_10power;
-  let b_bound = min_10power + x_case_gain;
-  let f_a = gain_db_at(binding, Math.pow(10,a_bound));
-  let f_b = gain_db_at(binding, Math.pow(10,b_bound));
-  if(f_a * f_b < 0){
-    for(let h=0; h<20; h++){
-      let mid_point = (a_bound + b_bound)/2;
-      let f_mid = gain_db_at(binding, Math.pow(10,mid_point));
-      if(f_mid * f_a < 0){
-        b_bound = mid_point;
-      }
-      else{
-        a_bound = mid_point;
-      }
+// The frequency [rad/s] of Bode sample x (0 <= x < graph_bode_mag_width) on the log axis.
+function bode_sample_frequency(x){
+  return Math.pow(10, min_10power + x*x_case_gain/graph_bode_mag_width);
+}
+
+// Pairs [i, j] of sample indices on either side of each sign change of `values`. Samples within
+// `dead_band` of 0 have no sign, so a curve that only hovers around 0 (float noise) has none.
+// With `branch`, a sign change only counts between samples on the same branch.
+function sign_changes(values, dead_band, branch){
+  const changes = [];
+  let last = -1;
+  for (let i = 0; i < values.length; i++){
+    if (!(Math.abs(values[i]) > dead_band)) continue; // also skips NaN
+    if (last >= 0 && (values[i] > 0) != (values[last] > 0) && (!branch || branch[i] == branch[last])){
+      changes.push([last, i]);
     }
-    a_bound = (a_bound + b_bound)/2;
-    //let output = buffer_formula.replaceAll('s','(i*' + Math.pow(10,a_bound).toString() + ')');
-    //output = math.evaluate(output).toPolar().phi;
-    let linked_array_pos = map(a_bound,min_10power,min_10power + x_case_gain,0,graph_bode_mag_width-1);
-    let output = input_array[Math.ceil(linked_array_pos)];
-    return [output*180/Math.PI + 180, Math.pow(10,a_bound)];
+    last = i;
   }
-  else{
-    return NaN
+  return changes;
+}
+
+// The frequency between samples i and j where f(omega) changes sign, by bisection on log10(omega).
+function refine_crossing(f, i, j){
+  let lo = Math.log10(bode_sample_frequency(i));
+  let hi = Math.log10(bode_sample_frequency(j));
+  const positive_at_lo = f(Math.pow(10, lo)) > 0;
+  for (let h = 0; h < 50; h++){
+    const mid = (lo + hi)/2;
+    if ((f(Math.pow(10, mid)) > 0) == positive_at_lo) lo = mid; else hi = mid;
+  }
+  return Math.pow(10, (lo + hi)/2);
+}
+
+// arg G(j*omega) [rad] in (-pi, pi], or NaN when the formula cannot be evaluated there.
+function phase_at(binding, omega){
+  try{
+    return math.complex(evaluate_formula(binding, math.complex(0,omega))).arg();
+  } catch(error){
+    return NaN;
   }
 }
 
-function findOmega180(binding,input_array){
+// Wraps an angle in degrees into (-180, 180].
+const wrap_degrees = (angle) => angle - 360*Math.ceil((angle - 180)/360);
+
+// Of all crossings, the one with the margin closest to 0 (closest to instability), as MATLAB's
+// margin() reports: [margin, frequency], or NaN when there is no crossing.
+function smallest_margin(crossings){
+  let best = null;
+  for (const crossing of crossings){
+    if (best === null || Math.abs(crossing[0]) < Math.abs(best[0])) best = crossing;
+  }
+  return best === null ? NaN : best;
+}
+
+// Phase margin [degrees, wrapped into (-180, 180]] and gain crossover frequency [rad/s]: the
+// crossings of 0 dB in the sampled gain curve, each refined on the exact |G(j*omega)|.
+// Returns [phase_margin, frequency], or NaN when the gain never crosses 0 dB.
+function findOmegaZero(binding,gain_array){
   if (binding === null) return NaN;
-  let a_bound = min_10power;
-  let b_bound = min_10power + x_case_gain;
-  let f_a = input_array[Math.ceil(map(a_bound,min_10power,min_10power + x_case_gain,0,graph_bode_mag_width-1))] + Math.PI;
-  let f_b = input_array[Math.ceil(map(b_bound,min_10power,min_10power + x_case_gain,0,graph_bode_mag_width-1))] + Math.PI;
-  if(f_a * f_b < 0 && Math.abs(f_a) > 0.005 && Math.abs(f_b) > 0.005){
-    for(let h=0; h<20; h++){
-      let mid_point = (a_bound + b_bound)/2;
-      let f_mid = input_array[Math.ceil(map(mid_point,min_10power,min_10power + x_case_gain,0,graph_bode_mag_width-1))] + Math.PI;
-      if(f_mid * f_a < 0){
-        b_bound = mid_point;
-      }
-      else{
-        a_bound = mid_point
-      }
-    }
-    a_bound = (a_bound + b_bound)/2;
-    let output = -gain_db_at(binding, Math.pow(10,a_bound));
-    return [output,Math.pow(10,a_bound)];
-  }
-  else{
-    return NaN;
-  }
+  const crossings = sign_changes(gain_array, 1e-6).map(([i, j]) => {
+    const omega = refine_crossing((w) => gain_db_at(binding, w), i, j);
+    return [wrap_degrees(phase_at(binding, omega)*180/Math.PI + 180), omega];
+  });
+  return smallest_margin(crossings);
+}
+
+// Gain margin [dB] and phase crossover frequency [rad/s]: the crossings of -180 + k*360 degrees
+// in the sampled (unwrapped) phase curve, each refined on the exact phase: arg G(j*omega) jumps
+// between +pi and -pi exactly there, so bisection on its sign finds the crossing. A phase within
+// 0.005 rad of -180 (for example 1/s^2, which stays there) is not a crossing.
+// Returns [gain_margin, frequency], or NaN when the phase never crosses -180 + k*360.
+function findOmega180(binding,phase_array){
+  if (binding === null) return NaN;
+  const turns = phase_array.map((phase) => Math.round((phase + Math.PI)/(2*Math.PI)));
+  const distance = phase_array.map((phase, i) => phase + Math.PI - 2*Math.PI*turns[i]);
+  const crossings = sign_changes(distance, 0.005, turns).map(([i, j]) => {
+    const omega = refine_crossing((w) => phase_at(binding, w), i, j);
+    return [-gain_db_at(binding, omega), omega];
+  });
+  return smallest_margin(crossings);
 }

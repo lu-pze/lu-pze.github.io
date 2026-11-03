@@ -48,8 +48,7 @@ class bode_graph{
 
       let phase_bias = 0;
       for(let x=0; x<graph_bode_mag_width; x++){
-        let log_pow = map(x,0,graph_bode_mag_width,min_10power,min_10power+x_case_gain);
-        let math_x = Math.pow(10,log_pow);
+        let math_x = bode_sample_frequency(x);
         let bode_value = getComplexValues(binding, math_x);
         if(bode_value.re > this.bode_max_nyquist_x){
           this.bode_max_nyquist_x = bode_value.re;
@@ -88,7 +87,7 @@ class bode_graph{
         }
       }
     }
-    let omegaZero = findOmegaZero(binding, this.bode_phase_array);
+    let omegaZero = findOmegaZero(binding, this.bode_gain_array);
     let omega180 = findOmega180(binding, this.bode_phase_array);
     this.bode_gain_margin = omega180[0];
     this.bode_phase_margin = omegaZero[0];

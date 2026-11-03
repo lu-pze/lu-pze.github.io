@@ -413,3 +413,125 @@ describe('bode_graph time responses agree with the closed forms', () => {
     general.bode_timerep_array.forEach((y, i) => expect(y).toBeCloseTo(closed.bode_timerep_array[i], 9));
   });
 });
+
+describe('stability margins', () => {
+  beforeEach(() => {
+    set_globals({ graph_bode_mag_width: 400, min_10power: -2, x_case_gain: 5 });
+  });
+  const margins = (formula, sliders) => {
+    set_sliders(sliders);
+    const graph = window.eval(`new bode_graph(1, ${JSON.stringify(formula)})`);
+    graph.get_complex_p5();
+    return graph;
+  };
+  const preset = (name) => global_value(name).formula;
+  // Exact values, solved independently (bisection on the analytic phase/gain to 1e-12).
+  test.each([
+    ['GRAPH_FOUR_POLES', { k_5: 1.5, T_5: 0.7 }, 78.542599, 0.677247, 8.519375, 1.428571],
+    ['GRAPH_TIME_DELAY', { L: 0.5 }, 28.442752, 2.828427, 2.068965, 3.673194],
+    ['GRAPH_TWO_COMPLEX_POLES', { k_3: 2, w: 3, z: 0.3 }, 29.752709, 4.962576, NaN, NaN],
+    ['GRAPH_TWO_REAL_POLES', { k_2: 3, T_2: 1, T_3: 0.4 }, 75.947295, 2.078727, NaN, NaN],
+    ['GRAPH_ONE_REAL_POLE', { k_1: 2, T_1: 1.5 }, 120, Math.sqrt(3) / 1.5, NaN, NaN],
+  ])('%s: exact margins', (name, sliders, pm, wc, gm, w180) => {
+    const graph = margins(preset(name), sliders);
+    expect(graph.bode_phase_margin).toBeCloseTo(pm, 5);
+    expect(graph.bode_gain_crossover_freq).toBeCloseTo(wc, 5);
+    if (Number.isNaN(gm)) {
+      expect(graph.bode_gain_margin).toBeUndefined(); // NaN[0], as the info panel expects
+      expect(graph.bode_phase_crossover_freq).toBeUndefined();
+    } else {
+      expect(graph.bode_gain_margin).toBeCloseTo(gm, 5);
+      expect(graph.bode_phase_crossover_freq).toBeCloseTo(w180, 5);
+    }
+  });
+
+  test('the phase margin is wrapped into (-180, 180]: 0.5 + 2s gives -120', () => {
+    const graph = margins(preset('GRAPH_ONE_ZERO'), { T_4: 2 });
+    expect(graph.bode_phase_margin).toBeCloseTo(-120, 6);
+    expect(graph.bode_gain_crossover_freq).toBeCloseTo(Math.sqrt(0.75) / 2, 6);
+  });
+
+  test('a phase margin of exactly 0 stays 0, not 360 or 180 (1/s^2 at 1 rad/s)', () => {
+    const graph = margins('1/s^2', {});
+    expect(graph.bode_phase_margin).toBeCloseTo(0, 6);
+    expect(graph.bode_gain_crossover_freq).toBeCloseTo(1, 6);
+  });
+
+  test('a phase that stays at -180 is not a phase crossover (1/s^2)', () => {
+    expect(margins('1/s^2', {}).bode_gain_margin).toBeUndefined();
+  });
+
+  test('a phase margin of exactly 180 stays 180 (2/(1-s^2) is real and positive on the j axis)', () => {
+    const graph = margins('2/(1-s^2)', {});
+    expect(graph.bode_phase_margin).toBe(180);
+    expect(graph.bode_gain_crossover_freq).toBeCloseTo(1, 6);
+  });
+
+  test('float noise around -180 degrees or 0 dB is not a crossing', () => {
+    // (s+0.1)^2/(s^2+0.2s+0.01) is 1, apart from rounding errors that flip the sign of its gain in dB
+    // about 120 times over the frequency axis; its negative sits at -180 degrees the same way.
+    const noisy_gain = margins('(s+0.1)^2/(s^2+0.2s+0.01)', {});
+    expect(noisy_gain.bode_phase_margin).toBeUndefined();
+  });
+
+  test('a phase that only wobbles within 0.005 rad of -180 is not a phase crossover, as before', () => {
+    // 1/s^2 with a tiny lag near 1 rad/s and a tiny lead near 10 rad/s: the phase dips below -180
+    // and comes back above it, by less than 0.001 rad.
+    const graph = margins('(1+s/1.001)(1+s/9.99)/((1+s)(1+s/10)s^2)', {});
+    const to_nearest_crossing = (p) => Math.abs(p + Math.PI - 2 * Math.PI * Math.round((p + Math.PI) / (2 * Math.PI)));
+    expect(Math.max(...graph.bode_phase_array.map(to_nearest_crossing))).toBeLessThan(0.001);
+    expect(graph.bode_gain_margin).toBeUndefined();
+  });
+
+  test('a gain that stays at 0 dB is not a gain crossover (pure delay)', () => {
+    const graph = margins('e^(-L*s)', { L: 0.5 });
+    expect(graph.bode_phase_margin).toBeUndefined();
+    // ... but the delay's phase does cross -180 at pi/L, with |G| = 1:
+    expect(graph.bode_phase_crossover_freq).toBeCloseTo(Math.PI / 0.5, 5);
+    expect(graph.bode_gain_margin).toBeCloseTo(0, 6);
+  });
+
+  test('two gain crossovers (resonance peak above 0 dB): the smaller |PM| is reported', () => {
+    const [k, z] = [0.8, 0.1];
+    const graph = margins('k_3*w^2/(s^2+2*z*w*s+w^2)', { k_3: k, w: 1, z });
+    // |G| = 1  <=>  u^2 + (4z^2 - 2)u + (1 - k^2) = 0 with u = omega^2
+    const b = 4 * z * z - 2;
+    const roots = [(-b - Math.sqrt(b * b - 4 * (1 - k * k))) / 2, (-b + Math.sqrt(b * b - 4 * (1 - k * k))) / 2].map(Math.sqrt);
+    const pm = roots.map((w) => 180 - Math.atan2(2 * z * w, 1 - w * w) * 180 / Math.PI);
+    expect(pm[0]).toBeGreaterThan(150); // the upward crossing, misleading
+    expect(graph.bode_phase_margin).toBeCloseTo(pm[1], 5);
+    expect(graph.bode_gain_crossover_freq).toBeCloseTo(roots[1], 5);
+  });
+
+  test('several phase crossovers (a delay crosses -180, -540, ...): the smaller |GM| is reported', () => {
+    // 0.5/(1+0.05s)*e^(-2s): the first crossing (lowest frequency, highest gain) has the smallest |GM|
+    const graph = margins('0.5/(1+0.05s)*e^(-L*s)', { L: 2 });
+    const w = graph.bode_phase_crossover_freq;
+    expect(-Math.atan(0.05 * w) - 2 * w).toBeCloseTo(-Math.PI, 6);
+    expect(graph.bode_gain_margin).toBeCloseTo(-20 * Math.log10(0.5 / Math.sqrt(1 + 0.0025 * w * w)), 6);
+  });
+
+  test('with a gain above 0 dB at the first -180 crossing, the crossing closest to 0 dB wins', () => {
+    // 12/(1+s)*e^(-0.5s) crosses -180 + k*360 where atan(w) + 0.5w = (2k+1)pi:
+    // GM = -10.0 dB at the first crossing, +2.4 dB at the second, +7.6 dB at the third.
+    const crossing = (k) => {
+      let [lo, hi] = [0, 100];
+      for (let i = 0; i < 200; i++) {
+        const mid = (lo + hi) / 2;
+        if (Math.atan(mid) + 0.5 * mid < Math.PI * (2 * k + 1)) lo = mid; else hi = mid;
+      }
+      return lo;
+    };
+    const gm = (w) => -20 * Math.log10(12 / Math.sqrt(1 + w * w));
+    expect(gm(crossing(0))).toBeLessThan(-9);
+    const graph = margins('12/(1+s)*e^(-L*s)', { L: 0.5 });
+    expect(graph.bode_phase_crossover_freq).toBeCloseTo(crossing(1), 5);
+    expect(graph.bode_gain_margin).toBeCloseTo(gm(crossing(1)), 5);
+  });
+
+  test('an unset slider leaves the margins undefined', () => {
+    const graph = margins('k_1/(1+T_1*s)', { k_1: 2 });
+    expect(graph.bode_phase_margin).toBeUndefined();
+    expect(graph.bode_gain_margin).toBeUndefined();
+  });
+});
