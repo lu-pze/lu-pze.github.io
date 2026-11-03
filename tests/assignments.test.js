@@ -141,14 +141,14 @@ describe('update_assignments', () => {
 });
 
 describe('PID controller pole-zero map', () => {
-  test('draws -1/T_i and -1/T_d as zeros', () => {
+  test('draws the integrator pole at 0, and -1/T_i and -1/T_d as zeros', () => {
     set_sliders({ T_i: 2, T_d: 0.5 });
     const graph = Object.create(global_value('bode_graph').prototype);
     Object.assign(graph, { bode_formula: global_value('GRAPH_PID').formula, bode_hue: 0 });
     graph.plot_pole = jest.fn();
     graph.plot_zero = jest.fn();
     graph.draw_pole_zero(false);
-    expect(graph.plot_pole).not.toHaveBeenCalled();
+    expect(graph.plot_pole.mock.calls).toEqual([[0, 0]]);
     expect(graph.plot_zero.mock.calls).toEqual([[-0.5, 0], [-2, 0]]);
   });
 });

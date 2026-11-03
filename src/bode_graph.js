@@ -701,6 +701,7 @@ class bode_graph{
 
     } else if (this.bode_formula == GRAPH_PID.formula){
       //pole_x = range_slider_variables[0];
+      this.plot_pole(0,0); // The integrator 1/(sT_i)
       let T_iinv = 1/range_slider_variables[variable_position["T_i"]];
       if (T_iinv > 3.2) T_iinv=3.2;
       this.plot_zero(-T_iinv,0); // Approximate PID zero -1/T_i (exact when T_d << T_i)
