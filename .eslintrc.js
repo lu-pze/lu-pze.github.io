@@ -11,7 +11,8 @@ module.exports = {
             },
             "files": [
                 ".eslintrc.{js,cjs}",
-                "jest.config.js"
+                "jest.config.js",
+                "playwright.config.js"
             ],
             "parserOptions": {
                 "sourceType": "script"
