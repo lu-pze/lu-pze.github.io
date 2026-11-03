@@ -413,10 +413,10 @@ function draw_bode_responses(type){
             draw_bode_phase_T(range_slider_variables[variable_position["T_5"]],i);
           } catch {}
         } else if(bode_graphs[i].bode_formula == GRAPH_PID.formula){
-          // Draw T_i and T_d:
+          // Draw the PID zeros at 1/T_i and 1/T_d:
           try{ // The graph may be deleted, so this might fail:
-            draw_bode_phase_T(range_slider_variables[variable_position["T_i"]],i);
-            draw_bode_phase_T(range_slider_variables[variable_position["T_d"]],i);
+            draw_bode_phase_T(range_slider_variables[variable_position["T_i"]],i,"zero");
+            draw_bode_phase_T(range_slider_variables[variable_position["T_d"]],i,"zero");
           } catch {}
         }
       }
@@ -520,10 +520,10 @@ function draw_bode_responses(type){
             draw_bode_mag_T(range_slider_variables[variable_position["T_5"]],i);
           } catch {}
         } else if (bode_graphs[i].bode_formula == GRAPH_PID.formula){
-          // Draw T_i and T_d:
+          // Draw the PID zeros at 1/T_i and 1/T_d:
           try{ // The graph may be deleted, so this might fail:
-            draw_bode_mag_T(range_slider_variables[variable_position["T_i"]],i);
-            draw_bode_mag_T(range_slider_variables[variable_position["T_d"]],i);
+            draw_bode_mag_T(range_slider_variables[variable_position["T_i"]],i,"zero");
+            draw_bode_mag_T(range_slider_variables[variable_position["T_d"]],i,"zero");
           } catch {}
         }
       }

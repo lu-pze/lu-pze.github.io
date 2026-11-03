@@ -703,10 +703,10 @@ class bode_graph{
       //pole_x = range_slider_variables[0];
       let T_iinv = 1/range_slider_variables[variable_position["T_i"]];
       if (T_iinv > 3.2) T_iinv=3.2;
-      this.plot_pole(-T_iinv,0); // Should be T_i
+      this.plot_zero(-T_iinv,0); // Approximate PID zero -1/T_i (exact when T_d << T_i)
       let T_dinv = 1/range_slider_variables[variable_position["T_d"]];
       if (T_dinv > 3.2) T_dinv=3.2;
-      this.plot_pole(-T_dinv,0); // Should be T_d
+      this.plot_zero(-T_dinv,0); // Approximate PID zero -1/T_d
 
     } else if (this.bode_poles_zeros !== null){
       // Display-only map: computed poles (X) and zeros (O).

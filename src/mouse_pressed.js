@@ -653,7 +653,9 @@ function mouseReleased(){
   let k_1 = range_slider_variables[variable_position["k_1"]];
   if ((k_1 > 0.5) && (k_1<0.7)) task_done("PID_(k_1)");
   if (T_d != 0) task_done("PID_(T_d!=0)");
-  if ((K!=1.0)&&(T_i!=1.0)&&(T_d!=0)) task_done("PID_Load");
+  const pid_parameter_changed = ["K","T_i","T_d"].some(
+    (name) => range_slider_variables[variable_position[name]] != default_variable_values[name].value);
+  if (pid_parameter_changed) task_done("PID_Load");
 
   let w = range_slider_variables[variable_position["w"]];
   let z = range_slider_variables[variable_position["z"]];

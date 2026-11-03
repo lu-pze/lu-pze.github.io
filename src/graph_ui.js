@@ -220,7 +220,7 @@ function createRangeSlider(event){
     let w = range_slider_variables[variable_position["w"]];
     let z = range_slider_variables[variable_position["z"]];
     let k_3 = range_slider_variables[variable_position["k_3"]];
-    if ((k_3>=0.90)&&(k_3<=1.1)&&(w>=7.3)&&(w<=8.7)&&(z>=0.2)&&(z<=0.7)){
+    if ((k_3>=0.90)&&(k_3<=1.1)&&(w>=7.3)&&(w<=8.7)&&(z>=0.02)&&(z<=0.07)){
       task_done("w=8,z=0.05,k_3=1");
     }
     // When pressing enter, we shall lose focus:
