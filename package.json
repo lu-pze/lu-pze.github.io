@@ -2,10 +2,11 @@
   "name": "lu-pze.github.io",
   "version": "1.0.0",
   "description": "an Automatic Control theory playground",
-  "main": "main.js",
+  "main": "index.html",
   "scripts": {
     "test": "jest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "lint": "node tools/lint.js --quiet"
   },
   "author": "",
   "license": "ISC",

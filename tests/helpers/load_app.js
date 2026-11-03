@@ -1,4 +1,4 @@
-// Loads the real, unmodified classic scripts (math.js, main.js) into the jsdom
+// Loads the real, unmodified classic scripts (math.js and the files in src/) into the jsdom
 // window the same way a browser does: as <script> elements sharing one global
 // scope. Top-level `let`/`const`/`class` therefore end up in the global lexical
 // scope, reachable from tests via window.eval("name").
@@ -14,7 +14,7 @@ function runClassicScript(source) {
   document.head.appendChild(script);
 }
 
-// Minimal stand-ins for the p5.js globals that main.js calls while loading.
+// Minimal stand-ins for the p5.js globals that the src/ scripts call while loading.
 // Drawing functions are no-ops; the numeric helpers behave like the real ones.
 function installP5Stubs() {
   const noop = () => {};
@@ -39,9 +39,15 @@ function installP5Stubs() {
   });
 }
 
-// Mimic a browser parsing the page: main.js checks document.readyState and
-// defers ready() until DOMContentLoaded, which it needs because its top-level
-// constants are defined after that first call.
+// The app's own scripts, in the load order given by index.html (the single source of truth).
+function app_script_paths() {
+  const html = read('index.html');
+  return [...html.matchAll(/<script[^>]*\ssrc="(src\/[^"]+)"/g)].map((match) => match[1]);
+}
+
+// Mimic a browser parsing the page: the start-up hook in app_setup.js runs ready() at once
+// unless document.readyState is 'loading', in which case it waits for DOMContentLoaded.
+// Reporting 'loading' while the scripts run keeps the tests in control of when that fires.
 function loadApp() {
   const html = read('index.html');
   document.body.innerHTML = /<body[^>]*>([\s\S]*)<\/body>/.exec(html)[1];
@@ -50,7 +56,7 @@ function loadApp() {
   installP5Stubs();
   window.confetti = () => {};
   runClassicScript(read('js/math.js'));
-  runClassicScript(read('main.js'));
+  for (const source of app_script_paths()) runClassicScript(read(source));
   delete document.readyState;
 }
 
@@ -64,4 +70,4 @@ function set_globals(values) {
   }
 }
 
-module.exports = { loadApp, global_value, set_globals };
+module.exports = { loadApp, global_value, set_globals, app_script_paths };

@@ -45,7 +45,7 @@ module.exports = {
         "windowHeight": "readonly", "windowWidth": "readonly"
     },
     "rules": {
-        // main.js is a classic script: top-level functions are called by p5
+        // src/ holds classic scripts: top-level functions are called by p5
         // (setup, draw, mousePressed, ...) or by inline HTML handlers, so only
         // check unused variables inside functions.
         // Event handlers take `event` by convention even when they ignore it.

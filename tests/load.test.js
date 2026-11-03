@@ -8,7 +8,7 @@ describe('app scripts load in a browser-like global scope', () => {
     expect(typeof window.math.complex).toBe('function');
   });
 
-  test('main.js top-level declarations are reachable', () => {
+  test('src/ top-level declarations are reachable', () => {
     expect(typeof global_value('bode_graph')).toBe('function');
     expect(Array.isArray(global_value('GRAPH_ORDER'))).toBe(true);
   });
