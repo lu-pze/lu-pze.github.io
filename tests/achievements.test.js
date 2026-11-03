@@ -97,16 +97,14 @@ describe('achievement_done', () => {
     expect(window.play_jingle).toHaveBeenCalledTimes(1);
   });
 
-  // Quirk: when the mouse is below 90% of the window height the code sets `left = 90` instead of
-  // `top = 90` (src/achievements_sound.js:51), so the popup jumps sideways and is not clamped.
-  test('quirk: a mouse near the bottom edge moves the popup horizontally to 90%', () => {
+  test('the popup is kept at most 90% from the top, without moving it sideways', () => {
     set_globals({ gamification_enabled: true });
-    window.mouseX = 0;
+    window.mouseX = 320; // a quarter of the window width
     window.mouseY = 800;
     window.achievement_done('drag_zero');
     const style = document.querySelector('.achievement_text').style;
-    expect(style.getPropertyValue('--left')).toBe('90%');
-    expect(style.getPropertyValue('--top')).toBe('100%');
+    expect(style.getPropertyValue('--left')).toBe('25%');
+    expect(style.getPropertyValue('--top')).toBe('90%');
   });
 });
 

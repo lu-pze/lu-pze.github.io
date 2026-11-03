@@ -48,7 +48,7 @@ function achievement_done (which_one){
       let left = (100*mouseX /windowWidth);
       if (left > 85) left = 85;
       let top = (100*mouseY/windowHeight);
-      if (top > 90) left = 90;
+      if (top > 90) top = 90;
       document.querySelector('.achievement_text').style.setProperty('--left',left+"%");
       document.querySelector('.achievement_text').style.setProperty('--top',top+"%");
       document.querySelector('.achievement_star').style.setProperty('--left',left+"%");
