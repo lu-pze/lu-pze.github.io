@@ -57,4 +57,11 @@ function loadApp() {
 // Reads a global (including top-level let/const/class) from the app's scope.
 const global_value = (name) => window.eval(name);
 
-module.exports = { loadApp, global_value };
+// Assigns to existing app globals (including top-level `let`s).
+function set_globals(values) {
+  for (const [name, value] of Object.entries(values)) {
+    window.eval(`${name} = ${JSON.stringify(value)}`);
+  }
+}
+
+module.exports = { loadApp, global_value, set_globals };
