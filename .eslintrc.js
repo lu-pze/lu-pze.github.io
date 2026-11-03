@@ -46,6 +46,10 @@ module.exports = {
         // main.js is a classic script: top-level functions are called by p5
         // (setup, draw, mousePressed, ...) or by inline HTML handlers, so only
         // check unused variables inside functions.
-        "no-unused-vars": ["error", { "vars": "local" }]
+        // Event handlers take `event` by convention even when they ignore it.
+        "no-unused-vars": ["error", { "vars": "local", "argsIgnorePattern": "^event$" }],
+        // Drawing code wraps calls in try/catch because a graph can be deleted
+        // mid-frame; swallowing that error is intentional.
+        "no-empty": ["error", { "allowEmptyCatch": true }]
     }
 }

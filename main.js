@@ -1594,7 +1594,7 @@ The PID controller is usually connected in a feedback loop as in the image above
 <math-field read-only style='vertical-align:bottom;display:inline-block'>
   s = \\frac{-1000 \\pm \\sqrt{1000^2 - 4 \\cdot 1000 \\cdot 5000}}{2 \\cdot 1000} = \\frac{-1000 \\pm \\sqrt{-16000000}}{2000}
 </math-field><br>
-  This illustrates a system with complex conjugate poles, indicating an underdamped system typical for making the car suspension comfortable by allowing it to \"bounce\" slightly before settling. Notice, however, in this example and the given values, the calculation gives real poles, and we will end up with the transfer function for two real poles.`},
+  This illustrates a system with complex conjugate poles, indicating an underdamped system typical for making the car suspension comfortable by allowing it to "bounce" slightly before settling. Notice, however, in this example and the given values, the calculation gives real poles, and we will end up with the transfer function for two real poles.`},
 
 
 
@@ -2107,7 +2107,7 @@ set(findall(gcf,'-property','FontSize'),'FontSize',fontsize)
   return html;
 }
 
-function hide_script(id){
+function hide_script(){
   let toggleElement = document.querySelector('.download_script_box');
   toggleElement.classList.toggle('active');
 }
@@ -3427,7 +3427,6 @@ function read_highscores () {
     let high_longest_streak = {};
     let high_nof_correct = {};
     let high_latest = {};
-    let places = {};
     for(let i=0; i<lines.length; i++){
       let line=lines[i];
       if (line.startsWith("T")){
@@ -3444,7 +3443,6 @@ function read_highscores () {
 //,#server_time=2024/09/27 14:37:16.
         const server_time_re = new RegExp(/,#server_time=([0-9/ :]+)/,"g");
 
-        let total = -1;
         const m2=total_re.exec(line);
         const m3=longest_streak_re.exec(line);
         const m4=nof_correct_re.exec(line);
@@ -3788,7 +3786,6 @@ function quiz_time_is_up (){
     }
     s += "good at " + quiz_explanation[top_question_id];
     let bottom_question_id = items[items.length - 1][0];
-    let bottom_difficulty_level = items[items.length - 1][1];
     s += ", but you could focus on learning more about " + quiz_explanation[bottom_question_id] + ".<br><br>";
     //  s += '<span style="color:#808080">Total: ' + quiz_difficulty.toFixed(1) + "</span><br>";
   }
@@ -4749,7 +4746,7 @@ function update_achievements (){
   // Sort the array based on integer keys in descending order
   entries.sort(([keyA], [keyB]) => keyB - keyA);
   // Iterate over the sorted array
-  for (const [threshold, rank] of entries) {
+  for (const [threshold] of entries) {
     if (achievement_score>=threshold){
       achievement_rank=achievement_ranks[threshold];
       break;
@@ -5591,7 +5588,6 @@ function draw_time_responses(){
         // Draw T_2:
         try{ // The graph may be deleted, so this might fail:
           draw_time_response_T(range_slider_variables[variable_position["T_2"]],i);
-          let T_2 = range_slider_variables[variable_position["T_2"]];
         } catch {}
         try{ // The graph may be deleted, so this might fail:
           draw_time_response_T(range_slider_variables[variable_position["T_3"]],i);
@@ -5617,7 +5613,6 @@ function draw_time_responses(){
         // Draw T_8:
         try{ // The graph may be deleted, so this might fail:
           draw_time_response_T(range_slider_variables[variable_position["T_8"]],i,"zero");
-          let T_8 = range_slider_variables[variable_position["T_8"]];
         } catch {}
       } else if (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula){
         // Draw T_5:
@@ -6223,9 +6218,7 @@ function mousePressed (event){
     ((mouseY-graph_bode_mag_y) > graph_bode_mag_y_offset && (mouseY-graph_bode_mag_y) < graph_bode_mag_height + graph_bode_mag_y_offset)){
     event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
     let linked_x = mouseX - graph_bode_mag_x - graph_bode_mag_x_offset;
-    let linked_y = mouseY - graph_bode_mag_y - graph_bode_mag_y_offset;
     let perc_x = linked_x / graph_bode_mag_width;
-    let perc_y = linked_y / graph_bode_mag_height;
     // 0.0   equals hovering over frequency 10^min_10power (= -2);
     // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
     let exponent = perc_x*x_case_gain + min_10power;
@@ -6250,8 +6243,6 @@ function mousePressed (event){
         }
       }
     }
-    let magnitude_in_dB = gain_upper_bound - perc_y*120;//y_case_gain; //60 - perc_y
-    let magnitude = 1.0 * Math.pow(10.0, magnitude_in_dB / 20.0);
     // Find the closest point from the graphs:
     let output;
     let distance = 10000;
@@ -6350,9 +6341,7 @@ function mousePressed (event){
     event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
     add_event("click_nyquist");
     if (current_quiz!="none"){
-      let origo_x = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
       let origo_y = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-      let screen_x = graph_nyquist_x + origo_x + graph_nyquist_x_offset;
       let screen_y = graph_nyquist_y + origo_y + graph_nyquist_y_offset;
       let perc_x = (mouseX - graph_nyquist_x - graph_nyquist_x_offset) / graph_nyquist_width;
       let perc_y = (mouseY - graph_nyquist_y - graph_nyquist_y_offset) / graph_nyquist_height;
@@ -7040,7 +7029,6 @@ function mouseDragged (){
   } else if (clicked_on_bode_phase_graph_no != -1){
     let i=clicked_on_bode_phase_graph_no;
     let mouseDiffX = (mouseX - initial_mouseX) / graph_step_response_width;
-    let mouseDiffY = (mouseY - initial_mouseY) / graph_step_response_height;
 
     if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_ONE_REAL_POLE.formula){
       achievement_done("drag_bode_phase");
@@ -7584,8 +7572,6 @@ function mouseMoved(){
         // Draw a corresponding white dot at the real axis of the Nyquist diagram
         let screen_x0 = map(output[2],min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
         let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-        let screen_xw = map(2*magnitude,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-        let screen_yw = map(-2*magnitude,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
         if ((screen_x0>=0)&&(screen_x0<=graph_nyquist_width)){
           ellipse(graph_nyquist_x+graph_nyquist_x_offset+screen_x0,graph_nyquist_y+graph_nyquist_y_offset+screen_y0,12,12);
         }
@@ -7612,7 +7598,6 @@ function mouseMoved(){
       } else {
         let time=(mouseX - graph_step_response_x - graph_step_response_x_offset) / graph_step_response_width * 10.0;
         let output=max_y_timerep - (max_y_timerep - min_y_timerep) * (mouseY - graph_step_response_y - graph_step_response_y_offset) / graph_step_response_height;
-        let linked_y = Math.ceil((mouseY - graph_step_response_y)/precision);
         push();
         // Draw a white dot at the right edge of the time response graph
         fill(text_color);
@@ -7625,8 +7610,6 @@ function mouseMoved(){
         // Draw a corresponding white dot at the real axis of the Nyquist diagram
         let screen_x0 = map(output,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
         let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-        let screen_xw = map(2*magnitude,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-        let screen_yw = map(-2*magnitude,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
         if ((screen_x0>=0)&&(screen_x0<=graph_nyquist_width)){
           ellipse(graph_nyquist_x+graph_nyquist_x_offset+screen_x0,graph_nyquist_y+graph_nyquist_y_offset+screen_y0,12,12);
         }
@@ -8117,14 +8100,8 @@ function mouseMoved(){
 }
 
 
-let screenshot_number = 0;
-function capture_screen(){
-  saveCanvas(canvas,"Pexperiment_screenshot_" + screenshot_number.toString(),'png');
-  screenshot_number++;
-}
 
-
-function draw_loglines(x_case,y_case,type){
+function draw_loglines(x_case){
   stroke(line_color);
   let sum = (1 - Math.pow(1/rate,9))/(1 - 1/rate);
   let step_x = (graph_bode_mag_width/x_case)/sum;
@@ -8775,7 +8752,7 @@ class bode_graph{
           strokeWeight(line_stroke_weight);
           draw_X(screen_x, screen_y);
           pop();
-        } catch {};
+        } catch {}
       }
     }
   }
@@ -8798,7 +8775,7 @@ class bode_graph{
           strokeWeight(line_stroke_weight);
           draw_O(screen_x, screen_y);
           pop();
-        } catch {};
+        } catch {}
       }
     }
   }
