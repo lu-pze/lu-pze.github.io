@@ -34,7 +34,8 @@ class bode_graph{
 
   get_complex_p5(){
     //Reset Values
-    if(replaceLetterByValue(this.bode_formula)){
+    const binding = bind_formula(this.bode_formula);
+    if(binding !== null){
       this.bode_max_phase = -10000;
       this.bode_min_phase = 10000;
       this.bode_min_nyquist_x = 10000;
@@ -46,11 +47,10 @@ class bode_graph{
       this.bode_complex_array = [];
 
       let phase_bias = 0;
-      buffer_formula = buffer_formula.replace('⋅','');
       for(let x=0; x<graph_bode_mag_width; x++){
         let log_pow = map(x,0,graph_bode_mag_width,min_10power,min_10power+x_case_gain);
         let math_x = Math.pow(10,log_pow);
-        let bode_value = getComplexValues(math_x);
+        let bode_value = getComplexValues(binding, math_x);
         if(bode_value.re > this.bode_max_nyquist_x){
           this.bode_max_nyquist_x = bode_value.re;
         }
@@ -88,8 +88,8 @@ class bode_graph{
         }
       }
     }
-    let omegaZero = findOmegaZero(this.bode_phase_array);
-    let omega180 = findOmega180(this.bode_phase_array);
+    let omegaZero = findOmegaZero(binding, this.bode_phase_array);
+    let omega180 = findOmega180(binding, this.bode_phase_array);
     this.bode_gain_margin = omega180[0];
     this.bode_phase_margin = omegaZero[0];
     this.bode_gain_crossover_freq = omegaZero[1];
@@ -349,7 +349,8 @@ class bode_graph{
       }
       //console.log("Calculate:" + formula_to_use + " with time delay " + time_delay);
 
-      if(replaceLetterByValue(formula_to_use)){
+      const binding = bind_formula("(" + input_formula + ")*(" + formula_to_use + ")");
+      if(binding !== null){
         this.bode_max_timerep = -100000;
         this.bode_min_timerep = 100000;
         this.bode_timerep_array = []
@@ -357,10 +358,10 @@ class bode_graph{
           let math_x = map(x,0,graph_step_response_width,0,max_x_timerep);
           let math_y;
           if(x != 0){
-            math_y = getTimeValues(math_x,time_delay);
+            math_y = getTimeValues(binding,math_x,time_delay);
           }
           else{
-            math_y = getTimeValues(0.00001,time_delay);
+            math_y = getTimeValues(binding,0.00001,time_delay);
           }
           if(math_y > this.bode_max_timerep){
             this.bode_max_timerep = math_y;
