@@ -1,32 +1,9 @@
 // Browser smoke tests: catch broken <script> order, missing globals and
 // runtime errors that jsdom stubs cannot show.
 const { test, expect } = require('@playwright/test');
+const { block_production, open_app, start_from_splash } = require('./helpers');
 
-test.beforeEach(async ({ page }) => {
-  // Never talk to the production logging/highscore server from tests.
-  await page.route(/livet\.se/, (route) => route.abort());
-});
-
-// Opens the page and returns the list of uncaught errors seen so far.
-async function open_app(page) {
-  const errors = [];
-  page.on('pageerror', (error) => errors.push(error.message));
-  page.on('console', (message) => {
-    // The aborted livet.se requests show up as failed-resource errors.
-    if (message.type() === 'error' && !message.text().includes('Failed to load resource')) {
-      errors.push(message.text());
-    }
-  });
-  await page.goto('/index.html');
-  await page.waitForSelector('#sketch_holder canvas');
-  return errors;
-}
-
-// The first click only removes the splash screen, which then adds the starting graphs.
-async function start_from_splash(page) {
-  await page.locator('#sketch_holder canvas').click();
-  await expect.poll(() => page.evaluate(() => bode_graphs.length)).toBe(4);
-}
+test.beforeEach(async ({ page }) => block_production(page));
 
 test('loads without errors and adds the starting graphs after the splash click', async ({ page }) => {
   const errors = await open_app(page);
