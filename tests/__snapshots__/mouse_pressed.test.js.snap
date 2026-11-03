@@ -1,0 +1,965 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`mousePressed in a quiz exact arguments of the quiz callbacks 1`] = `
+"800,20: ret=false [{"name":"quiz_clicked_pole_zero","args":[[0,-2.95833,1.16667,""]]}] clicked=[-1,-1,-1,"",0] initial=[0,0]
+850,20: ret=false [{"name":"quiz_clicked_pole_zero","args":[[0,-0.875,1.16667,""]]}] clicked=[-1,-1,-1,"",0] initial=[0,0]
+50,60: ret=false [{"name":"quiz_clicked_bode_mag_yaxis","args":[[202.095]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+100,60: ret=false [{"name":"quiz_clicked_bode_mag","args":[[0,0.0293377,202.095,""]]}] clicked=[-1,0,-1,"",-1] initial=[100,60]
+150,60: ret=false [{"name":"quiz_clicked_bode_mag","args":[[-1,0.157681,202.095,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+200,60: ret=false [{"name":"quiz_clicked_bode_mag","args":[[-1,0.847487,202.095,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+250,60: ret=false [{"name":"quiz_clicked_bode_mag","args":[[-1,4.55498,202.095,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+300,60: ret=false [{"name":"quiz_clicked_bode_mag","args":[[-1,24.4816,202.095,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+350,60: ret=false [{"name":"quiz_clicked_bode_mag","args":[[-1,131.581,202.095,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+400,60: ret=false [{"name":"quiz_clicked_bode_mag","args":[[-1,707.208,202.095,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+550,60: ret=false [{"name":"quiz_clicked_time_response","args":[[-1,1.49693,88.4259,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+600,60: ret=false [{"name":"quiz_clicked_time_response","args":[[0,3.24978,88.4259,""]]}] clicked=[0,-1,-1,"",-1] initial=[600,60]
+650,60: ret=false [{"name":"quiz_clicked_time_response","args":[[0,5.00263,88.4259,""]]}] clicked=[0,-1,-1,"",-1] initial=[650,60]
+700,60: ret=false [{"name":"quiz_clicked_time_response","args":[[0,6.75548,88.4259,""]]}] clicked=[0,-1,-1,"",-1] initial=[700,60]
+750,60: ret=false [{"name":"quiz_clicked_time_response","args":[[1,8.50833,88.4259,"T_3"]]}] clicked=[1,-1,-1,"T_3",-1] initial=[750,60]
+800,60: ret=false [{"name":"quiz_clicked_pole_zero","args":[[0,-2.95833,-0.5,""]]}] clicked=[-1,-1,-1,"",0] initial=[0,0]
+850,60: ret=false [{"name":"quiz_clicked_pole_zero","args":[[0,-0.875,-0.5,""]]}] clicked=[-1,-1,-1,"",0] initial=[0,0]
+50,100: ret=false [{"name":"quiz_clicked_bode_mag_yaxis","args":[[23.9679]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+100,100: ret=false [{"name":"quiz_clicked_bode_mag","args":[[0,0.0293377,23.9679,""]]}] clicked=[-1,0,-1,"",-1] initial=[100,100]
+150,100: ret=false [{"name":"quiz_clicked_bode_mag","args":[[0,0.157681,23.9679,""]]}] clicked=[-1,0,-1,"",-1] initial=[150,100]
+200,100: ret=false [{"name":"quiz_clicked_bode_mag","args":[[0,0.847487,23.9679,""]]}] clicked=[-1,0,-1,"",-1] initial=[200,100]
+250,100: ret=false [{"name":"quiz_clicked_bode_mag","args":[[0,4.55498,23.9679,""]]}] clicked=[-1,0,-1,"",-1] initial=[250,100]
+300,100: ret=false [{"name":"quiz_clicked_bode_mag","args":[[-1,24.4816,23.9679,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+350,100: ret=false [{"name":"quiz_clicked_bode_mag","args":[[-1,131.581,23.9679,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+400,100: ret=false [{"name":"quiz_clicked_bode_mag","args":[[-1,707.208,23.9679,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+550,100: ret=false [{"name":"quiz_clicked_time_response","args":[[-1,1.49693,72.9938,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+600,100: ret=false [{"name":"quiz_clicked_time_response","args":[[0,3.24978,72.9938,""]]}] clicked=[0,-1,-1,"",-1] initial=[600,100]
+650,100: ret=false [{"name":"quiz_clicked_time_response","args":[[1,5.00263,72.9938,"T_3"]]}] clicked=[1,-1,-1,"T_3",-1] initial=[650,100]
+700,100: ret=false [{"name":"quiz_clicked_time_response","args":[[2,6.75548,72.9938,"T_7"]]}] clicked=[2,-1,-1,"T_7",-1] initial=[700,100]
+750,100: ret=false [{"name":"quiz_clicked_time_response","args":[[3,8.50833,72.9938,""]]}] clicked=[3,-1,-1,"",-1] initial=[750,100]
+50,140: ret=false [{"name":"quiz_clicked_bode_mag_yaxis","args":[[2.84252]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+100,140: ret=false [{"name":"quiz_clicked_bode_mag","args":[[1,0.0293377,2.84252,"T_3"]]}] clicked=[-1,1,-1,"T_3",-1] initial=[100,140]
+150,140: ret=false [{"name":"quiz_clicked_bode_mag","args":[[0,0.157681,2.84252,""]]}] clicked=[-1,0,-1,"",-1] initial=[150,140]
+200,140: ret=false [{"name":"quiz_clicked_bode_mag","args":[[0,0.847487,2.84252,""]]}] clicked=[-1,0,-1,"",-1] initial=[200,140]
+250,140: ret=false [{"name":"quiz_clicked_bode_mag","args":[[0,4.55498,2.84252,""]]}] clicked=[-1,0,-1,"",-1] initial=[250,140]
+300,140: ret=false [{"name":"quiz_clicked_bode_mag","args":[[0,24.4816,2.84252,""]]}] clicked=[-1,0,-1,"",-1] initial=[300,140]
+350,140: ret=false [{"name":"quiz_clicked_bode_mag","args":[[0,131.581,2.84252,""]]}] clicked=[-1,0,-1,"",-1] initial=[350,140]
+400,140: ret=false [{"name":"quiz_clicked_bode_mag","args":[[-1,707.208,2.84252,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+550,140: ret=false [{"name":"quiz_clicked_time_response","args":[[0,1.49693,57.5617,""]]}] clicked=[0,-1,-1,"",-1] initial=[550,140]
+600,140: ret=false [{"name":"quiz_clicked_time_response","args":[[1,3.24978,57.5617,"T_3"]]}] clicked=[1,-1,-1,"T_3",-1] initial=[600,140]
+650,140: ret=false [{"name":"quiz_clicked_time_response","args":[[2,5.00263,57.5617,"T_7"]]}] clicked=[2,-1,-1,"T_7",-1] initial=[650,140]
+700,140: ret=false [{"name":"quiz_clicked_time_response","args":[[4,6.75548,57.5617,""]]}] clicked=[3,-1,-1,"",-1] initial=[700,140]
+750,140: ret=false [{"name":"quiz_clicked_time_response","args":[[4,8.50833,57.5617,""]]}] clicked=[3,-1,-1,"",-1] initial=[750,140]
+800,140: ret=false [{"name":"quiz_clicked_pole_zero","args":[[1,-2.95833,1.16667,"T_2"]]}] clicked=[-1,-1,-1,"T_2",1] initial=[0,0]
+850,140: ret=false [{"name":"quiz_clicked_pole_zero","args":[[1,-0.875,1.16667,"T_3"]]}] clicked=[-1,-1,-1,"T_3",1] initial=[0,0]
+50,180: ret=false [{"name":"quiz_clicked_bode_mag_yaxis","args":[[0.337115]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+100,180: ret=false [{"name":"quiz_clicked_bode_mag","args":[[2,0.0293377,0.337115,"T_7"]]}] clicked=[-1,2,-1,"T_7",-1] initial=[100,180]
+150,180: ret=false [{"name":"quiz_clicked_bode_mag","args":[[2,0.157681,0.337115,"T_7"]]}] clicked=[-1,2,-1,"T_7",-1] initial=[150,180]
+200,180: ret=false [{"name":"quiz_clicked_bode_mag","args":[[1,0.847487,0.337115,"T_3"]]}] clicked=[-1,1,-1,"T_3",-1] initial=[200,180]
+250,180: ret=false [{"name":"quiz_clicked_bode_mag","args":[[1,4.55498,0.337115,"T_2"]]}] clicked=[-1,1,-1,"T_2",-1] initial=[250,180]
+300,180: ret=false [{"name":"quiz_clicked_bode_mag","args":[[0,24.4816,0.337115,""]]}] clicked=[-1,0,-1,"",-1] initial=[300,180]
+350,180: ret=false [{"name":"quiz_clicked_bode_mag","args":[[0,131.581,0.337115,""]]}] clicked=[-1,0,-1,"",-1] initial=[350,180]
+400,180: ret=false [{"name":"quiz_clicked_bode_mag","args":[[0,707.208,0.337115,""]]}] clicked=[-1,0,-1,"",-1] initial=[400,180]
+550,180: ret=false [{"name":"quiz_clicked_time_response","args":[[0,1.49693,42.1296,""]]}] clicked=[0,-1,-1,"",-1] initial=[550,180]
+600,180: ret=false [{"name":"quiz_clicked_time_response","args":[[2,3.24978,42.1296,"T_7"]]}] clicked=[2,-1,-1,"T_7",-1] initial=[600,180]
+650,180: ret=false [{"name":"quiz_clicked_time_response","args":[[4,5.00263,42.1296,""]]}] clicked=[3,-1,-1,"",-1] initial=[650,180]
+700,180: ret=false [{"name":"quiz_clicked_time_response","args":[[4,6.75548,42.1296,""]]}] clicked=[3,-1,-1,"",-1] initial=[700,180]
+750,180: ret=false [{"name":"quiz_clicked_time_response","args":[[4,8.50833,42.1296,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+800,180: ret=false [{"name":"quiz_clicked_pole_zero","args":[[1,-2.95833,-0.5,"T_2"]]}] clicked=[-1,-1,-1,"T_2",1] initial=[0,0]
+850,180: ret=false [{"name":"quiz_clicked_pole_zero","args":[[1,-0.875,-0.5,"T_3"]]}] clicked=[-1,-1,-1,"T_3",1] initial=[0,0]
+50,220: ret=false [{"name":"quiz_clicked_bode_mag_yaxis","args":[[0.0399808]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+100,220: ret=false [{"name":"quiz_clicked_bode_mag","args":[[4,0.0293377,0.0399808,"T_i"]]}] clicked=[-1,3,-1,"T_i",-1] initial=[100,220]
+150,220: ret=false [{"name":"quiz_clicked_bode_mag","args":[[3,0.157681,0.0399808,"T_i"]]}] clicked=[-1,3,-1,"T_i",-1] initial=[150,220]
+200,220: ret=false [{"name":"quiz_clicked_bode_mag","args":[[3,0.847487,0.0399808,"T_i"]]}] clicked=[-1,3,-1,"T_i",-1] initial=[200,220]
+250,220: ret=false [{"name":"quiz_clicked_bode_mag","args":[[2,4.55498,0.0399808,"T_8"]]}] clicked=[-1,2,-1,"T_8",-1] initial=[250,220]
+300,220: ret=false [{"name":"quiz_clicked_bode_mag","args":[[1,24.4816,0.0399808,"T_2"]]}] clicked=[-1,1,-1,"T_2",-1] initial=[300,220]
+350,220: ret=false [{"name":"quiz_clicked_bode_mag","args":[[1,131.581,0.0399808,"T_2"]]}] clicked=[-1,1,-1,"T_2",-1] initial=[350,220]
+400,220: ret=false [{"name":"quiz_clicked_bode_mag","args":[[0,707.208,0.0399808,""]]}] clicked=[-1,0,-1,"",-1] initial=[400,220]
+550,220: ret=false [{"name":"quiz_clicked_time_response","args":[[2,1.49693,26.6975,"T_6"]]}] clicked=[2,-1,-1,"T_6",-1] initial=[550,220]
+600,220: ret=false [{"name":"quiz_clicked_time_response","args":[[4,3.24978,26.6975,""]]}] clicked=[3,-1,-1,"",-1] initial=[600,220]
+650,220: ret=false [{"name":"quiz_clicked_time_response","args":[[4,5.00263,26.6975,""]]}] clicked=[3,-1,-1,"",-1] initial=[650,220]
+700,220: ret=false [{"name":"quiz_clicked_time_response","args":[[-1,6.75548,26.6975,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+750,220: ret=false [{"name":"quiz_clicked_time_response","args":[[-1,8.50833,26.6975,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+50,260: ret=false [{"name":"quiz_clicked_bode_mag_yaxis","args":[[0.00474161]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+100,260: ret=false [{"name":"quiz_clicked_bode_mag","args":[[4,0.0293377,0.00474161,"T_i"]]}] clicked=[-1,3,-1,"T_i",-1] initial=[100,260]
+150,260: ret=false [{"name":"quiz_clicked_bode_mag","args":[[4,0.157681,0.00474161,"T_i"]]}] clicked=[-1,3,-1,"T_i",-1] initial=[150,260]
+200,260: ret=false [{"name":"quiz_clicked_bode_mag","args":[[4,0.847487,0.00474161,"T_i"]]}] clicked=[-1,3,-1,"T_i",-1] initial=[200,260]
+250,260: ret=false [{"name":"quiz_clicked_bode_mag","args":[[4,4.55498,0.00474161,"T_d"]]}] clicked=[-1,3,-1,"T_d",-1] initial=[250,260]
+300,260: ret=false [{"name":"quiz_clicked_bode_mag","args":[[3,24.4816,0.00474161,"T_d"]]}] clicked=[-1,3,-1,"T_d",-1] initial=[300,260]
+350,260: ret=false [{"name":"quiz_clicked_bode_mag","args":[[2,131.581,0.00474161,"T_8"]]}] clicked=[-1,2,-1,"T_8",-1] initial=[350,260]
+400,260: ret=false [{"name":"quiz_clicked_bode_mag","args":[[2,707.208,0.00474161,"T_8"]]}] clicked=[-1,2,-1,"T_8",-1] initial=[400,260]
+550,260: ret=false [{"name":"quiz_clicked_time_response","args":[[4,1.49693,11.2654,""]]}] clicked=[3,-1,-1,"",-1] initial=[550,260]
+600,260: ret=false [{"name":"quiz_clicked_time_response","args":[[4,3.24978,11.2654,""]]}] clicked=[3,-1,-1,"",-1] initial=[600,260]
+650,260: ret=false [{"name":"quiz_clicked_time_response","args":[[-1,5.00263,11.2654,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+700,260: ret=false [{"name":"quiz_clicked_time_response","args":[[-1,6.75548,11.2654,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+750,260: ret=false [{"name":"quiz_clicked_time_response","args":[[-1,8.50833,11.2654,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+800,260: ret=false [{"name":"quiz_clicked_pole_zero","args":[[2,-2.95833,1.16667,"T_8"]]}] clicked=[-1,-1,-1,"T_8",2] initial=[0,0]
+850,260: ret=false [{"name":"quiz_clicked_pole_zero","args":[[2,-0.875,1.16667,"T_6"]]}] clicked=[-1,-1,-1,"T_6",2] initial=[0,0]
+100,300: ret=false [{"name":"quiz_clicked_bode_mag_xaxis","args":[[0.0293377]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+150,300: ret=false [{"name":"quiz_clicked_bode_mag_xaxis","args":[[0.157681]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+200,300: ret=false [{"name":"quiz_clicked_bode_mag_xaxis","args":[[0.847487]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+250,300: ret=false [{"name":"quiz_clicked_bode_mag_xaxis","args":[[4.55498]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+300,300: ret=false [{"name":"quiz_clicked_bode_mag_xaxis","args":[[24.4816]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+350,300: ret=false [{"name":"quiz_clicked_bode_mag_xaxis","args":[[131.581]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+400,300: ret=false [{"name":"quiz_clicked_bode_mag_xaxis","args":[[707.208]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+550,300: ret=false [{"name":"quiz_clicked_time_response_xaxis","args":[[1.49693]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+600,300: ret=false [{"name":"quiz_clicked_time_response_xaxis","args":[[3.24978]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+650,300: ret=false [{"name":"quiz_clicked_time_response_xaxis","args":[[5.00263]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+700,300: ret=false [{"name":"quiz_clicked_time_response_xaxis","args":[[6.75548]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+750,300: ret=false [{"name":"quiz_clicked_time_response_xaxis","args":[[8.50833]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+800,300: ret=false [{"name":"quiz_clicked_pole_zero","args":[[2,-2.95833,-0.5,"T_8"]]}] clicked=[-1,-1,-1,"T_8",2] initial=[0,0]
+850,300: ret=false [{"name":"quiz_clicked_pole_zero","args":[[2,-0.875,-0.5,"T_6"]]}] clicked=[-1,-1,-1,"T_6",2] initial=[0,0]
+50,380: ret=false [{"name":"quiz_clicked_bode_phase_yaxis","args":[[-7.5]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+100,380: ret=false [{"name":"quiz_clicked_bode_phase","args":[[0,0.0293377,-7.5,""]]}] clicked=[-1,-1,0,"",-1] initial=[100,380]
+150,380: ret=false [{"name":"quiz_clicked_bode_phase","args":[[0,0.157681,-7.5,""]]}] clicked=[-1,-1,0,"",-1] initial=[150,380]
+200,380: ret=false [{"name":"quiz_clicked_bode_phase","args":[[-1,0.847487,-7.5,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+250,380: ret=false [{"name":"quiz_clicked_bode_phase","args":[[-1,4.55498,-7.5,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+300,380: ret=false [{"name":"quiz_clicked_bode_phase","args":[[-1,24.4816,-7.5,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+350,380: ret=false [{"name":"quiz_clicked_bode_phase","args":[[-1,131.581,-7.5,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+400,380: ret=false [{"name":"quiz_clicked_bode_phase","args":[[-1,707.208,-7.5,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+550,380: ret=false [{"name":"quiz_clicked_nyquist","args":[[1.15375,-232.609]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+600,380: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.981228,-249.1]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+650,380: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.916667,-270.033]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+700,380: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.981604,-290.958]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+750,380: ret=false [{"name":"quiz_clicked_nyquist","args":[[1.15439,-307.432]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+800,380: ret=false [{"name":"quiz_clicked_pole_zero","args":[[3,-2.95833,1.16667,"T_d"]]}] clicked=[-1,-1,-1,"T_d",3] initial=[0,0]
+850,380: ret=false [{"name":"quiz_clicked_pole_zero","args":[[3,-0.875,1.16667,"T_i"]]}] clicked=[-1,-1,-1,"T_i",3] initial=[0,0]
+50,420: ret=false [{"name":"quiz_clicked_bode_phase_yaxis","args":[[-35.2778]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+100,420: ret=false [{"name":"quiz_clicked_bode_phase","args":[[1,0.0293377,-35.2778,"T_3"]]}] clicked=[-1,-1,1,"T_3",-1] initial=[100,420]
+150,420: ret=false [{"name":"quiz_clicked_bode_phase","args":[[0,0.157681,-35.2778,""]]}] clicked=[-1,-1,0,"",-1] initial=[150,420]
+200,420: ret=false [{"name":"quiz_clicked_bode_phase","args":[[0,0.847487,-35.2778,""]]}] clicked=[-1,-1,0,"",-1] initial=[200,420]
+250,420: ret=false [{"name":"quiz_clicked_bode_phase","args":[[0,4.55498,-35.2778,""]]}] clicked=[-1,-1,0,"",-1] initial=[250,420]
+300,420: ret=false [{"name":"quiz_clicked_bode_phase","args":[[0,24.4816,-35.2778,""]]}] clicked=[-1,-1,0,"",-1] initial=[300,420]
+350,420: ret=false [{"name":"quiz_clicked_bode_phase","args":[[-1,131.581,-35.2778,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+400,420: ret=false [{"name":"quiz_clicked_bode_phase","args":[[-1,707.208,-35.2778,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+550,420: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.92766,-220.953]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+600,420: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.701587,-240.071]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+650,420: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.608025,-270.05]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+700,420: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.702113,-300.004]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+750,420: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.928455,-319.09]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+800,420: ret=false [{"name":"quiz_clicked_pole_zero","args":[[3,-2.95833,-0.5,"T_d"]]}] clicked=[-1,-1,-1,"T_d",3] initial=[0,0]
+850,420: ret=false [{"name":"quiz_clicked_pole_zero","args":[[3,-0.875,-0.5,"T_i"]]}] clicked=[-1,-1,-1,"T_i",3] initial=[0,0]
+50,460: ret=false [{"name":"quiz_clicked_bode_phase_yaxis","args":[[-63.0556]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+100,460: ret=false [{"name":"quiz_clicked_bode_phase","args":[[2,0.0293377,-63.0556,"T_7"]]}] clicked=[-1,-1,2,"T_7",-1] initial=[100,460]
+150,460: ret=false [{"name":"quiz_clicked_bode_phase","args":[[1,0.157681,-63.0556,"T_3"]]}] clicked=[-1,-1,1,"T_3",-1] initial=[150,460]
+200,460: ret=false [{"name":"quiz_clicked_bode_phase","args":[[0,0.847487,-63.0556,""]]}] clicked=[-1,-1,0,"",-1] initial=[200,460]
+250,460: ret=false [{"name":"quiz_clicked_bode_phase","args":[[0,4.55498,-63.0556,""]]}] clicked=[-1,-1,0,"",-1] initial=[250,460]
+300,460: ret=false [{"name":"quiz_clicked_bode_phase","args":[[0,24.4816,-63.0556,""]]}] clicked=[-1,-1,0,"",-1] initial=[300,460]
+350,460: ret=false [{"name":"quiz_clicked_bode_phase","args":[[0,131.581,-63.0556,""]]}] clicked=[-1,-1,0,"",-1] initial=[350,460]
+400,460: ret=false [{"name":"quiz_clicked_bode_phase","args":[[0,707.208,-63.0556,""]]}] clicked=[-1,-1,0,"",-1] initial=[400,460]
+550,460: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.761898,-203.138]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+600,460: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.460609,-220.539]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+650,460: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.299383,-270.101]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+700,460: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.461409,-319.545]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+750,460: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.762866,-336.893]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+50,500: ret=false [{"name":"quiz_clicked_bode_phase_yaxis","args":[[-90.8333]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+100,500: ret=false [{"name":"quiz_clicked_bode_phase","args":[[4,0.0293377,-90.8333,"T_i"]]}] clicked=[-1,-1,3,"T_i",-1] initial=[100,500]
+150,500: ret=false [{"name":"quiz_clicked_bode_phase","args":[[2,0.157681,-90.8333,"T_7"]]}] clicked=[-1,-1,2,"T_7",-1] initial=[150,500]
+200,500: ret=false [{"name":"quiz_clicked_bode_phase","args":[[1,0.847487,-90.8333,"T_3"]]}] clicked=[-1,-1,1,"T_3",-1] initial=[200,500]
+250,500: ret=false [{"name":"quiz_clicked_bode_phase","args":[[1,4.55498,-90.8333,"T_2"]]}] clicked=[-1,-1,1,"T_2",-1] initial=[250,500]
+300,500: ret=false [{"name":"quiz_clicked_bode_phase","args":[[1,24.4816,-90.8333,"T_2"]]}] clicked=[-1,-1,1,"T_2",-1] initial=[300,500]
+350,500: ret=false [{"name":"quiz_clicked_bode_phase","args":[[0,131.581,-90.8333,""]]}] clicked=[-1,-1,0,"",-1] initial=[350,500]
+400,500: ret=false [{"name":"quiz_clicked_bode_phase","args":[[0,707.208,-90.8333,""]]}] clicked=[-1,-1,0,"",-1] initial=[400,500]
+550,500: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.700675,-179.243]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+600,500: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.350166,-178.485]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+650,500: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.00927418,-86.7495]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+700,500: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.351218,-1.51068]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+750,500: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.701726,-0.756038]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+50,540: ret=false [{"name":"quiz_clicked_bode_phase_yaxis","args":[[-118.611]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+100,540: ret=false [{"name":"quiz_clicked_bode_phase","args":[[4,0.0293377,-118.611,"T_i"]]}] clicked=[-1,-1,3,"T_i",-1] initial=[100,540]
+150,540: ret=false [{"name":"quiz_clicked_bode_phase","args":[[4,0.157681,-118.611,"T_i"]]}] clicked=[-1,-1,3,"T_i",-1] initial=[150,540]
+200,540: ret=false [{"name":"quiz_clicked_bode_phase","args":[[3,0.847487,-118.611,"T_i"]]}] clicked=[-1,-1,3,"T_i",-1] initial=[200,540]
+250,540: ret=false [{"name":"quiz_clicked_bode_phase","args":[[3,4.55498,-118.611,"T_d"]]}] clicked=[-1,-1,3,"T_d",-1] initial=[250,540]
+300,540: ret=false [{"name":"quiz_clicked_bode_phase","args":[[2,24.4816,-118.611,"T_8"]]}] clicked=[-1,-1,2,"T_8",-1] initial=[300,540]
+350,540: ret=false [{"name":"quiz_clicked_bode_phase","args":[[2,131.581,-118.611,"T_8"]]}] clicked=[-1,-1,2,"T_8",-1] initial=[350,540]
+400,540: ret=false [{"name":"quiz_clicked_bode_phase","args":[[2,707.208,-118.611,"T_8"]]}] clicked=[-1,-1,2,"T_8",-1] initial=[400,540]
+550,540: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.769364,-155.594]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+600,540: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.472855,-137.755]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+650,540: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.317902,-89.9052]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+700,540: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.473634,-42.1594]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+750,540: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.770322,-24.3737]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+50,580: ret=false [{"name":"quiz_clicked_bode_phase_yaxis","args":[[-146.389]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+100,580: ret=false [{"name":"quiz_clicked_bode_phase","args":[[-1,0.0293377,-146.389,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+150,580: ret=false [{"name":"quiz_clicked_bode_phase","args":[[4,0.157681,-146.389,"T_i"]]}] clicked=[-1,-1,3,"T_i",-1] initial=[150,580]
+200,580: ret=false [{"name":"quiz_clicked_bode_phase","args":[[4,0.847487,-146.389,"T_i"]]}] clicked=[-1,-1,3,"T_i",-1] initial=[200,580]
+250,580: ret=false [{"name":"quiz_clicked_bode_phase","args":[[4,4.55498,-146.389,"T_d"]]}] clicked=[-1,-1,3,"T_d",-1] initial=[250,580]
+300,580: ret=false [{"name":"quiz_clicked_bode_phase","args":[[4,24.4816,-146.389,"T_d"]]}] clicked=[-1,-1,3,"T_d",-1] initial=[300,580]
+350,580: ret=false [{"name":"quiz_clicked_bode_phase","args":[[4,131.581,-146.389,"T_d"]]}] clicked=[-1,-1,3,"T_d",-1] initial=[350,580]
+400,580: ret=false [{"name":"quiz_clicked_bode_phase","args":[[3,707.208,-146.389,"T_d"]]}] clicked=[-1,-1,3,"T_d",-1] initial=[400,580]
+550,580: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.939902,-138.194]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+600,580: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.717696,-119.192]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+650,580: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.626543,-89.9519]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+700,580: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.718209,-60.7351]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+750,580: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.940686,-41.7629]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+50,620: ret=false [{"name":"quiz_clicked_bode_phase_yaxis","args":[[-174.167]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+100,620: ret=false [{"name":"quiz_clicked_bode_phase","args":[[-1,0.0293377,-174.167,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+150,620: ret=false [{"name":"quiz_clicked_bode_phase","args":[[-1,0.157681,-174.167,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+200,620: ret=false [{"name":"quiz_clicked_bode_phase","args":[[4,0.847487,-174.167,""]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+250,620: ret=false [{"name":"quiz_clicked_bode_phase","args":[[4,4.55498,-174.167,"T_d"]]}] clicked=[-1,-1,3,"T_d",-1] initial=[250,620]
+300,620: ret=false [{"name":"quiz_clicked_bode_phase","args":[[4,24.4816,-174.167,"T_d"]]}] clicked=[-1,-1,3,"T_d",-1] initial=[300,620]
+350,620: ret=false [{"name":"quiz_clicked_bode_phase","args":[[4,131.581,-174.167,"T_d"]]}] clicked=[-1,-1,3,"T_d",-1] initial=[350,620]
+400,620: ret=false [{"name":"quiz_clicked_bode_phase","args":[[4,707.208,-174.167,"T_d"]]}] clicked=[-1,-1,3,"T_d",-1] initial=[400,620]
+550,620: ret=false [{"name":"quiz_clicked_nyquist","args":[[1.16852,-126.839]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+600,620: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.99855,-110.521]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+650,620: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.935185,-89.9678]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+700,620: ret=false [{"name":"quiz_clicked_nyquist","args":[[0.998919,-69.4224]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+750,620: ret=false [{"name":"quiz_clicked_nyquist","args":[[1.16915,-53.1193]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+100,660: ret=false [{"name":"quiz_clicked_bode_phase_xaxis","args":[[0.0293377]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+150,660: ret=false [{"name":"quiz_clicked_bode_phase_xaxis","args":[[0.157681]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+200,660: ret=false [{"name":"quiz_clicked_bode_phase_xaxis","args":[[0.847487]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+250,660: ret=false [{"name":"quiz_clicked_bode_phase_xaxis","args":[[4.55498]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+300,660: ret=false [{"name":"quiz_clicked_bode_phase_xaxis","args":[[24.4816]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+350,660: ret=false [{"name":"quiz_clicked_bode_phase_xaxis","args":[[131.581]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+400,660: ret=false [{"name":"quiz_clicked_bode_phase_xaxis","args":[[707.208]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]"
+`;
+
+exports[`mousePressed in a quiz outcome of a press at each point of the canvas 1`] = `
+" -20 .......................................
+   0 .......................................
+  20 ................................AAAA...
+  40 .BBCDDDDDDDDDDDDD....EEEFFFFFFFFAAAA...
+  60 .BBCCCDDDDDDDDDDD....EEEFFFFFGGGAAAA...
+  80 .BBCCCCCCDDDDDDDD....EEFFFFGGGHHAAAA...
+ 100 .BBCCCCCCCCDDDDDD....EEFFFGGHHII.......
+ 120 .BBCCCCCCCCCCCDDD....EFFFGGHIIII.......
+ 140 .BBJJJCCCCCCCCCCD....EFFGHHIIIIIKKLL...
+ 160 .BBMMJJJCCCCCCCCC....EFGHHIIIIIIKKLL...
+ 180 .BBNMMMMJOOCCCCCC....FFGHIIIIIEEKKLL...
+ 200 .BBNNNNMPPOOOCCCC....FGHIIIIEEEEKKLL...
+ 220 .BBNNNNNNPQQOOOOC....FRIIIIEEEEE.......
+ 240 .BBNNNNNNSSSQQQOO....FIIIIEEEEEE.......
+ 260 .BBDNNNNNSSSSSQQQ....RIIIEEEEEEETUUV...
+ 280 .BBDDDNNNSSSSSSSS....IIIEEEEEEEETUUV...
+ 300 ...WWWWWWWWWWWWWW....XXXXXXXXXXXTUUV...
+ 320 ...WWWWWWWWWWWWWW....XXXXXXXXXXXTUUV...
+ 340 .......................................
+ 360 .......................................
+ 380 .YYZZZZ[[[[[[[[[[....\\\\\\\\\\\\\\\\\\\\\\]]^^...
+ 400 .YY_ZZZZZ[[[[[[[[....\\\\\\\\\\\\\\\\\\\\\\]]^^...
+ 420 .YY\`_ZZZZZZZZZ[[[....\\\\\\\\\\\\\\\\\\\\\\]]^^...
+ 440 .YYa__ZZZZZZZZZZZ....\\\\\\\\\\\\\\\\\\\\\\]]^^...
+ 460 .YYa\`__ZZZZZZZZZZ....\\\\\\\\\\\\\\\\\\\\\\.......
+ 480 .YYaa\`\`__ZZZZZZZZ....\\\\\\\\\\\\\\\\\\\\\\.......
+ 500 .YYaaa\`\`_bbbbZZZZ....\\\\\\\\\\\\\\\\\\\\\\.......
+ 520 .YYaaaaaccddbbbbb....\\\\\\\\\\\\\\\\\\\\\\.......
+ 540 .YY[aaaaaeedddddd....\\\\\\\\\\\\\\\\\\\\\\.......
+ 560 .YY[[aaaaeeeeeeee....\\\\\\\\\\\\\\\\\\\\\\.......
+ 580 .YY[[[aaaeeeeeeee....\\\\\\\\\\\\\\\\\\\\\\.......
+ 600 .YY[[[[[aeeeeeeee....\\\\\\\\\\\\\\\\\\\\\\.......
+ 620 .YY[[[[[[[eeeeeee....\\\\\\\\\\\\\\\\\\\\\\.......
+ 640 ...ffffffffffffff......................
+ 660 ...ffffffffffffff......................
+ 680 .......................................
+ 700 .......................................
+ 720 .......................................
+
+. {"ret":true,"prevented":false,"clicked":[-1,-1,-1,"",-1],"fast":false,"called":[]}
+A {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"",0],"fast":false,"called":["quiz_clicked_pole_zero","add_event:click_pole_zero_map=0,clicked_on_time_variable="]}
+B {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"",-1],"fast":false,"called":["quiz_clicked_bode_mag_yaxis"]}
+C {"ret":false,"prevented":true,"clicked":[-1,0,-1,"",-1],"fast":false,"called":["quiz_clicked_bode_mag","add_event:click_bode_magnitude,clicked_on_time_variable="]}
+D {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"",-1],"fast":false,"called":["quiz_clicked_bode_mag","add_event:click_bode_magnitude,clicked_on_time_variable="]}
+E {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"",-1],"fast":false,"called":["quiz_clicked_time_response","add_event:click_step_response,clicked_on_time_variable="]}
+F {"ret":false,"prevented":true,"clicked":[0,-1,-1,"",-1],"fast":false,"called":["quiz_clicked_time_response","add_event:click_step_response,clicked_on_time_variable="]}
+G {"ret":false,"prevented":true,"clicked":[1,-1,-1,"T_3",-1],"fast":false,"called":["quiz_clicked_time_response","add_event:click_step_response,clicked_on_time_variable=T_3"]}
+H {"ret":false,"prevented":true,"clicked":[2,-1,-1,"T_7",-1],"fast":false,"called":["quiz_clicked_time_response","add_event:click_step_response,clicked_on_time_variable=T_7"]}
+I {"ret":false,"prevented":true,"clicked":[3,-1,-1,"",-1],"fast":false,"called":["quiz_clicked_time_response","add_event:click_step_response,clicked_on_time_variable="]}
+J {"ret":false,"prevented":true,"clicked":[-1,1,-1,"T_3",-1],"fast":false,"called":["quiz_clicked_bode_mag","add_event:click_bode_magnitude,clicked_on_time_variable=T_3"]}
+K {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"T_2",1],"fast":false,"called":["quiz_clicked_pole_zero","add_event:click_pole_zero_map=1,clicked_on_time_variable=T_2"]}
+L {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"T_3",1],"fast":false,"called":["quiz_clicked_pole_zero","add_event:click_pole_zero_map=1,clicked_on_time_variable=T_3"]}
+M {"ret":false,"prevented":true,"clicked":[-1,2,-1,"T_7",-1],"fast":false,"called":["quiz_clicked_bode_mag","add_event:click_bode_magnitude,clicked_on_time_variable=T_7"]}
+N {"ret":false,"prevented":true,"clicked":[-1,3,-1,"T_i",-1],"fast":false,"called":["quiz_clicked_bode_mag","add_event:click_bode_magnitude,clicked_on_time_variable=T_i"]}
+O {"ret":false,"prevented":true,"clicked":[-1,1,-1,"T_2",-1],"fast":false,"called":["quiz_clicked_bode_mag","add_event:click_bode_magnitude,clicked_on_time_variable=T_2"]}
+P {"ret":false,"prevented":true,"clicked":[-1,2,-1,"T_6",-1],"fast":false,"called":["quiz_clicked_bode_mag","add_event:click_bode_magnitude,clicked_on_time_variable=T_6"]}
+Q {"ret":false,"prevented":true,"clicked":[-1,2,-1,"T_8",-1],"fast":false,"called":["quiz_clicked_bode_mag","add_event:click_bode_magnitude,clicked_on_time_variable=T_8"]}
+R {"ret":false,"prevented":true,"clicked":[2,-1,-1,"T_6",-1],"fast":false,"called":["quiz_clicked_time_response","add_event:click_step_response,clicked_on_time_variable=T_6"]}
+S {"ret":false,"prevented":true,"clicked":[-1,3,-1,"T_d",-1],"fast":false,"called":["quiz_clicked_bode_mag","add_event:click_bode_magnitude,clicked_on_time_variable=T_d"]}
+T {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"T_8",2],"fast":false,"called":["quiz_clicked_pole_zero","add_event:click_pole_zero_map=2,clicked_on_time_variable=T_8"]}
+U {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"T_6",2],"fast":false,"called":["quiz_clicked_pole_zero","add_event:click_pole_zero_map=2,clicked_on_time_variable=T_6"]}
+V {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"T_7",2],"fast":false,"called":["quiz_clicked_pole_zero","add_event:click_pole_zero_map=2,clicked_on_time_variable=T_7"]}
+W {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"",-1],"fast":false,"called":["quiz_clicked_bode_mag_xaxis"]}
+X {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"",-1],"fast":false,"called":["quiz_clicked_time_response_xaxis"]}
+Y {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"",-1],"fast":false,"called":["quiz_clicked_bode_phase_yaxis"]}
+Z {"ret":false,"prevented":true,"clicked":[-1,-1,0,"",-1],"fast":false,"called":["quiz_clicked_bode_phase","add_event:click_bode_phase,clicked_on_time_variable="]}
+[ {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"",-1],"fast":false,"called":["quiz_clicked_bode_phase","add_event:click_bode_phase,clicked_on_time_variable="]}
+\\ {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"",-1],"fast":false,"called":["quiz_clicked_nyquist","add_event:click_nyquist"]}
+] {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"T_d",3],"fast":false,"called":["quiz_clicked_pole_zero","add_event:click_pole_zero_map=3,clicked_on_time_variable=T_d"]}
+^ {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"T_i",3],"fast":false,"called":["quiz_clicked_pole_zero","add_event:click_pole_zero_map=3,clicked_on_time_variable=T_i"]}
+_ {"ret":false,"prevented":true,"clicked":[-1,-1,1,"T_3",-1],"fast":false,"called":["quiz_clicked_bode_phase","add_event:click_bode_phase,clicked_on_time_variable=T_3"]}
+\` {"ret":false,"prevented":true,"clicked":[-1,-1,2,"T_7",-1],"fast":false,"called":["quiz_clicked_bode_phase","add_event:click_bode_phase,clicked_on_time_variable=T_7"]}
+a {"ret":false,"prevented":true,"clicked":[-1,-1,3,"T_i",-1],"fast":false,"called":["quiz_clicked_bode_phase","add_event:click_bode_phase,clicked_on_time_variable=T_i"]}
+b {"ret":false,"prevented":true,"clicked":[-1,-1,1,"T_2",-1],"fast":false,"called":["quiz_clicked_bode_phase","add_event:click_bode_phase,clicked_on_time_variable=T_2"]}
+c {"ret":false,"prevented":true,"clicked":[-1,-1,2,"T_6",-1],"fast":false,"called":["quiz_clicked_bode_phase","add_event:click_bode_phase,clicked_on_time_variable=T_6"]}
+d {"ret":false,"prevented":true,"clicked":[-1,-1,2,"T_8",-1],"fast":false,"called":["quiz_clicked_bode_phase","add_event:click_bode_phase,clicked_on_time_variable=T_8"]}
+e {"ret":false,"prevented":true,"clicked":[-1,-1,3,"T_d",-1],"fast":false,"called":["quiz_clicked_bode_phase","add_event:click_bode_phase,clicked_on_time_variable=T_d"]}
+f {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"",-1],"fast":false,"called":["quiz_clicked_bode_phase_xaxis"]}"
+`;
+
+exports[`mousePressed without a quiz exact drag-start values 1`] = `
+"800,20: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",0] initial=[0,0]
+850,20: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",0] initial=[0,0]
+100,60: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,0,-1,"",-1] initial=[100,60]
+150,60: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+200,60: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+250,60: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+300,60: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+350,60: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+400,60: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+550,60: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+600,60: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[0,-1,-1,"",-1] initial=[600,60]
+650,60: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[0,-1,-1,"",-1] initial=[650,60]
+700,60: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[0,-1,-1,"",-1] initial=[700,60]
+750,60: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[1,-1,-1,"T_3",-1] initial=[750,60]
+800,60: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",0] initial=[0,0]
+850,60: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",0] initial=[0,0]
+100,100: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,0,-1,"",-1] initial=[100,100]
+150,100: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,0,-1,"",-1] initial=[150,100]
+200,100: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,0,-1,"",-1] initial=[200,100]
+250,100: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,0,-1,"",-1] initial=[250,100]
+300,100: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+350,100: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+400,100: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+550,100: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+600,100: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[0,-1,-1,"",-1] initial=[600,100]
+650,100: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[1,-1,-1,"T_3",-1] initial=[650,100]
+700,100: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[2,-1,-1,"T_7",-1] initial=[700,100]
+750,100: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[3,-1,-1,"",-1] initial=[750,100]
+100,140: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,1,-1,"T_3",-1] initial=[100,140]
+150,140: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,0,-1,"",-1] initial=[150,140]
+200,140: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,0,-1,"",-1] initial=[200,140]
+250,140: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,0,-1,"",-1] initial=[250,140]
+300,140: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,0,-1,"",-1] initial=[300,140]
+350,140: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,0,-1,"",-1] initial=[350,140]
+400,140: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+550,140: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[0,-1,-1,"",-1] initial=[550,140]
+600,140: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[1,-1,-1,"T_3",-1] initial=[600,140]
+650,140: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[2,-1,-1,"T_7",-1] initial=[650,140]
+700,140: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[3,-1,-1,"",-1] initial=[700,140]
+750,140: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[3,-1,-1,"",-1] initial=[750,140]
+800,140: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"T_2",1] initial=[0,0]
+850,140: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"T_3",1] initial=[0,0]
+100,180: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,2,-1,"T_7",-1] initial=[100,180]
+150,180: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,2,-1,"T_7",-1] initial=[150,180]
+200,180: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,1,-1,"T_3",-1] initial=[200,180]
+250,180: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,1,-1,"T_2",-1] initial=[250,180]
+300,180: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,0,-1,"",-1] initial=[300,180]
+350,180: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,0,-1,"",-1] initial=[350,180]
+400,180: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,0,-1,"",-1] initial=[400,180]
+550,180: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[0,-1,-1,"",-1] initial=[550,180]
+600,180: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[2,-1,-1,"T_7",-1] initial=[600,180]
+650,180: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[3,-1,-1,"",-1] initial=[650,180]
+700,180: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[3,-1,-1,"",-1] initial=[700,180]
+750,180: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+800,180: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"T_2",1] initial=[0,0]
+850,180: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"T_3",1] initial=[0,0]
+100,220: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,3,-1,"T_i",-1] initial=[100,220]
+150,220: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,3,-1,"T_i",-1] initial=[150,220]
+200,220: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,3,-1,"T_i",-1] initial=[200,220]
+250,220: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,2,-1,"T_8",-1] initial=[250,220]
+300,220: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,1,-1,"T_2",-1] initial=[300,220]
+350,220: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,1,-1,"T_2",-1] initial=[350,220]
+400,220: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,0,-1,"",-1] initial=[400,220]
+550,220: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[2,-1,-1,"T_6",-1] initial=[550,220]
+600,220: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[3,-1,-1,"",-1] initial=[600,220]
+650,220: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[3,-1,-1,"",-1] initial=[650,220]
+700,220: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+750,220: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+100,260: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,3,-1,"T_i",-1] initial=[100,260]
+150,260: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,3,-1,"T_i",-1] initial=[150,260]
+200,260: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,3,-1,"T_i",-1] initial=[200,260]
+250,260: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,3,-1,"T_d",-1] initial=[250,260]
+300,260: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,3,-1,"T_d",-1] initial=[300,260]
+350,260: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,2,-1,"T_8",-1] initial=[350,260]
+400,260: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,2,-1,"T_8",-1] initial=[400,260]
+550,260: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[3,-1,-1,"",-1] initial=[550,260]
+600,260: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[3,-1,-1,"",-1] initial=[600,260]
+650,260: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+700,260: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+750,260: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+800,260: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"T_8",2] initial=[0,0]
+850,260: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"T_6",2] initial=[0,0]
+800,300: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"T_8",2] initial=[0,0]
+850,300: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"T_6",2] initial=[0,0]
+100,380: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,0,"",-1] initial=[100,380]
+150,380: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,0,"",-1] initial=[150,380]
+200,380: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+250,380: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+300,380: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+350,380: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+400,380: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+550,380: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+600,380: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+650,380: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+700,380: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+750,380: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+800,380: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"T_d",3] initial=[0,0]
+850,380: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"T_i",3] initial=[0,0]
+100,420: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,1,"T_3",-1] initial=[100,420]
+150,420: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,0,"",-1] initial=[150,420]
+200,420: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,0,"",-1] initial=[200,420]
+250,420: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,0,"",-1] initial=[250,420]
+300,420: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,0,"",-1] initial=[300,420]
+350,420: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+400,420: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+550,420: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+600,420: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+650,420: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+700,420: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+750,420: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+800,420: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"T_d",3] initial=[0,0]
+850,420: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"T_i",3] initial=[0,0]
+100,460: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,2,"T_7",-1] initial=[100,460]
+150,460: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,1,"T_3",-1] initial=[150,460]
+200,460: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,0,"",-1] initial=[200,460]
+250,460: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,0,"",-1] initial=[250,460]
+300,460: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,0,"",-1] initial=[300,460]
+350,460: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,0,"",-1] initial=[350,460]
+400,460: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,0,"",-1] initial=[400,460]
+550,460: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+600,460: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+650,460: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+700,460: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+750,460: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+100,500: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,3,"T_i",-1] initial=[100,500]
+150,500: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,2,"T_7",-1] initial=[150,500]
+200,500: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,1,"T_3",-1] initial=[200,500]
+250,500: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,1,"T_2",-1] initial=[250,500]
+300,500: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,1,"T_2",-1] initial=[300,500]
+350,500: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,0,"",-1] initial=[350,500]
+400,500: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,0,"",-1] initial=[400,500]
+550,500: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+600,500: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+650,500: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+700,500: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+750,500: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+100,540: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,3,"T_i",-1] initial=[100,540]
+150,540: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,3,"T_i",-1] initial=[150,540]
+200,540: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,3,"T_i",-1] initial=[200,540]
+250,540: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,3,"T_d",-1] initial=[250,540]
+300,540: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,2,"T_8",-1] initial=[300,540]
+350,540: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,2,"T_8",-1] initial=[350,540]
+400,540: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,2,"T_8",-1] initial=[400,540]
+550,540: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+600,540: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+650,540: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+700,540: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+750,540: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+100,580: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+150,580: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,3,"T_i",-1] initial=[150,580]
+200,580: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,3,"T_i",-1] initial=[200,580]
+250,580: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,3,"T_d",-1] initial=[250,580]
+300,580: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,3,"T_d",-1] initial=[300,580]
+350,580: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,3,"T_d",-1] initial=[350,580]
+400,580: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,3,"T_d",-1] initial=[400,580]
+550,580: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+600,580: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+650,580: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+700,580: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+750,580: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+100,620: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+150,620: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+200,620: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+250,620: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,3,"T_d",-1] initial=[250,620]
+300,620: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,3,"T_d",-1] initial=[300,620]
+350,620: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,3,"T_d",-1] initial=[350,620]
+400,620: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,3,"T_d",-1] initial=[400,620]
+550,620: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+600,620: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+650,620: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+700,620: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]
+750,620: ret=false [{"name":"mouseDragged","args":[[]]}] clicked=[-1,-1,-1,"",-1] initial=[0,0]"
+`;
+
+exports[`mousePressed without a quiz outcome of a press at each point of the canvas 1`] = `
+" -20 .......................................
+   0 .......................................
+  20 ................................AAAA...
+  40 ...BCCCCCCCCCCCCC....DDDEEEEEEEEAAAA...
+  60 ...BBBCCCCCCCCCCC....DDDEEEEEFFFAAAA...
+  80 ...BBBBBBCCCCCCCC....DDEEEEFFFGGAAAA...
+ 100 ...BBBBBBBBCCCCCC....DDEEEFFGGHH.......
+ 120 ...BBBBBBBBBBBCCC....DEEEFFGHHHH.......
+ 140 ...IIIBBBBBBBBBBC....DEEFGGHHHHHJJKK...
+ 160 ...LLIIIBBBBBBBBB....DEFGGHHHHHHJJKK...
+ 180 ...MLLLLINNBBBBBB....EEFGHHHHHDDJJKK...
+ 200 ...MMMMLOONNNBBBB....EFGHHHHDDDDJJKK...
+ 220 ...MMMMMMOPPNNNNB....EQHHHHDDDDD.......
+ 240 ...MMMMMMRRRPPPNN....EHHHHDDDDDD.......
+ 260 ...CMMMMMRRRRRPPP....QHHHDDDDDDDSTTU...
+ 280 ...CCCMMMRRRRRRRR....HHHDDDDDDDDSTTU...
+ 300 ................................STTU...
+ 320 ................................STTU...
+ 340 .......................................
+ 360 .......................................
+ 380 ...VVVVWWWWWWWWWW....XXXXXXXXXXXYYZZ...
+ 400 ...[VVVVVWWWWWWWW....XXXXXXXXXXXYYZZ...
+ 420 ...\\[VVVVVVVVVWWW....XXXXXXXXXXXYYZZ...
+ 440 ...][[VVVVVVVVVVV....XXXXXXXXXXXYYZZ...
+ 460 ...]\\[[VVVVVVVVVV....XXXXXXXXXXX.......
+ 480 ...]]\\\\[[VVVVVVVV....XXXXXXXXXXX.......
+ 500 ...]]]\\\\[^^^^VVVV....XXXXXXXXXXX.......
+ 520 ...]]]]]__\`\`^^^^^....XXXXXXXXXXX.......
+ 540 ...W]]]]]aa\`\`\`\`\`\`....XXXXXXXXXXX.......
+ 560 ...WW]]]]aaaaaaaa....XXXXXXXXXXX.......
+ 580 ...WWW]]]aaaaaaaa....XXXXXXXXXXX.......
+ 600 ...WWWWW]aaaaaaaa....XXXXXXXXXXX.......
+ 620 ...WWWWWWWaaaaaaa....XXXXXXXXXXX.......
+ 640 .......................................
+ 660 .......................................
+ 680 .......................................
+ 700 .......................................
+ 720 .......................................
+
+. {"ret":true,"prevented":false,"clicked":[-1,-1,-1,"",-1],"fast":false,"called":[]}
+A {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"",0],"fast":false,"called":["add_event:click_pole_zero_map=0,clicked_on_time_variable=","mouseDragged"]}
+B {"ret":false,"prevented":true,"clicked":[-1,0,-1,"",-1],"fast":false,"called":["add_event:click_bode_magnitude,clicked_on_time_variable=","mouseDragged"]}
+C {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"",-1],"fast":false,"called":["add_event:click_bode_magnitude,clicked_on_time_variable=","mouseDragged"]}
+D {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"",-1],"fast":false,"called":["add_event:click_step_response,clicked_on_time_variable=","mouseDragged"]}
+E {"ret":false,"prevented":true,"clicked":[0,-1,-1,"",-1],"fast":false,"called":["add_event:click_step_response,clicked_on_time_variable=","mouseDragged"]}
+F {"ret":false,"prevented":true,"clicked":[1,-1,-1,"T_3",-1],"fast":false,"called":["add_event:click_step_response,clicked_on_time_variable=T_3","mouseDragged"]}
+G {"ret":false,"prevented":true,"clicked":[2,-1,-1,"T_7",-1],"fast":false,"called":["add_event:click_step_response,clicked_on_time_variable=T_7","mouseDragged"]}
+H {"ret":false,"prevented":true,"clicked":[3,-1,-1,"",-1],"fast":false,"called":["add_event:click_step_response,clicked_on_time_variable=","mouseDragged"]}
+I {"ret":false,"prevented":true,"clicked":[-1,1,-1,"T_3",-1],"fast":false,"called":["add_event:click_bode_magnitude,clicked_on_time_variable=T_3","mouseDragged"]}
+J {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"T_2",1],"fast":false,"called":["add_event:click_pole_zero_map=1,clicked_on_time_variable=T_2","mouseDragged"]}
+K {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"T_3",1],"fast":false,"called":["add_event:click_pole_zero_map=1,clicked_on_time_variable=T_3","mouseDragged"]}
+L {"ret":false,"prevented":true,"clicked":[-1,2,-1,"T_7",-1],"fast":false,"called":["add_event:click_bode_magnitude,clicked_on_time_variable=T_7","mouseDragged"]}
+M {"ret":false,"prevented":true,"clicked":[-1,3,-1,"T_i",-1],"fast":false,"called":["add_event:click_bode_magnitude,clicked_on_time_variable=T_i","mouseDragged"]}
+N {"ret":false,"prevented":true,"clicked":[-1,1,-1,"T_2",-1],"fast":false,"called":["add_event:click_bode_magnitude,clicked_on_time_variable=T_2","mouseDragged"]}
+O {"ret":false,"prevented":true,"clicked":[-1,2,-1,"T_6",-1],"fast":false,"called":["add_event:click_bode_magnitude,clicked_on_time_variable=T_6","mouseDragged"]}
+P {"ret":false,"prevented":true,"clicked":[-1,2,-1,"T_8",-1],"fast":false,"called":["add_event:click_bode_magnitude,clicked_on_time_variable=T_8","mouseDragged"]}
+Q {"ret":false,"prevented":true,"clicked":[2,-1,-1,"T_6",-1],"fast":false,"called":["add_event:click_step_response,clicked_on_time_variable=T_6","mouseDragged"]}
+R {"ret":false,"prevented":true,"clicked":[-1,3,-1,"T_d",-1],"fast":false,"called":["add_event:click_bode_magnitude,clicked_on_time_variable=T_d","mouseDragged"]}
+S {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"T_8",2],"fast":false,"called":["add_event:click_pole_zero_map=2,clicked_on_time_variable=T_8","mouseDragged"]}
+T {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"T_6",2],"fast":false,"called":["add_event:click_pole_zero_map=2,clicked_on_time_variable=T_6","mouseDragged"]}
+U {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"T_7",2],"fast":false,"called":["add_event:click_pole_zero_map=2,clicked_on_time_variable=T_7","mouseDragged"]}
+V {"ret":false,"prevented":true,"clicked":[-1,-1,0,"",-1],"fast":false,"called":["add_event:click_bode_phase,clicked_on_time_variable=","mouseDragged"]}
+W {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"",-1],"fast":false,"called":["add_event:click_bode_phase,clicked_on_time_variable=","mouseDragged"]}
+X {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"",-1],"fast":false,"called":["add_event:click_nyquist","mouseDragged"]}
+Y {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"T_d",3],"fast":false,"called":["add_event:click_pole_zero_map=3,clicked_on_time_variable=T_d","mouseDragged"]}
+Z {"ret":false,"prevented":true,"clicked":[-1,-1,-1,"T_i",3],"fast":false,"called":["add_event:click_pole_zero_map=3,clicked_on_time_variable=T_i","mouseDragged"]}
+[ {"ret":false,"prevented":true,"clicked":[-1,-1,1,"T_3",-1],"fast":false,"called":["add_event:click_bode_phase,clicked_on_time_variable=T_3","mouseDragged"]}
+\\ {"ret":false,"prevented":true,"clicked":[-1,-1,2,"T_7",-1],"fast":false,"called":["add_event:click_bode_phase,clicked_on_time_variable=T_7","mouseDragged"]}
+] {"ret":false,"prevented":true,"clicked":[-1,-1,3,"T_i",-1],"fast":false,"called":["add_event:click_bode_phase,clicked_on_time_variable=T_i","mouseDragged"]}
+^ {"ret":false,"prevented":true,"clicked":[-1,-1,1,"T_2",-1],"fast":false,"called":["add_event:click_bode_phase,clicked_on_time_variable=T_2","mouseDragged"]}
+_ {"ret":false,"prevented":true,"clicked":[-1,-1,2,"T_6",-1],"fast":false,"called":["add_event:click_bode_phase,clicked_on_time_variable=T_6","mouseDragged"]}
+\` {"ret":false,"prevented":true,"clicked":[-1,-1,2,"T_8",-1],"fast":false,"called":["add_event:click_bode_phase,clicked_on_time_variable=T_8","mouseDragged"]}
+a {"ret":false,"prevented":true,"clicked":[-1,-1,3,"T_d",-1],"fast":false,"called":["add_event:click_bode_phase,clicked_on_time_variable=T_d","mouseDragged"]}"
+`;
+
+exports[`mousePressed, which time constant is picked with T_6 equal to T_7 and T_8 further away GRAPH_ONE_ZERO_TWO_POLES 1`] = `
+"Bode magnitude y=60: -x1,T_6x24,-x90
+Bode magnitude y=90: -x1,T_6x50,T_8x5,-x59
+Bode magnitude y=120: -x1,T_6x50,T_8x36,-x28
+Bode magnitude y=150: -x1,T_6x50,T_8x64
+Bode magnitude y=180: -x4,T_6x47,T_8x64
+Bode magnitude y=210: -x35,T_6x16,T_8x64
+Bode magnitude y=240: -x66,T_8x49
+Bode magnitude y=270: -x97,T_8x18
+Bode phase y=399: -x1,T_6x48,-x66
+Bode phase y=429: -x1,T_6x50,T_8x64
+Bode phase y=459: -x6,T_6x45,T_8x64
+Bode phase y=489: -x17,T_6x34,T_8x64
+Bode phase y=519: -x32,T_6x19,T_8x64
+Bode phase y=549: -x63,T_8x52
+step response y=50: -x29,T_6x67
+step response y=80: -x21,T_6x75
+step response y=110: -x14,T_6x73,-x9
+step response y=140: -x10,T_6x40,-x46
+step response y=170: -x6,T_8x1,T_6x28,-x61
+step response y=200: -x2,T_8x5,T_6x19,-x70
+step response y=230: -x1,T_8x6,T_6x11,-x78
+step response y=260: -x1,T_8x6,T_6x6,-x83
+pole-zero map y=5: T_8x27,T_6x68
+pole-zero map y=20: T_8x27,T_6x68
+pole-zero map y=35: T_8x27,T_6x68
+pole-zero map y=50: T_8x27,T_6x68
+pole-zero map y=65: T_8x27,T_6x68
+pole-zero map y=80: T_8x27,T_6x68"
+`;
+
+exports[`mousePressed, which time constant is picked with T_6 equal to T_7 and T_8 further away GRAPH_PID 1`] = `
+"Bode magnitude y=60: -x1,T_dx24,-x90
+Bode magnitude y=90: -x1,T_dx55,-x59
+Bode magnitude y=120: -x1,T_dx86,-x28
+Bode magnitude y=150: -x1,T_dx114
+Bode magnitude y=180: -x4,T_dx111
+Bode magnitude y=210: -x35,T_dx80
+Bode magnitude y=240: -x66,T_dx49
+Bode magnitude y=270: -x97,T_dx18
+Bode phase y=399: -x1,T_dx48,-x66
+Bode phase y=429: -x1,T_dx114
+Bode phase y=459: -x6,T_dx109
+Bode phase y=489: -x17,T_dx98
+Bode phase y=519: -x32,T_dx83
+Bode phase y=549: -x63,T_dx52
+pole-zero map y=5: T_dx95
+pole-zero map y=20: T_dx95
+pole-zero map y=35: T_dx95
+pole-zero map y=50: T_dx95
+pole-zero map y=65: T_dx95
+pole-zero map y=80: T_dx95"
+`;
+
+exports[`mousePressed, which time constant is picked with T_6 equal to T_7 and T_8 further away GRAPH_TWO_REAL_POLES 1`] = `
+"Bode magnitude y=60: -x1,T_3x24,-x90
+Bode magnitude y=90: -x1,T_3x55,-x59
+Bode magnitude y=120: -x1,T_3x86,-x28
+Bode magnitude y=150: -x1,T_3x114
+Bode magnitude y=180: -x4,T_3x111
+Bode magnitude y=210: -x35,T_3x80
+Bode magnitude y=240: -x66,T_3x49
+Bode magnitude y=270: -x97,T_3x18
+Bode phase y=399: -x1,T_3x48,-x66
+Bode phase y=429: -x1,T_3x114
+Bode phase y=459: -x6,T_3x109
+Bode phase y=489: -x17,T_3x98
+Bode phase y=519: -x32,T_3x83
+Bode phase y=549: -x63,T_3x52
+step response y=50: -x29,T_3x67
+step response y=80: -x21,T_3x75
+step response y=110: -x14,T_3x73,-x9
+step response y=140: -x10,T_3x40,-x46
+step response y=170: -x6,T_3x29,-x61
+step response y=200: -x2,T_3x24,-x70
+step response y=230: -x1,T_3x17,-x78
+step response y=260: -x1,T_3x12,-x83
+pole-zero map y=5: T_3x95
+pole-zero map y=20: T_3x95
+pole-zero map y=35: T_3x95
+pole-zero map y=50: T_3x95
+pole-zero map y=65: T_3x95
+pole-zero map y=80: T_3x95"
+`;
+
+exports[`mousePressed, which time constant is picked with all time constants equal GRAPH_ONE_ZERO_TWO_POLES 1`] = `
+"Bode magnitude y=60: -x1,T_8x24,-x90
+Bode magnitude y=90: -x1,T_8x55,-x59
+Bode magnitude y=120: -x1,T_8x86,-x28
+Bode magnitude y=150: -x1,T_8x114
+Bode magnitude y=180: -x4,T_8x111
+Bode magnitude y=210: -x35,T_8x80
+Bode magnitude y=240: -x66,T_8x49
+Bode magnitude y=270: -x97,T_8x18
+Bode phase y=399: -x1,T_8x48,-x66
+Bode phase y=429: -x1,T_8x114
+Bode phase y=459: -x6,T_8x109
+Bode phase y=489: -x17,T_8x98
+Bode phase y=519: -x32,T_8x83
+Bode phase y=549: -x63,T_8x52
+step response y=50: -x29,T_8x67
+step response y=80: -x21,T_8x75
+step response y=110: -x14,T_8x73,-x9
+step response y=140: -x10,T_8x40,-x46
+step response y=170: -x6,T_8x29,-x61
+step response y=200: -x2,T_8x24,-x70
+step response y=230: -x1,T_8x17,-x78
+step response y=260: -x1,T_8x12,-x83
+pole-zero map y=5: T_8x95
+pole-zero map y=20: T_8x95
+pole-zero map y=35: T_8x95
+pole-zero map y=50: T_8x95
+pole-zero map y=65: T_8x95
+pole-zero map y=80: T_8x95"
+`;
+
+exports[`mousePressed, which time constant is picked with all time constants equal GRAPH_PID 1`] = `
+"Bode magnitude y=60: -x1,T_dx24,-x90
+Bode magnitude y=90: -x1,T_dx55,-x59
+Bode magnitude y=120: -x1,T_dx86,-x28
+Bode magnitude y=150: -x1,T_dx114
+Bode magnitude y=180: -x4,T_dx111
+Bode magnitude y=210: -x35,T_dx80
+Bode magnitude y=240: -x66,T_dx49
+Bode magnitude y=270: -x97,T_dx18
+Bode phase y=399: -x1,T_dx48,-x66
+Bode phase y=429: -x1,T_dx114
+Bode phase y=459: -x6,T_dx109
+Bode phase y=489: -x17,T_dx98
+Bode phase y=519: -x32,T_dx83
+Bode phase y=549: -x63,T_dx52
+pole-zero map y=5: T_dx95
+pole-zero map y=20: T_dx95
+pole-zero map y=35: T_dx95
+pole-zero map y=50: T_dx95
+pole-zero map y=65: T_dx95
+pole-zero map y=80: T_dx95"
+`;
+
+exports[`mousePressed, which time constant is picked with all time constants equal GRAPH_TWO_REAL_POLES 1`] = `
+"Bode magnitude y=60: -x1,T_3x24,-x90
+Bode magnitude y=90: -x1,T_3x55,-x59
+Bode magnitude y=120: -x1,T_3x86,-x28
+Bode magnitude y=150: -x1,T_3x114
+Bode magnitude y=180: -x4,T_3x111
+Bode magnitude y=210: -x35,T_3x80
+Bode magnitude y=240: -x66,T_3x49
+Bode magnitude y=270: -x97,T_3x18
+Bode phase y=399: -x1,T_3x48,-x66
+Bode phase y=429: -x1,T_3x114
+Bode phase y=459: -x6,T_3x109
+Bode phase y=489: -x17,T_3x98
+Bode phase y=519: -x32,T_3x83
+Bode phase y=549: -x63,T_3x52
+step response y=50: -x29,T_3x67
+step response y=80: -x21,T_3x75
+step response y=110: -x14,T_3x73,-x9
+step response y=140: -x10,T_3x40,-x46
+step response y=170: -x6,T_3x29,-x61
+step response y=200: -x2,T_3x24,-x70
+step response y=230: -x1,T_3x17,-x78
+step response y=260: -x1,T_3x12,-x83
+pole-zero map y=5: T_3x95
+pole-zero map y=20: T_3x95
+pole-zero map y=35: T_3x95
+pole-zero map y=50: T_3x95
+pole-zero map y=65: T_3x95
+pole-zero map y=80: T_3x95"
+`;
+
+exports[`mousePressed, which time constant is picked with poles beyond the map edge (T_2, T_6, T_i) GRAPH_ONE_ZERO_TWO_POLES 1`] = `
+"Bode magnitude y=60: -x1,T_8x24,-x90
+Bode magnitude y=90: -x1,T_8x50,T_7x5,-x59
+Bode magnitude y=120: -x1,T_8x50,T_7x6,T_6x30,-x28
+Bode magnitude y=150: -x1,T_8x50,T_7x6,T_6x58
+Bode magnitude y=180: -x4,T_8x47,T_7x6,T_6x58
+Bode magnitude y=210: -x35,T_8x16,T_7x6,T_6x58
+Bode magnitude y=240: -x66,T_6x49
+Bode magnitude y=270: -x97,T_6x18
+Bode phase y=399: -x1,T_8x48,-x66
+Bode phase y=429: -x1,T_8x50,T_7x6,T_6x58
+Bode phase y=459: -x6,T_8x45,T_7x6,T_6x58
+Bode phase y=489: -x17,T_8x34,T_7x6,T_6x58
+Bode phase y=519: -x32,T_8x19,T_7x6,T_6x58
+Bode phase y=549: -x63,T_6x52
+step response y=50: -x29,T_8x67
+step response y=80: -x21,T_8x75
+step response y=110: -x14,T_8x73,-x9
+step response y=140: -x10,T_8x40,-x46
+step response y=170: -x6,T_7x1,T_8x28,-x61
+step response y=200: -x2,T_6x2,T_7x3,T_8x19,-x70
+step response y=230: -x1,T_6x3,T_7x3,T_8x11,-x78
+step response y=260: -x1,T_6x3,T_7x3,T_8x6,-x83
+pole-zero map y=5: T_6x1,T_7x26,T_8x68
+pole-zero map y=20: T_6x1,T_7x26,T_8x68
+pole-zero map y=35: T_6x1,T_7x26,T_8x68
+pole-zero map y=50: T_6x1,T_7x26,T_8x68
+pole-zero map y=65: T_6x1,T_7x26,T_8x68
+pole-zero map y=80: T_6x1,T_7x26,T_8x68"
+`;
+
+exports[`mousePressed, which time constant is picked with poles beyond the map edge (T_2, T_6, T_i) GRAPH_PID 1`] = `
+"Bode magnitude y=60: -x1,T_dx24,-x90
+Bode magnitude y=90: -x1,T_dx55,-x59
+Bode magnitude y=120: -x1,T_dx56,T_ix30,-x28
+Bode magnitude y=150: -x1,T_dx56,T_ix58
+Bode magnitude y=180: -x4,T_dx53,T_ix58
+Bode magnitude y=210: -x35,T_dx22,T_ix58
+Bode magnitude y=240: -x66,T_ix49
+Bode magnitude y=270: -x97,T_ix18
+Bode phase y=399: -x1,T_dx48,-x66
+Bode phase y=429: -x1,T_dx56,T_ix58
+Bode phase y=459: -x6,T_dx51,T_ix58
+Bode phase y=489: -x17,T_dx40,T_ix58
+Bode phase y=519: -x32,T_dx25,T_ix58
+Bode phase y=549: -x63,T_ix52
+pole-zero map y=5: T_ix1,T_dx94
+pole-zero map y=20: T_ix1,T_dx94
+pole-zero map y=35: T_ix1,T_dx94
+pole-zero map y=50: T_ix1,T_dx94
+pole-zero map y=65: T_ix1,T_dx94
+pole-zero map y=80: T_ix1,T_dx94"
+`;
+
+exports[`mousePressed, which time constant is picked with poles beyond the map edge (T_2, T_6, T_i) GRAPH_TWO_REAL_POLES 1`] = `
+"Bode magnitude y=60: -x1,T_3x24,-x90
+Bode magnitude y=90: -x1,T_3x55,-x59
+Bode magnitude y=120: -x1,T_3x56,T_2x30,-x28
+Bode magnitude y=150: -x1,T_3x56,T_2x58
+Bode magnitude y=180: -x4,T_3x53,T_2x58
+Bode magnitude y=210: -x35,T_3x22,T_2x58
+Bode magnitude y=240: -x66,T_2x49
+Bode magnitude y=270: -x97,T_2x18
+Bode phase y=399: -x1,T_3x48,-x66
+Bode phase y=429: -x1,T_3x56,T_2x58
+Bode phase y=459: -x6,T_3x51,T_2x58
+Bode phase y=489: -x17,T_3x40,T_2x58
+Bode phase y=519: -x32,T_3x25,T_2x58
+Bode phase y=549: -x63,T_2x52
+step response y=50: -x29,T_3x67
+step response y=80: -x21,T_3x75
+step response y=110: -x14,T_3x73,-x9
+step response y=140: -x10,T_3x40,-x46
+step response y=170: -x6,T_3x29,-x61
+step response y=200: -x2,T_2x2,T_3x22,-x70
+step response y=230: -x1,T_2x3,T_3x14,-x78
+step response y=260: -x1,T_2x3,T_3x9,-x83
+pole-zero map y=5: T_2x1,T_3x94
+pole-zero map y=20: T_2x1,T_3x94
+pole-zero map y=35: T_2x1,T_3x94
+pole-zero map y=50: T_2x1,T_3x94
+pole-zero map y=65: T_2x1,T_3x94
+pole-zero map y=80: T_2x1,T_3x94"
+`;
+
+exports[`mousePressed, which time constant is picked with poles beyond the map edge (T_7) GRAPH_ONE_ZERO_TWO_POLES 1`] = `
+"Bode magnitude y=60: -x1,T_8x24,-x90
+Bode magnitude y=90: -x1,T_8x50,T_6x5,-x59
+Bode magnitude y=120: -x1,T_8x50,T_6x6,T_7x30,-x28
+Bode magnitude y=150: -x1,T_8x50,T_6x6,T_7x58
+Bode magnitude y=180: -x4,T_8x47,T_6x6,T_7x58
+Bode magnitude y=210: -x35,T_8x16,T_6x6,T_7x58
+Bode magnitude y=240: -x66,T_7x49
+Bode magnitude y=270: -x97,T_7x18
+Bode phase y=399: -x1,T_8x48,-x66
+Bode phase y=429: -x1,T_8x50,T_6x6,T_7x58
+Bode phase y=459: -x6,T_8x45,T_6x6,T_7x58
+Bode phase y=489: -x17,T_8x34,T_6x6,T_7x58
+Bode phase y=519: -x32,T_8x19,T_6x6,T_7x58
+Bode phase y=549: -x63,T_7x52
+step response y=50: -x29,T_8x67
+step response y=80: -x21,T_8x75
+step response y=110: -x14,T_8x73,-x9
+step response y=140: -x10,T_8x40,-x46
+step response y=170: -x6,T_6x1,T_8x28,-x61
+step response y=200: -x2,T_7x2,T_6x3,T_8x19,-x70
+step response y=230: -x1,T_7x3,T_6x3,T_8x11,-x78
+step response y=260: -x1,T_7x3,T_6x3,T_8x6,-x83
+pole-zero map y=5: T_7x1,T_6x26,T_8x68
+pole-zero map y=20: T_7x1,T_6x26,T_8x68
+pole-zero map y=35: T_7x1,T_6x26,T_8x68
+pole-zero map y=50: T_7x1,T_6x26,T_8x68
+pole-zero map y=65: T_7x1,T_6x26,T_8x68
+pole-zero map y=80: T_7x1,T_6x26,T_8x68"
+`;
+
+exports[`mousePressed, which time constant is picked with poles beyond the map edge (T_7) GRAPH_PID 1`] = `
+"Bode magnitude y=60: -x1,T_ix24,-x90
+Bode magnitude y=90: -x1,T_ix55,-x59
+Bode magnitude y=120: -x1,T_ix56,T_dx30,-x28
+Bode magnitude y=150: -x1,T_ix56,T_dx58
+Bode magnitude y=180: -x4,T_ix53,T_dx58
+Bode magnitude y=210: -x35,T_ix22,T_dx58
+Bode magnitude y=240: -x66,T_dx49
+Bode magnitude y=270: -x97,T_dx18
+Bode phase y=399: -x1,T_ix48,-x66
+Bode phase y=429: -x1,T_ix56,T_dx58
+Bode phase y=459: -x6,T_ix51,T_dx58
+Bode phase y=489: -x17,T_ix40,T_dx58
+Bode phase y=519: -x32,T_ix25,T_dx58
+Bode phase y=549: -x63,T_dx52
+pole-zero map y=5: T_dx1,T_ix94
+pole-zero map y=20: T_dx1,T_ix94
+pole-zero map y=35: T_dx1,T_ix94
+pole-zero map y=50: T_dx1,T_ix94
+pole-zero map y=65: T_dx1,T_ix94
+pole-zero map y=80: T_dx1,T_ix94"
+`;
+
+exports[`mousePressed, which time constant is picked with poles beyond the map edge (T_7) GRAPH_TWO_REAL_POLES 1`] = `
+"Bode magnitude y=60: -x1,T_2x24,-x90
+Bode magnitude y=90: -x1,T_2x55,-x59
+Bode magnitude y=120: -x1,T_2x56,T_3x30,-x28
+Bode magnitude y=150: -x1,T_2x56,T_3x58
+Bode magnitude y=180: -x4,T_2x53,T_3x58
+Bode magnitude y=210: -x35,T_2x22,T_3x58
+Bode magnitude y=240: -x66,T_3x49
+Bode magnitude y=270: -x97,T_3x18
+Bode phase y=399: -x1,T_2x48,-x66
+Bode phase y=429: -x1,T_2x56,T_3x58
+Bode phase y=459: -x6,T_2x51,T_3x58
+Bode phase y=489: -x17,T_2x40,T_3x58
+Bode phase y=519: -x32,T_2x25,T_3x58
+Bode phase y=549: -x63,T_3x52
+step response y=50: -x29,T_2x67
+step response y=80: -x21,T_2x75
+step response y=110: -x14,T_2x73,-x9
+step response y=140: -x10,T_2x40,-x46
+step response y=170: -x6,T_2x29,-x61
+step response y=200: -x2,T_3x2,T_2x22,-x70
+step response y=230: -x1,T_3x3,T_2x14,-x78
+step response y=260: -x1,T_3x3,T_2x9,-x83
+pole-zero map y=5: T_3x1,T_2x94
+pole-zero map y=20: T_3x1,T_2x94
+pole-zero map y=35: T_3x1,T_2x94
+pole-zero map y=50: T_3x1,T_2x94
+pole-zero map y=65: T_3x1,T_2x94
+pole-zero map y=80: T_3x1,T_2x94"
+`;
+
+exports[`mousePressed, which time constant is picked with poles beyond the map edge (T_8) GRAPH_ONE_ZERO_TWO_POLES 1`] = `
+"Bode magnitude y=60: -x1,T_7x24,-x90
+Bode magnitude y=90: -x1,T_7x50,T_6x5,-x59
+Bode magnitude y=120: -x1,T_7x50,T_6x6,T_8x30,-x28
+Bode magnitude y=150: -x1,T_7x50,T_6x6,T_8x58
+Bode magnitude y=180: -x4,T_7x47,T_6x6,T_8x58
+Bode magnitude y=210: -x35,T_7x16,T_6x6,T_8x58
+Bode magnitude y=240: -x66,T_8x49
+Bode magnitude y=270: -x97,T_8x18
+Bode phase y=399: -x1,T_7x48,-x66
+Bode phase y=429: -x1,T_7x50,T_6x6,T_8x58
+Bode phase y=459: -x6,T_7x45,T_6x6,T_8x58
+Bode phase y=489: -x17,T_7x34,T_6x6,T_8x58
+Bode phase y=519: -x32,T_7x19,T_6x6,T_8x58
+Bode phase y=549: -x63,T_8x52
+step response y=50: -x29,T_7x67
+step response y=80: -x21,T_7x75
+step response y=110: -x14,T_7x73,-x9
+step response y=140: -x10,T_7x40,-x46
+step response y=170: -x6,T_6x1,T_7x28,-x61
+step response y=200: -x2,T_8x2,T_6x3,T_7x19,-x70
+step response y=230: -x1,T_8x3,T_6x3,T_7x11,-x78
+step response y=260: -x1,T_8x3,T_6x3,T_7x6,-x83
+pole-zero map y=5: T_8x1,T_6x26,T_7x68
+pole-zero map y=20: T_8x1,T_6x26,T_7x68
+pole-zero map y=35: T_8x1,T_6x26,T_7x68
+pole-zero map y=50: T_8x1,T_6x26,T_7x68
+pole-zero map y=65: T_8x1,T_6x26,T_7x68
+pole-zero map y=80: T_8x1,T_6x26,T_7x68"
+`;
+
+exports[`mousePressed, which time constant is picked with poles beyond the map edge (T_8) GRAPH_PID 1`] = `
+"Bode magnitude y=60: -x1,T_ix24,-x90
+Bode magnitude y=90: -x1,T_ix55,-x59
+Bode magnitude y=120: -x1,T_ix56,T_dx30,-x28
+Bode magnitude y=150: -x1,T_ix56,T_dx58
+Bode magnitude y=180: -x4,T_ix53,T_dx58
+Bode magnitude y=210: -x35,T_ix22,T_dx58
+Bode magnitude y=240: -x66,T_dx49
+Bode magnitude y=270: -x97,T_dx18
+Bode phase y=399: -x1,T_ix48,-x66
+Bode phase y=429: -x1,T_ix56,T_dx58
+Bode phase y=459: -x6,T_ix51,T_dx58
+Bode phase y=489: -x17,T_ix40,T_dx58
+Bode phase y=519: -x32,T_ix25,T_dx58
+Bode phase y=549: -x63,T_dx52
+pole-zero map y=5: T_dx1,T_ix94
+pole-zero map y=20: T_dx1,T_ix94
+pole-zero map y=35: T_dx1,T_ix94
+pole-zero map y=50: T_dx1,T_ix94
+pole-zero map y=65: T_dx1,T_ix94
+pole-zero map y=80: T_dx1,T_ix94"
+`;
+
+exports[`mousePressed, which time constant is picked with poles beyond the map edge (T_8) GRAPH_TWO_REAL_POLES 1`] = `
+"Bode magnitude y=60: -x1,T_2x24,-x90
+Bode magnitude y=90: -x1,T_2x55,-x59
+Bode magnitude y=120: -x1,T_2x56,T_3x30,-x28
+Bode magnitude y=150: -x1,T_2x56,T_3x58
+Bode magnitude y=180: -x4,T_2x53,T_3x58
+Bode magnitude y=210: -x35,T_2x22,T_3x58
+Bode magnitude y=240: -x66,T_3x49
+Bode magnitude y=270: -x97,T_3x18
+Bode phase y=399: -x1,T_2x48,-x66
+Bode phase y=429: -x1,T_2x56,T_3x58
+Bode phase y=459: -x6,T_2x51,T_3x58
+Bode phase y=489: -x17,T_2x40,T_3x58
+Bode phase y=519: -x32,T_2x25,T_3x58
+Bode phase y=549: -x63,T_3x52
+step response y=50: -x29,T_2x67
+step response y=80: -x21,T_2x75
+step response y=110: -x14,T_2x73,-x9
+step response y=140: -x10,T_2x40,-x46
+step response y=170: -x6,T_2x29,-x61
+step response y=200: -x2,T_3x2,T_2x22,-x70
+step response y=230: -x1,T_3x3,T_2x14,-x78
+step response y=260: -x1,T_3x3,T_2x9,-x83
+pole-zero map y=5: T_3x1,T_2x94
+pole-zero map y=20: T_3x1,T_2x94
+pole-zero map y=35: T_3x1,T_2x94
+pole-zero map y=50: T_3x1,T_2x94
+pole-zero map y=65: T_3x1,T_2x94
+pole-zero map y=80: T_3x1,T_2x94"
+`;
