@@ -1,0 +1,51 @@
+module.exports = {
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": "eslint:recommended",
+    "overrides": [
+        {
+            "env": {
+                "node": true
+            },
+            "files": [
+                ".eslintrc.{js,cjs}"
+            ],
+            "parserOptions": {
+                "sourceType": "script"
+            }
+        }
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    // Libraries loaded via <script> tags in index.html, plus the element with
+    // id="banner" (accessed through the browser's named-element globals).
+    "globals": {
+        "confetti": "readonly",
+        "math": "readonly",
+        "banner": "readonly",
+        // p5.js global mode
+        "CENTER": "readonly", "HSB": "readonly", "RIGHT": "readonly",
+        "arc": "readonly", "background": "readonly", "beginShape": "readonly",
+        "color": "readonly", "colorMode": "readonly", "cos": "readonly",
+        "createCanvas": "readonly", "ellipse": "readonly", "endShape": "readonly",
+        "fill": "readonly", "float": "readonly", "line": "readonly",
+        "map": "readonly", "max": "readonly", "mouseButton": "readonly",
+        "mouseX": "readonly", "mouseY": "readonly", "noFill": "readonly",
+        "noLoop": "readonly", "noStroke": "readonly", "pop": "readonly",
+        "push": "readonly", "rect": "readonly", "redraw": "readonly",
+        "resizeCanvas": "readonly", "rotate": "readonly", "saveCanvas": "readonly",
+        "sin": "readonly", "str": "readonly", "stroke": "readonly",
+        "strokeWeight": "readonly", "text": "readonly", "textAlign": "readonly",
+        "textSize": "readonly", "translate": "readonly", "vertex": "readonly",
+        "windowHeight": "readonly", "windowWidth": "readonly"
+    },
+    "rules": {
+        // main.js is a classic script: top-level functions are called by p5
+        // (setup, draw, mousePressed, ...) or by inline HTML handlers, so only
+        // check unused variables inside functions.
+        "no-unused-vars": ["error", { "vars": "local" }]
+    }
+}
