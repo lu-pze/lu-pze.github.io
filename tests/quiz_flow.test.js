@@ -637,3 +637,171 @@ describe('perturb_wrong_bode_magnitude', () => {
     expect(perturbed([0.5, 0.1, 0, 0.1, 0], 10).t).toBe(18);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Cases added after Stryker mutation testing (npm run test:mutation) showed that no test noticed
+// these changes to src/quiz.js.
+describe('mutation gaps: starting a quiz calls removeAllGraphs and update_quiz', () => {
+  let original_update_quiz;
+  beforeEach(() => {
+    jest.useFakeTimers().setSystemTime(new Date('2026-11-03T12:00:00'));
+    original_update_quiz = window.update_quiz;
+    window.update_quiz = jest.fn();
+  });
+  afterEach(() => { window.update_quiz = original_update_quiz; });
+
+  test('quiz_lets_go clears the graphs and then draws the status panel once', () => {
+    window.quiz_lets_go();
+    expect(window.removeAllGraphs).toHaveBeenCalledTimes(1);
+    expect(window.update_quiz).toHaveBeenCalledTimes(1);
+  });
+
+  test('quiz_lets_go_compete clears the graphs and draws the status panel before and after the first question', () => {
+    set_globals({ client_nick: 'Pex' });
+    window.quiz_lets_go_compete();
+    expect(window.removeAllGraphs).toHaveBeenCalledTimes(2); // once itself, once in quiz_lets_go
+    expect(window.update_quiz).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('mutation gaps: perturb_wrong_bode_magnitude factors', () => {
+  const base = () => ({ k: 1, t: 1, z: 1, w: 1 });
+  const perturbed = (level, ...random_values) => {
+    script_random(...random_values);
+    const p = base();
+    window.perturb_wrong_bode_magnitude(p, level);
+    return p;
+  };
+
+  test('k/w branch below level 50: factors 8 + 14 * draw (k) and 10 + 14 * draw (w)', () => {
+    // draws: branch, k coin, k factor, w coin, w factor
+    let p = perturbed(10, 0.1, 0.1, 0.5, 0.1, 0.5);
+    expect(p.k).toBeCloseTo(15, 10);
+    expect(p.w).toBeCloseTo(1 / 17, 10);
+    p = perturbed(10, 0.1, 0.9, 0.5, 0.9, 0.5);
+    expect(p.k).toBeCloseTo(1 / 15, 10);
+    expect(p.w).toBeCloseTo(17, 10);
+  });
+
+  test('k/w branch from level 50: factor 2 + 40 * draw for k', () => {
+    let p = perturbed(60, 0.1, 0.1, 0.5, 0.1, 0.5);
+    expect(p.k).toBeCloseTo(22, 10);
+    p = perturbed(60, 0.1, 0.9, 0.5, 0.1, 0.5);
+    expect(p.k).toBeCloseTo(1 / 22, 10);
+  });
+
+  test('t/z branch: factors 18 + 14 * draw (t) and 10 + 14 * draw (z)', () => {
+    let p = perturbed(10, 0.9, 0.1, 0.5, 0.1, 0.5);
+    expect(p.t).toBeCloseTo(25, 10);
+    expect(p.z).toBeCloseTo(1 / 17, 10);
+    p = perturbed(10, 0.9, 0.9, 0.5, 0.9, 0.5);
+    expect(p.t).toBeCloseTo(1 / 25, 10);
+    expect(p.z).toBeCloseTo(17, 10);
+  });
+
+  test('every direction coin flips at exactly 0.5 (a draw of 0.5 means "divide k/t, multiply w/z")', () => {
+    let p = perturbed(10, 0.1, 0.5, 0.5, 0.5, 0.5);
+    expect(p.k).toBeCloseTo(1 / 15, 10);
+    expect(p.w).toBeCloseTo(17, 10);
+    p = perturbed(60, 0.1, 0.5, 0.5, 0.1, 0.5);
+    expect(p.k).toBeCloseTo(1 / 22, 10);
+    p = perturbed(10, 0.9, 0.5, 0.5, 0.5, 0.5);
+    expect(p.t).toBeCloseTo(1 / 25, 10);
+    expect(p.z).toBeCloseTo(17, 10);
+  });
+});
+
+describe('mutation gaps: restart_quiz_text_animations', () => {
+  // The value the browser model keeps for a CSS property, which may differ from the text we set.
+  const stored = (property, value) => {
+    const probe = document.createElement('div');
+    probe.style[property] = value;
+    expect(probe.style[property]).not.toBe('');
+    return probe.style[property];
+  };
+  const restart = (mode) => {
+    set_globals({ light_mode: mode });
+    const text = by_id('quiz_text');
+    const norepeat = by_id('quiz_text_norepeat');
+    text.style.animation = '';
+    norepeat.style.cssText = '';
+    window.restart_quiz_text_animations(text);
+    return { text, norepeat };
+  };
+
+  test('the question text fades repeatedly', () => {
+    const { text } = restart('dark');
+    expect(text.style.animation).toBe(stored('animation', 'quiz_fade_repeat 7s ease-out infinite'));
+  });
+
+  test('dark mode: light blue text, one fade, dark shadow', () => {
+    const { norepeat } = restart('dark');
+    expect(norepeat.style.color).toBe(stored('color', '#bfbfffc0'));
+    expect(norepeat.style.animation).toBe(stored('animation', 'quiz_fade 1s ease-out 1'));
+    expect(norepeat.style.textShadow).toBe(stored('textShadow', '10px 10px 40px #000000ff'));
+  });
+
+  test('light mode: dark blue text, the light-mode fade, white shadow', () => {
+    const { norepeat } = restart('light');
+    expect(norepeat.style.color).toBe(stored('color', '#202080c0'));
+    expect(norepeat.style.animation).toBe(stored('animation', 'quiz_fade_light_mode 1s ease-out 1'));
+    expect(norepeat.style.textShadow).toBe(stored('textShadow', '10px 10px 40px #ffffffff'));
+  });
+});
+
+describe('mutation gaps: update_quiz panel HTML', () => {
+  const render = (extra) => {
+    set_globals({ current_quiz: 'click_freq', ...extra });
+    window.update_quiz();
+    return by_id('task_list');
+  };
+
+  test('the panel starts with the centred title and nothing before it', () => {
+    expect(render({}).innerHTML.startsWith('<center>')).toBe(true);
+  });
+
+  test('the slider and its nine scale labels are inside one container, with the labels in their own div', () => {
+    const container = render({}).querySelector('.quiz-container');
+    const slider = container.querySelector(':scope > input#difficulty_level');
+    expect(slider.getAttribute('onchange')).toBe('set_difficulty_level(this);next_quiz();');
+    const labels = container.querySelector(':scope > .quiz-labels');
+    expect([...labels.children].map((label) => [label.tagName, label.getAttribute('for'), label.textContent])).toEqual([
+      ['LABEL', '0', ''], ['LABEL', '12.5', ' Novice'], ['LABEL', '25', ''], ['LABEL', '37.5', ''],
+      ['LABEL', '50', ' Intermediate'], ['LABEL', '62.5', ''], ['LABEL', '75', ''],
+      ['LABEL', '87.5', ' Professor'], ['LABEL', '100', ''],
+    ]);
+    // the <center> follows the label div; it is not inside it
+    expect(container.querySelector(':scope > center')).not.toBeNull();
+    expect(labels.querySelector('center')).toBeNull();
+  });
+
+  test('debug mode: the adaptive-difficulty checkbox sits in the centred row and has a label', () => {
+    const panel = render({ debug_mode: true });
+    const center = panel.querySelector('.quiz-container > center');
+    const checkbox = center.querySelector('input#adaptive_difficulty');
+    expect(checkbox.type).toBe('checkbox');
+    expect(checkbox.getAttribute('onchange')).toBe('toggle_adaptive_difficulty(this);');
+    expect(center.querySelector('label[for="adaptive_difficulty"]').textContent).toBe('Adaptive difficulty level');
+  });
+
+  test('debug mode: the stats come after the container, not inside it', () => {
+    const panel = render({ debug_mode: true });
+    expect(panel.querySelector('.quiz-container br')).toBeNull();
+    expect(panel.querySelector('.quiz-container span')).toBeNull();
+    expect(panel.innerHTML).toContain('</div><br><br><span style="color:#808080">Your stats:</span><br>');
+  });
+
+  test('debug mode: every question type has its own checkbox and a label that holds only its difficulty', () => {
+    const panel = render({
+      debug_mode: true,
+      quiz_difficulties: { click_freq: 10, click_time: 20, click_nyquist_angle: 30, click_system: 40, click_wrong: 55 },
+    });
+    expect(panel.querySelectorAll('label input')).toHaveLength(0);
+    for (const [name, level] of [['click_freq', '10.0'], ['click_time', '20.0'], ['click_nyquist_angle', '30.0'], ['click_system', '40.0'], ['click_wrong', '55.0']]) {
+      const label = panel.querySelector(`label[for="${name}"]`);
+      expect(label.innerHTML).toBe(`<span style="color:#808080">${name}: ${level}</span><br>`);
+      expect(panel.querySelector(`input#${name}`).getAttribute('onchange')).toBe('select_quiz_type(event);');
+    }
+    expect(panel.innerHTML.endsWith('<span style="color:#808080">Total: 31.0</span><br>')).toBe(true);
+  });
+});

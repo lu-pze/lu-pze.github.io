@@ -509,3 +509,236 @@ describe('click_wrong', () => {
     expect(correct.mf).toMatch(/^\\frac\{[0-9.]+\}\{1\+1s\}$/);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Cases added after Stryker mutation testing (npm run test:mutation) showed that no test noticed
+// these changes to src/quiz.js.
+describe('mutation gaps: choosing the question type', () => {
+  const first_round = (random) => {
+    single_type('click_freq', 50);
+    set_globals({
+      enabled_quiz_types: { click_freq: true, click_time: true, click_nyquist_angle: false, click_system: false, click_wrong: true },
+      quiz_questions_nof_done: { click_freq: 1, click_time: 0, click_nyquist_angle: 0, click_system: 0, click_wrong: 0 },
+      current_quiz: 'click_freq', quiz_no: 0,
+    });
+    script_random(random);
+    window.pick_next_quiz_type();
+    return global_value('current_quiz');
+  };
+
+  test('the first round never offers a type that is not enabled, even if it was never asked', () => {
+    // candidates: time and wrong (weight 1 each). Counting the disabled nyquist type as well would
+    // put 0.3 * 4 = 1.2 on it.
+    expect(first_round(0.3)).toBe('click_time');
+  });
+
+  test('a draw exactly on a cumulative weight picks the earlier candidate', () => {
+    expect(first_round(0.5)).toBe('click_time'); // 0.5 * 2 = 1 = weight of the first candidate
+    random_spy.mockRestore();
+    expect(first_round(0.5001)).toBe('click_wrong');
+  });
+
+  test('with no candidate left in the first round nothing is picked (empty type)', () => {
+    single_type('click_freq', 50);
+    set_globals({
+      enabled_quiz_types: { click_freq: true, click_time: true, click_nyquist_angle: false, click_system: false, click_wrong: false },
+      quiz_questions_nof_done: { click_freq: 1, click_time: 1, click_nyquist_angle: 0, click_system: 0, click_wrong: 0 },
+      current_quiz: 'click_freq', quiz_no: 0,
+    });
+    script_random(0.5);
+    window.pick_next_quiz_type();
+    expect(global_value('current_quiz')).toBe('');
+  });
+});
+
+describe('mutation gaps: question texts', () => {
+  test('click_freq at level 40-74 also words the question with the frequency', () => {
+    single_type('click_freq', 50);
+    script_random(0.99, 0.4); // mantissa 4, power 0
+    window.next_quiz();
+    expect(quiz_text()).toBe('Click on the frequency 4.00 rad/s');
+  });
+});
+
+describe('mutation gaps: click_nyquist_angle level boundaries', () => {
+  const ask = (level, r) => {
+    single_type('click_nyquist_angle', level);
+    script_random(r);
+    window.next_quiz();
+    random_spy.mockRestore();
+    return global_value('quiz_nyquist_angle_to_click');
+  };
+
+  test('6 is the first level with an angle', () => {
+    expect(ask(5.99, 0.5)).toBe(1000);
+    expect(ask(6, 0.5)).not.toBe(1000);
+  });
+
+  test('20, 40 and 70 switch to the next, finer set of angles', () => {
+    expect(ask(19.99, 0.99) + 0).toBe(-180); // steps of 90, 0..-180
+    expect(ask(20, 0.99)).toBe(-270); // steps of 90, 90..-270
+    expect(ask(30, 0.19)).toBe(90); // still steps of 90 (not 45) in the middle of 20-39
+    expect(ask(39.99, 0.19)).toBe(90);
+    expect(ask(40, 0.19)).toBe(45); // steps of 45
+    expect(ask(69.99, 0.19)).toBe(45);
+    expect(ask(70, 0.19)).toBe(22); // whole degrees
+  });
+});
+
+describe('mutation gaps: ghost systems', () => {
+  test('random_ghost_time_constant is 1/(decimal * 10^power), power starting at -1', () => {
+    script_random(0.5, 0.2); // decimal 5, power floor(0.2 * 2) - 1 = -1
+    expect(window.random_ghost_time_constant(31, 2)).toBeCloseTo(2, 10);
+    random_spy.mockRestore();
+    script_random(0.5, 0.99); // power 0 for a range of 2
+    expect(window.random_ghost_time_constant(31, 2)).toBeCloseTo(0.2, 10);
+    random_spy.mockRestore();
+    script_random(0.5, 0.99); // power 1 for a range of 3
+    expect(window.random_ghost_time_constant(31, 3)).toBeCloseTo(0.02, 10);
+    random_spy.mockRestore();
+    script_random();
+    expect(window.random_ghost_time_constant(30, 3)).toBe(1);
+  });
+
+  test('random_ghost_gain: negative only above level 70, and only for a draw below 0.5', () => {
+    const gain = (level, k_draw, sign_draw) => {
+      script_random(k_draw, sign_draw);
+      const k = window.random_ghost_gain(level);
+      random_spy.mockRestore();
+      return k;
+    };
+    expect(gain(70, 0.5, 0.2)).toBe(2.25);
+    expect(gain(70.5, 0.5, 0.2)).toBe(-2.25);
+    expect(gain(70.5, 0.5, 0.5)).toBe(2.25);
+    expect(gain(70.5, 0.5, 0.4999)).toBe(-2.25);
+  });
+
+  test('second_order_ghost writes the same system for MathLive and for math.js', () => {
+    expect(window.second_order_ghost('n', 2, 0.5, 3)).toEqual({
+      name: 'n',
+      mf: '\\frac{2*(3)^2}{s^2+2*(0.5)*(3)*s+(3)^2}',
+      formula: '2*(3)^2/(s^2+2*(0.5)*(3)*s+(3)^2)',
+    });
+  });
+
+  test('click_system_name_prefixes changes at levels 30, 60 and 90, and at draws 0.33 and 0.67', () => {
+    const prefixes = (level, r) => {
+      script_random(r);
+      const result = window.click_system_name_prefixes(level);
+      random_spy.mockRestore();
+      return [result.first, result.second, result.fourth];
+    };
+    const all = (name) => [name, name, name];
+    expect(prefixes(29.99, 0.1)).toEqual(all('GhostMPTNIE_'));
+    expect(prefixes(30, 0.1)).toEqual(all('GhostMP...._'));
+    expect(prefixes(59.99, 0.1)).toEqual(all('GhostMP...._'));
+    expect(prefixes(60, 0.1)).toEqual(all('GhostM....._'));
+    expect(prefixes(89.99, 0.1)).toEqual(all('GhostM....._'));
+    expect(prefixes(90, 0.1)).toEqual(['GhostM....._', 'Ghost.P...._', 'Ghost..T..._']);
+
+    for (const [level, draws] of [
+      [40, [[0.3299, 'GhostMP...._'], [0.33, 'Ghost..TN.._'], [0.6699, 'Ghost..TN.._'], [0.67, 'GhostM.T..._']]],
+      [70, [[0.3299, 'GhostM....._'], [0.33, 'Ghost.P...._'], [0.6699, 'Ghost.P...._'], [0.67, 'Ghost..T..._']]],
+    ]) {
+      for (const [r, name] of draws) expect(prefixes(level, r)).toEqual(all(name));
+    }
+    expect(prefixes(95, 0.3299)).toEqual(['GhostM....._', 'Ghost.P...._', 'Ghost..T..._']);
+    expect(prefixes(95, 0.33)).toEqual(['Ghost..T..._', 'GhostM....._', 'Ghost.P...._']);
+    expect(prefixes(95, 0.6699)).toEqual(['Ghost..T..._', 'GhostM....._', 'Ghost.P...._']);
+    expect(prefixes(95, 0.67)).toEqual(['Ghost.P...._', 'Ghost..T..._', 'GhostM....._']);
+  });
+});
+
+describe('mutation gaps: click_system graphs', () => {
+  const ask = (level, ...random) => {
+    single_type('click_system', level);
+    script_random(...random);
+    window.next_quiz();
+    random_spy.mockRestore();
+    return graphs();
+  };
+  // Draws are 0.5 unless the test names the (1-based) position of a draw.
+  const draws = (length, overrides = {}) => Array.from({ length }, (_, i) => overrides[i + 1] ?? 0.5);
+
+  test.each([
+    [0.1, '\\frac{0.5}{1+2s+s^2}', '0.5/(1+2s+s^2)'],
+    [0.25, '\\frac{1}{(1+5s)(1+0.05s)}', '1/(1+5s)*1/(1+0.05s)'],
+    [0.4999, '\\frac{1}{(1+5s)(1+0.05s)}', '1/(1+5s)*1/(1+0.05s)'],
+    [0.5, '\\frac{8^2}{s^2+2*0.05*8*s+8^2}', '8^2/(s^2+2*0.05*8*s+8^2)'],
+    [0.7499, '\\frac{8^2}{s^2+2*0.05*8*s+8^2}', '8^2/(s^2+2*0.05*8*s+8^2)'],
+    [0.75, '\\frac{0.7*2^2}{s^2+2*0.7*2*s+2^2}', '0.7*2^2/(s^2+2*0.7*2*s+2^2)'],
+    [0.9, '\\frac{0.7*2^2}{s^2+2*0.7*2*s+2^2}', '0.7*2^2/(s^2+2*0.7*2*s+2^2)'],
+  ])('second graph for random %s has the exact name, LaTeX and formula', (r, mf, formula) => {
+    expect(ask(10, 0.5, 0.5, r)[1]).toEqual({ name: 'GhostMPTNIE_', mf, formula });
+  });
+
+  test('the fourth-order time constant: 3/decimal from level 31, 3/(decimal * 10^power) from level 81', () => {
+    const fourth = (level, overrides) => ask(level, ...draws(12, overrides))[2].formula;
+    // level 85 draws: colour, prefix, k, sign, dec, pow, second, k4, sign4, decimal4 (10), power4 (11)
+    expect(fourth(85, { 10: 0.5, 11: 0.99 })).toBe('2.25/((1+0.06s)^4)'); // 3 / (5 * 10)
+    expect(fourth(85, { 10: 0.5, 11: 0.2 })).toBe('2.25/((1+0.6s)^4)'); // 3 / (5 * 1)
+    expect(fourth(85, { 10: 0.0, 11: 0.99 })).toBe('2.25/((1+0.3s)^4)'); // 3 / (1 * 10)
+    // level 80 is still in the middle range: the power draw is not used
+    expect(fourth(80, { 10: 0.5, 11: 0.99 })).toBe('2.25/((1+0.6s)^4)');
+    expect(fourth(80.5, { 10: 0.5, 11: 0.99 })).toBe('2.25/((1+0.06s)^4)');
+    // level 50 draws: colour, prefix, k, dec, pow, second, k4, decimal4 (8)
+    expect(fourth(50, { 8: 0.5 })).toBe('2.25/((1+0.6s)^4)');
+    expect(fourth(50, { 8: 0.0 })).toBe('2.25/((1+3s)^4)');
+    // up to level 30 the time constant stays 1
+    expect(fourth(30, {})).toBe('2.25/((1+1s)^4)');
+    expect(fourth(30.5, {})).toBe('2.25/((1+0.6s)^4)');
+  });
+
+  test('the Dirac impulse is selected by name in the input drop-down', () => {
+    const choices = document.getElementById('input-choices');
+    choices.value = 'Unit step';
+    set_globals({ input_formula: '1/s' });
+    ask(96, ...draws(11), 0.1);
+    expect(choices.value).toBe('Impulse');
+  });
+
+  test('...only for a draw below 0.33, and only above level 95', () => {
+    const choices = document.getElementById('input-choices');
+    choices.value = 'Unit step';
+    set_globals({ input_formula: '1/s' });
+    ask(96, ...draws(11), 0.33);
+    expect(global_value('input_formula')).toBe('1/s');
+    ask(95, ...draws(11), 0.1);
+    expect(global_value('input_formula')).toBe('1/s');
+    expect(choices.value).toBe('Unit step');
+  });
+});
+
+describe('mutation gaps: next_quiz logs the difficulty level of every question type', () => {
+  test.each(['click_freq', 'click_time', 'click_nyquist_angle', 'click_system', 'click_wrong'])('%s', (type) => {
+    single_type(type, 33);
+    script_random();
+    window.next_quiz();
+    expect(window.add_event).toHaveBeenCalledWith('level=33');
+  });
+});
+
+describe('mutation gaps: click_wrong', () => {
+  const ask = (level, odd_one_out, ...random) => {
+    single_type('click_wrong', level);
+    script_random(0.5, (odd_one_out + 0.5) / 4, ...random);
+    window.next_quiz();
+    random_spy.mockRestore();
+    return graphs();
+  };
+  const second_order = (graph) => graph.formula.includes('s^2');
+
+  test('the order coin flips at exactly 0.5 and the mismatch coin at exactly 0.4', () => {
+    expect(ask(50, 0, 0.5).map(second_order)).toEqual([false, false]);
+    expect(ask(50, 0, 0.4999).map(second_order)).toEqual([true, true]);
+    expect(ask(95, 0, 0.1, 0.4).map(second_order)).toEqual([true, true]);
+    expect(ask(95, 0, 0.1, 0.3999).map(second_order)).toEqual([true, false]);
+  });
+
+  test('the correct second-order graph uses z = 2 * draw and w = 0.4 + 4 * draw', () => {
+    // level 50 draws after colour & odd-one-out: order coin, k, decimal, power, z (7), w (8)
+    const [correct] = ask(50, 0, 0.1, 0.5, 0.5, 0.5, 0.25, 0.25);
+    expect(correct.mf).toBe('\\frac{2.25*(1.4)^2}{s^2+2*(0.5)*(1.4)*s+(1.4)^2}');
+    expect(correct.formula).toBe('2.25*(1.4)^2/(s^2+2*(0.5)*(1.4)*s+(1.4)^2)');
+  });
+});
