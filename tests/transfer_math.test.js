@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // Formula evaluation in src/transfer_math.js: MathLive ascii-math is turned into math.js syntax,
 // compiled once and evaluated with the slider values as a scope.
 const { loadApp, global_value, set_globals } = require('./helpers/load_app');

@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // Tests for src/mouse_drag.js: mouseDragged() and the helpers it uses (drag_T_in_Bode, drag_k_in_Bode,
 // drag_T_in_step_response, drag_k_in_step_response, set_T_in_pz_map, redraw_canvas_gain_for_variables).
 // Each test starts a drag the way mousePressed() does (clicked_on_* globals and initial_mouseX/Y),

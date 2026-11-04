@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // Tests for src/help_questions.js (the right-click Q&A help) and for the sound part of
 // src/achievements_sound.js (init_jingle, play_jingle). The achievement logic itself is in
 // tests/achievements.test.js.

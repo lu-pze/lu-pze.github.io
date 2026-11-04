@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // Tests for the assignment logic in src/assignments.js and the task checks that complete
 // assignment tasks (mouseReleased in src/mouse_pressed.js, the typed-in slider value in
 // src/graph_ui.js), plus how the PID controller's zeros are drawn (src/bode_graph.js).

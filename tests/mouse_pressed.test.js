@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // Characterization (golden master) tests for mousePressed() in src/mouse_pressed.js: what a press at
 // each point of the canvas does, with and without a running quiz, for the graph types that have
 // special "which time constant is closest" handling. The snapshot records current behaviour,

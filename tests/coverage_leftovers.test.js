@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // The last small gaps that `npm run test:coverage` showed in the other suites: branches and
 // one-line `if` bodies that no test reached. Each describe block names the src/ file it covers.
 // The expected values are worked out from the maths or the documented behaviour, not copied from

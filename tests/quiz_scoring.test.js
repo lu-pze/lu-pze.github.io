@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // Characterization tests for src/quiz_scoring.js: answer routing (quiz_clicked), scoring state
 // (quiz_correct / quiz_incorrect / timeline), the highscore parser (read_highscores) and the
 // contract between the event string that quiz_time_is_up POSTs and the regexes that

@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // Characterization tests for the achievement logic in src/achievements_sound.js.
 const { loadApp, global_value, set_globals } = require('./helpers/load_app');
 

@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // Golden-master tests for the numeric core: transfer-function evaluation,
 // Bode gain/phase, stability margins and time responses of every preset graph.
 // Snapshots record the current behaviour so a refactor cannot silently change it.

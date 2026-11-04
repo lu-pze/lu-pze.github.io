@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // Characterization tests for next_quiz() in src/quiz.js: which question type is picked, and the
 // target value / graphs generated for each type at each difficulty level. Math.random is replaced
 // by a scripted sequence (0.5 once the script runs out), and removeAllGraphs/addNewGraph are

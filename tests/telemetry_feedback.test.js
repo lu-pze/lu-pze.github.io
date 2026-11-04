@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // Tests for src/banner_telemetry.js (right-click banner, add_event / periodic_send event
 // logging, opt_out_tracking) and src/feedback.js (survey popups, set_fb_*). They record current
 // behaviour; the one `test.failing` case marks a suspected bug (see the comment on it).

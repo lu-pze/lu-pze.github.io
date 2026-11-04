@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // More tests for src/assignments.js: toggling and showing the assignments window, task_done's
 // side effects (sound, popup, answer text), reset_task, the task list written by update_tasks
 // (to-do/done lists, the grade badge thresholds), update_assignments, remove_all_windows,

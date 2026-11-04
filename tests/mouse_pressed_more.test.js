@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // Tests for the parts of src/mouse_pressed.js that the golden master in mouse_pressed.test.js does not
 // reach: mouseReleased (task detection after a drag, fast-precision reset, clicked_on_* reset),
 // remove_splash_screen, the Web Audio start-up on a press and the dialog-box hit test.

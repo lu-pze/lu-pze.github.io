@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // Tests for src/bode_graph.js beyond the golden master in numeric_core.test.js: the closed-form
 // time responses of the first presets (every sign branch of the y-axis range), margins and
 // computed poles/zeros, pole_zero_map_position clamping, which graphs get a pole-zero map, and all

@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // Tests for the quiz state and flow in src/quiz.js: enabling the quiz, starting and stopping it,
 // nickname handling, the 90 second countdown, the compete/practice start-up, the status panel
 // (update_quiz) with its cap grades, and the perturbations used by the "click the wrong graph"

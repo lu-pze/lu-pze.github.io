@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // Tests for src/dialogs_scripts.js: opening/closing the settings and info windows, the script
 // export box, and the generated Python / Julia / MATLAB code for each preset graph.
 const { loadApp, global_value, set_globals } = require('./helpers/load_app');

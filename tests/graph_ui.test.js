@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // Tests for src/graph_ui.js: the range sliders (createRangeSlider and its handlers), adding and
 // removing graphs (addNewGraph, removeGraph, removeAllGraphs), the information tabs, and the
 // bode_graphs management around them (getGraphById, checkSlider, updateFormulaAndDraw ...).

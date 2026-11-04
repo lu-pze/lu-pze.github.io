@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // Tests for src/hover_nyquist.js: the right-click-help hover (handle_questions), the mouseMoved
 // hover overlays on every plot (pole-zero map, step response, Bode magnitude/phase, Nyquist),
 // draw_hover_nyquist and the grid/axis drawing helpers. The p5 drawing functions are replaced by

@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // Tests for src/app_setup.js: fullscreen toggling, cookies, p5 setup() (URL parameters, client
 // cookie id, telemetry events), ready() (DOM wiring) and the start-up hook.
 const { loadApp, global_value, set_globals } = require('./helpers/load_app');

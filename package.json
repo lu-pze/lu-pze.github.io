@@ -7,12 +7,15 @@
     "test": "jest",
     "test:coverage": "LU_PZE_COVERAGE=1 jest --coverage",
     "test:e2e": "playwright test",
-    "lint": "node tools/lint.js --quiet"
+    "lint": "node tools/lint.js --quiet",
+    "test:mutation": "stryker run"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.64.1",
+    "@stryker-mutator/core": "^10.1.1",
+    "@stryker-mutator/jest-runner": "^10.1.1",
     "eslint": "^8.56.0",
     "istanbul-lib-instrument": "^6.0.3",
     "jest": "^30.5.2",

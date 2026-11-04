@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 const { loadApp, global_value } = require('./helpers/load_app');
 
 describe('app scripts load in a browser-like global scope', () => {

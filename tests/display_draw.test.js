@@ -1,4 +1,3 @@
-/** @jest-environment jsdom */
 // Tests for src/display_draw.js: display settings (stroke weight, light/dark mode, input signal
 // list), the graph-information tabs, plot geometry (setGraphDimensions, windowResized), the
 // numeric axis helpers, and the p5 draw() with every draw_* function. The p5 drawing functions
