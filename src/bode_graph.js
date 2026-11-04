@@ -141,7 +141,8 @@ class bode_graph{
         this.bode_timerep_array = []
         for(let x=0; x<graph_step_response_width; x+=precision){
           let t = map(x,0,graph_step_response_width,0,max_x_timerep);
-          let math_y = k_1 * (1.0 - Math.exp(-t / T_1));
+          // With T_1 = 0 the system is the constant k_1 (and exp(-0/0) would be NaN at t = 0):
+          let math_y = (T_1 == 0) ? k_1 : k_1 * (1.0 - Math.exp(-t / T_1));
           this.bode_timerep_array.push(math_y);
         }
         if (T_1 >= 0){

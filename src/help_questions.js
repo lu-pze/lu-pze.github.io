@@ -498,7 +498,7 @@ and the significance of stability in control systems more effectively. This appr
     }
   },a:`<center><img src="images/PID_control_loop_v2.svg" width="80%"></center><br>
 The closed-loop response is how the output Y responds to the input R.<br><br>
-When we take our system and control it with, in this example, a PID controller, then the closed-loop response G<sub>YR</sub> will tell us how the output y(t) reacts to the reference input. The step input response graph shows a system with the reference input value 0.0 for time t<0, and reference value 1.0 when t>=0. Ideally, this would make the output y(t) also resemble a step function. However, it's difficult to make an ideal controller.<br>
+When we take our system and control it with, in this example, a PID controller, then the closed-loop response G<sub>YR</sub> will tell us how the output y(t) reacts to the reference input. The step input response graph shows a system with the reference input value 0.0 for time t&lt;0, and reference value 1.0 when t>=0. Ideally, this would make the output y(t) also resemble a step function. However, it's difficult to make an ideal controller.<br>
   <h3>How do we get the closed-loop transfer function?</h3>
   To find the closed-loop transfer function G<sub>YR</sub>(s) when the open-loop transfer function is<br>
   <math-field read-only style='vertical-align:bottom;display:inline-block'>
@@ -941,7 +941,7 @@ function enable_questions(){
         let scroll_y = window.pageYOffset || document.documentElement.scrollTop;
         let x=scroll_x + rect.left + rect.width/2;
         let y=scroll_y + rect.top + rect.height/2;
-        s += "<div class='question_div' id='task_"+task_id+"' style='top:"+(y+6)+"px;left:"+(x+4)+"px;'>";
+        s += "<div class='question_div' id='icon_task_"+task_id+"' style='top:"+(y+6)+"px;left:"+(x+4)+"px;'>";
         s += '<img src="images/question_small.webp" width="100px" style="opacity:0.8">';
         s += "</div>";
       }

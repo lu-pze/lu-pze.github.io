@@ -256,6 +256,7 @@ let rad_phase_upper_bound;
 function draw_bode_phase_T (T,i,pole_zero="pole"){
   let frequency = 1/Math.abs(T);
   let screen_x = (Math.log(frequency)/Math.log(10)+2) * graph_bode_phase_width/5;
+  if (!isFinite(screen_x)) return; // T = 0 or T = Infinity (w = 0): no corner frequency to mark
   let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
   let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
   stroke(bode_graphs[i].bode_hue,240,360);
@@ -271,6 +272,7 @@ function draw_bode_mag_T(T,i,pole_zero="pole"){
   let frequency = 1 / Math.abs(T);
   // Need to map frequency to pixel:
   let screen_x = (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
+  if (!isFinite(screen_x)) return; // T = 0 or T = Infinity (w = 0): no corner frequency to mark
   // Now we know the x position. Let's find out the y position:
   let screen_y = map(bode_graphs[i].bode_gain_array[Math.round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
   stroke(bode_graphs[i].bode_hue,240,360);

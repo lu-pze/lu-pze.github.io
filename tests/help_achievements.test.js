@@ -182,7 +182,7 @@ describe('help_questions.js: the all_questions table', () => {
 
   // The browser shows "t<0" correctly, but the HTML spec wants &lt; in text and a bare "<" in front
   // of a letter would start a tag. Found in the GRAPH_ONE_POLE_WITH_PID_YR answer: "for time t<0".
-  test.failing('the text uses &lt; instead of a bare "<"', () => {
+  test('the text uses &lt; instead of a bare "<"', () => {
     for (const [id, entry] of Object.entries(questions())) {
       const outside_tags = (entry.q + entry.a).replace(/<\/?[a-zA-Z][^>]*>/g, '');
       expect({ id, bare: /<(?![a-zA-Z/])/.exec(outside_tags) }).toEqual({ id, bare: null });
@@ -614,7 +614,7 @@ describe('enable_questions', () => {
       span.getBoundingClientRect = () => ({ left: 300, top: 400, width: 100, height: 20 });
       document.body.appendChild(span);
     };
-    const task_icon = (id) => document.querySelector(`#questions_div [id="task_${id}"]`);
+    const task_icon = (id) => document.querySelector(`#questions_div [id="icon_task_${id}"]`);
     afterEach(() => {
       for (const id of added.splice(0)) window.eval(`delete all_tasks[${JSON.stringify(id)}]`);
     });
@@ -658,7 +658,7 @@ describe('enable_questions', () => {
     // so after enable_questions two elements share an id. As #questions_div comes first in the
     // page, document.getElementById('task_X') in handle_questions then finds the icon and not
     // the text, so the distance is measured to a stale position when the task list scrolls.
-    test.failing('the icon does not reuse the id of the task text', () => {
+    test('the icon does not reuse the id of the task text', () => {
       add_task('test_task', { t: 'Do it', a: 'Hint' });
       task_span('test_task');
       window.enable_questions();

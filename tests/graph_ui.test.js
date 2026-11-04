@@ -914,7 +914,7 @@ describe('removeGraph', () => {
 
   // BUG: removeGraph removes `tbody` (the 3rd parent of the range input), not the .slider-wrapper
   // div, so every deleted graph leaves empty `<div class="slider-wrapper"><table></table></div>` behind.
-  test.failing('removes the slider wrapper elements of the sliders that it deletes', () => {
+  test('removes the slider wrapper elements of the sliders that it deletes', () => {
     window.addNewGraph(null, preset('GRAPH_ONE_REAL_POLE'));
     window.removeGraph(1);
     expect(document.querySelectorAll('.slider-wrapper')).toHaveLength(0);
@@ -923,7 +923,7 @@ describe('removeGraph', () => {
   // BUG: removeGraph writes UNSET to range_slider_variables[linked_id] (the graph id, which is an
   // unrelated variable slot) instead of the slots of the deleted sliders. The variables keep their
   // old values, so checkSlider never offers a "+" button for them again (it needs the value UNSET).
-  test.failing('forgets the values of the sliders that it deletes', () => {
+  test('forgets the values of the sliders that it deletes', () => {
     window.addNewGraph(null, preset('GRAPH_ONE_REAL_POLE'));
     window.addNewGraph(null, preset('GRAPH_TWO_REAL_POLES'));
     window.removeGraph(1);

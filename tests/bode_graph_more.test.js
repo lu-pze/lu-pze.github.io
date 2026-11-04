@@ -153,10 +153,9 @@ describe('bode_graph', () => {
       expect(range(graph)).toEqual([0, 20]);
     });
 
-    // BUG (src/bode_graph.js, GRAPH_ONE_REAL_POLE step response): with T_1 = 0 the first sample is
-    // k_1*(1 - exp(-0/0)) = NaN, so draw_timeresponse() passes vertex(0, NaN) to p5. For t > 0 the
-    // formula gives the right value k_1. Remove .failing once fixed.
-    test.failing('one real pole, step with T_1 = 0 gives finite samples (first sample is NaN)', () => {
+    // With T_1 = 0 the formula would give k_1*(1 - exp(-0/0)) = NaN at t = 0, and draw_timeresponse()
+    // would pass vertex(0, NaN) to p5.
+    test('one real pole, step with T_1 = 0 gives finite samples (first sample is NaN)', () => {
       set_sliders({ k_1: 2, T_1: 0 });
       const graph = with_time_response(preset('GRAPH_ONE_REAL_POLE'));
       expect(graph.bode_timerep_array.every(Number.isFinite)).toBe(true);

@@ -695,6 +695,22 @@ describe('draw_bode_responses: magnitude', () => {
   });
 });
 
+describe('draw_bode_mag_T and draw_bode_phase_T without a corner frequency', () => {
+  test.each([
+    ['draw_bode_mag_T', 0], ['draw_bode_mag_T', Infinity],
+    ['draw_bode_phase_T', 0], ['draw_bode_phase_T', Infinity],
+  ])('%s(T = %s) draws nothing instead of a marker at an infinite x', (name, T) => {
+    use_presets('GRAPH_ONE_REAL_POLE');
+    window.draw_bode_responses('phase'); // sets the bounds used by draw_bode_phase_T
+    window.draw_X = jest.fn();
+    window.draw_O = jest.fn();
+    window[name](T, 0);
+    window[name](T, 0, 'zero');
+    expect(window.draw_X).not.toHaveBeenCalled();
+    expect(window.draw_O).not.toHaveBeenCalled();
+  });
+});
+
 describe('draw_bode_responses: phase', () => {
   const axis_labels = () => calls('text').filter((a) => a[1] === -7).map((a) => a[0]);
 

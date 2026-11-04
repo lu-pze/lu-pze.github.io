@@ -518,10 +518,8 @@ function removeGraph (linked_id){
   for(let i=0; i<variables_to_delete.length; i++){
     let variable_to_delete = variables_to_delete[i];
     let button = document.getElementById("RANGE_" + variable_position[variable_to_delete]);
-    range_slider_variables[linked_id] = 18012001;
-//    let linked_id = button.parentElement.parentElement.getElementsByClassName("range-slider")[0].id.split("_")[1];
-    let slider = button.parentElement.parentElement.parentElement;
-    slider.remove();
+    range_slider_variables[variable_position[variable_to_delete]] = 18012001; // "unset": checkSlider offers a "+" button again
+    button.closest(".slider-wrapper").remove();
   }
   linked_equation.parentElement.remove();
 }
