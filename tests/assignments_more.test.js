@@ -649,5 +649,177 @@ describe('select_assignment', () => {
       expect([open.bode_display_timeresponse_bool, open.bode_display_nyquist_bool, open.bode_display_information_bool])
         .toEqual([false, true, true]);
     });
+
+    test.each([
+      ['pid_controller_S', ['GRAPH_PID', 'GRAPH_ONE_POLE_WITH_PID_YR', 'GRAPH_ONE_POLE_WITH_PID_S']],
+      ['pid_controller_OL', ['GRAPH_PID', 'GRAPH_ONE_POLE_WITH_PID_YR', 'GRAPH_ONE_POLE_WITH_PID_S',
+        'GRAPH_ONE_POLE_WITH_PID_YL', 'GRAPH_ONE_POLE_WITH_PID_OPEN']],
+    ])('%s: every PID graph has its own display flags', (assignment, presets) => {
+      register(assignment);
+      select(assignment);
+      expect(graphs().slice(1).map(flags)).toEqual(presets.map((name) => PID_FLAGS[name]));
+    });
+
+    test.each(['pid_controller_S', 'pid_controller_OL'])('%s restarts at the first preset like the other PID assignments', (assignment) => {
+      register(assignment);
+      set_globals({ next_graph_no_to_add: 3 });
+      select(assignment);
+      expect(graphs()[0].graph_name).toBe(global_value('GRAPH_ORDER')[0].name);
+    });
+  });
+});
+
+// The display flags of the PID graphs: magnitude, phase, time response, Nyquist, information, equation.
+// They come from the strings "_____MP...E" and so on in select_assignment.
+const PID_FLAGS = {
+  GRAPH_PID: [true, true, false, false, false, true],
+  GRAPH_ONE_POLE_WITH_PID_YR: [true, true, true, false, false, true],
+  GRAPH_ONE_POLE_WITH_PID_S: [true, false, false, true, false, true],
+  GRAPH_ONE_POLE_WITH_PID_YL: [true, true, true, false, false, true],
+  GRAPH_ONE_POLE_WITH_PID_OPEN: [true, true, false, true, true, true],
+};
+const flags = (graph) => [graph.bode_display_bodemag_bool, graph.bode_display_bodephase_bool,
+  graph.bode_display_timeresponse_bool, graph.bode_display_nyquist_bool,
+  graph.bode_display_information_bool, graph.bode_display_equation_bool];
+
+// Cases added after Stryker mutation testing (npm run test:mutation) showed that no test noticed
+// these changes to src/assignments.js.
+describe('mutation gaps: select_assignment', () => {
+  const select = (value) => window.select_assignment({ value });
+
+  // beforeEach sets next_graph_no_to_add to 0, which hides a missing reset to 0.
+  test.each(['one_pole', 'pid_controller', 'pid_controller_YL'])('%s restarts at the first preset', (assignment) => {
+    set_globals({ next_graph_no_to_add: 3 });
+    select(assignment);
+    expect(graphs()[0].graph_name).toBe(global_value('GRAPH_ORDER')[0].name);
+    expect(graphs()[0].bode_id).toBe(1);
+  });
+
+  test('pid_controller_YL gives every PID graph its display flags', () => {
+    select('pid_controller_YL');
+    expect(graphs().slice(1).map(flags)).toEqual([
+      PID_FLAGS.GRAPH_PID, PID_FLAGS.GRAPH_ONE_POLE_WITH_PID_YR, PID_FLAGS.GRAPH_ONE_POLE_WITH_PID_YL,
+    ]);
+  });
+
+  test.each([
+    ['one_pole', 'Match this response', '\\frac{0.65}{1+2s}'],
+    ['two_real_poles', 'Match this response', '\\frac{0.5}{1+2s+s^2}'],
+    ['two_real_poles', 'Match this Bode phase', '\\frac{1}{(1+5s)(1+0.05s)}'],
+    ['two_complex_poles', 'Match this Bode', '\\frac{8^2}{s^2+2*0.05*8*s+8^2}'],
+    ['two_complex_poles', 'Match this response', '\\frac{0.7*2^2}{s^2+2*0.7*2*s+2^2}'],
+    ['one_zero_two_poles', 'Match this Nyquist', '\\frac{(1+6s)}{(1+2.5s)(1+s)}'],
+    ['one_zero_two_poles', 'Match this Bode', '\\frac{0.75(1+2s)}{(1+9.25s)(1+0.5s)}'],
+    ['one_zero_two_poles', 'Match this response', '\\frac{(1-1.5s)}{(1+s)(1+s)}'],
+  ])('%s: the ghost "%s" shows the LaTeX %s', (assignment, name, latex) => {
+    select(assignment);
+    const equation = [...document.querySelectorAll('.equation')].find((div) => div.id.endsWith('_' + name));
+    expect(equation.querySelector('math-field.formula').textContent).toBe(latex);
+  });
+});
+
+describe('mutation gaps: task_done', () => {
+  test('moves the assignment star to the same --top as the text, as a percentage', () => {
+    set_globals({ current_assignment: 'one_pole' });
+    window.mouseX = 0.5 * window.windowWidth;
+    window.mouseY = 0.25 * window.windowHeight;
+    window.task_done('T1=2');
+    expect(document.querySelector('.assignment_star').style.getPropertyValue('--top')).toBe('25%');
+    expect(document.querySelector('.achievement_text').style.getPropertyValue('--top')).toBe('25%');
+  });
+
+  test('refreshes the assignments window', () => {
+    set_globals({ current_assignment: 'one_pole' });
+    window.task_done('T1=2');
+    expect(document.querySelector('.assignments_box').innerHTML).toContain('Please select an assignment:');
+  });
+});
+
+describe('mutation gaps: update_assignments', () => {
+  const box = () => document.querySelector('.assignments_box');
+
+  test('the window starts with the close button and the heading, exactly', () => {
+    window.update_assignments();
+    expect(box().innerHTML.startsWith('<br><button type="button" class="close-window"')).toBe(true);
+    expect(box().innerHTML).toContain('</svg></button><center><svg');
+    expect(box().innerHTML).toContain('&nbsp;Your Assignments</center><br>Please select an assignment:<br><input');
+  });
+
+  test('every label is followed by a line break, and the counter line is on its own line', () => {
+    window.update_assignments();
+    const radios = Object.keys(all_assignments()).length;
+    expect(box().innerHTML.split('</label><br>')).toHaveLength(radios + 1);
+    expect(box().innerHTML).toContain('</label><br><br><b>0/8</b> done so far. Better get started!<br><img');
+  });
+
+  test('the legend message needs all 8 assignments, and each count has its own message', () => {
+    set_globals({ done_tasks: Object.keys(all_tasks()) });
+    window.update_assignments();
+    expect(box().textContent).toContain('8/8 done so far. You\'re a legend!');
+  });
+
+  test('only the current assignment is checked in the completed list', () => {
+    set_globals({ current_assignment: 'time_delay', done_tasks: [...all_assignments().time_delay.tasks, ...all_assignments().four_poles.tasks] });
+    window.update_assignments();
+    const completed = box().innerHTML.slice(box().innerHTML.indexOf('Completed assignments:'));
+    expect(completed.match(/ checked/g)).toHaveLength(1);
+    expect(completed).toContain('id="time_delay" value="time_delay" onchange="select_assignment(this);" checked=""');
+    expect(completed).toContain('</label><br><input type="radio" name="assignment" id="four_poles"');
+    expect(completed).toContain('</label><br><img');
+  });
+});
+
+describe('mutation gaps: update_tasks', () => {
+  const html = () => document.getElementById('task_list').innerHTML;
+
+  test('starts with the assignment name', () => {
+    set_globals({ current_assignment: 'one_pole' });
+    window.update_tasks();
+    expect(html().startsWith('<center><b>' + all_assignments().one_pole.t + '</b></center><br>Your tasks')).toBe(true);
+  });
+
+  test('the badge text is "done/total" followed by a non-breaking space', () => {
+    set_globals({ current_assignment: 'one_pole', done_tasks: ['T1=2'] });
+    window.update_tasks();
+    expect(document.getElementById('assignment_0_text').textContent).toBe('1/' + Object.keys(all_tasks()).length + '\u00a0');
+  });
+
+  test('every task and every counter is on its own line', () => {
+    set_globals({ current_assignment: 'one_pole', done_tasks: ['T1=2'] });
+    window.update_tasks();
+    expect(html()).toContain('</span><br><br><input type="checkbox"'); // to-do tasks are separated by an empty line
+    expect(html()).toContain('Completed tasks:<br><input type="checkbox" checked="" onclick="reset_task(&quot;T1=2&quot;);">');
+    expect(html()).toContain('</span><br><br><b>1/5</b> done so far.<br><br><br><center><i><div');
+    expect(html().endsWith(all_assignments().one_pole.info + '</div></i></center>')).toBe(true);
+  });
+
+  test('the message for a finished assignment also ends with the info box', () => {
+    set_globals({ current_assignment: 'time_delay', done_tasks: all_assignments().time_delay.tasks });
+    window.update_tasks();
+    expect(html()).toContain("</span><br><br><br><center><i><div style='width:70%".replace(/'/g, '"'));
+  });
+});
+
+describe('mutation gaps: the assignment and task tables', () => {
+  test('every assignment has a name, tasks that exist, and an info text', () => {
+    for (const [id, assignment] of Object.entries(all_assignments())) {
+      expect([id, assignment.t]).toEqual([id, expect.stringMatching(/\S/)]);
+      expect(assignment.tasks.length).toBeGreaterThan(0);
+      if (id === 'none') continue;
+      expect([id, assignment.info]).toEqual([id, expect.stringMatching(/\S/)]);
+      for (const task of assignment.tasks) expect(Object.keys(all_tasks())).toContain(task);
+    }
+  });
+
+  test('"none" is the assignment that can never be finished and has no info text', () => {
+    expect(all_assignments().none.tasks).toEqual(['impossible']);
+    expect(all_assignments().none.info).toBe('');
+  });
+
+  test('every task has a text, and a hint that is not empty if it has one', () => {
+    for (const [id, task] of Object.entries(all_tasks())) {
+      expect([id, task.t]).toEqual([id, expect.stringMatching(/\S/)]);
+      if (task.a !== undefined) expect([id, task.a]).toEqual([id, expect.stringMatching(/\S/)]);
+    }
   });
 });
