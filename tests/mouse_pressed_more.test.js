@@ -600,3 +600,448 @@ describe('mouse_is_in_a_box', () => {
     expect(window.mouse_is_in_a_box(200, 150)).toBe(false);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Cases added after Stryker mutation testing (npm run test:mutation) showed that no test noticed
+// these changes to src/mouse_pressed.js.
+
+// Plot geometry with a different, non-zero value for every position and size, so that a swapped
+// sign anywhere moves an edge. The offsets (graph_*_x_offset ...) are constants of the app.
+const DISTINCT_GEOMETRY = {
+  graph_step_response_x: 11, graph_step_response_y: 13, graph_step_response_width: 200, graph_step_response_height: 100,
+  graph_bode_mag_x: 17, graph_bode_mag_y: 19, graph_bode_mag_width: 150, graph_bode_mag_height: 90,
+  graph_bode_phase_x: 23, graph_bode_phase_y: 29, graph_bode_phase_width: 160, graph_bode_phase_height: 80,
+  graph_nyquist_x: 31, graph_nyquist_y: 37, graph_nyquist_width: 120, graph_nyquist_height: 110,
+};
+
+describe('mutation gaps: the regions of the canvas that react to a press', () => {
+  beforeEach(() => set_globals(DISTINCT_GEOMETRY));
+
+  // Each region is described by its edges as absolute canvas coordinates:
+  // [low, high, low edge belongs to the region, high edge belongs to the region].
+  function regions() {
+    const g = global_value;
+    const sx = g('graph_step_response_x') + g('graph_step_response_x_offset');
+    const sy = g('graph_step_response_y') + g('graph_step_response_y_offset');
+    const mx = g('graph_bode_mag_x') + g('graph_bode_mag_x_offset');
+    const my = g('graph_bode_mag_y') + g('graph_bode_mag_y_offset');
+    const px = g('graph_bode_phase_x') + g('graph_bode_phase_x_offset');
+    const py = g('graph_bode_phase_y') + g('graph_bode_phase_y_offset');
+    const nx = g('graph_nyquist_x') + g('graph_nyquist_x_offset');
+    const ny = g('graph_nyquist_y') + g('graph_nyquist_y_offset');
+    const step_x = [sx, sx + g('graph_step_response_width'), false, false];
+    const step_bottom = sy + g('graph_step_response_height');
+    const mag_x = [mx, mx + g('graph_bode_mag_width'), false, false];
+    const mag_bottom = my + g('graph_bode_mag_height');
+    const phase_x = [px, px + g('graph_bode_phase_width'), false, false];
+    const phase_bottom = py + g('graph_bode_phase_height');
+    return {
+      mouse_in_step_response_time_axis: { x: step_x, y: [step_bottom, step_bottom + g('graph_step_response_timeaxis_height'), true, true] },
+      mouse_in_step_response: { x: step_x, y: [sy, step_bottom, false, false] },
+      mouse_in_bode_mag_frequency_axis: { x: mag_x, y: [mag_bottom, mag_bottom + g('graph_bode_phase_axis_height'), true, false] },
+      mouse_in_bode_mag_yaxis: { x: [g('graph_bode_mag_x'), g('graph_bode_mag_x') + g('graph_bode_mag_x_offset'), false, true], y: [my, mag_bottom, false, false] },
+      mouse_in_bode_mag: { x: mag_x, y: [my, mag_bottom, false, false] },
+      mouse_in_nyquist: { x: [nx, nx + g('graph_nyquist_width'), false, false], y: [ny, ny + g('graph_nyquist_height'), false, false] },
+      mouse_in_bode_phase_frequency_axis: { x: phase_x, y: [phase_bottom, phase_bottom + g('graph_bode_phase_axis_height'), true, false] },
+      mouse_in_bode_phase_yaxis: { x: [g('graph_bode_phase_x'), g('graph_bode_phase_x') + g('graph_bode_mag_x_offset'), false, true], y: [py, phase_bottom, false, false] },
+      mouse_in_bode_phase: { x: phase_x, y: [py, phase_bottom, false, false] },
+    };
+  }
+
+  const hit = (name, x, y) => {
+    window.mouseX = x;
+    window.mouseY = y;
+    return window[name]();
+  };
+
+  test.each(Object.keys({
+    mouse_in_step_response_time_axis: 0, mouse_in_step_response: 0, mouse_in_bode_mag_frequency_axis: 0,
+    mouse_in_bode_mag_yaxis: 0, mouse_in_bode_mag: 0, mouse_in_nyquist: 0, mouse_in_bode_phase_frequency_axis: 0,
+    mouse_in_bode_phase_yaxis: 0, mouse_in_bode_phase: 0,
+  }))('%s: inside, just outside and exactly on every edge', (name) => {
+    const { x, y } = regions()[name];
+    const middle = (edges) => (edges[0] + edges[1]) / 2;
+    const mid_x = middle(x);
+    const mid_y = middle(y);
+    expect(hit(name, mid_x, mid_y)).toBe(true);
+    for (const [axis, edges] of [['x', x], ['y', y]]) {
+      const at = (value) => (axis === 'x' ? hit(name, value, mid_y) : hit(name, mid_x, value));
+      const [low, high, low_included, high_included] = edges;
+      expect([at(low - 0.25), at(low), at(low + 0.25)]).toEqual([false, low_included, true]);
+      expect([at(high - 0.25), at(high), at(high + 0.25)]).toEqual([true, high_included, false]);
+    }
+  });
+});
+
+describe('mutation gaps: mouse_is_in_a_box on a scrolled page', () => {
+  const rect = { left: 100, right: 300, top: 50, bottom: 250 };
+  const saved = {};
+
+  function scroll({ page_x = 0, page_y = 0, document_left = 0, document_top = 0 }) {
+    for (const name of ['pageXOffset', 'pageYOffset']) saved[name] ??= Object.getOwnPropertyDescriptor(window, name);
+    Object.defineProperty(window, 'pageXOffset', { configurable: true, value: page_x });
+    Object.defineProperty(window, 'pageYOffset', { configurable: true, value: page_y });
+    Object.defineProperty(document.documentElement, 'scrollLeft', { configurable: true, value: document_left });
+    Object.defineProperty(document.documentElement, 'scrollTop', { configurable: true, value: document_top });
+  }
+
+  beforeEach(() => {
+    const box = document.querySelector('.toolbox');
+    box.classList.add('active');
+    box.getBoundingClientRect = () => rect;
+  });
+
+  afterEach(() => {
+    for (const [name, descriptor] of Object.entries(saved)) {
+      if (descriptor) Object.defineProperty(window, name, descriptor);
+      else delete window[name];
+    }
+    delete document.documentElement.scrollLeft;
+    delete document.documentElement.scrollTop;
+  });
+
+  // The box (viewport coordinates) is moved by the scroll to find where it is on the page.
+  test.each([
+    ['the page offset', { page_x: 30, page_y: 40 }, 30, 40],
+    ['the document element when the page offset is 0', { document_left: 25, document_top: 35 }, 25, 35],
+    ['the page offset rather than the document element when both are set', { page_x: 30, page_y: 40, document_left: 25, document_top: 35 }, 30, 40],
+  ])('uses %s', (_, scrolling, dx, dy) => {
+    scroll(scrolling);
+    const middle_x = 200 + dx;
+    const middle_y = 150 + dy;
+    const at = (x, y) => window.mouse_is_in_a_box(x, y);
+    expect([at(rect.left + dx - 0.1, middle_y), at(rect.left + dx, middle_y)]).toEqual([false, true]);
+    expect([at(rect.right + dx, middle_y), at(rect.right + dx + 0.1, middle_y)]).toEqual([true, false]);
+    expect([at(middle_x, rect.top + dy - 0.1), at(middle_x, rect.top + dy)]).toEqual([false, true]);
+    expect([at(middle_x, rect.bottom + dy), at(middle_x, rect.bottom + dy + 0.1)]).toEqual([true, false]);
+  });
+});
+
+describe('mutation gaps: pressing on the plots in a quiz', () => {
+  const QUIZ_SPIES = [
+    'quiz_clicked_time_response', 'quiz_clicked_bode_mag', 'quiz_clicked_bode_mag_xaxis', 'quiz_clicked_bode_mag_yaxis',
+    'quiz_clicked_bode_phase', 'quiz_clicked_bode_phase_xaxis', 'quiz_clicked_bode_phase_yaxis', 'quiz_clicked_nyquist',
+    'mouseDragged', 'push', 'pop', 'stroke', 'strokeWeight', 'line',
+  ];
+  const saved_functions = {};
+  const event = () => ({ preventDefault: jest.fn() });
+
+  const offset = (name) => global_value(name);
+  const set_sliders = (values) => {
+    const slider_values = global_value('range_slider_variables');
+    const variable_position = global_value('variable_position');
+    for (const [name, value] of Object.entries(values)) slider_values[variable_position[name]] = value;
+  };
+  const curve_graph = (preset, props = {}) => ({
+    bode_formula: formula(preset), full_name: 'Graph', bode_displaybool: true,
+    bode_display_bodemag_bool: true, bode_display_bodephase_bool: true, bode_display_timeresponse_bool: true,
+    bode_gain_array: Array(500).fill(20), bode_phase_array: Array(500).fill(0), bode_timerep_array: Array(200).fill(50),
+    ...props,
+  });
+
+  beforeEach(() => {
+    for (const name of QUIZ_SPIES) {
+      saved_functions[name] = window[name];
+      window[name] = jest.fn();
+    }
+    set_globals({
+      ...DISTINCT_GEOMETRY, current_quiz: 'click_freq', precision: 4, min_y_timerep: 0, max_y_timerep: 100,
+      gain_upper_bound: 60, y_case_gain: 6, x_case_gain: 5, min_10power: -2, phase_upper_bound: 90, phase_lower_bound: -90,
+      phase_case_number: 4, bode_graphs: [curve_graph('GRAPH_TWO_REAL_POLES')],
+      clicked_on_time_variable: '',
+    });
+  });
+
+  afterEach(() => {
+    for (const name of QUIZ_SPIES) window[name] = saved_functions[name];
+  });
+
+  test('the frequency axes of both Bode plots measure with the geometry of the phase plot', () => {
+    window.mouseX = 100;
+    const expected = Math.pow(10, (100 - 23 - offset('graph_bode_phase_x_offset')) / 160 * 5 - 2);
+    expect(window.press_bode_mag_frequency_axis(event())).toBe(false);
+    expect(window.quiz_clicked_bode_mag_xaxis.mock.calls[0][0]).toBeCloseTo(expected, 8);
+    expect(window.press_bode_phase_frequency_axis(event())).toBe(false);
+    expect(window.quiz_clicked_bode_phase_xaxis.mock.calls[0][0]).toBeCloseTo(expected, 8);
+  });
+
+  test('the magnitude at the mouse follows the Bode magnitude plot', () => {
+    window.mouseY = 70;
+    const perc = (70 - 19 - offset('graph_bode_mag_y_offset')) / 90;
+    expect(window.bode_magnitude_at_mouse_y()).toBeCloseTo(Math.pow(10, (60 - perc * 120) / 20), 8);
+  });
+
+  test('a press on the step response draws the vertical line through the plot', () => {
+    window.mouseX = 100;
+    window.mouseY = 60;
+    expect(window.press_step_response(event())).toBe(false);
+    const top = 13 + offset('graph_step_response_y_offset');
+    expect(window.push).toHaveBeenCalledTimes(1);
+    expect(window.stroke).toHaveBeenCalledWith(global_value('text_color'));
+    expect(window.strokeWeight).toHaveBeenCalledWith(2);
+    expect(window.line).toHaveBeenCalledWith(100, top, 100, top + 100);
+    expect(window.pop).toHaveBeenCalledTimes(1);
+  });
+
+  test('in a quiz the step response press reports time and amplitude', () => {
+    set_globals({ min_y_timerep: -20, max_y_timerep: 100 });
+    window.mouseX = 100;
+    window.mouseY = 60;
+    window.press_step_response(event());
+    const time = (100 - 11 - offset('graph_step_response_x_offset')) / 200 * 10;
+    const amplitude = 100 - 120 * (60 - 13 - offset('graph_step_response_y_offset')) / 100;
+    const [graph_no, reported_time, reported_amplitude, variable] = window.quiz_clicked_time_response.mock.calls[0];
+    expect(graph_no).toBe(0);
+    expect(reported_time).toBeCloseTo(time, 8);
+    expect(reported_amplitude).toBeCloseTo(amplitude, 8);
+    expect(variable).toBe(global_value('clicked_on_time_variable'));
+  });
+
+  test('a Nyquist press exactly on the real axis counts as the upper half plane (-360 degrees on the right)', () => {
+    set_globals({ max_nyquist_y: 2, min_nyquist_y: -2, min_nyquist_x: -3, max_nyquist_x: 1 });
+    const real_axis_y = 37 + 55 + offset('graph_nyquist_y_offset'); // origo is in the middle of the 110 px high plot
+    window.mouseX = 31 + offset('graph_nyquist_x_offset') + 120 * 0.9; // axis_x = -3 + 4 * 0.9 = 0.6
+    window.mouseY = real_axis_y;
+    window.press_nyquist(event());
+    const [magnitude, angle] = window.quiz_clicked_nyquist.mock.calls[0];
+    expect(magnitude).toBeCloseTo(0.6, 8);
+    expect(angle).toBeCloseTo(-270 - 90, 8);
+  });
+
+  test('a step response outside the plot range counts as being at the edge of the plot', () => {
+    const real_map = window.map;
+    // p5's map(value, a, b, c, d, true) clamps the result to [c, d]; the stand-in used by the other tests does not.
+    window.map = (value, a, b, c, d, clamp) => {
+      const result = c + (value - a) * (d - c) / (b - a);
+      return clamp ? Math.min(Math.max(c, d), Math.max(Math.min(c, d), result)) : result;
+    };
+    try {
+      set_globals({
+        bode_graphs: [
+          curve_graph('GRAPH_ONE_REAL_POLE', { bode_timerep_array: Array(200).fill(500) }),
+          curve_graph('GRAPH_ONE_REAL_POLE', { bode_timerep_array: Array(200).fill(50) }),
+        ],
+      });
+      window.mouseX = 100;
+      window.mouseY = 13 + offset('graph_step_response_y_offset'); // the top of the plot, where 500 is drawn
+      window.press_step_response(event());
+      expect(global_value('clicked_on_time_response_graph_no')).toBe(0);
+    } finally {
+      window.map = real_map;
+    }
+  });
+
+  test.each([
+    ['Bode magnitude', 'press_bode_mag', 'bode_mag', 'quiz_clicked_bode_mag', 17, 150, 73],
+    ['Bode phase', 'press_bode_phase', 'bode_phase', 'quiz_clicked_bode_phase', 23, 160, 139],
+  ])('%s: the closest time constant and the frequency come from the press relative to the plot', (_, press, __, quiz_click, plot_x, plot_width, mouse_y) => {
+    // T_2 sits at 60 px and T_3 at 120 px in the frequency axis (width 150, 30 px per decade from 0.01 rad/s).
+    set_sliders({ T_2: 1, T_3: 0.01 });
+    window.mouseX = 70 + offset('graph_bode_mag_x_offset') + plot_x; // 70 px into the plot: closer to T_2
+    window.mouseY = mouse_y;
+    expect(window[press](event())).toBe(false);
+    expect(global_value('clicked_on_time_variable')).toBe('T_2');
+    const [graph_no, frequency, , variable] = window[quiz_click].mock.calls[0];
+    expect(graph_no).toBe(0);
+    expect(variable).toBe('T_2');
+    expect(frequency).toBeCloseTo(Math.pow(10, 70 / plot_width * 5 - 2), 8);
+  });
+
+  test('Bode phase: the curve is placed using the phase bounds in radians', () => {
+    // Phase bounds -90..90 degrees; graph 0 is at -0.3 rad, graph 1 at 0.7 rad. Pressing on the curve of a graph picks it.
+    set_globals({
+      bode_graphs: [
+        curve_graph('GRAPH_ONE_REAL_POLE', { bode_phase_array: Array(500).fill(-0.3) }),
+        curve_graph('GRAPH_ONE_REAL_POLE', { bode_phase_array: Array(500).fill(0.7) }),
+      ],
+    });
+    const y_of = (phase) => 29 + offset('graph_bode_phase_y_offset') + 80 * (1 - (phase + Math.PI / 2) / Math.PI);
+    window.mouseX = 200;
+    for (const [phase, expected] of [[-0.3, 0], [0.7, 1]]) {
+      window.quiz_clicked_bode_phase.mockClear();
+      window.mouseY = y_of(phase);
+      window.press_bode_phase(event());
+      expect(window.quiz_clicked_bode_phase.mock.calls[0][0]).toBe(expected);
+    }
+  });
+});
+
+describe('mutation gaps: choosing the graph and the time constant that a press moves', () => {
+  test('graphs_near_press only lists displayed graphs in this plot within less than 70 pixels', () => {
+    set_globals({
+      bode_graphs: [
+        { bode_displaybool: true, full_name: 'Graph', shown: true, d: 69.9 },
+        { bode_displaybool: true, full_name: 'Graph', shown: true, d: 70 },
+        { bode_displaybool: false, full_name: 'Graph', shown: true, d: 1 },
+        { bode_displaybool: true, full_name: 'Graph', shown: false, d: 1 },
+        { bode_displaybool: true, full_name: 'GhostMPTNIE_x', shown: true, d: 10 },
+      ],
+    });
+    const near = window.graphs_near_press((graph) => graph.shown, (graph) => graph.d);
+    expect(near.queue_with_ghosts).toEqual([[69.9, 0], [10, 4]]);
+    expect(near.queue).toEqual([[69.9, 0]]);
+  });
+
+  test('graphs_near_press with no graph at all gives two empty lists', () => {
+    set_globals({ bode_graphs: [] });
+    expect(window.graphs_near_press(() => true, () => 0)).toEqual({ queue: [], queue_with_ghosts: [] });
+  });
+
+  test('closest_in_queue picks the smallest distance and the first one of equals', () => {
+    expect(window.closest_in_queue([])).toBeUndefined();
+    expect(window.closest_in_queue([[5, 0], [3, 1], [3, 2], [4, 3]])).toEqual([3, 1]);
+    expect(window.closest_in_queue([[9999, 0]])).toEqual([9999, 0]);
+  });
+});
+
+describe('mutation gaps: the pole-zero maps', () => {
+  const event = () => ({ preventDefault: jest.fn() });
+  const map_graph = (preset, props = {}) => ({ bode_formula: formula(preset), bode_displaybool: true, ...props });
+
+  beforeEach(() => {
+    set_globals({
+      pole_zero_width: 96, pole_zero_height: 96, pole_zero_graph_x: [100, 300], pole_zero_graph_y: [200, 400],
+      clicked_on_time_variable: '', current_quiz: 'none',
+    });
+    window.mouseDragged = jest.fn();
+    window.quiz_clicked_pole_zero = jest.fn();
+  });
+
+  afterEach(() => {
+    delete window.mouseDragged;
+    delete window.quiz_clicked_pole_zero;
+  });
+
+  test.each(['GRAPH_ONE_REAL_POLE', 'GRAPH_TWO_REAL_POLES', 'GRAPH_TWO_COMPLEX_POLES', 'GRAPH_ONE_ZERO_TWO_POLES', 'GRAPH_PID'])(
+    '%s has a pole-zero map', (preset) => {
+      expect(window.graph_has_pole_zero_map(formula(preset))).toBe(true);
+    });
+
+  test.each(['GRAPH_TIME_DELAY', 'GRAPH_FOUR_POLES'])('%s has none', (preset) => {
+    expect(window.graph_has_pole_zero_map(formula(preset))).toBe(false);
+  });
+
+  test('a press just inside each edge of the map is taken, one exactly on the edge is not', () => {
+    set_globals({ bode_graphs: [map_graph('GRAPH_ONE_REAL_POLE')] });
+    const press = (x, y) => {
+      window.mouseX = x;
+      window.mouseY = y;
+      return window.press_in_pole_zero_maps(event());
+    };
+    expect(press(148, 248)).toBe(true);
+    expect([press(100, 248), press(100.5, 248)]).toEqual([false, true]);
+    expect([press(196, 248), press(195.5, 248)]).toEqual([false, true]);
+    expect([press(148, 200), press(148, 200.5)]).toEqual([false, true]);
+    expect([press(148, 296), press(148, 295.5)]).toEqual([false, true]);
+  });
+
+  test('graphs that are hidden or have no map are skipped', () => {
+    window.mouseX = 148;
+    window.mouseY = 248;
+    set_globals({ bode_graphs: [map_graph('GRAPH_ONE_REAL_POLE', { bode_displaybool: false })] });
+    expect(window.press_in_pole_zero_maps(event())).toBe(false);
+    set_globals({ bode_graphs: [map_graph('GRAPH_TIME_DELAY')] });
+    expect(window.press_in_pole_zero_maps(event())).toBe(false);
+    expect(global_value('clicked_on_pole_zero_graph_no')).toBe(-1);
+  });
+
+  test('a press in the map picks the closest time constant and reports it', () => {
+    set_globals({ bode_graphs: [map_graph('GRAPH_TWO_REAL_POLES')] });
+    const slider_values = global_value('range_slider_variables');
+    const variable_position = global_value('variable_position');
+    slider_values[variable_position.T_2] = 0.5; // pole at -2
+    slider_values[variable_position.T_3] = 2; // pole at -0.5
+    window.mouseX = 148; // real part -1
+    window.mouseY = 248;
+    window.press_in_pole_zero_maps(event());
+    expect(global_value('clicked_on_pole_zero_graph_no')).toBe(0);
+    expect(window.add_event).toHaveBeenCalledWith('click_pole_zero_map=0,clicked_on_time_variable=T_3');
+    expect(window.mouseDragged).toHaveBeenCalledTimes(1);
+  });
+
+  test.each(['pid_controller', 'pid_controller_YL'])('in the %s assignment the plots are redrawn with fast precision', (assignment) => {
+    set_globals({ bode_graphs: [map_graph('GRAPH_PID')], current_assignment: assignment, we_need_faster_calculations_right_now: false });
+    window.mouseX = 148;
+    window.mouseY = 248;
+    window.press_in_pole_zero_maps(event());
+    expect(global_value('we_need_faster_calculations_right_now')).toBe(true);
+    expect(global_value('precision')).toBe(global_value('SPEED_PRECISION'));
+  });
+
+  test('in a quiz the press is reported to the quiz instead of dragging', () => {
+    set_globals({ bode_graphs: [map_graph('GRAPH_ONE_REAL_POLE')], current_quiz: 'click_freq' });
+    window.mouseX = 148;
+    window.mouseY = 248;
+    window.press_in_pole_zero_maps(event());
+    expect(window.quiz_clicked_pole_zero).toHaveBeenCalledWith(0, -1, 0, '');
+    expect(window.mouseDragged).not.toHaveBeenCalled();
+  });
+});
+
+describe('mutation gaps: the first press', () => {
+  const event = () => ({ preventDefault: jest.fn() });
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    window.initial_graph = jest.fn();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+    delete window.initial_graph;
+  });
+
+  test('starts the four starting graphs 200 ms after the press, 150 ms apart', () => {
+    set_globals({ splash_screen_active: true, quiz_is_running: 0 });
+    expect(window.press_to_remove_splash_screen(event())).toBe(false);
+    const done_at = (ms) => {
+      jest.advanceTimersByTime(ms - Date.now() + start);
+      return window.initial_graph.mock.calls.length;
+    };
+    const start = Date.now();
+    expect([199, 200, 349, 350, 499, 500, 649, 650].map(done_at)).toEqual([0, 1, 1, 2, 2, 3, 3, 4].map((n) => n));
+  });
+
+  test('starts no graphs while a quiz is running', () => {
+    set_globals({ splash_screen_active: true, quiz_is_running: 1 });
+    window.press_to_remove_splash_screen(event());
+    jest.advanceTimersByTime(5000);
+    expect(window.initial_graph).not.toHaveBeenCalled();
+  });
+
+  test('a press while the help questions are shown logs it and closes them', () => {
+    const closed = [];
+    const original = window.disable_questions;
+    window.disable_questions = () => closed.push('closed');
+    try {
+      const e = event();
+      expect(window.press_to_close_questions(e)).toBe(false);
+      expect(window.add_event).toHaveBeenCalledWith('questions_removed');
+      expect(e.preventDefault).toHaveBeenCalled();
+      expect(closed).toEqual(['closed']);
+      expect(window.redraw_canvas_gain).toHaveBeenCalledWith('all');
+    } finally {
+      window.disable_questions = original;
+    }
+  });
+});
+
+describe('mutation gaps: tolerance limits of tasks checked on release', () => {
+  describe('matching Nyquist diagrams: the 0.92 and 1.07 limits are inclusive', () => {
+    const TASK = 'k4=1,T6=2.5,T7=1,T8=6';
+    const user = { bode_gain_array: [1, 2, 3], bode_complex_array: [{ re: 1, im: 2 }, { re: 0.5, im: -2 }, { re: 0.2, im: 0 }] };
+    const scaled = (key, factor) => ({
+      bode_gain_array: user.bode_gain_array.map((v) => v * (key === 'gain' ? factor : 1)),
+      bode_complex_array: user.bode_complex_array.map(({ re, im }) => ({
+        re: re * (key === 're' ? factor : 1),
+        im: im * ((im > 0 && key === 'im_max') || (im < 0 && key === 'im_min') ? factor : 1),
+      })),
+    });
+    const done = (key, factor) => release({ k_4: 1 }, { graphs: [make_graph(null, user), make_graph(null, scaled(key, factor))], clicked: CLICKED.bode_mag }).includes(TASK);
+
+    test.each(['gain', 're', 'im_max', 'im_min'])('%s', (key) => {
+      expect(done(key, 0.92)).toBe(true);
+      expect(done(key, 1.07)).toBe(true);
+    });
+  });
+});
