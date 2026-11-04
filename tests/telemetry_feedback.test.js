@@ -456,8 +456,7 @@ describe('feedback', () => {
   // "none" is the placeholder assignment ("...no assignment", one impossible task): it has no survey.
   const assignment_ids = () => Object.keys(global_value('all_assignments')).filter((id) => id !== 'none');
 
-  // Every question id start_feedback can pick (fb_nickname exists in get_next_fb_text but is
-  // never added to the available list, so it is not in this set).
+  // Every question id start_feedback can pick.
   const ALL_FB = [
     'fb_quiz_new', 'fb_quiz_knowledge', 'fb_quiz_enjoy', 'fb_quiz_many', 'fb_quiz_highscore',
     'fb_ass_new', 'fb_ass_knowledge', 'fb_ass_enjoy', 'fb_achievements', 'fb_liketext', 'fb_text',

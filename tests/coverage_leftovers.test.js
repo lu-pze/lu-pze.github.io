@@ -1,8 +1,7 @@
 // The last small gaps that `npm run test:coverage` showed in the other suites: branches and
 // one-line `if` bodies that no test reached. Each describe block names the src/ file it covers.
 // The expected values are worked out from the maths or the documented behaviour, not copied from
-// the output. Not covered here because the code is unreachable: feedback.js lines 22-23 and
-// 281-282 (see the notes in those files).
+// the output.
 const { loadApp, global_value, set_globals } = require('./helpers/load_app');
 
 beforeAll(() => loadApp());

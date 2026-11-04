@@ -16,20 +16,14 @@ function timer_feedback () {
 function start_feedback () {
   if (feedback_is_visible==1) return;
   let fb_text = get_next_fb_text();
-  if (fb_text=="") {
-    // No feedback question available right now. Just ignore.
-    // There is nothing to show
-    if (feedback_is_visible==1){
-      stop_feedback();
-    }
-  } else {
-    add_event("start_fb");
-    let toggleElement = document.querySelector('.feedback');
-    toggleElement.classList.add('active');
-    feedback_is_visible=1;
-    let fb_div = document.getElementById("feedback_text");
-    fb_div.innerHTML = fb_text;
-  }
+  // No feedback question available right now: there is nothing to show.
+  if (fb_text=="") return;
+  add_event("start_fb");
+  let toggleElement = document.querySelector('.feedback');
+  toggleElement.classList.add('active');
+  feedback_is_visible=1;
+  let fb_div = document.getElementById("feedback_text");
+  fb_div.innerHTML = fb_text;
 }
 
 function stop_feedback () {
@@ -278,8 +272,6 @@ function get_next_fb_text() {
     s += '<table width="90%"><tr><td width="50%" class="yellow_hover" onclick="done_fb_text()" align="center">';
     s += '<span id="fb_done_button" style="color:#000000;vertical-align:middle;text-align:center;margin:10px" width="100%">Done!</span><br>';
     s += '</td></tr></table>';
-  } else if (fb_to_show_this_time=="fb_nickname"){
-    s += 'Your nickname (optional): <input type="text" id="nickname" name="nickname" size="12" style="font-size:162%;text-align:center;background:#fff" value="" oninput="set_nickname(this)">';
   } else if (fb_to_show_this_time=="fb_edu"){
     s += '<table><tr><td>';
     s += 'Automatic control:<br>';
