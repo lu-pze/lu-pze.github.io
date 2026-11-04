@@ -902,3 +902,88 @@ describe('achievements reach the event log', () => {
     expect(add_event.mock.calls.map(([event]) => event)).toEqual(['achievement_done=drag_bode_mag']);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Cases added after Stryker mutation testing (npm run test:mutation) showed that no test noticed
+// these changes to src/mouse_drag.js.
+describe('mutation gaps: helpers', () => {
+  test('set_T_in_pz_map moves a pole exactly on the imaginary axis slightly into the left half-plane', () => {
+    window.set_T_in_pz_map('T_1', 0);
+    expect(get('T_1')).toBeCloseTo(1 / 0.0678, 8);
+    expect(text_field('T_1')).toBe((1 / 0.0678).toFixed(2));
+    expect(range_field('T_1')).toBe((1 / 0.0678).toFixed(2));
+  });
+});
+
+describe('mutation gaps: dragging in the step response', () => {
+  test('the vertical movement is scaled by the whole range of the plot (max - min)', () => {
+    set_globals({ min_y_timerep: -5, max_y_timerep: 20 });
+    set({ k_1: 1 });
+    drag({ time: 'GRAPH_ONE_REAL_POLE', from: [0, 0], to: [0, 10] }); // 10 px of 100: 0.1 of a range of 25
+    expect(get('k_1')).toBeCloseTo(1 - 0.1 * 25, 8);
+  });
+
+  test('T_2 / T_3 is what counts as "far apart", not their product', () => {
+    set({ T_2: 11, T_3: 11 });
+    drag({ time: 'GRAPH_TWO_REAL_POLES', variable: 'T_2', from: [0, 0], to: [1, 0] });
+    expect(achievements()).not.toContain('T2_T3_far_apart');
+  });
+
+  describe('the one zero and two poles graph', () => {
+    const drag_variable = (variable, extra = {}) =>
+      drag({ time: 'GRAPH_ONE_ZERO_TWO_POLES', variable, from: [0, 0], to: [10, 0], ...extra });
+
+    test('a drag in progress keeps its direction, also when T has the other sign by now', () => {
+      set({ T_8: 2 });
+      set_globals({ direction_of_T_drag: -1 });
+      drag_variable('T_8');
+      expect(get('T_8')).toBeCloseTo(1, 8); // 2 - 0.1 * 10
+      expect(global_value('direction_of_T_drag')).toBe(-1);
+    });
+
+    test('a drag starting at exactly T = 0 moves in the positive direction', () => {
+      set({ T_8: 0 });
+      drag_variable('T_8');
+      expect(global_value('direction_of_T_drag')).toBe(1);
+      expect(get('T_8')).toBeCloseTo(1, 8);
+    });
+
+    test.each(['T_6', 'T_7'])('%s keeps a positive value (it is only stopped at 0)', (variable) => {
+      set({ [variable]: 2 });
+      drag_variable(variable);
+      expect(get(variable)).toBeCloseTo(3, 8);
+    });
+  });
+});
+
+describe('mutation gaps: dragging in the Bode plots with the mouse already away from the origin', () => {
+  test('magnitude plot: the movement is measured from where the press started', () => {
+    set({ T_4: 1 });
+    drag({ mag: 'GRAPH_ONE_ZERO', from: [50, 0], to: [60, 0] }); // 10 px of 100: T * (1 - 10 * 0.1)
+    expect(get('T_4')).toBeCloseTo(0, 8);
+  });
+
+  test('phase plot: the movement is measured from where the press started', () => {
+    set({ T_4: 1 });
+    drag({ phase: 'GRAPH_ONE_ZERO', from: [50, 0], to: [60, 0] });
+    expect(get('T_4')).toBeCloseTo(0, 8);
+  });
+
+  test.each([['mag'], ['phase']])('%s plot: T_2 / T_3 is what counts as "far apart", not their product', (plot) => {
+    set({ T_2: 11, T_3: 11 });
+    drag({ [plot]: 'GRAPH_TWO_REAL_POLES', variable: 'T_2', from: [0, 0], to: [-1, 0] });
+    expect(achievements()).not.toContain('T2_T3_far_apart');
+  });
+});
+
+describe('mutation gaps: the pole-zero maps loop', () => {
+  test('a pole-zero map position without a graph is ignored', () => {
+    // One more map position than graphs, as left behind when a graph is removed.
+    set_globals({
+      pole_zero_graph_x: [...PRESETS.map(() => MAP_X), MAP_X],
+      pole_zero_graph_y: [...PRESETS.map((_, i) => 100 * i), 100 * PRESETS.length],
+    });
+    expect(() => drag({ to: [MAP_X + 40, 100 * PRESETS.length + 40] })).not.toThrow();
+    expect(window.achievement_done).not.toHaveBeenCalled();
+  });
+});
