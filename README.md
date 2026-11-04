@@ -69,6 +69,21 @@ npm run test:e2e
 
 This starts `python3 -m http.server` on port 8123 and drives the page in a headless Chromium. It checks that the page loads and draws, drags poles and curves with the mouse, and answers a quiz question. Every request to livet.se is blocked, so the tests never send events or highscores to the production server.
 
+### Mutation tests (Stryker)
+
+```
+npm run test:mutation                                    # the files in "mutate" in stryker.config.json
+npx stryker run --mutate src/transfer_math.js            # one file
+```
+
+Coverage says which lines the tests run, not whether they would notice a wrong result. [Stryker](https://stryker-mutator.io) changes the code in `src/` one small step at a time (`<` to `<=`, `+` to `-`, a string to `""`) and runs the Jest suite on each change. A change that makes a test fail is *killed*; one that no test notices *survived* and points at a missing or too weak test. The mutation score is killed divided by all mutants.
+
+Open `reports/mutation/mutation.html` to see every survivor next to the code. The text report lists them too, as `src/file.js:line:column` with the original and the changed line. Some survivors are equivalent mutants (the changed code behaves the same) and need no test. Re-runs are incremental (`reports/stryker-incremental.json`), so only changed code is retested.
+
+Only the pure-logic files are listed in `mutate`. The drawing code (`display_draw.js`, `hover_nyquist.js`) and the text tables (`help_questions.js`) are left out: the p5 stand-ins draw nothing, so nearly every mutant there survives and hides the real gaps. A run takes a few minutes per file (about 3 minutes for `transfer_math.js`).
+
+Stryker reports each test's coverage through its own Jest environment, and a `@jest-environment` docblock in a test file replaces that environment. So test files must not have one; `jest.config.js` already selects jsdom for all of them. Without it Stryker stops with "Missing coverage results".
+
 ### Lint
 
 ```
