@@ -9,17 +9,37 @@
     "src/transfer_math.js",
     "src/quiz_scoring.js",
     "src/assignments.js",
-    "src/presets_state.js"
+    "src/presets_state.js",
+    "src/quiz.js",
+    "src/mouse_pressed.js",
+    "src/mouse_drag.js",
+    "src/graph_ui.js",
+    "src/feedback.js"
   ],
   "ignorePatterns": [
-    "docs", "e2e", "splash_screen", "php", "images/src", "audio/src",
-    "coverage", "reports", "test-results", "playwright-report", ".stryker-tmp"
+    "docs",
+    "e2e",
+    "splash_screen",
+    "php",
+    "images/src",
+    "audio/src",
+    "coverage",
+    "reports",
+    "test-results",
+    "playwright-report",
+    ".stryker-tmp"
   ],
   "coverageAnalysis": "perTest",
   "timeoutMS": 10000,
   "timeoutFactor": 2,
   "incremental": true,
   "incrementalFile": "reports/stryker-incremental.json",
-  "reporters": ["clear-text", "progress", "html"],
-  "htmlReporter": { "fileName": "reports/mutation/mutation.html" }
+  "reporters": [
+    "clear-text",
+    "progress",
+    "html"
+  ],
+  "htmlReporter": {
+    "fileName": "reports/mutation/mutation.html"
+  }
 }
