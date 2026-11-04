@@ -8,7 +8,16 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..', '..');
 const read = (relative) => fs.readFileSync(path.join(ROOT, relative), 'utf8');
 
-function runClassicScript(source) {
+// With LU_PZE_COVERAGE=1 (npm run test:coverage) each src/ script is instrumented, because Jest
+// cannot instrument code that is injected as <script> text. Counters go to global.__coverage__,
+// which Jest collects after each test file.
+const COVERAGE = process.env.LU_PZE_COVERAGE === '1';
+const instrumenter = COVERAGE
+  ? require('istanbul-lib-instrument').createInstrumenter({ coverageVariable: '__coverage__', esModules: false })
+  : null;
+
+function runClassicScript(source, file) {
+  if (instrumenter && file) source = instrumenter.instrumentSync(source, file);
   const script = document.createElement('script');
   script.textContent = source;
   document.head.appendChild(script);
@@ -56,7 +65,7 @@ function loadApp() {
   installP5Stubs();
   window.confetti = () => {};
   runClassicScript(read('js/math.js'));
-  for (const source of app_script_paths()) runClassicScript(read(source));
+  for (const source of app_script_paths()) runClassicScript(read(source), path.join(ROOT, source));
   delete document.readyState;
 }
 

@@ -5,6 +5,7 @@
   "main": "index.html",
   "scripts": {
     "test": "jest",
+    "test:coverage": "LU_PZE_COVERAGE=1 jest --coverage",
     "test:e2e": "playwright test",
     "lint": "node tools/lint.js --quiet"
   },
@@ -13,6 +14,7 @@
   "devDependencies": {
     "@playwright/test": "^1.64.1",
     "eslint": "^8.56.0",
+    "istanbul-lib-instrument": "^6.0.3",
     "jest": "^30.5.2",
     "jest-environment-jsdom": "^30.5.2"
   }
