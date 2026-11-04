@@ -52,7 +52,10 @@ npx playwright install chromium
 npm test                              # all suites
 npx jest tests/assignments.test.js    # one file
 npx jest -u                           # accept changed snapshots
+npm run test:coverage                 # all suites, with a coverage report
 ```
+
+Use `npm run test:coverage` for coverage, not a plain `jest --coverage`. The scripts in `src/` are injected into the test page as `<script>` text, so Jest's own coverage sees nothing and reports 0 %. The npm script sets `LU_PZE_COVERAGE=1`, which makes `tests/helpers/load_app.js` instrument the `src/` files first. It prints a per-file table and a summary, and fails if coverage drops below the floor in `jest.config.js` (`coverageThreshold`). Raise the floor when coverage rises; don't lower it. While the variable is set, a function's `toString()` returns instrumented code, so a test that inspects source text has to read it from the `src/` file.
 
 The unit tests run in jsdom. `tests/helpers/load_app.js` loads the real `js/math.js` and every file in `src/`, in the order `index.html` gives, plus small stand-ins for the p5.js drawing functions. The tests therefore exercise the same code the browser runs.
 
