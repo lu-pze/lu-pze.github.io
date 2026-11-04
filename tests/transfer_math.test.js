@@ -691,3 +691,122 @@ describe('computed pole-zero maps', () => {
     });
   });
 });
+
+// Cases added after Stryker mutation testing (npm run test:mutation) showed that no test noticed
+// these changes to src/transfer_math.js.
+describe('mutation gaps: insert_explicit_multiplication', () => {
+  test.each([
+    ['12s', '12*s'], // a number has more than one digit
+    ['.25s', '.25*s'], // a fraction with no integer part has more than one digit
+    ['2·3s', '2*3*s'], // the middle dot is a product sign, like the dot operator
+    ['sin(s)cos(s)', 'sin(s)*cos(s)'],
+    ['tan(s)abs(s)', 'tan(s)*abs(s)'],
+    ['log(s)exp(s)sqrt(s)', 'log(s)*exp(s)*sqrt(s)'],
+  ])('%s -> %s', (input, expected) => {
+    expect(window.insert_explicit_multiplication(input)).toBe(expected);
+  });
+});
+
+describe('mutation gaps: polynomials', () => {
+  test('poly_multiply adds the products of the coefficients', () => {
+    expect(window.poly_multiply([1, 2], [3, 4])).toEqual([3, 10, 8]);
+  });
+
+  test('poly_trim drops a leading coefficient of exactly 1e-12 of the largest, but keeps 1e-6', () => {
+    expect(window.poly_trim([1, 1e-12])).toEqual([1]);
+    expect(window.poly_trim([1, 0, 1e-13])).toEqual([1]);
+    expect(window.poly_trim([1, 1e-6])).toEqual([1, 1e-6]);
+    expect(window.poly_trim([1e-3, 1e-12])).toEqual([1e-3, 1e-12]); // the limit scales with the largest coefficient
+  });
+});
+
+describe('mutation gaps: to_rational', () => {
+  const parse = (formula) => math.parse(window.insert_explicit_multiplication(formula));
+
+  test.each([['true'], ['"a"']])('the constant %s is not a rational function of s', (formula) => {
+    expect(() => window.to_rational(parse(formula), {})).toThrow('not a rational function of s');
+  });
+
+  test('a power whose exponent is not constant is rejected', () => {
+    expect(() => window.to_rational(parse('(1+s)^(1/(1+s))'), {})).toThrow('not a rational function of s');
+  });
+
+  test('the exponent is the numerator divided by the denominator: (s+1)^(4/2) = (s+1)^2', () => {
+    const rational = window.to_rational(parse('(s+1)^(4/2)'), {});
+    expect(rational.num).toEqual([1, 2, 1]);
+    expect(rational.den).toEqual([1]);
+  });
+
+  test('the highest accepted exponent, 50, still works (51 is in the test above)', () => {
+    const rational = window.to_rational(parse('(1+s)^50'), {});
+    expect(rational.num).toHaveLength(51);
+    expect(rational.den).toEqual([1]);
+  });
+});
+
+describe('mutation gaps: delay_of_factor', () => {
+  const delay_of = (formula, scope = { e: Math.E }) => window.delay_of_factor(math.parse(formula), scope);
+
+  test('e^(-s/2) and exp(-s/2) delay by 0.5', () => {
+    expect(delay_of('e^(-s/2)')).toBeCloseTo(0.5, 14);
+    expect(delay_of('exp(-s/2)')).toBeCloseTo(0.5, 14);
+  });
+
+  test.each([
+    ['e*s'], // a product, not a power
+    ['pow(e, -s)'], // only the ^ operator and exp() are delay factors
+    ['x^(-s)'], // the base must be e
+    ['sin(-s)'], // the function must be exp
+    ['exp(-s, 2)'], // exp with two arguments
+    ['e^(-s^2)'], // the exponent must have degree 1
+    ['e^(-s/(1+s))'], // the exponent must have a constant denominator
+  ])('%s is not a delay factor', (formula) => {
+    expect(delay_of(formula)).toBeNull();
+  });
+});
+
+describe('mutation gaps: time responses', () => {
+  const times = Array.from({ length: 41 }, (_, k) => k * 0.1);
+
+  test('getTimeValues evaluates the formula at time - delay, not time + delay', () => {
+    set_sliders({});
+    const binding = window.bind_formula('1/(s+1)');
+    expect(window.getTimeValues(binding, 2, 0.5)).toBeCloseTo(window.getTimeValues(binding, 1.5, 0), 12);
+    expect(window.getTimeValues(binding, 0.4, 0.5)).toBe(0);
+  });
+
+  test('an improper response of order 2 loses only its impulse: (s^2+1)/((s+1)(s+2)) = 1 + 2/(s+1) - 5/(s+2)', () => {
+    set_sliders({});
+    const response = window.time_response('1', '(s^2+1)/((s+1)(s+2))', times);
+    times.forEach((t, k) => expect(response[k]).toBeCloseTo(2 * Math.exp(-t) - 5 * Math.exp(-2 * t), 9));
+  });
+
+  test('the Gaver-Stehfest fallback replaces t = 0 by 0.00001 also without a delay', () => {
+    set_sliders({});
+    const response = window.time_response('1/s', '1/(1+sqrt(s))', times);
+    const binding = window.bind_formula('(1/s)*(1/(1+sqrt(s)))');
+    expect(Number.isFinite(response[0])).toBe(true);
+    expect(response[0]).toBeCloseTo(window.getTimeValues(binding, 0.00001, 0), 12);
+  });
+});
+
+describe('mutation gaps: poles, zeros and margins', () => {
+  test('poles_and_zeros of an unset slider (a null binding) is null', () => {
+    expect(window.poles_and_zeros(null)).toBeNull();
+  });
+
+  test('sign_changes: a change between the first two samples counts', () => {
+    expect(window.sign_changes([1, -1], 1e-6)).toEqual([[0, 1]]);
+  });
+
+  test('sign_changes: samples exactly at the dead band have no sign', () => {
+    expect(window.sign_changes([0.1, -0.1], 0.1)).toEqual([]);
+    expect(window.sign_changes([0.1, -0.11], 0.1)).toEqual([]);
+    expect(window.sign_changes([0.11, -0.11], 0.1)).toEqual([[0, 1]]);
+  });
+
+  test('findOmegaZero and findOmega180 without a binding are NaN, whatever the curve', () => {
+    expect(window.findOmegaZero(null, [1, -1])).toBeNaN();
+    expect(window.findOmega180(null, [-3, -3.3])).toBeNaN();
+  });
+});
