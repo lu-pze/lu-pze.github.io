@@ -510,7 +510,7 @@ function mouseMoved(){
           let current_graph = bode_graphs[i];
           let linked_y = current_graph.bode_gain_array[linked_x];
           let screen_y = graph_bode_mag_y_offset + map(linked_y,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
-          let distance = Math.abs(mouseY - graph_step_response_y - screen_y);
+          let distance = Math.abs(mouseY - graph_bode_mag_y - screen_y);
           if(distance < 70){
             yes_close_enough = true;
             queue.push([distance,i,screen_y,linked_y,current_graph.graph_name]);

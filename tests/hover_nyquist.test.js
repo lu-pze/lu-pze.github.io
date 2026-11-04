@@ -678,6 +678,15 @@ describe('mouseMoved: Bode magnitude', () => {
       expect(texts()[0]).toBe('freq=3.162rad/s');
     });
 
+    test('the distance is measured from the Bode magnitude plot, not from the step response plot', () => {
+      set_live('graph_step_response_y', -10); // as in the real layout; the magnitude plot is at y = 0
+      set_live('bode_graphs', [fake_graph()]); // curve at y = 130
+      move(218, 199); // distance 69
+      expect(texts()[0]).toBe('Graph');
+      move(218, 60); // distance 70, exclusive
+      expect(texts()[0]).toBe('freq=3.162rad/s');
+    });
+
     test('not close to a curve: shows the frequency and the magnitude at the mouse, and a horizontal line at the mouse', () => {
       set_live('bode_graphs', [fake_graph()]);
       move(218, 60); // 60 - 0.15 * 120 = 42 dB

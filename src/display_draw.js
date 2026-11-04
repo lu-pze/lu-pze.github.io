@@ -220,7 +220,8 @@ function value_magnet(input,magnet_value){
 function get_bestMultiple(input,divider,type){
   let sign = Math.sign(input);
   input = Math.abs(input);
-  let dividend = +(input/divider).toFixed(1);
+  // Rounded only to remove floating point noise (3*45/45 = 3.0000000000000004), not to widen the multiples:
+  let dividend = +(input/divider).toFixed(9);
   if(type == 'upper'){
     if(sign < 0){
       dividend = Math.floor(dividend);

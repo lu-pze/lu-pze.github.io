@@ -161,13 +161,23 @@ describe('get_bestMultiple', () => {
     }
   });
 
-  test('the quotient is rounded to one decimal first, so a value just above a multiple is not rounded up', () => {
-    expect(window.get_bestMultiple(91, 45, 'upper')).toBe(90); // 91/45 = 2.02 -> 2.0
-    expect(window.get_bestMultiple(94, 45, 'upper')).toBe(135); // 94/45 = 2.09 -> 2.1
+  test('a value just above a multiple is rounded up to the next one, and just below down to the previous', () => {
+    expect(window.get_bestMultiple(91, 45, 'upper')).toBe(135);
+    expect(window.get_bestMultiple(94, 45, 'upper')).toBe(135);
+    expect(window.get_bestMultiple(-91, 45, 'lower')).toBe(-135);
+    expect(window.get_bestMultiple(89, 45, 'lower')).toBe(45);
+    expect(window.get_bestMultiple(-89, 45, 'upper')).toBe(-45);
   });
 
-  test('an unknown type only rounds the quotient to one decimal', () => {
-    expect(window.get_bestMultiple(100, 45, 'other')).toBeCloseTo(2.2 * 45, 10);
+  test('floating point noise does not move an exact multiple', () => {
+    // 0.3 / 0.1 = 2.9999999999999996 and 0.7 / 0.1 = 6.999999999999999
+    expect(window.get_bestMultiple(0.3, 0.1, 'lower')).toBeCloseTo(0.3, 10);
+    expect(window.get_bestMultiple(0.7, 0.1, 'lower')).toBeCloseTo(0.7, 10);
+    expect(window.get_bestMultiple(0.1 * 3, 0.1, 'upper')).toBeCloseTo(0.3, 10);
+  });
+
+  test('an unknown type returns the input (the quotient is only rounded to remove noise)', () => {
+    expect(window.get_bestMultiple(100, 45, 'other')).toBeCloseTo(100, 6);
   });
 });
 
