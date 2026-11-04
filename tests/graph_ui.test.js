@@ -1017,3 +1017,88 @@ describe('updateInputFormula', () => {
     expect(window.redraw_canvas_gain).toHaveBeenCalledWith('all');
   });
 });
+
+// ---------------------------------------------------------------------------
+// Cases added after Stryker mutation testing (npm run test:mutation) showed that no test noticed
+// these changes to src/graph_ui.js.
+describe('mutation gaps: default_variable_values', () => {
+  test('every slider variable has its range and start value', () => {
+    expect(global_value('default_variable_values')).toEqual({
+      L: { min: 0, max: 3, value: 0 },
+      k_1: { min: -4, max: 20, value: 4 },
+      k_2: { min: -4, max: 20, value: 2 },
+      k_3: { min: -4, max: 20, value: 0.7 },
+      k_4: { min: -4, max: 20, value: 2.5 },
+      k_5: { min: -4, max: 20, value: 1 },
+      z: { min: 0, max: 1.2, value: 0.2 },
+      T_1: { min: -5, max: 10, value: 0.6 },
+      T_2: { min: 0, max: 10, value: 0.6 },
+      T_3: { min: 0, max: 10, value: 2 },
+      T_4: { min: 0, max: 10, value: 1 },
+      T_5: { min: 0, max: 10, value: 1 },
+      T_6: { min: 0, max: 10, value: 1.5 },
+      T_7: { min: 0, max: 10, value: 1.1 },
+      T_8: { min: -10, max: 10, value: 0.7 },
+      T_d: { min: 0, max: 10, value: 0 },
+      T_i: { min: 0.01, max: 10, value: 1 },
+      K: { min: 0.01, max: 10, value: 1 },
+      q: { min: 0.01, max: 1, value: 0.1 },
+      v: { min: 0.1, max: 20, value: 4.5 },
+    });
+  });
+
+  test('a slider starts at the range and value of its variable', () => {
+    for (const [name, { min, max, value }] of Object.entries(global_value('default_variable_values'))) {
+      const slider = make_slider(name);
+      expect([name, +slider.range.min, +slider.range.max, +slider.range.value]).toEqual([name, min, max, value]);
+    }
+  });
+});
+
+describe('mutation gaps: sliders only trigger the achievements and tasks of their own variable', () => {
+  beforeEach(add_info_tabs);
+
+  test('a negative value completes T1_unstable only for T_1 (release of the slider)', () => {
+    drag(make_slider('k_1'), -1, 'change');
+    expect(calls_of('task_done')).not.toContain('T1_unstable');
+  });
+
+  test('a negative value completes T1_unstable only for T_1 (end of typing)', () => {
+    type_into(make_slider('k_1'), -1, 'change');
+    expect(calls_of('task_done')).not.toContain('T1_unstable');
+  });
+
+  test('a low value completes low_z only for z (dragging)', () => {
+    drag(make_slider('T_2'), 0.05);
+    drag(make_slider('K'), 0.05);
+    expect(calls_of('achievement_done')).not.toContain('low_z');
+  });
+
+  test('far apart T_2 and T_3 only complete T2_T3_far_apart when a T slider is moved', () => {
+    set_variable({ T_2: 1000, T_3: 1 });
+    drag(make_slider('K'), 2);
+    type_into(make_slider('q'), 0.5);
+    expect(calls_of('achievement_done')).toEqual([]);
+  });
+
+  test('a value of 100 or more only completes k_above_or_equal_100 for a k variable (typing)', () => {
+    const slider = make_slider('K');
+    type_into(slider, 150);
+    expect(calls_of('achievement_done')).toEqual([]);
+    type_into(make_slider('k_3'), 150);
+    expect(calls_of('achievement_done')).toEqual(['k_above_or_equal_100']);
+  });
+
+  // Tab 1 is selected when the tabs are created, so the move has to start from another tab.
+  test.each([
+    ['k_1', 1], ['T_1', 1], ['k_2', 2], ['T_2', 2], ['T_3', 2], ['w', 3], ['z', 3], ['k_3', 3],
+    ['L', 4], ['k_4', 5], ['T_6', 5], ['T_7', 5], ['T_8', 5], ['k_5', 6], ['T_5', 6], ['T_4', 7],
+  ])('moving %s switches from another tab to information tab %i', (name, tab) => {
+    const other = tab === 7 ? 6 : 7;
+    document.getElementById('graph_' + other + '_info').checked = true;
+    const slider = make_slider(name);
+    drag(slider, +slider.range.value + 0.5);
+    expect(tab_checked(tab)).toBe(true);
+    expect(tab_checked(other)).toBe(false);
+  });
+});
