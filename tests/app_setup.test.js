@@ -259,6 +259,12 @@ describe('setup()', () => {
       expect(global_value('client_place')).toBe('a_b_c');
     });
 
+    test('every semicolon and backslash in the place is neutralised, not just the first', () => {
+      set_url('?p=' + encodeURIComponent('a;b;c\\d\\e'));
+      window.setup();
+      expect(global_value('client_place')).toBe('a_b_c_d_e');
+    });
+
     test('without ?p the place is left alone', () => {
       set_url('?debug');
       set_globals({ client_place: 'kept' });

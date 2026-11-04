@@ -82,7 +82,7 @@ function setup (){
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   if (urlParams.has('p')) {
-    let place = urlParams.get('p').replace(";","_").replace("\\","/");
+    let place = urlParams.get('p').replaceAll(";","_").replace("\\","/");
     client_place = place.replace(/[^A-ZÅÄÖa-zåäö0123456789]/g, '_')
   }
   if (urlParams.has('debug')) {
