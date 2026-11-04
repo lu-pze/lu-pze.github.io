@@ -1,9 +1,8 @@
 // The last small gaps that `npm run test:coverage` showed in the other suites: branches and
 // one-line `if` bodies that no test reached. Each describe block names the src/ file it covers.
 // The expected values are worked out from the maths or the documented behaviour, not copied from
-// the output. Not covered here because the code is unreachable: quiz_scoring.js lines 48-52 (the
-// `else if` can only run for a name missing from high_total, whose high_total2 entry is then
-// undefined) and feedback.js lines 22-23 and 281-282 (see the notes in those files).
+// the output. Not covered here because the code is unreachable: feedback.js lines 22-23 and
+// 281-282 (see the notes in those files).
 const { loadApp, global_value, set_globals } = require('./helpers/load_app');
 
 beforeAll(() => loadApp());

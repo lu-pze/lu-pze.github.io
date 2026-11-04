@@ -45,11 +45,6 @@ function parse_highscore_lines(raw) {
             high_total2[placename] = this_score;
             high_total_nof_correct[placename] = this_nof_correct;
           }
-        } else if (this_score == high_total2[placename]){
-          // Make sure to grab the highest nof_correct for this highest score:
-          if (high_total_nof_correct[placename] < this_nof_correct) {
-            high_total_nof_correct[placename] = this_nof_correct;
-          }
         } else {
           high_total[placename] = this_total;
           high_total2[placename] = this_score;
