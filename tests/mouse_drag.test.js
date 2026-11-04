@@ -718,8 +718,8 @@ describe('mouseDragged in the pole-zero maps', () => {
     expect(achievements()).toEqual(['drag_pole', 'drag_pole_to_right_half_plane']);
   });
 
-  // 1 / 0: a pole dragged onto the imaginary axis exactly (reachable: dx = 60 of 80 pixels).
-  test.failing('one real pole: dragging exactly onto the imaginary axis keeps T_1 finite', () => {
+  // 1 / 0: a pole dragged onto the imaginary axis exactly (reachable: dx = 60 of 80 pixels) must not give T = -Infinity.
+  test('one real pole: dragging exactly onto the imaginary axis keeps T_1 finite', () => {
     drag_in_map('GRAPH_ONE_REAL_POLE', dx_for_real(0), 40);
     expect(Number.isFinite(get('T_1'))).toBe(true);
   });

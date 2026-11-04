@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 // Tests for src/banner_telemetry.js (right-click banner, add_event / periodic_send event
 // logging, opt_out_tracking) and src/feedback.js (survey popups, set_fb_*). They record current
-// behaviour; the two `test.failing` cases mark suspected bugs (see the comments on them).
+// behaviour; the one `test.failing` case marks a suspected bug (see the comment on it).
 // No real network traffic: window.XMLHttpRequest is replaced by a fake and timers are faked.
 const { loadApp, global_value, set_globals } = require('./helpers/load_app');
 
@@ -144,10 +144,9 @@ describe('add_event', () => {
     expect(global_value('pending')).toEqual(['E0;T3.5;Aa_b;']);
   });
 
-  // BUG (not fixed): `string.replace(";", "_")` replaces only the first occurrence, so text with
-  // two or more ";" (free text typed into the feedback textareas goes through set_fb_text and
-  // set_fb_liketext) injects extra fields into "E<n>;T<t>;A<text>;" on the server side.
-  test.failing('every ";" in the text is replaced so the event stays one field', () => {
+  // Free text from the feedback textareas (set_fb_text, set_fb_liketext) must not inject extra
+  // fields into the ";"-separated "E<n>;T<t>;A<text>;" protocol, so every ";" is replaced.
+  test('every ";" in the text is replaced so the event stays one field', () => {
     window.add_event('a;b;c');
     expect(global_value('pending')).toEqual(['E0;T3.5;Aa_b_c;']);
   });

@@ -1113,13 +1113,11 @@ describe('draw_nyquist_lines', () => {
     const labels = texts();
     expect(labels).toHaveLength(26);
     expect(labels.slice(0, 13)).toEqual(['-2.4', '-2.0', '-1.6', '-1.2', '-0.8', '-0.4', '0.0', '0.4', '0.8', '1.2', '1.6', '2.0', '2.4']);
-    // (normalised: see the test.failing below for the "-0.0" label)
-    expect(labels.slice(13).map((label) => label.replace('-0.0', '0.0'))).toEqual(['2.4', '2.0', '1.6', '1.2', '0.8', '0.4', '0.0', '-0.4', '-0.8', '-1.2', '-1.6', '-2.0', '-2.4']);
+    expect(labels.slice(13)).toEqual(['2.4', '2.0', '1.6', '1.2', '0.8', '0.4', '0.0', '-0.4', '-0.8', '-1.2', '-1.6', '-2.0', '-2.4']);
   });
 
-  // BUG (src/hover_nyquist.js, draw_nyquist_lines): the imaginary-axis label at 0 is computed as
-  // 2.4 - 6 * 0.4 = -4.4e-16 and printed with toFixed(1), so the plot shows "-0.0" instead of "0.0".
-  test.failing('the label at imaginary = 0 is "0.0", not "-0.0"', () => {
+  // The imaginary-axis label at 0 is computed as 2.4 - 6 * 0.4 = -4.4e-16; it must not print as "-0.0".
+  test('the label at imaginary = 0 is "0.0", not "-0.0"', () => {
     window.draw_nyquist_lines();
     expect(texts().slice(13)[6]).toBe('0.0');
   });

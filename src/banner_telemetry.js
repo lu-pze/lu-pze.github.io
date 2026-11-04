@@ -66,7 +66,7 @@ function add_event (string) {
   let thestring = `E${event_no};T${mseconds_elapsed/1000};`;
   let delay = 5000;
   if (string !== "") {
-    string = string.replace(";","_");
+    string = string.replaceAll(";","_");
     thestring += "A" + string + ";";
     if (periodic_timer_id !== 0) {
       clearTimeout(periodic_timer_id);

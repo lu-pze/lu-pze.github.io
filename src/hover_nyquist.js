@@ -956,6 +956,11 @@ function draw_timelines(){
 }
 
 
+// One decimal, but never "-0.0" (rounding noise such as -4.4e-16 would otherwise print as "-0.0").
+function nyquist_axis_label(value){
+  return (+value.toFixed(1)).toFixed(1);
+}
+
 function draw_nyquist_lines(){
   let x_step = +(Math.abs(max_nyquist_x - min_nyquist_x)/10).toPrecision(1);
   let y_step = +(Math.abs(max_nyquist_y - min_nyquist_y)/10).toPrecision(1);
@@ -976,7 +981,7 @@ function draw_nyquist_lines(){
     noStroke();
     fill(text_color);
     textSize(15);
-    text(text_value.toFixed(1),x*x_tile_length,graph_nyquist_height + 25);
+    text(nyquist_axis_label(text_value),x*x_tile_length,graph_nyquist_height + 25);
   }
   for(let y=0; y<=y_case_number; y++){
     stroke(line_color);
@@ -986,7 +991,7 @@ function draw_nyquist_lines(){
     noStroke();
     fill(text_color);
     textSize(15);
-    text(text_value.toFixed(1),-30,y*y_tile_length+4);
+    text(nyquist_axis_label(text_value),-30,y*y_tile_length+4);
   }
   // Thicker line at real=0, and im=0:
   stroke(line_color);
