@@ -17,12 +17,14 @@ class FakeXHR {
   constructor() {
     this.listeners = {};
     this.opened = null;
+    this.async = null;
+    this.headers = {};
     this.sent = null;
     FakeXHR.instances.push(this);
   }
   addEventListener(name, listener) { this.listeners[name] = listener; }
-  open(method, url) { this.opened = { method, url }; }
-  setRequestHeader() {}
+  open(method, url, async) { this.opened = { method, url }; this.async = async; }
+  setRequestHeader(name, value) { this.headers[name] = value; }
   send(body) { this.sent = body; }
   respond(response) { this.listeners.load({ target: { response } }); }
 }
@@ -75,26 +77,27 @@ afterEach(() => {
 // ---------------------------------------------------------------------------
 // quiz_clicked: which verdict does each (question type, clicked place) give?
 // ---------------------------------------------------------------------------
+// Runs one click and returns {verdict, message}. verdict is 'none' when no handler fired.
+// The caller spies on quiz_correct, quiz_incorrect, quiz_perhaps, update_quiz and add_event.
+function click(current_quiz, state, all) {
+  window.quiz_correct.mockClear();
+  window.quiz_incorrect.mockClear();
+  window.quiz_perhaps.mockClear();
+  set_globals({ current_quiz, ...state });
+  window.quiz_clicked(all);
+  const calls = {
+    correct: window.quiz_correct.mock.calls,
+    incorrect: window.quiz_incorrect.mock.calls,
+    perhaps: window.quiz_perhaps.mock.calls,
+  };
+  const fired = Object.keys(calls).filter((verdict) => calls[verdict].length > 0);
+  expect(fired.length).toBeLessThanOrEqual(1);
+  if (fired.length === 0) return { verdict: 'none', message: undefined };
+  return { verdict: fired[0], message: calls[fired[0]][0][0] };
+}
+
 describe('quiz_clicked routing', () => {
   beforeEach(() => spy_on(['quiz_correct', 'quiz_incorrect', 'quiz_perhaps', 'update_quiz', 'add_event']));
-
-  // Runs one click and returns {verdict, message}. verdict is 'none' when no handler fired.
-  function click(current_quiz, state, all) {
-    window.quiz_correct.mockClear();
-    window.quiz_incorrect.mockClear();
-    window.quiz_perhaps.mockClear();
-    set_globals({ current_quiz, ...state });
-    window.quiz_clicked(all);
-    const calls = {
-      correct: window.quiz_correct.mock.calls,
-      incorrect: window.quiz_incorrect.mock.calls,
-      perhaps: window.quiz_perhaps.mock.calls,
-    };
-    const fired = Object.keys(calls).filter((verdict) => calls[verdict].length > 0);
-    expect(fired.length).toBeLessThanOrEqual(1);
-    if (fired.length === 0) return { verdict: 'none', message: undefined };
-    return { verdict: fired[0], message: calls[fired[0]][0][0] };
-  }
 
   test('always logs the click and refreshes the quiz, whatever the verdict', () => {
     click('none', {}, { where: 'Bmag', graph_no: 1 });
@@ -580,6 +583,63 @@ describe('read_highscores', () => {
     expect(rows(sections()['Longest streak']).map(plain)).toEqual([' 1.  1 P      ' + 'x'.repeat(21) + '...']);
   });
 
+  // Cases added after Stryker mutation testing (npm run test:mutation) showed that no test noticed
+  // these changes to src/quiz_scoring.js.
+  describe('mutation gaps', () => {
+    const line = (place_nick, total, correct, time, prefix = 'T100.5') =>
+      `${prefix};U1;L${place_nick};quiz_time_is_up.click_freq=50.0,total=${total},nof_correct=${correct},` +
+      `longest_streak=3,nof_questions=${correct},#server_time=${time}`;
+    const first_rows = (title) => rows(sections()[title]).map(plain);
+
+    test('only lines that start with T are results', () => {
+      load([line('FRTF05_Ghost', '90.0', 9, '2026/10/31 08:00:00', 'X5'), line('FRTF05_Real', '50.0', 5, '2026/10/31 08:00:00')].join('\n'));
+      expect(first_rows('High score last 3 months')).toEqual([' 1.  50.0 FRTF05 Real, after 5 questions']);
+    });
+
+    test('at an equal total the player with more correct answers ranks first', () => {
+      load([line('FRTF05_Few', '70.0', 10, '2026/10/31 08:00:00'), line('FRTF05_Many', '70.0', 20, '2026/10/31 08:00:00')].join('\n'));
+      expect(first_rows('High score last 3 months').map((row) => row.match(/FRTF05 (\w+),/)[1])).toEqual(['Many', 'Few']);
+    });
+
+    test('a later result of the same player moves "latest" forward', () => {
+      load([line('FRTF05_Eve', '50.0', 5, '2026/10/20 10:00:00'), line('FRTF05_Eve', '40.0', 4, '2026/10/25 09:00:00')].join('\n'));
+      expect(first_rows('Latest quizzers')).toEqual(['2026/10/25 09:00:00 FRTF05 Eve']);
+    });
+
+    test('a result exactly 3 months old is still listed, one second older is not', () => {
+      // NOW is 2026-11-03 12:00:00, so the limit is 2026-08-03 12:00:00.
+      load([line('FRTF05_Edge', '50.0', 5, '2026/08/03 12:00:00'), line('FRTF05_Old', '60.0', 6, '2026/08/03 11:59:59')].join('\n'));
+      expect(first_rows('High score last 3 months')).toEqual([' 2.  50.0 FRTF05 Edge, after 5 questions']);
+    });
+
+    test('legends: 99.99 counts, 99.98 does not (but takes rank 1), a tie leaves the rank blank, and every row ends the line', () => {
+      load([
+        line('FRTF05_Top', '99.99', 40, '2026/09/10 09:00:00'), line('FRTF05_Same', '99.99', 30, '2026/09/11 09:00:00'),
+        line('FRTF05_Almost', '99.98', 50, '2026/09/12 09:00:00'),
+      ].join('\n'));
+      expect(first_rows('Legends')).toEqual([
+        ' 2. 100.0 FRTF05 Top, 40 questions, Sep 2026',
+        '    100.0 FRTF05 Same, 30 questions, Sep 2026',
+      ]);
+    });
+
+    test('asks the server with a GET that is asynchronous and has no body, and logs the request', () => {
+      const request = load('');
+      expect(request.async).toBe(true);
+      expect(request.sent).toBe('');
+      expect(window.add_event).toHaveBeenCalledWith('read_highscores');
+    });
+
+    test('a failed request logs the word and the event', () => {
+      const log = jest.spyOn(console, 'log').mockImplementation(() => {});
+      window.read_highscores();
+      const event = { type: 'error' };
+      FakeXHR.instances[0].listeners.error(event);
+      expect(log.mock.calls).toEqual([['Error'], [event]]);
+      log.mockRestore();
+    });
+  });
+
   test('a response with no result lines still renders the headings', () => {
     load('');
     expect(Object.values(sections()).every((text) => text === '')).toBe(true);
@@ -620,6 +680,92 @@ describe('quiz_time_is_up', () => {
     expect(global_value('current_quiz')).toBe('none');
     expect(global_value('quiz_is_running')).toBe(0);
     expect(window.removeAllGraphs).toHaveBeenCalled();
+  });
+
+  // Cases added after Stryker mutation testing showed that no test noticed these changes.
+  describe('mutation gaps', () => {
+    const box = () => document.getElementById('quiz_intro');
+    const nbsp = (text) => text.replaceAll('\u00a0', ' ');
+
+    test('the window is a centred heading, the close button and the bell, in that order', () => {
+      window.quiz_time_is_up();
+      expect(intro().startsWith('<center><h2>Zed, Time\'s up!</h2><button type="button" class="close-window" onclick="stop_quiz();">')).toBe(true);
+      expect(intro()).toContain('</button><img src="images/bell_small.webp" width="300px" style="margin:0;padding:0"><br>You');
+    });
+
+    test('the experience slider is labelled, and the labels are not part of the result text', () => {
+      window.quiz_time_is_up();
+      const container = box().querySelector('.quiz-container');
+      expect(container.querySelector('input.quiz-slider#experience_level').value).toBe('62.5');
+      const labels = [...container.querySelectorAll('.quiz-labels > label')];
+      expect(labels.map((label) => label.htmlFor)).toEqual(['0', '12.5', '25', '37.5', '50', '62.5', '75', '87.5', '100']);
+      expect(labels.map((label) => nbsp(label.textContent))).toEqual(['', ' Novice', '', '', ' Intermediate', '', '', ' Professor', '']);
+      expect(container.textContent).not.toContain('Your total result');
+      expect(intro()).toContain('Your total result<br><br>');
+    });
+
+    test('the nickname field is alone in its area, and the three buttons are a table after it', () => {
+      window.quiz_time_is_up();
+      const area = box().querySelector('#nickname_area');
+      expect([...area.children].map((child) => child.tagName)).toEqual(['INPUT', 'BR']);
+      expect(area.children[0].id).toBe('nickname');
+      expect(area.textContent).toBe('Your nickname: ');
+      const cells = [...box().querySelectorAll('table td')];
+      expect(cells.map((cell) => cell.getAttribute('width'))).toEqual(['20%', '30%', '40%']);
+      expect(cells.map((cell) => cell.getAttribute('onclick'))).toEqual(['stop_quiz()', 'quiz_lets_go_practice()', 'quiz_lets_go_compete()']);
+      expect(cells.map((cell) => cell.textContent)).toEqual(["I'm done", 'Practice!', "Let's go Compete!"]);
+      for (const cell of cells) {
+        expect(cell.innerHTML.startsWith('<br><span id="quiz_')).toBe(true);
+        expect(cell.innerHTML.endsWith('</span><br><br>')).toBe(true);
+      }
+    });
+
+    test.each([
+      ['click_freq', 'reading log scale diagrams'],
+      ['click_time', 'clicking on linear x axes'],
+      ['click_nyquist_angle', 'identifying angles in the Nyquist diagram'],
+      ['click_system', "understanding a system's order"],
+      ['click_wrong', 'finding the odd-one-out graph'],
+    ])('when %s is the weakest topic the advice is "%s"', (weakest, advice) => {
+      const levels = { click_freq: 50, click_time: 60, click_nyquist_angle: 70, click_system: 80, click_wrong: 90, [weakest]: 5 };
+      set_globals({ quiz_difficulties: levels });
+      window.quiz_time_is_up();
+      expect(intro()).toContain(`, but you could focus on learning more about ${advice}.<br><br>`);
+    });
+
+    test('the quiz question text is cleared', () => {
+      document.getElementById('quiz_text').innerHTML = 'Question!';
+      window.quiz_time_is_up();
+      expect(document.getElementById('quiz_text').innerHTML).toBe('');
+    });
+
+    describe('the compete POST', () => {
+      beforeEach(() => set_globals({ quiz_compete: true, client_nick: 'Ann Lee' }));
+
+      test('is asynchronous, form-encoded, and writes spaces as +', () => {
+        window.quiz_time_is_up();
+        const [post] = FakeXHR.instances;
+        expect(post.async).toBe(true);
+        expect(post.headers).toEqual({ 'Content-Type': 'application/x-www-form-urlencoded' });
+        expect(post.sent).toContain('LTEST_Ann+Lee%3B');
+        expect(post.sent).not.toContain('%20');
+      });
+
+      test('logs what the server answers, and what went wrong', () => {
+        window.quiz_time_is_up();
+        const [post] = FakeXHR.instances;
+        const log = jest.spyOn(console, 'log').mockImplementation(() => {});
+        window.read_highscores = jest.fn();
+        const load_event = { target: { response: 'Saved' } };
+        post.listeners.load(load_event);
+        expect(log.mock.calls).toEqual([['OK'], [load_event], ['Saved']]);
+        log.mockClear();
+        const error_event = { type: 'error' };
+        post.listeners.error(error_event);
+        expect(log.mock.calls).toEqual([['Error'], [error_event]]);
+        log.mockRestore();
+      });
+    });
   });
 
   test('practice mode logs the result but does not POST it', () => {
@@ -668,5 +814,130 @@ describe('quiz_time_is_up', () => {
     expect(html).toContain('2026/11/01 10:00:00 TEST   Zed<br>');
     expect(html).toContain(' 1.  4 TEST   Zed<br>'); // longest streak
     expect(html).toContain(' 1.  7 TEST   Zed<br>'); // most answered
+  });
+});
+
+// Cases added after Stryker mutation testing (npm run test:mutation) showed that no test noticed
+// these changes to src/quiz_scoring.js.
+describe('mutation gaps: quiz_clicked', () => {
+  beforeEach(() => spy_on(['quiz_correct', 'quiz_incorrect', 'quiz_perhaps', 'update_quiz', 'add_event']));
+
+  test('logs every field of the click, in order', () => {
+    const all = { where: 'Bmag', graph_no: 1, time_variable: 2, real: 3, imaginary: 4, time: 5, amplitude: 6, frequency: 7, magnitude: 8, phase: 9 };
+    click('none', {}, all);
+    expect(window.add_event).toHaveBeenCalledWith(
+      'quiz_clicked:where=Bmag,graph_no=1,time_variable=2,real=3,imaginary=4,time=5,amplitude=6,frequency=7,magnitude=8,phase=9');
+  });
+
+  // [question, state, click, verdict, message (a string, or a regular expression for the long ones)]
+  test.each([
+    ['click_freq', { quiz_freq: 10 }, { where: 'Nyq' }, 'incorrect', /^No\. The Nyquist diagram contains phases and magnitudes\. The frequency information/],
+    ['click_freq', { quiz_freq: 10 }, { where: 'time' }, 'incorrect', /^No\. The time response of a system shows the amplitude after the input signal is applied\./],
+    ['click_freq', { quiz_freq: 10 }, { where: 'time_xaxis' }, 'incorrect', /^No\. This axis is about time and seconds\./],
+    ['click_freq', { quiz_freq: 10 }, { where: 'pz' }, 'perhaps', /^Perhaps\. The pole-zero map can tell you time constants/],
+    ['click_time', { quiz_time_to_click: 2 }, { where: 'Bmag' }, 'incorrect', 'No. There is no time information in the Bode magnitude plot.'],
+    ['click_time', { quiz_time_to_click: 2 }, { where: 'Bphase' }, 'incorrect', 'No. There is no time information in the Bode phase plot.'],
+    ['click_time', { quiz_time_to_click: 2 }, { where: 'Bmag_xaxis' }, 'incorrect', 'No. There is no time information in the Bode magnitude frequency axis.'],
+    ['click_time', { quiz_time_to_click: 2 }, { where: 'Bphase_xaxis' }, 'incorrect', 'No. There is no time information in the Bode phase frequency axis.'],
+    ['click_time', { quiz_time_to_click: 2 }, { where: 'Bmag_yaxis' }, 'incorrect', 'No. There is no time information in the Bode magnitude y-axis.'],
+    ['click_time', { quiz_time_to_click: 2 }, { where: 'Bphase_yaxis' }, 'incorrect', 'No. There is no time information in the Bode phase y-axis.'],
+    ['click_time', { quiz_time_to_click: 2 }, { where: 'Nyq' }, 'incorrect', /^No\. The Nyquist diagram contains phases and magnitudes\. There is no direct time information/],
+    ['click_nyquist_angle', { quiz_nyquist_angle_to_click: -45 }, { where: 'time' }, 'incorrect', 'No. There are no angles in the time response graph.'],
+    ['click_nyquist_angle', { quiz_nyquist_angle_to_click: -45 }, { where: 'Bmag' }, 'incorrect', 'No. There are no angles in the Bode magnitude plot.'],
+    ['click_nyquist_angle', { quiz_nyquist_angle_to_click: -45 }, { where: 'Bmag_xaxis' }, 'incorrect', 'No. There are no angles in the Bode magnitude frequency axis.'],
+    ['click_nyquist_angle', { quiz_nyquist_angle_to_click: -45 }, { where: 'Bmag_yaxis' }, 'incorrect', 'No. There are no angles in the Bode magnitude y-axis.'],
+    ['click_nyquist_angle', { quiz_nyquist_angle_to_click: -45 }, { where: 'Bphase' }, 'perhaps', /^Well, there are angles in the Bode phase plot, but this time we asked for the Nyquist angles\./],
+    ['click_nyquist_angle', { quiz_nyquist_angle_to_click: -45 }, { where: 'Bphase_xaxis' }, 'incorrect', 'No. There are no angles in the Bode phase frequency axis.'],
+    ['click_nyquist_angle', { quiz_nyquist_angle_to_click: -45 }, { where: 'Bphase_yaxis' }, 'perhaps', /^Well, there are angles in the Bode phase plot, but this time we asked for the Nyquist angles\./],
+    ['click_nyquist_angle', { quiz_nyquist_angle_to_click: -45 }, { where: 'pz' }, 'incorrect', 'No, there are no angles in the pole-zero map.'],
+    ['click_system', { quiz_system_to_click: 1 }, { where: 'Bmag', graph_no: -1 }, 'perhaps', 'Perhaps. Please click directly on one line, not just inside a graph.'],
+    ['click_system', { quiz_system_to_click: 1 }, { where: 'Nyq', graph_no: 0 }, 'perhaps', 'Please click in the other graphs or plots.'],
+    ['click_wrong', { quiz_click_wrong: 3 }, { where: 'Bmag' }, 'incorrect', "No. There's nothing wrong with this Bode magnitude plot."],
+    ['click_wrong', { quiz_click_wrong: 3 }, { where: 'Bphase' }, 'incorrect', "No. There's nothing wrong with this Bode phase plot."],
+    ['click_wrong', { quiz_click_wrong: 3 }, { where: 'time' }, 'incorrect', "No. There's nothing wrong with this step input response."],
+    ['click_wrong', { quiz_click_wrong: 0 }, { where: 'Nyq' }, 'incorrect', "No. There's nothing wrong with this Nyquist diagram."],
+  ])('%s %j: a click on %j is %s with the right explanation', (question, state, where, verdict, message) => {
+    const result = click(question, state, where);
+    expect(result.verdict).toBe(verdict);
+    if (typeof message === 'string') expect(result.message).toBe(message);
+    else expect(result.message).toMatch(message);
+  });
+
+  test.each([
+    [-1, ['Bmag', 'Bmag_xaxis', 'Bmag_yaxis'], ['Bphase', 'Bphase_xaxis', 'Bphase_yaxis']],
+    [-2, ['Bphase', 'Bphase_xaxis', 'Bphase_yaxis'], ['Bmag', 'Bmag_xaxis', 'Bmag_yaxis']],
+  ])('quiz_freq %i accepts every part of one Bode plot and none of the other', (quiz_freq, right, wrong) => {
+    for (const where of right) expect(click('click_freq', { quiz_freq }, { where }).verdict).toBe('correct');
+    for (const where of wrong) expect(click('click_freq', { quiz_freq }, { where }).verdict).toBe('incorrect');
+  });
+
+  test('the Nyquist angle is shown as it is clicked: -270 stays, only below -270 is turned by 360', () => {
+    expect(click('click_nyquist_angle', { quiz_nyquist_angle_to_click: 0 }, { where: 'Nyq', phase: -270 }).message)
+      .toBe('No. You did click the right graph, but at the wrong angle. Your -270° is too far away from the desired 0°.');
+    expect(click('click_nyquist_angle', { quiz_nyquist_angle_to_click: 0 }, { where: 'Nyq', phase: -271 }).message)
+      .toBe('No. You did click the right graph, but at the wrong angle. Your 89° is too far away from the desired 0°.');
+  });
+});
+
+describe('mutation gaps: scoring and the wrong-answer text', () => {
+  test('quiz_correct and quiz_incorrect log themselves', () => {
+    spy_on(['next_quiz', 'add_event', 'play_jingle', 'update_quiz', 'show_quiz_wrong_text']);
+    window.quiz_correct();
+    window.quiz_incorrect('No.');
+    expect(window.add_event.mock.calls).toEqual([['quiz_correct'], ['quiz_incorrect']]);
+  });
+
+  test('set_difficulty_level logs the new level', () => {
+    spy_on(['update_quiz', 'next_quiz', 'add_event']);
+    window.set_difficulty_level({ value: '30' });
+    expect(window.add_event).toHaveBeenCalledWith('set_difficulty_level=30');
+  });
+
+  test('the star, square and circle bursts have their own shape, colours and speed', () => {
+    spy_on(['next_quiz', 'add_event', 'play_jingle']);
+    window.confetti = jest.fn();
+    window.mouseX = 640;
+    window.mouseY = 200;
+    window.quiz_correct();
+    const base = {
+      spread: 360, ticks: 55, gravity: -0.8, decay: 0.96, startVelocity: 8, origin: { x: 0.5, y: 0.25 },
+      colors: ['FFFF00', 'FF8080', 'E89400', 'FFCA6C', 'FDFFB8'],
+    };
+    expect(window.confetti.mock.calls.map((args) => args[0])).toEqual([
+      { ...base, particleCount: 30, gravity: -0.2, scalar: 2.8, shapes: ['star'] },
+      { ...base, particleCount: 15, scalar: 1.5, startVelocity: 24, flat: false, shapes: ['square'], colors: ['FF0000', 'FF8000', 'c0c0c0', 'a04070'] },
+      { ...base, particleCount: 10, gravity: 1.0, scalar: 2.5, startVelocity: 14, shapes: ['circle'], colors: ['a0d0a0', 'a0a0d0', 'c0c0c0', 'a05050'] },
+    ]);
+  });
+
+  test('the wrong-answer text is positioned and animated in both the text and the "no" marker', () => {
+    window.mouseX = 640;
+    window.mouseY = 400;
+    window.show_quiz_wrong_text('x');
+    for (const selector of ['.quiz_answer', '.quiz_no']) {
+      const style = document.querySelector(selector).style;
+      expect(style.getPropertyValue('--left')).toBe('51%');
+      expect(style.getPropertyValue('--top')).toBe('50%');
+    }
+    expect(document.getElementById('quiz_answer').style.animation).toContain('QuizAnim 12s');
+    expect(document.getElementById('quiz_no').style.animation).toContain('QuizAnim2 12s');
+  });
+});
+
+describe('mutation gaps: highscore helpers', () => {
+  test('split_placename keeps a nickname of exactly max_length and shortens a longer one to max_length', () => {
+    expect(window.split_placename('P_' + 'a'.repeat(19), 19).nickname).toBe('a'.repeat(19));
+    expect(window.split_placename('P_' + 'a'.repeat(20), 19).nickname).toBe('a'.repeat(16) + '...');
+  });
+
+  test.each([
+    [{ A: '2026/10/01 10:00:00', B: '2026/10/01 10:00:00', C: '2026/10/05 10:00:00', D: '2026/09/01 10:00:00' }],
+    [{ D: '2026/09/01 10:00:00', C: '2026/10/05 10:00:00', B: '2026/10/01 10:00:00', A: '2026/10/01 10:00:00' }],
+    [{ D: '2026/09/01 10:00:00', A: '2026/10/01 10:00:00', B: '2026/10/01 10:00:00', C: '2026/10/05 10:00:00' }],
+  ])('the latest quizzers are newest first, and equal times keep their order (%j)', (times) => {
+    const html = window.render_latest_quizzers_section(Object.fromEntries(Object.entries(times).map(([nick, time]) => ['P_' + nick, time])));
+    const nicknames = [...html.matchAll(/&nbsp;([A-D])<br>/g)].map((match) => match[1]);
+    const input_order = Object.keys(times);
+    expect(nicknames).toEqual(['C', ...['A', 'B'].sort((a, b) => input_order.indexOf(a) - input_order.indexOf(b)), 'D']);
   });
 });
