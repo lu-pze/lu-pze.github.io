@@ -43,9 +43,9 @@ describe('toggle_gamification', () => {
 });
 
 describe('toggle_sound', () => {
-  // The states are 0/1 ("audio context not initialised") and false/true ("initialised"). Because
-  // of loose == comparisons, toggling never leaves the 0 <-> 1 cycle: false goes to 1 and true to 0.
-  test.each([[0, 1], [1, 0], [false, 1], [true, 0]])('%s -> %s', (before, after) => {
+  // The states are 0/1 (audio context not initialised yet) and false/true (initialised). Toggling
+  // cycles 0 <-> 1 before the first press, and true <-> false (muted, context kept) afterwards.
+  test.each([[0, 1], [1, 0], [false, true], [true, false]])('%s -> %s', (before, after) => {
     set_globals({ sound_enabled: before });
     window.toggle_sound({});
     expect(global_value('sound_enabled')).toBe(after);

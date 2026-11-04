@@ -323,6 +323,12 @@ describe('quiz_correct', () => {
     expect(window.play_jingle).toHaveBeenCalledTimes(1);
   });
 
+  test('is silent while the audio is still to be initialised (sound_enabled 1, and 1 == true)', () => {
+    set_globals({ sound_enabled: 1 });
+    window.quiz_correct();
+    expect(window.play_jingle).not.toHaveBeenCalled();
+  });
+
   test('shoots three confetti bursts from the mouse position', () => {
     window.confetti = jest.fn();
     window.mouseX = 640;

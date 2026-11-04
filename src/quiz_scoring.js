@@ -584,7 +584,7 @@ function quiz_correct (){
   let quiz_no_div = document.getElementById("quiz_no");
   quiz_answer_div.style.animation = 'none';
   quiz_no_div.style.animation = 'none';
-  if (sound_enabled==true){
+  if (sound_enabled===true){
     play_jingle();
   }
   if (adaptive_difficulty_enabled==true){

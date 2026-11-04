@@ -4,8 +4,7 @@
 // The expected values are worked out from the maths or the documented behaviour, not copied from
 // the output. Not covered here because the code is unreachable: quiz_scoring.js lines 48-52 (the
 // `else if` can only run for a name missing from high_total, whose high_total2 entry is then
-// undefined), achievements_sound.js line 29-30 (`sound_enabled == false` is only true when
-// `== 0` was already true) and feedback.js lines 22-23 and 281-282 (see the notes in those files).
+// undefined) and feedback.js lines 22-23 and 281-282 (see the notes in those files).
 const { loadApp, global_value, set_globals } = require('./helpers/load_app');
 
 beforeAll(() => loadApp());

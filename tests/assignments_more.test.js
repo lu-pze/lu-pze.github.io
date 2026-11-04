@@ -161,6 +161,12 @@ describe('task_done', () => {
     expect(window.play_jingle).toHaveBeenCalledTimes(1);
   });
 
+  test('the jingle is silent while the audio is still to be initialised (sound_enabled 1, and 1 == true)', () => {
+    set_globals({ sound_enabled: 1 });
+    window.task_done(TASK);
+    expect(window.play_jingle).not.toHaveBeenCalled();
+  });
+
   test('a task that is already done is ignored', () => {
     set_globals({ done_tasks: [TASK] });
     window.task_done(TASK);

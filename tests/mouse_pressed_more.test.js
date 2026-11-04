@@ -402,10 +402,15 @@ describe('mouseReleased, tasks that depend on which plot was pressed', () => {
       expect(done({}, { k_4: 1 }, CLICKED.pole_zero)).toBe(false);
     });
 
-    // Bug: with a single graph (the ghost deleted or never added) bode_graphs[1] is undefined and the
-    // release of the mouse throws a TypeError instead of just not completing the task.
-    test.failing('a single graph does not make mouseReleased throw', () => {
+    // Without the ghost graph (deleted or never added) bode_graphs[1] is undefined: the release of
+    // the mouse must not throw, it just does not complete the task.
+    test('a single graph does not make mouseReleased throw', () => {
       expect(() => release({ k_4: 1 }, { graphs: [make_graph(null, user)], clicked: CLICKED.bode_mag })).not.toThrow();
+      expect(window.task_done).not.toHaveBeenCalledWith(TASK);
+    });
+
+    test('no graph at all does not make mouseReleased throw', () => {
+      expect(() => release({ k_4: 1 }, { graphs: [], clicked: CLICKED.bode_mag })).not.toThrow();
     });
   });
 
@@ -551,9 +556,9 @@ describe('mousePressed, starting the Web Audio API', () => {
     expect(global_value('sound_enabled')).toBe(value);
   });
 
-  // Bug: sound_enabled becomes true once the audio is up, and `true == 1` in JavaScript, so every later
-  // press creates yet another AudioContext and downloads the jingle again.
-  test.failing('a second press does not create another audio context', () => {
+  // sound_enabled becomes true once the audio is up, and `true == 1` in JavaScript, so a loose
+  // comparison would create yet another AudioContext and download the jingle on every later press.
+  test('a second press does not create another audio context', () => {
     const created = jest.fn();
     window.AudioContext = class { constructor() { created(); } };
     set_globals({ sound_enabled: 1 });

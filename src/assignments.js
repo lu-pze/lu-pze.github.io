@@ -57,7 +57,7 @@ function task_done (which_one){
         assignment_star_div.style.animation = 'none';
         assignment_star_div.offsetHeight; /* trigger reflow */
         assignment_star_div.style.animation="MoveToStar3 8s ease-out 0s 1";
-        if (sound_enabled==true){
+        if (sound_enabled===true){
           play_jingle();
         }
         // Let the menu star wiggle a little:

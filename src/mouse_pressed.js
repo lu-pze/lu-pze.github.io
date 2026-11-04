@@ -480,7 +480,8 @@ function press_in_pole_zero_maps(event){
 
 // Audio API stuff. Can only initialize and play sound at user action, and clicking is one such action:
 function start_audio_on_press(){
-  if (sound_enabled==1){
+  // Strict: once the audio works sound_enabled is true, and true==1 would initialize it again on every press.
+  if (sound_enabled===1){
     // https://webaudio.github.io/web-audio-api/#AudioBufferSourceNode
     try {
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -715,7 +716,8 @@ function mouseReleased(){
     }
     // See if two Nyquist diagrams are equal:
     let k_4 = range_slider_variables[variable_position["k_4"]];
-    if ((k_4>=0.95)&&(k_4<=1.05)){
+    // The ghost graph to compare with (bode_graphs[1]) may be missing:
+    if ((k_4>=0.95)&&(k_4<=1.05)&&(bode_graphs.length > 1)){
       // This is kind of difficult to check using ranges for T_6, T_7 and T_8.
       // Depending on T_8 (the zero), T_6 and T_7 can vary a lot.
       // So let's find a couple of angles in the Nyquist diagram, and 

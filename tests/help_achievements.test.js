@@ -985,19 +985,12 @@ describe('the jingle', () => {
       expect(context.sources[0].start).toHaveBeenCalledTimes(1);
     });
 
-    // 1 == true: "1" means that the audio context is still to be initialised, and it plays.
-    test.each([0, false])('and is silent when sound_enabled is %s', (state) => {
+    // "1" means that the audio context is still to be initialised (1 == true, but there is nothing to play with).
+    test.each([0, false, 1])('and is silent when sound_enabled is %s', (state) => {
       window.jingle_buffer = { duration: 3 };
       set_globals({ sound_enabled: state });
       window.achievement_done('add_graph');
       expect(context.sources).toHaveLength(0);
-    });
-
-    test('sound_enabled 1 (the state after one click on the sound button) also plays', () => {
-      window.jingle_buffer = { duration: 3 };
-      set_globals({ sound_enabled: 1 });
-      window.achievement_done('add_graph');
-      expect(context.sources).toHaveLength(1);
     });
 
     test('an achievement that is already done does not play it again', () => {
@@ -1057,8 +1050,7 @@ describe('view_achievements and hide_achievements', () => {
 });
 
 describe('toggle_sound with other values', () => {
-  // The loose comparisons make the `== false` branch unreachable: false == 0 is caught first. Only a
-  // value that is neither 0, false nor 1 ends in the last branch, which switches the sound off.
+  // A value that is none of 0, 1, true or false ends in the last branch, which mutes the sound.
   test.each([2, null, 'on'])('%s -> false', (before) => {
     window.eval(`sound_enabled = ${JSON.stringify(before)}`);
     window.toggle_sound({});

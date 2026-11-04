@@ -4,8 +4,9 @@
 // Achievements
 
 let gamification_enabled = false;
-let sound_enabled=0; // 1 means "audio context needs to be initialized". true means "everything works"
-                     // 0 means "audio context needs to be initialized". false means "everything works but don't play anything"
+// The states of the "Enable sound" checkbox. Compare with === : 1 == true and 0 == false in JavaScript.
+let sound_enabled=0; // 0 means "sound off, no audio context yet". 1 means "sound on, the audio context is initialized at the next press".
+                     // true means "everything works". false means "everything works but don't play anything" (muted, the context is kept).
 let done_achievements=[];
 let achievement_score=0;
 let achievement_rank="";
@@ -24,12 +25,12 @@ function toggle_gamification(event){
 }
 
 function toggle_sound(event){
-  if (sound_enabled==0){
+  if (sound_enabled===0){
     sound_enabled = 1;
-  } else if (sound_enabled==false){
-    sound_enabled = true;
-  } else if (sound_enabled==1){
+  } else if (sound_enabled===1){
     sound_enabled = 0;
+  } else if (sound_enabled===false){
+    sound_enabled = true;
   } else {
     sound_enabled = false;
   }
@@ -60,7 +61,7 @@ function achievement_done (which_one){
       achievement_star_div.style.animation = 'none';
       achievement_star_div.offsetHeight; /* trigger reflow */
       achievement_star_div.style.animation="MoveToStar2 8s ease-out 0s 1";
-      if (sound_enabled==true){
+      if (sound_enabled===true){
         play_jingle();
       }
       // Let the menu star wiggle a little:
