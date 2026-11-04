@@ -886,4 +886,127 @@ describe('feedback', () => {
       expect(Object.keys(global_value('fb_all_assignments')).sort()).toEqual([...ASSIGNMENT_FB].sort());
     });
   });
+
+  // Cases added after Stryker mutation testing (npm run test:mutation) showed that no test noticed
+  // these changes to src/feedback.js.
+  describe('mutation gaps: after an answer the next question is shown', () => {
+    const ANSWERS = [
+      'set_fb_quiz_new', 'set_fb_quiz_knowledge', 'set_fb_quiz_enjoy', 'set_fb_quiz_highscore',
+      'set_fb_achievements', 'set_fb_increased', 'set_fb_good_learning', 'set_fb_gamified',
+      'set_fb_ass_new', 'set_fb_ass_knowledge', 'set_fb_ass_enjoy', 'set_fb_questions',
+      'set_fb_bode', 'set_fb_nyquist', 'set_fb_polezero', 'set_fb_bode2', 'set_fb_nyquist2',
+      'set_fb_polezero2', 'set_fb_edu', 'set_fb_quiz_many',
+    ];
+    let real_start_feedback;
+    beforeEach(() => {
+      real_start_feedback = window.start_feedback;
+      window.start_feedback = jest.fn();
+    });
+    afterEach(() => { window.start_feedback = real_start_feedback; });
+
+    test.each(ANSWERS)('%s closes the question and then asks for the next one', (handler) => {
+      window[handler]({ value: '5' });
+      expect(window.start_feedback).toHaveBeenCalledTimes(1);
+    });
+
+    test('set_fb_all_assignments, done_fb_text and done_fb_liketext do the same', () => {
+      window.set_fb_all_assignments('fb_four_poles', { value: '5' });
+      window.done_fb_text();
+      window.done_fb_liketext();
+      expect(window.start_feedback).toHaveBeenCalledTimes(3);
+    });
+
+    test('set_fb_text and set_fb_liketext only log what is typed', () => {
+      window.set_fb_text({ value: 'a' });
+      window.set_fb_liketext({ value: 'b' });
+      expect(window.start_feedback).not.toHaveBeenCalled();
+      expect(logged()).toEqual(['set_fb_text=a', 'set_fb_liketext=b']);
+    });
+  });
+
+  describe('mutation gaps: fb_liketext needs all of the quiz, assignment and achievement questions answered', () => {
+    const THREE = ['fb_quiz_new', 'fb_ass_new', 'fb_achievements'];
+    test.each([
+      [[]], [['fb_quiz_new']], [['fb_ass_new']], [['fb_achievements']],
+      [['fb_quiz_new', 'fb_ass_new']], [['fb_quiz_new', 'fb_achievements']], [['fb_ass_new', 'fb_achievements']],
+    ])('with only %j answered it is not offered', (answered) => {
+      unlock_everything();
+      set_globals({ done_fb: answered });
+      expect(available_questions_with(answered)).not.toContain('fb_liketext');
+    });
+
+    test('with all three answered it is offered', () => {
+      unlock_everything();
+      expect(available_questions_with(THREE)).toContain('fb_liketext');
+    });
+
+    // The questions that can be picked, found by drawing with many different random values.
+    // (Nothing is answered meanwhile, so the answers given to the others stay as they were.)
+    function available_questions_with(answered) {
+      set_globals({ done_fb: answered });
+      const found = new Set();
+      for (let i = 0; i < 40; i++) {
+        jest.spyOn(Math, 'random').mockReturnValue(i / 40);
+        const html = window.get_next_fb_text();
+        Math.random.mockRestore();
+        if (html !== '') found.add(question_id_of(html));
+      }
+      set_globals({ done_fb: [] });
+      return [...found];
+    }
+  });
+
+  describe('mutation gaps: the exact markup of the surveys that were only checked in part', () => {
+    const html_of = (id) => {
+      show_only(id);
+      return feedback_text().innerHTML;
+    };
+    const slider = (id, handler, width = 60) =>
+      `<fieldset style="border:0"><label for="${id}">Don't&nbsp;agree</label>` +
+      `<input type="range" min="0" max="100" step="1" class="quiz-slider" id="${id}" value="50" style="width:${width}%" onchange="${handler}">` +
+      `<label for="${id}">Agree</label></fieldset>`;
+
+    test('an assignment question: sentence, line break, slider with both labels', () => {
+      const html = html_of('fb_four_poles');
+      expect(html).toBe(
+        'I have learnt more about systems with four poles from this assignment:<br>' +
+        slider('fb_all_assignments', "set_fb_all_assignments('fb_four_poles',this)"));
+    });
+
+    test('fb_text: a text area and a Done button in a table cell', () => {
+      const html = html_of('fb_text');
+      expect(html.startsWith('Suggestions for improvement:<br><textarea rows="3" cols="60" id="fb_text" name="fb_text"')).toBe(true);
+      expect(html).toContain('oninput="set_fb_text(this)"></textarea>');
+      const button = feedback_text().querySelector('table > tbody > tr > td.yellow_hover > span#fb_done_button');
+      expect(button.textContent).toBe('Done!');
+      expect(button.nextElementSibling.tagName).toBe('BR');
+      expect(feedback_text().querySelector('td.yellow_hover').getAttribute('onclick')).toBe('done_fb_text()');
+    });
+
+    test('fb_liketext: a text area and a Done button in a table cell', () => {
+      const html = html_of('fb_liketext');
+      expect(html.startsWith('What did you like the most here:<br><textarea rows="5" cols="40" id="fb_liketext" name="fb_liketext"')).toBe(true);
+      const button = feedback_text().querySelector('table > tbody > tr > td.yellow_hover > span#fb_done_button');
+      expect(button.textContent).toBe('Done!');
+      expect(button.nextElementSibling.tagName).toBe('BR');
+      expect(feedback_text().querySelector('td.yellow_hover').getAttribute('onclick')).toBe('done_fb_liketext()');
+    });
+
+    test.each([
+      ['fb_edu', 'Automatic control:', [
+        ['nothing', 'I know nothing.'], ['student', "I'm studying it."], ['have_studied', 'I have studied it.'],
+        ['phd', "I'm an Automatic Control PhD student."], ['professor', "I'm an Automatic Control Professor."],
+      ]],
+      ['fb_quiz_many', 'What makes you do more quizzes?', [
+        ['fun_compete', 'It’s fun to compete'], ['good_practice', 'Good practice'], ['challenge_myself', 'Fun to challenge myself'],
+        ['professor', 'Want to reach professor level'], ['other', 'Other'],
+      ]],
+    ])('%s: a heading and one label per choice, each followed by a line break', (id, heading, choices) => {
+      const expected = `<table><tbody><tr><td>${heading}<br>` +
+        choices.map(([value, text]) =>
+          `<label><input type="radio" id="${id}" name="${id}" value="${value}" onchange="set_${id}(this)">${text}</label><br>`).join('') +
+        '</td></tr></tbody></table>';
+      expect(html_of(id)).toBe(expected);
+    });
+  });
 });
