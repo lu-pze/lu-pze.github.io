@@ -54,6 +54,7 @@ function drag({ time = null, mag = null, phase = null, variable = '', from = [0,
 
 // Drags inside the pole-zero map of `preset` to the point (real, imaginary)'s pixel, given as offsets inside the map.
 function drag_in_map(preset, dx, dy, variable = '') {
+  set_globals({ pole_zero_drag_graph_no: index_of(preset) });
   return drag({ variable, to: [MAP_X + dx, map_y(preset) + dy] });
 }
 // Pixel offsets (inside an 80 x 80 map) of a real part, with imaginary part 1.
@@ -993,6 +994,73 @@ describe('dragging one real pole in the Bode plots recalculates the other graphs
     drag({ phase: 'GRAPH_ONE_REAL_POLE', to: [1, 1] });
     expect(redrawn()).not.toContain('only_k_1');
     expect(redrawn()).toContain('only_T_1');
+  });
+});
+
+describe('only the map the press started on follows the mouse', () => {
+  const INSIDE = 40;
+  const drag_with_press_on = (pressed_map, over_preset) => {
+    set({ T_1: 0.5, T_5: 0.5 });
+    set_globals({ pole_zero_drag_graph_no: pressed_map });
+    return drag({ variable: '', to: [MAP_X + INSIDE, map_y(over_preset) + INSIDE] });
+  };
+
+  test('a drag from outside the maps moves nothing and does not crash', () => {
+    expect(() => drag_with_press_on(-1, 'GRAPH_ONE_REAL_POLE')).not.toThrow();
+    expect(get('T_1')).toBe(0.5);
+    expect(() => drag_with_press_on(-1, 'GRAPH_TWO_REAL_POLES')).not.toThrow();
+    expect(achievements()).toEqual([]);
+    expect(redrawn()).toEqual([]);
+  });
+
+  test('a drag from one map moves nothing in another map', () => {
+    expect(() => drag_with_press_on(index_of('GRAPH_FOUR_POLES'), 'GRAPH_TWO_REAL_POLES')).not.toThrow();
+    drag_with_press_on(index_of('GRAPH_FOUR_POLES'), 'GRAPH_ONE_REAL_POLE');
+    expect(get('T_1')).toBe(0.5);
+    expect(achievements()).toEqual([]);
+  });
+
+  test.each(['GRAPH_FOUR_POLES', 'GRAPH_ONE_ZERO'])('%s, which takes no presses, still follows a drag from its map', (preset) => {
+    drag_with_press_on(index_of(preset), preset);
+    expect(redrawn()).toEqual([id_of(preset)]);
+  });
+
+  test('a pole stops at the edge of its map and follows the mouse again when it comes back', () => {
+    set_globals({ pole_zero_drag_graph_no: index_of('GRAPH_ONE_REAL_POLE') });
+    drag({ to: [MAP_X + 60, map_y('GRAPH_ONE_REAL_POLE') + INSIDE] }); // real = 0: nudged to T = 14.75
+    const inside = get('T_1');
+    drag({ to: [MAP_X + 200, map_y('GRAPH_ONE_REAL_POLE') + INSIDE] }); // outside: nothing changes
+    expect(get('T_1')).toBe(inside);
+    drag({ to: [MAP_X + 20, map_y('GRAPH_ONE_REAL_POLE') + INSIDE] }); // real = -2
+    expect(get('T_1')).toBeCloseTo(0.5, 10);
+  });
+
+  test('a graph that is gone by the time of the drag is passed over', () => {
+    set_globals({ pole_zero_drag_graph_no: 50, pole_zero_graph_x: Array(60).fill(MAP_X), pole_zero_graph_y: Array(60).fill(0) });
+    expect(() => drag({ to: [MAP_X + INSIDE, INSIDE] })).not.toThrow();
+    expect(achievements()).toEqual([]);
+  });
+
+  test('a hidden graph has no map under the mouse', () => {
+    global_value('bode_graphs')[index_of('GRAPH_ONE_REAL_POLE')].bode_displaybool = false;
+    window.mouseX = MAP_X + INSIDE;
+    window.mouseY = map_y('GRAPH_ONE_REAL_POLE') + INSIDE;
+    expect(window.pole_zero_map_under_mouse()).toBe(-1);
+  });
+
+  test('pole_zero_map_under_mouse finds the map, with exclusive edges', () => {
+    const y = map_y('GRAPH_TWO_REAL_POLES');
+    const at = (x_offset, y_offset) => {
+      window.mouseX = MAP_X + x_offset;
+      window.mouseY = y + y_offset;
+      return window.pole_zero_map_under_mouse();
+    };
+    expect(at(1, 1)).toBe(index_of('GRAPH_TWO_REAL_POLES'));
+    expect(at(MAP_SIZE - 1, MAP_SIZE - 1)).toBe(index_of('GRAPH_TWO_REAL_POLES'));
+    expect(at(0, 40)).toBe(-1);
+    expect(at(MAP_SIZE, 40)).toBe(-1);
+    expect(at(40, 0)).toBe(-1);
+    expect(at(40, MAP_SIZE)).toBe(-1);
   });
 });
 

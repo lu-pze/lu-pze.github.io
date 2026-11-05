@@ -55,6 +55,23 @@ async function start(page) {
 }
 
 test.describe('pole-zero map', () => {
+  test('a drag that starts outside the maps does not move a pole or crash', async ({ page }) => {
+    const errors = await open_app(page);
+    await start_from_splash(page);
+    const one_pole = await graph_index(page, 'GRAPH_ONE_REAL_POLE');
+    const two_poles = await graph_index(page, 'GRAPH_TWO_REAL_POLES');
+    const [one_pole_point, two_poles_point] = [
+      await free_pole_zero_point(page, one_pole, -2, 1), await free_pole_zero_point(page, two_poles, -2, 1)];
+    const T_1 = await variable(page, 'T_1');
+    await move_to_canvas(page, one_pole_point.x, 5); // just above the maps
+    await page.mouse.down();
+    await move_to_canvas(page, one_pole_point.x, one_pole_point.y, { steps: 3 });
+    await move_to_canvas(page, two_poles_point.x, two_poles_point.y, { steps: 3 });
+    await page.mouse.up();
+    expect(await variable(page, 'T_1')).toBe(T_1);
+    expect(errors).toEqual([]);
+  });
+
   test('dragging the pole of a one-real-pole graph sets its time constant', async ({ page }) => {
     const errors = await start(page);
     const i = await graph_index(page, 'GRAPH_ONE_REAL_POLE');

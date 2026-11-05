@@ -8,6 +8,7 @@
   "mutate": [
     "src/transfer_math.js",
     "src/bode_graph.js",
+    "src/hover_nyquist.js",
     "src/quiz_scoring.js",
     "src/assignments.js",
     "src/presets_state.js",

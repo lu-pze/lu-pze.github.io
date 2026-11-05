@@ -260,18 +260,24 @@ const POLE_ZERO_MAP_DRAGS = new Map([
   }],
 ]);
 
-function drag_in_pole_zero_maps(){
-  for(let i=0; i<bode_graphs.length; i++){
-    if(((mouseX-pole_zero_graph_x[i]) > 0) && ((mouseX-pole_zero_graph_x[i]) < pole_zero_width)){
-      if(((mouseY-pole_zero_graph_y[i]) > 0) && ((mouseY-pole_zero_graph_y[i]) < pole_zero_height)){
-        if(bode_graphs[i].bode_displaybool){
-          let real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 3;
-          let imaginary=2 - (mouseY-pole_zero_graph_y[i])/pole_zero_height * 4;
-          POLE_ZERO_MAP_DRAGS.get(preset_of_formula(bode_graphs[i].bode_formula))?.(bode_graphs[i],real,imaginary);
-        }
-      }
-    }
-  }
+function mouse_is_in_pole_zero_map(i){
+  return ((mouseX-pole_zero_graph_x[i]) > 0) && ((mouseX-pole_zero_graph_x[i]) < pole_zero_width) &&
+    ((mouseY-pole_zero_graph_y[i]) > 0) && ((mouseY-pole_zero_graph_y[i]) < pole_zero_height) &&
+    bode_graphs[i]?.bode_displaybool === true;
+}
+
+// The graph of the shown pole-zero map under the mouse, or -1.
+function pole_zero_map_under_mouse(){
+  return bode_graphs.findIndex((graph, i) => mouse_is_in_pole_zero_map(i));
+}
+
+// Moves what is in the map the press started on, while the mouse is inside that map.
+function drag_in_pole_zero_map(){
+  const i = pole_zero_drag_graph_no;
+  if (!mouse_is_in_pole_zero_map(i)) return;
+  let real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 3;
+  let imaginary=2 - (mouseY-pole_zero_graph_y[i])/pole_zero_height * 4;
+  POLE_ZERO_MAP_DRAGS.get(preset_of_formula(bode_graphs[i].bode_formula))?.(bode_graphs[i],real,imaginary);
 }
 
 function mouseDragged (){
@@ -302,7 +308,7 @@ function mouseDragged (){
         draw_hover_nyquist();
       }
     }
-    drag_in_pole_zero_maps();
+    drag_in_pole_zero_map();
     return;
   }
   initial_mouseX = mouseX;

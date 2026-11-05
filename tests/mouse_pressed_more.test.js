@@ -107,9 +107,10 @@ describe('mouseReleased, bookkeeping', () => {
   test('forgets what was pressed on', () => {
     set_globals({
       clicked_on_time_response_graph_no: 2, clicked_on_bode_mag_graph_no: 3, clicked_on_bode_phase_graph_no: 1,
-      clicked_on_pole_zero_graph_no: 0, clicked_on_time_variable: 'T_2',
+      clicked_on_pole_zero_graph_no: 0, clicked_on_time_variable: 'T_2', pole_zero_drag_graph_no: 2,
     });
     window.mouseReleased();
+    expect(global_value('pole_zero_drag_graph_no')).toBe(-1);
     expect(['clicked_on_time_response_graph_no', 'clicked_on_bode_mag_graph_no', 'clicked_on_bode_phase_graph_no',
       'clicked_on_pole_zero_graph_no'].map(global_value)).toEqual([-1, -1, -1, -1]);
     expect(global_value('clicked_on_time_variable')).toBe('');
@@ -947,6 +948,39 @@ describe('mutation gaps: the pole-zero maps', () => {
     set_globals({ bode_graphs: [map_graph('GRAPH_TIME_DELAY')] });
     expect(window.press_in_pole_zero_maps(event())).toBe(false);
     expect(global_value('clicked_on_pole_zero_graph_no')).toBe(-1);
+  });
+
+  describe('pole_zero_drag_graph_no remembers the map a press started on', () => {
+    const shown_press = (x, y) => {
+      window.mouseX = x;
+      window.mouseY = y;
+      window.mouse_is_in_a_box = jest.fn(() => false);
+      window.mousePressed(event());
+      delete window.mouse_is_in_a_box;
+    };
+
+    test('also for a map that takes no presses', () => {
+      set_globals({ bode_graphs: [map_graph('GRAPH_FOUR_POLES')], pole_zero_drag_graph_no: -1 });
+      shown_press(148, 248);
+      expect(global_value('pole_zero_drag_graph_no')).toBe(0);
+      expect(global_value('clicked_on_pole_zero_graph_no')).toBe(-1);
+    });
+
+    test('a press outside the maps forgets an earlier one', () => {
+      set_globals({ bode_graphs: [map_graph('GRAPH_ONE_REAL_POLE')], pole_zero_drag_graph_no: 0 });
+      shown_press(5000, 5000);
+      expect(global_value('pole_zero_drag_graph_no')).toBe(-1);
+    });
+
+    test('a press in a window on top of the map does not count', () => {
+      set_globals({ bode_graphs: [map_graph('GRAPH_ONE_REAL_POLE')], pole_zero_drag_graph_no: 0 });
+      window.mouseX = 148;
+      window.mouseY = 248;
+      window.mouse_is_in_a_box = jest.fn(() => true);
+      window.mousePressed(event());
+      delete window.mouse_is_in_a_box;
+      expect(global_value('pole_zero_drag_graph_no')).toBe(-1);
+    });
   });
 
   test('a press in the map picks the closest time constant and reports it', () => {

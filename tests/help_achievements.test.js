@@ -242,21 +242,19 @@ describe('help_questions.js: the all_questions table', () => {
   });
 
   test('every id the string-based code refers to in hover_nyquist.js is a real question', () => {
-    const source = read_source('hover_nyquist.js');
-    const referred = [...source.matchAll(/q_id\s*==\s*"([^"]+)"/g)].map((match) => match[1]);
+    const referred = Object.keys(global_value('HELP_QUESTION_TASKS'));
     expect(referred).toEqual(expect.arrayContaining(['GRAPH_PID', 'GRAPH_ONE_POLE_WITH_PID_YR']));
     for (const id of referred) expect(question_ids()).toContain(id);
   });
 
   test('the PID help questions are the ones that complete the "pid_help_" tasks', () => {
-    const source = read_source('hover_nyquist.js');
     const assignments = read_source('assignments.js');
     const tasks = Object.keys(global_value('all_tasks'));
-    for (const match of source.matchAll(/q_id == "([^"]+)"\) task_done\("([^"]+)"\)/g)) {
-      expect(question_ids()).toContain(match[1]);
+    for (const [question, task] of Object.entries(global_value('HELP_QUESTION_TASKS'))) {
+      expect(question_ids()).toContain(question);
       // pid_help_S and pid_help_OPEN are commented out in assignments.js (experimental assignments).
-      const commented_out = assignments.includes(`//"${match[2]}"`);
-      expect({ task: match[2], exists: tasks.includes(match[2]) || commented_out }).toEqual({ task: match[2], exists: true });
+      const commented_out = assignments.includes(`//"${task}"`);
+      expect({ task, exists: tasks.includes(task) || commented_out }).toEqual({ task, exists: true });
     }
   });
 

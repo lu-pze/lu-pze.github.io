@@ -1,5 +1,14 @@
 'use strict';
 
+// Reading the answer to one of these questions completes this task.
+const HELP_QUESTION_TASKS = {
+  "GRAPH_PID":"pid_help_PID",
+  "GRAPH_ONE_POLE_WITH_PID_YR":"pid_help_YR",
+  "GRAPH_ONE_POLE_WITH_PID_S":"pid_help_S",
+  "GRAPH_ONE_POLE_WITH_PID_YL":"pid_help_YL",
+  "GRAPH_ONE_POLE_WITH_PID_OPEN":"pid_help_OPEN",
+};
+
 function handle_questions(){
   redraw();
   let queue = [];
@@ -92,11 +101,7 @@ function handle_questions(){
         // Scale around center:
         hover_answer.style.transform="translate(-50%,-50%) scale(" + (windowHeight/(rect.height)) +") translate(50%,50%)";
       }
-      if (q_id == "GRAPH_PID") task_done("pid_help_PID");
-      if (q_id == "GRAPH_ONE_POLE_WITH_PID_YR") task_done("pid_help_YR");
-      if (q_id == "GRAPH_ONE_POLE_WITH_PID_S") task_done("pid_help_S");
-      if (q_id == "GRAPH_ONE_POLE_WITH_PID_YL") task_done("pid_help_YL");
-      if (q_id == "GRAPH_ONE_POLE_WITH_PID_OPEN") task_done("pid_help_OPEN");
+      if (q_id in HELP_QUESTION_TASKS) task_done(HELP_QUESTION_TASKS[q_id]);
     }
     //Move this div:
     if (mouseX<windowWidth/2){
@@ -243,6 +248,451 @@ function draw_hover_nyquist(){
 
 let last_hover_answer_id="";
 let nof_redraws_in_math_bar=0;
+
+// ---------------- What the hover overlays are made of
+
+// Moves to the mouse and draws the background of a tooltip. Goes between push() and pop().
+function draw_tooltip_box(width, height=90){
+  translate(mouseX,mouseY);
+  fill(box_background_color,200);
+  stroke(150);
+  rect(0,0,width,height);
+  noStroke();
+}
+
+// 0.0 equals hovering over frequency 10^min_10power (= -2);
+// 1.0 equals hovering over frequency 10^(min_10power + x_case_gain) (-2+5=3)
+function frequency_at(perc_x){
+  return Math.pow(10, perc_x*x_case_gain + min_10power);
+}
+
+function magnitude_of_dB(magnitude_in_dB){
+  return 1.0 * Math.pow(10.0, magnitude_in_dB / 20.0);
+}
+
+function line_across_bode_mag_at_mouse(){
+  line(mouseX,graph_bode_mag_y+graph_bode_mag_y_offset,mouseX,graph_bode_mag_y + graph_bode_mag_y_offset + graph_bode_mag_height);
+}
+
+function line_across_bode_phase_at_mouse(){
+  line(mouseX,graph_bode_phase_y+graph_bode_phase_y_offset,mouseX,graph_bode_phase_y + graph_bode_phase_y_offset + graph_bode_phase_height);
+}
+
+// The value of every shown curve at the mouse, in the Nyquist diagram.
+function draw_nyquist_values_at(perc_x){
+  for(let i=0; i<bode_graphs.length; i++){
+    if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodemag_bool)){
+      if (bode_graphs[i].bode_display_nyquist_bool){
+        bode_graphs[i].draw_nyquist_value(perc_x);
+      }
+    }
+  }
+}
+
+// The curve closest to the mouse, within 70 pixels, as {graph_no, screen_y, value, name}, or undefined.
+// is_shown(graph) tells if the graph is in this plot, value_of(graph) gives its value at the mouse,
+// and screen_y_of(value) the height of that value in the plot, which starts at plot_y.
+// With perc_x, the shown curves also get their value drawn in the Nyquist diagram.
+function closest_curve(is_shown, value_of, screen_y_of, plot_y, perc_x){
+  let closest;
+  let closest_distance = 70;
+  for(let i=0; i<bode_graphs.length; i++){
+    if((bode_graphs[i].bode_displaybool)&&(is_shown(bode_graphs[i]))){
+      if ((perc_x !== undefined) && bode_graphs[i].bode_display_nyquist_bool){
+        bode_graphs[i].draw_nyquist_value(perc_x);
+      }
+      const value = value_of(bode_graphs[i]);
+      const screen_y = screen_y_of(value);
+      const distance = Math.abs(mouseY - plot_y - screen_y);
+      if(distance < closest_distance){
+        closest_distance = distance;
+        closest = {graph_no: i, screen_y: screen_y, value: value, name: bode_graphs[i].graph_name};
+      }
+    }
+  }
+  return closest;
+}
+
+// Dots at this output value: at the right edge of the step response, at the left edge of the
+// Bode magnitude plot, and on the real axis of the Nyquist diagram.
+function draw_output_dots(output, right_edge_screen_y){
+  fill(text_color);
+  ellipse(graph_step_response_x+graph_step_response_width+graph_step_response_x_offset,right_edge_screen_y,12,12);
+  let magnitude = Math.abs(output);
+  let magnitude_in_dB = 20*Math.log(magnitude)/Math.log(10);
+  let screen_y5 = map(magnitude_in_dB,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+  ellipse(graph_bode_mag_x+graph_bode_mag_x_offset,graph_bode_mag_y + screen_y5 + graph_bode_mag_y_offset,12,12);
+  let screen_x0 = map(output,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+  let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+  if ((screen_x0>=0)&&(screen_x0<=graph_nyquist_width)){
+    ellipse(graph_nyquist_x+graph_nyquist_x_offset+screen_x0,graph_nyquist_y+graph_nyquist_y_offset+screen_y0,12,12);
+  }
+}
+
+// The origin of the Nyquist diagram, and the size of the circle of radius 1 around it, on the canvas.
+function nyquist_unit_circle(){
+  let screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+  let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+  let screen_xw = map(2,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+  let screen_yw = map(-2,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+  return {x: graph_nyquist_x + graph_nyquist_x_offset + screen_x0, y: graph_nyquist_y + graph_nyquist_y_offset + screen_y0,
+    width: screen_xw - screen_x0, height: screen_yw - screen_y0};
+}
+
+function draw_magnitude_circle_in_nyquist(magnitude){
+  push();
+  let screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+  let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+  let screen_xw = map(2*magnitude,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+  let screen_yw = map(-2*magnitude,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+  stroke(text_color);
+  strokeWeight(2);
+  noFill();
+  ellipse(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0);
+  pop();
+}
+
+function draw_magnitude_line_in_bode_mag(screen_y){
+  push();
+  stroke(text_color);
+  strokeWeight(2);
+  line(graph_bode_mag_x+graph_bode_mag_x_offset,screen_y,graph_bode_mag_x + graph_bode_mag_x_offset + graph_bode_mag_width, screen_y);
+  pop();
+}
+
+// An arc over the unit circle of the Nyquist diagram, for a phase in degrees.
+function draw_phase_arc_in_nyquist(angle){
+  const circle = nyquist_unit_circle();
+  stroke(angle_color);
+  strokeWeight(2);
+  noFill();
+  if (angle < 0){
+    arc(circle.x,circle.y,circle.width,circle.height, 0, -angle/180*Math.PI);
+  } else {
+    arc(circle.x,circle.y,circle.width,circle.height, -angle/180*Math.PI, 0);
+  }
+}
+
+// The same arc, and a line out from the origin at that angle.
+function draw_phase_arc_and_radius_in_nyquist(angle){
+  push();
+  draw_phase_arc_in_nyquist(angle);
+  const circle = nyquist_unit_circle();
+  let screen_x2 = map(1.2*cos(angle/180*Math.PI),min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
+  let screen_y2 = map(1.2*sin(angle/180*Math.PI),max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
+  line(circle.x,circle.y,graph_nyquist_x + graph_nyquist_x_offset + screen_x2, graph_nyquist_y + graph_nyquist_y_offset + screen_y2);
+  pop();
+}
+
+// A horizontal line in the Bode phase plot, if this phase in degrees is inside it.
+function draw_phase_line_in_bode_phase(phase){
+  if ((phase >= phase_lower_bound) && (phase <= phase_upper_bound)){
+    let screen_y = map(phase,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
+    push();
+    stroke(angle_color);
+    strokeWeight(2);
+    line(graph_bode_phase_x + graph_bode_phase_x_offset,graph_bode_phase_y + screen_y + graph_bode_phase_y_offset,graph_bode_phase_x + graph_bode_phase_x_offset + graph_bode_phase_width,graph_bode_phase_y + screen_y + graph_bode_phase_y_offset);
+    pop();
+  }
+}
+
+// ---------------- One function per region of the canvas
+
+function hover_pole_zero_maps(){
+  for(let i=0; i<bode_graphs.length; i++){
+    if(mouse_is_in_pole_zero_map(i) && bode_graphs[i].has_pole_zero_map()){
+      let real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 3;
+      let imaginary=2 - (mouseY-pole_zero_graph_y[i])/pole_zero_height * 4;
+      noStroke();
+      push();
+      draw_tooltip_box(80,40);
+      fill(text_color);
+      textSize(15);
+      text("Re=" + real.toFixed(2),13,15);
+      text("Im=" + imaginary.toFixed(2),13,35);
+      pop();
+    }
+  }
+}
+
+function hover_step_response_time_axis(){
+  let time=(mouseX - graph_step_response_x - graph_step_response_x_offset) / graph_step_response_width * 10.0;
+  push();
+  stroke("#808080");
+  strokeWeight(2);
+  line(mouseX,graph_step_response_y+graph_step_response_y_offset,mouseX,graph_step_response_y + graph_step_response_y_offset + graph_step_response_height);
+  pop();
+  push();
+  draw_tooltip_box(200);
+  fill(text_color);
+  textSize(15);
+  text("time=" + time.toFixed(3) + "s",13,53);
+  pop();
+}
+
+function hover_step_response(){
+  let linked_x = Math.ceil((mouseX - graph_step_response_x - graph_step_response_x_offset)/precision);
+  const closest = closest_curve(
+    (graph) => graph.bode_display_timeresponse_bool,
+    (graph) => graph.bode_timerep_array[linked_x],
+    (value) => map(value,min_y_timerep,max_y_timerep,graph_step_response_height,0,true) + graph_step_response_y_offset,
+    graph_step_response_y);
+  push();
+  stroke("#808080");
+  strokeWeight(2);
+  line(mouseX,graph_step_response_y+graph_step_response_y_offset,mouseX,graph_step_response_y + graph_step_response_y_offset + graph_step_response_height);
+  pop();
+  if (closest !== undefined){
+    let linked_bode_graph = bode_graphs[closest.graph_no];
+    let time = map(mouseX - graph_step_response_x - graph_step_response_x_offset,0,graph_step_response_width,0,max_x_timerep,true);
+    let screen_y = map(closest.value,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
+    draw_output_dots(closest.value, graph_step_response_y+screen_y+graph_step_response_y_offset);
+    noStroke();
+    fill(linked_bode_graph.bode_hue,360,360);
+    ellipse(mouseX,screen_y + graph_step_response_y_offset + graph_step_response_y,12,12);
+    push();
+    draw_tooltip_box(200);
+    fill(linked_bode_graph.bode_hue,360,360);
+    ellipse(18,18,20,20);
+    noStroke();
+    fill(text_color);
+    textSize(18);
+    text(closest.name,35,24);
+    textSize(15);
+    text("time=" + time.toFixed(3) + "s",13,53);
+    text("output=" + closest.value.toFixed(3),13,77);
+    pop();
+  } else {
+    let time=(mouseX - graph_step_response_x - graph_step_response_x_offset) / graph_step_response_width * 10.0;
+    let output=max_y_timerep - (max_y_timerep - min_y_timerep) * (mouseY - graph_step_response_y - graph_step_response_y_offset) / graph_step_response_height;
+    push();
+    draw_output_dots(output, mouseY);
+    draw_tooltip_box(200);
+    fill(text_color);
+    textSize(15);
+    text("time=" + time.toFixed(3) + "s",13,53);
+    text("output=" + output.toFixed(3),13,77);
+    pop();
+  }
+}
+
+function hover_bode_mag_frequency_axis(){
+  let perc_x = (mouseX - graph_bode_phase_x - graph_bode_phase_x_offset) / graph_bode_phase_width;
+  draw_nyquist_values_at(perc_x);
+  push();
+  strokeWeight(2);
+  stroke("#808080");
+  line_across_bode_phase_at_mouse();
+  line_across_bode_mag_at_mouse();
+  noStroke();
+  draw_tooltip_box(160);
+  fill(text_color);
+  textSize(15);
+  text("freq=" + frequency_at(perc_x).toFixed(3) + "rad/s",13,33);
+  pop();
+}
+
+function hover_bode_mag_yaxis(){
+  let perc_y = (mouseY - graph_bode_mag_y - graph_bode_mag_y_offset) / graph_bode_mag_height;
+  let magnitude = magnitude_of_dB(gain_upper_bound - perc_y*120);
+  push();
+  noStroke();
+  draw_tooltip_box(160);
+  fill(text_color);
+  textSize(15);
+  text("magnitude=" + magnitude.toFixed(3),13,53);
+  pop();
+  draw_magnitude_circle_in_nyquist(magnitude);
+  draw_magnitude_line_in_bode_mag(mouseY);
+}
+
+function hover_bode_mag(){
+  let linked_x = mouseX - graph_bode_mag_x - graph_bode_mag_x_offset;
+  let perc_x = linked_x / graph_bode_mag_width;
+  let perc_y = (mouseY - graph_bode_mag_y - graph_bode_mag_y_offset) / graph_bode_mag_height;
+  let frequency = frequency_at(perc_x);
+  const closest = closest_curve(
+    (graph) => graph.bode_display_bodemag_bool,
+    (graph) => graph.bode_gain_array[linked_x],
+    (value) => graph_bode_mag_y_offset + map(value,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0),
+    graph_bode_mag_y, perc_x);
+  push();
+  strokeWeight(2);
+  stroke("#808080");
+  line_across_bode_mag_at_mouse();
+  line_across_bode_phase_at_mouse();
+  pop();
+  if (closest !== undefined){
+    let magnitude = magnitude_of_dB(closest.value);
+    noStroke();
+    push();
+    fill(bode_graphs[closest.graph_no].bode_hue,360,360);
+    ellipse(mouseX,closest.screen_y + graph_bode_mag_y,12,12);
+    noStroke();
+    draw_tooltip_box(200);
+    fill(text_color);
+    textSize(18);
+    text(closest.name,35,24);
+    textSize(15);
+    text("freq=" + frequency.toFixed(3) + "rad/s",13,53);
+    text("magnitude=" + magnitude.toFixed(3),13,77);
+    pop();
+    draw_magnitude_circle_in_nyquist(magnitude);
+    draw_magnitude_line_in_bode_mag(closest.screen_y + graph_bode_mag_y);
+  } else {
+    // perc_y = 1.0 -> magnitude = 0.001
+    // perc_y = 0.0 -> magnitude = 1000
+    let magnitude = magnitude_of_dB(gain_upper_bound - perc_y*120);
+    push();
+    noStroke();
+    draw_tooltip_box(160);
+    fill(text_color);
+    textSize(15);
+    text("freq=" + frequency.toFixed(3) + "rad/s",13,33);
+    text("magnitude=" + magnitude.toFixed(3),13,53);
+    pop();
+    draw_magnitude_circle_in_nyquist(magnitude);
+    draw_magnitude_line_in_bode_mag(mouseY);
+  }
+}
+
+function hover_bode_phase_frequency_axis(){
+  let perc_x = (mouseX - graph_bode_phase_x - graph_bode_phase_x_offset) / graph_bode_phase_width;
+  draw_nyquist_values_at(perc_x);
+  // And draw a vertical white line in the bode phase plot.
+  // And draw a vertical line in the bode mag plot:
+  push();
+  strokeWeight(2);
+  stroke("#808080");
+  line_across_bode_phase_at_mouse();
+  line_across_bode_mag_at_mouse();
+  noStroke();
+  draw_tooltip_box(160);
+  fill(text_color);
+  textSize(15);
+  text("freq=" + frequency_at(perc_x).toFixed(3) + "rad/s",13,33);
+  pop();
+}
+
+function hover_bode_phase_yaxis(){
+  let perc_y = (mouseY - graph_bode_phase_y - graph_bode_phase_y_offset) / graph_bode_phase_height;
+  let phase = phase_upper_bound - 45*phase_case_number*perc_y;
+  noStroke();
+  push();
+  draw_tooltip_box(160);
+  fill(text_color);
+  textSize(15);
+  text("phase=" + phase.toFixed(0) + "°",13,53);
+  pop();
+  draw_phase_arc_and_radius_in_nyquist(phase);
+  draw_phase_line_in_bode_phase(phase);
+}
+
+// The curve the mouse is close to, in the Nyquist diagram and in the Bode magnitude plot.
+function draw_hovered_phase_curve(closest, linked_x, perc_x, frequency){
+  const graph = bode_graphs[closest.graph_no];
+  noStroke();
+  push();
+  fill(graph.bode_hue,360,360);
+  ellipse(mouseX,closest.screen_y + graph_bode_phase_y,12,12);
+  noStroke();
+  draw_tooltip_box(200);
+  fill(graph.bode_hue,360,360);
+  ellipse(18,18,20,20);
+  noStroke();
+  fill(text_color);
+  textSize(18);
+  text(closest.name,35,24);
+  textSize(15);
+  text("freq=" + frequency.toFixed(3) + "rad/s",13,53);
+  let phase = closest.value * 180/Math.PI;
+  text("phase=" + phase.toFixed(1) + "°",13,77);
+  pop();
+  if (graph.bode_display_nyquist_bool){
+    push();
+    draw_phase_arc_in_nyquist(phase);
+    pop();
+  }
+  draw_phase_line_in_bode_phase(phase);
+  // And paint a white line from origo to the hovered color:
+  let point = graph.get_nyquist_value(perc_x);
+  if (graph.bode_display_nyquist_bool){
+    push();
+    stroke(text_color);
+    strokeWeight(2);
+    translate(graph_nyquist_x_offset+graph_nyquist_x,graph_nyquist_y_offset+graph_nyquist_y);
+    line(map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width),map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height),point[0],point[1]);
+    pop();
+  }
+  // And draw a vertical white line in the bode phase plot.
+  // And draw a vertical line ending up at the hovered graph:
+  push();
+  strokeWeight(2);
+  stroke("#808080");
+  line_across_bode_phase_at_mouse();
+  stroke(text_color);
+  let screen_y = graph_bode_mag_y_offset + map(graph.bode_gain_array[linked_x],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+  if (screen_y < graph_bode_mag_height + graph_bode_mag_y_offset){ // Only draw this line inside the Bode mag plot
+    push();
+    noStroke();
+    fill(graph.bode_hue,360,360);
+    ellipse(mouseX,screen_y + graph_bode_mag_y,12,12);
+    pop();
+    line(mouseX,graph_bode_mag_y+screen_y,mouseX,graph_bode_mag_y + graph_bode_mag_y_offset + graph_bode_mag_height);
+  }
+  pop();
+}
+
+function hover_bode_phase(){
+  let linked_x = mouseX - graph_bode_phase_x - graph_bode_mag_x_offset;
+  let perc_x = linked_x / graph_bode_phase_width;
+  let perc_y = (mouseY - graph_bode_phase_y - graph_bode_phase_y_offset) / graph_bode_phase_height;
+  let frequency = frequency_at(perc_x);
+  let rad_phase_lower_bound = phase_lower_bound*Math.PI/180;
+  let rad_phase_upper_bound = phase_upper_bound*Math.PI/180;
+  const closest = closest_curve(
+    (graph) => graph.bode_display_bodephase_bool,
+    (graph) => graph.bode_phase_array[linked_x],
+    (value) => graph_bode_phase_y_offset + map(value,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0),
+    graph_bode_phase_y, perc_x);
+  if (closest !== undefined){
+    draw_hovered_phase_curve(closest, linked_x, perc_x, frequency);
+  } else {
+    push();
+    strokeWeight(2);
+    stroke("#808080");
+    line_across_bode_mag_at_mouse();
+    line_across_bode_phase_at_mouse();
+    pop();
+    noStroke();
+    push();
+    draw_tooltip_box(160);
+    fill(text_color);
+    textSize(15);
+    // perc_y=0  -> phase = highest phase
+    // perc_y=1.0  -> phase = lowest phase
+    let phase = phase_upper_bound - 45*phase_case_number*perc_y;
+    text("freq=" + frequency.toFixed(3) + "rad/s",13,33);
+    text("phase=" + phase.toFixed(0) + "°",13,53);
+    pop();
+    draw_phase_arc_and_radius_in_nyquist(phase);
+    draw_phase_line_in_bode_phase(phase);
+  }
+}
+
+// Every region that holds the mouse gets its overlay, in this order.
+const HOVER_REGIONS = [
+  {hit: mouse_in_step_response_time_axis, hover: hover_step_response_time_axis},
+  {hit: mouse_in_step_response, hover: hover_step_response},
+  {hit: mouse_in_bode_mag_frequency_axis, hover: hover_bode_mag_frequency_axis},
+  {hit: mouse_in_bode_mag_yaxis, hover: hover_bode_mag_yaxis},
+  {hit: mouse_in_bode_mag, hover: hover_bode_mag},
+  {hit: mouse_in_nyquist, hover: () => draw_hover_nyquist()},
+  {hit: mouse_in_bode_phase_frequency_axis, hover: hover_bode_phase_frequency_axis},
+  {hit: mouse_in_bode_phase_yaxis, hover: hover_bode_phase_yaxis},
+  {hit: mouse_in_bode_phase, hover: hover_bode_phase},
+];
+
 function mouseMoved(){
   // If we are in the math-bar, no need to redraw.
   // Or, more correctly, if previous redraw was in the math-bar area, we don't need to redraw again:
@@ -262,627 +712,11 @@ function mouseMoved(){
     return;
   }
 
-
-  // Check if we're hovering any of the pole-zero graphs:
-  for(let i=0; i<bode_graphs.length; i++){
-    if(bode_graphs[i].bode_displaybool){
-      if (bode_graphs[i].has_pole_zero_map()){
-        if(((mouseX-pole_zero_graph_x[i]) > 0) && ((mouseX-pole_zero_graph_x[i]) < pole_zero_width)){
-          if(((mouseY-pole_zero_graph_y[i]) > 0) && ((mouseY-pole_zero_graph_y[i]) < pole_zero_height)){
-            let real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 3;
-            let imaginary=2 - (mouseY-pole_zero_graph_y[i])/pole_zero_height * 4;
-            noStroke();
-            push();
-            translate(mouseX,mouseY);
-            fill(box_background_color,200);
-            stroke(150);
-            rect(0,0,80,40);
-            noStroke();
-            fill(text_color);
-            textSize(15);
-            text("Re=" + real.toFixed(2),13,15);
-            text("Im=" + imaginary.toFixed(2),13,35);
-            pop();
-          }
-        }
-      }
-    }
-  }
-
-  // Check if we're hovering the time axis of the step response graph:
-  if(((mouseX-graph_step_response_x) > graph_step_response_x_offset && (mouseX-graph_step_response_x) < graph_step_response_width + graph_step_response_x_offset)&&
-    (((mouseY-graph_step_response_y) >= graph_step_response_height + graph_step_response_y_offset) && ((mouseY-graph_step_response_y) <= graph_step_response_height + graph_step_response_y_offset + graph_step_response_timeaxis_height))){
-    let time=(mouseX - graph_step_response_x - graph_step_response_x_offset) / graph_step_response_width * 10.0;
-    push();
-    stroke("#808080");
-    strokeWeight(2);
-    line(mouseX,graph_step_response_y+graph_step_response_y_offset,mouseX,graph_step_response_y + graph_step_response_y_offset + graph_step_response_height);
-    pop();
-    push();
-    translate(mouseX,mouseY);
-    fill(box_background_color,200);
-    stroke(150);
-    rect(0,0,200,90);
-    noStroke();
-    fill(text_color);
-    textSize(15);
-    text("time=" + time.toFixed(3) + "s",13,53);
-    pop();
-  }
-
-  // Check if we're hovering the step response graph:
-  let queue = [];
-  let yes_close_enough = false;
-  if((mouseX-graph_step_response_x) > graph_step_response_x_offset && (mouseX-graph_step_response_x) < graph_step_response_width + graph_step_response_x_offset){
-    if((mouseY-graph_step_response_y) > graph_step_response_y_offset && (mouseY-graph_step_response_y) < graph_step_response_height + graph_step_response_y_offset){
-      let linked_x = Math.ceil((mouseX - graph_step_response_x - graph_step_response_x_offset)/precision);
-      for(let h=0; h<bode_graphs.length; h++){
-        if((bode_graphs[h].bode_displaybool)&&(bode_graphs[h].bode_display_timeresponse_bool)){
-          let current_graph = bode_graphs[h];
-          let linked_y = current_graph.bode_timerep_array[linked_x];
-          let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true) + graph_step_response_y_offset;
-          let distance = Math.abs(mouseY - graph_step_response_y - screen_y);
-          if(distance < 70){
-            yes_close_enough = true;
-            queue.push([distance,h,linked_y,current_graph.graph_name]);
-          }
-        }
-      }
-      let output;
-      let distance = 10000;
-      for(let h=0; h<queue.length; h++){
-        if(queue[h][0] < distance){
-          distance = queue[h][0];
-          output = queue[h];
-        }
-      }
-      push();
-      stroke("#808080");
-      strokeWeight(2);
-      line(mouseX,graph_step_response_y+graph_step_response_y_offset,mouseX,graph_step_response_y + graph_step_response_y_offset + graph_step_response_height);
-      pop();
-      if(yes_close_enough){
-        let linked_bode_graph = bode_graphs[output[1]];
-        let linked_x = map(mouseX - graph_step_response_x - graph_step_response_x_offset,0,graph_step_response_width,0,max_x_timerep,true);
-        let screen_y = map(output[2],min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-        // Draw a white dot at the right edge of the time response graph
-        fill(text_color);
-        ellipse(graph_step_response_x+graph_step_response_width+graph_step_response_x_offset,graph_step_response_y+screen_y+graph_step_response_y_offset,12,12);
-        // Draw a corresponding white dot at the left edge of the bode magnitude graph
-        let magnitude = Math.abs(output[2]);
-        let magnitude_in_dB = 20*Math.log(magnitude)/Math.log(10);
-        let screen_y5 = map(magnitude_in_dB,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
-        ellipse(graph_bode_mag_x+graph_bode_mag_x_offset,graph_bode_mag_y + screen_y5 + graph_bode_mag_y_offset,12,12);
-        // Draw a corresponding white dot at the real axis of the Nyquist diagram
-        let screen_x0 = map(output[2],min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-        let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-        if ((screen_x0>=0)&&(screen_x0<=graph_nyquist_width)){
-          ellipse(graph_nyquist_x+graph_nyquist_x_offset+screen_x0,graph_nyquist_y+graph_nyquist_y_offset+screen_y0,12,12);
-        }
-        noStroke();
-        fill(linked_bode_graph.bode_hue,360,360);
-        ellipse(mouseX,screen_y + graph_step_response_y_offset + graph_step_response_y,12,12);
-        push();
-        translate(mouseX,mouseY);
-        fill(box_background_color,200);
-        stroke(150);
-        rect(0,0,200,90);
-        noStroke();
-        fill(linked_bode_graph.bode_hue,360,360);
-        ellipse(18,18,20,20);
-        noStroke();
-        fill(text_color);
-        textSize(18);
-//          text("Graph " + linked_bode_graph.bode_id,35,24);
-        text(output[3],35,24);
-        textSize(15);
-        text("time=" + linked_x.toFixed(3) + "s",13,53);
-        text("output=" + output[2].toFixed(3),13,77);
-        pop();
-      } else {
-        let time=(mouseX - graph_step_response_x - graph_step_response_x_offset) / graph_step_response_width * 10.0;
-        let output=max_y_timerep - (max_y_timerep - min_y_timerep) * (mouseY - graph_step_response_y - graph_step_response_y_offset) / graph_step_response_height;
-        push();
-        // Draw a white dot at the right edge of the time response graph
-        fill(text_color);
-        ellipse(graph_step_response_x+graph_step_response_width+graph_step_response_x_offset,mouseY,12,12);
-        // Draw a corresponding white dot at the left edge of the bode magnitude graph
-        let magnitude = Math.abs(output);
-        let magnitude_in_dB = 20*Math.log(magnitude)/Math.log(10);
-        let screen_y5 = map(magnitude_in_dB,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
-        ellipse(graph_bode_mag_x+graph_bode_mag_x_offset,graph_bode_mag_y + screen_y5 + graph_bode_mag_y_offset,12,12);
-        // Draw a corresponding white dot at the real axis of the Nyquist diagram
-        let screen_x0 = map(output,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-        let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-        if ((screen_x0>=0)&&(screen_x0<=graph_nyquist_width)){
-          ellipse(graph_nyquist_x+graph_nyquist_x_offset+screen_x0,graph_nyquist_y+graph_nyquist_y_offset+screen_y0,12,12);
-        }
-        translate(mouseX,mouseY);
-        fill(box_background_color,200);
-        stroke(150);
-        rect(0,0,200,90);
-        noStroke();
-        fill(text_color);
-        textSize(15);
-        text("time=" + time.toFixed(3) + "s",13,53);
-        text("output=" + output.toFixed(3),13,77);
-        pop();
-      }
-    }
-  }
-
-
-  // Check if we're hovering the frequency axis of the Bode magnitude plot:
-  if((mouseX-graph_bode_mag_x) > graph_bode_mag_x_offset && (mouseX-graph_bode_mag_x) < graph_bode_mag_width + graph_bode_mag_x_offset){
-    if(((mouseY-graph_bode_mag_y) >= graph_bode_mag_height + graph_bode_mag_y_offset) && (mouseY-graph_bode_mag_y < (graph_bode_mag_height + graph_bode_mag_y_offset + graph_bode_phase_axis_height))) {
-      let linked_x = mouseX - graph_bode_phase_x - graph_bode_phase_x_offset;
-      let perc_x = linked_x / graph_bode_phase_width;
-      for(let i=0; i<bode_graphs.length; i++){
-        if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodemag_bool)){
-          if (bode_graphs[i].bode_display_nyquist_bool){
-            bode_graphs[i].draw_nyquist_value(perc_x);
-          }
-        }
-      }
-      // 0.0   equals hovering over frequency 10^min_10power (= -2);
-      // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
-      let exponent = perc_x*x_case_gain + min_10power;
-      let frequency = Math.pow(10,exponent);
-      push();
-      strokeWeight(2);
-      stroke("#808080");
-      line(mouseX,graph_bode_phase_y+graph_bode_phase_y_offset,mouseX,graph_bode_phase_y + graph_bode_phase_y_offset + graph_bode_phase_height);
-      line(mouseX,graph_bode_mag_y+graph_bode_mag_y_offset,mouseX,graph_bode_mag_y + graph_bode_mag_y_offset + graph_bode_mag_height);
-      noStroke();
-      translate(mouseX,mouseY);
-      fill(box_background_color,200);
-      stroke(150);
-      rect(0,0,160,90);
-      noStroke();
-      fill(text_color);
-      textSize(15);
-      text("freq=" + frequency.toFixed(3) + "rad/s",13,33);
-      pop();
-    }
-  }
-
-  // Check if we're hovering the bode magnitude yaxis, the magnitude:
-  if((mouseX-graph_bode_mag_x) > 0 && (mouseX-graph_bode_mag_x) <= graph_bode_mag_x_offset){
-    if((mouseY-graph_bode_mag_y) > graph_bode_mag_y_offset && (mouseY-graph_bode_mag_y) < graph_bode_mag_height + graph_bode_mag_y_offset){
-      let linked_y = mouseY - graph_bode_mag_y - graph_bode_mag_y_offset;
-      let perc_y = linked_y / graph_bode_mag_height;
-      let magnitude_in_dB = gain_upper_bound - perc_y*120;//y_case_gain; //60 - perc_y
-      let magnitude = 1.0 * Math.pow(10.0, magnitude_in_dB / 20.0);
-      push();
-      noStroke();
-      translate(mouseX,mouseY);
-      fill(box_background_color,200);
-      stroke(150);
-      rect(0,0,160,90);
-      noStroke();
-      fill(text_color);
-      textSize(15);
-      text("magnitude=" + magnitude.toFixed(3),13,53);
-      pop();
-      // Draw a magnitude circle in the Nyquist graph:
-      push();
-      let screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-      let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-      let screen_xw = map(2*magnitude,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-      let screen_yw = map(-2*magnitude,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-      stroke(text_color);
-      strokeWeight(2);
-      noFill();
-      ellipse(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0);
-      pop();
-      // Draw a horizontal line for the magnitude in the bode mag plot:
-      push();
-      stroke(text_color);
-      strokeWeight(2);
-      line(graph_bode_mag_x+graph_bode_mag_x_offset,mouseY,graph_bode_mag_x + graph_bode_mag_x_offset + graph_bode_mag_width, mouseY);
-      pop();
-    }
-  }
-
-  // Check if we're hovering the bode magnitude plot:
-  if((mouseX-graph_bode_mag_x) > graph_bode_mag_x_offset && (mouseX-graph_bode_mag_x) < graph_bode_mag_width + graph_bode_mag_x_offset){
-    if((mouseY-graph_bode_mag_y) > graph_bode_mag_y_offset && (mouseY-graph_bode_mag_y) < graph_bode_mag_height + graph_bode_mag_y_offset){
-      let linked_x = mouseX - graph_bode_mag_x - graph_bode_mag_x_offset;
-      let linked_y = mouseY - graph_bode_mag_y - graph_bode_mag_y_offset;
-      let perc_x = linked_x / graph_bode_mag_width;
-      let perc_y = linked_y / graph_bode_mag_height;
-      // 0.0   equals hovering over frequency 10^min_10power (= -2);
-      // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
-      let exponent = perc_x*x_case_gain + min_10power;
-      let frequency = Math.pow(10,exponent);
-      let queue = [];
-      let yes_close_enough = false;
-      for(let i=0; i<bode_graphs.length; i++){
-        if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodemag_bool)){
-          if (bode_graphs[i].bode_display_nyquist_bool){
-            bode_graphs[i].draw_nyquist_value(perc_x);
-          }
-          let current_graph = bode_graphs[i];
-          let linked_y = current_graph.bode_gain_array[linked_x];
-          let screen_y = graph_bode_mag_y_offset + map(linked_y,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
-          let distance = Math.abs(mouseY - graph_bode_mag_y - screen_y);
-          if(distance < 70){
-            yes_close_enough = true;
-            queue.push([distance,i,screen_y,linked_y,current_graph.graph_name]);
-          }
-        }
-      }
-      let magnitude_in_dB = gain_upper_bound - perc_y*120;//y_case_gain; //60 - perc_y
-      let magnitude = 1.0 * Math.pow(10.0, magnitude_in_dB / 20.0);
-      // perc_y = 1.0 -> magnitude = 0.001
-      // perc_y = 0.0 -> magnitude = 1000
-      // Find the closest point from the graphs:
-      let output;
-      let distance = 10000;
-      for(let h=0; h<queue.length; h++){
-        if(queue[h][0] < distance){
-          distance = queue[h][0];
-          output = queue[h];
-        }
-      }
-      push();
-      strokeWeight(2);
-      stroke("#808080");
-      line(mouseX,graph_bode_mag_y+graph_bode_mag_y_offset,mouseX,graph_bode_mag_y + graph_bode_mag_y_offset + graph_bode_mag_height);
-      line(mouseX,graph_bode_phase_y+graph_bode_phase_y_offset,mouseX,graph_bode_phase_y + graph_bode_phase_y_offset + graph_bode_phase_height);
-      pop();
-      if(yes_close_enough){
-        noStroke();
-        push();
-        fill(bode_graphs[output[1]].bode_hue,360,360);
-        ellipse(mouseX,output[2] + graph_bode_mag_y,12,12);
-        noStroke();
-        translate(mouseX,mouseY);
-        fill(box_background_color,200);
-        stroke(150);
-        rect(0,0,200,90);
-        noStroke();
-        fill(text_color);
-        textSize(18);
-//          text("Graph " + linked_bode_graph.bode_id,35,24);
-        text(output[4],35,24);
-        textSize(15);
-//          text("time=" + linked_x.toFixed(3) + "s",13,53);
-//          text("output=" + output[2].toFixed(3),13,77);
-        text("freq=" + frequency.toFixed(3) + "rad/s",13,53);
-        let magnitude_in_dB = output[3];
-        let magnitude = 1.0 * Math.pow(10.0, magnitude_in_dB / 20.0);
-        text("magnitude=" + magnitude.toFixed(3),13,77);
-        pop();
-        // Draw a magnitude circle in the Nyquist graph:
-        push();
-        let screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-        let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-        let screen_xw = map(2*magnitude,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-        let screen_yw = map(-2*magnitude,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-        stroke(text_color);
-        strokeWeight(2);
-        noFill();
-        ellipse(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0);
-        pop();
-        // Draw a horizontal line for the magnitude in the bode mag plot:
-        push();
-        stroke(text_color);
-        strokeWeight(2);
-        line(graph_bode_mag_x+graph_bode_mag_x_offset,output[2] + graph_bode_mag_y,graph_bode_mag_x + graph_bode_mag_x_offset + graph_bode_mag_width, output[2] + graph_bode_mag_y);
-        pop();
-      } else {
-        push();
-        noStroke();
-        translate(mouseX,mouseY);
-        fill(box_background_color,200);
-        stroke(150);
-        rect(0,0,160,90);
-        noStroke();
-        fill(text_color);
-        textSize(15);
-        text("freq=" + frequency.toFixed(3) + "rad/s",13,33);
-        text("magnitude=" + magnitude.toFixed(3),13,53);
-        pop();
-        // Draw a magnitude circle in the Nyquist graph:
-        push();
-        let screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-        let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-        let screen_xw = map(2*magnitude,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-        let screen_yw = map(-2*magnitude,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-        stroke(text_color);
-        strokeWeight(2);
-        noFill();
-        ellipse(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0);
-        pop();
-        // Draw a horizontal line for the magnitude in the bode mag plot:
-        push();
-        stroke(text_color);
-        strokeWeight(2);
-        line(graph_bode_mag_x+graph_bode_mag_x_offset,mouseY,graph_bode_mag_x + graph_bode_mag_x_offset + graph_bode_mag_width, mouseY);
-        pop();
-      }
-    }
-  }
-
-
-  // Check if we're hovering the Nyquist diagram:
-  if((mouseX-graph_nyquist_x) > graph_nyquist_x_offset && (mouseX-graph_nyquist_x) < graph_nyquist_width + graph_nyquist_x_offset){
-    if((mouseY-graph_nyquist_y-graph_nyquist_y_offset) > 0 && (mouseY-graph_nyquist_y-graph_nyquist_y_offset) < graph_nyquist_height){
-      draw_hover_nyquist();
-    }
-  }
-
-
-  // Check if we're hovering the frequency axis of the Bode phase plot:
-  if(((mouseX-graph_bode_phase_x) > graph_bode_phase_x_offset) && ((mouseX-graph_bode_phase_x) < graph_bode_phase_width + graph_bode_phase_x_offset) && 
-    ((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) >= graph_bode_phase_height) && ((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) < (graph_bode_phase_height + graph_bode_phase_axis_height))) {
-    let linked_x = mouseX - graph_bode_phase_x - graph_bode_phase_x_offset;
-    let perc_x = linked_x / graph_bode_phase_width;
-    // 0.0   equals hovering over frequency 10^min_10power (= -2);
-    // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
-    let exponent = perc_x*x_case_gain + min_10power;
-    let frequency = Math.pow(10,exponent);
-    for(let i=0; i<bode_graphs.length; i++){
-      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodemag_bool)){
-        if (bode_graphs[i].bode_display_nyquist_bool){
-          bode_graphs[i].draw_nyquist_value(perc_x);
-        }
-      }
-    }
-    // And draw a vertical white line in the bode phase plot.
-    // And draw a vertical line in the bode mag plot:
-    push();
-    strokeWeight(2);
-    stroke("#808080");
-    line(mouseX,graph_bode_phase_y+graph_bode_phase_y_offset,mouseX,graph_bode_phase_y + graph_bode_phase_y_offset + graph_bode_phase_height);
-    line(mouseX,graph_bode_mag_y+graph_bode_mag_y_offset,mouseX,graph_bode_mag_y + graph_bode_mag_y_offset + graph_bode_mag_height);
-    noStroke();
-    translate(mouseX,mouseY);
-    fill(box_background_color,200);
-    stroke(150);
-    rect(0,0,160,90);
-    noStroke();
-    fill(text_color);
-    textSize(15);
-    text("freq=" + frequency.toFixed(3) + "rad/s",13,33);
-    pop();
-  }
-
-
-  // Check if we're hovering the bode phase plot yaxis, the phase:
-  if((mouseX-graph_bode_phase_x) > 0 && (mouseX-graph_bode_phase_x) <= graph_bode_mag_x_offset){
-    if((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) > 0 && (mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) < graph_bode_phase_height){
-      let linked_y2 = mouseY - graph_bode_phase_y - graph_bode_phase_y_offset;
-      let perc_y = linked_y2 / graph_bode_phase_height;
-      noStroke();
-      push();
-      translate(mouseX,mouseY);
-      fill(box_background_color,200);
-      stroke(150);
-      rect(0,0,160,90);
-      noStroke();
-      fill(text_color);
-      textSize(15);
-      let phase = phase_upper_bound - 45*phase_case_number*perc_y;
-      text("phase=" + phase.toFixed(0) + "°",13,53);
-      pop();
-      // Paint an arc in the nyquist diagram over the unit circle:
-      let angle = phase;
-      push();
-      let screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-      let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-      let screen_xw = map(2,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-      let screen_yw = map(-2,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-      stroke(angle_color);
-      strokeWeight(2);
-      noFill();
-      let screen_x2 = map(1.2*cos(angle/180*Math.PI),min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-      let screen_y2 = map(1.2*sin(angle/180*Math.PI),max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-      if (angle < 0){
-        arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*Math.PI);
-      } else {
-        arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, -angle/180*Math.PI, 0);
-      }
-      line(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,graph_nyquist_x + graph_nyquist_x_offset + screen_x2, graph_nyquist_y + graph_nyquist_y_offset + screen_y2);
-      pop();
-      // Now paint a horizontal line on the Bode phase plot, at the right height:
-      let linked_y = phase;
-      if ((angle >= phase_lower_bound) && (angle <= phase_upper_bound)){
-        let screen_y = map(linked_y,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
-        push();
-        stroke(angle_color);
-        strokeWeight(2);
-        line(graph_bode_phase_x + graph_bode_phase_x_offset,graph_bode_phase_y + screen_y + graph_bode_phase_y_offset,graph_bode_phase_x + graph_bode_phase_x_offset + graph_bode_phase_width,graph_bode_phase_y + screen_y + graph_bode_phase_y_offset);
-        pop();
-      }
-    }
-  }
-
-
-  // Check if we're hovering the bode phase plot:
-  if((mouseX-graph_bode_phase_x) > graph_bode_mag_x_offset && (mouseX-graph_bode_phase_x) < graph_bode_phase_width + graph_bode_mag_x_offset){
-    if((mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) > 0 && (mouseY-graph_bode_phase_y-graph_bode_phase_y_offset) < graph_bode_phase_height){
-      let linked_x = mouseX - graph_bode_phase_x - graph_bode_mag_x_offset;
-      let linked_y = mouseY - graph_bode_phase_y - graph_bode_phase_y_offset;
-      let perc_x = linked_x / graph_bode_phase_width;
-      let perc_y = linked_y / graph_bode_phase_height;
-      // 0.0   equals hovering over frequency 10^min_10power (= -2);
-      // 1.0   equals hovering over frequency 10^(min_10power + x_case_gain)   -2+5=3
-      let exponent = perc_x*x_case_gain + min_10power;
-      let frequency = Math.pow(10,exponent);
-      let rad_phase_lower_bound = phase_lower_bound*Math.PI/180;
-      let rad_phase_upper_bound = phase_upper_bound*Math.PI/180;
-      let queue = [];
-      let yes_close_enough = false;
-      for(let i=0; i<bode_graphs.length; i++){
-        if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
-          if (bode_graphs[i].bode_display_nyquist_bool){
-            bode_graphs[i].draw_nyquist_value(perc_x);
-          }
-          let current_graph = bode_graphs[i];
-          let linked_y = current_graph.bode_phase_array[linked_x];
-          let screen_y = graph_bode_phase_y_offset + map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-          let distance = Math.abs(mouseY - graph_bode_phase_y - screen_y);
-          if(distance < 70){
-            yes_close_enough = true;
-            queue.push([distance,i,screen_y,linked_y,current_graph.graph_name]);
-          }
-        }
-      }
-      // Find the closest point from the graphs:
-      let output;
-      let distance = 10000;
-      for(let h=0; h<queue.length; h++){
-        if(queue[h][0] < distance){
-          distance = queue[h][0];
-          output = queue[h];
-        }
-      }
-      // Find the phase where the mouse is.
-      // perc_y=0  -> phase = highest phase
-      // perc_y=1.0  -> phase = lowest phase
-      if(yes_close_enough){
-        noStroke();
-        push();
-        fill(bode_graphs[output[1]].bode_hue,360,360);
-        ellipse(mouseX,output[2] + graph_bode_phase_y,12,12);
-        noStroke();
-        translate(mouseX,mouseY);
-        fill(box_background_color,200);
-        stroke(150);
-        rect(0,0,200,90);
-        noStroke();
-        fill(bode_graphs[output[1]].bode_hue,360,360);
-        ellipse(18,18,20,20);
-        noStroke();
-        fill(text_color);
-        textSize(18);
-//          text("Graph " + linked_bode_graph.bode_id,35,24);
-        text(output[4],35,24);
-        textSize(15);
-//          text("time=" + linked_x.toFixed(3) + "s",13,53);
-//          text("output=" + output[2].toFixed(3),13,77);
-        text("freq=" + frequency.toFixed(3) + "rad/s",13,53);
-        let phase = output[3] * 180/Math.PI;
-        text("phase=" + phase.toFixed(1) + "°",13,77);
-        pop();
-        let angle = phase;
-        let screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-        let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-        let screen_xw = map(2,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-        let screen_yw = map(-2,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-        if (bode_graphs[output[1]].bode_display_nyquist_bool){
-          // Paint an arc in the nyquist diagram over the unit circle:
-          push();
-          stroke(angle_color);
-          strokeWeight(2);
-          noFill();
-          if (angle < 0){
-            arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*Math.PI);
-          } else {
-            arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, -angle/180*Math.PI, 0);
-          }
-          pop();
-        }
-        // Now paint a horizontal line on the Bode phase plot, at the right height:
-        let linked_y = phase;
-        if ((angle >= phase_lower_bound) && (angle <= phase_upper_bound)){
-          let screen_y = map(linked_y,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
-          push();
-          stroke(angle_color);
-          strokeWeight(2);
-          line(graph_bode_phase_x + graph_bode_phase_x_offset,graph_bode_phase_y + screen_y + graph_bode_phase_y_offset,graph_bode_phase_x + graph_bode_phase_x_offset + graph_bode_phase_width,graph_bode_phase_y + screen_y + graph_bode_phase_y_offset);
-          pop();
-        }
-        // And paint a white line from origo to the hovered color:
-        let hovered_graph_no = output[1];
-        let point = bode_graphs[hovered_graph_no].get_nyquist_value(perc_x);
-        let screen_x1 = point[0];
-        let screen_y1 = point[1];
-        screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-        screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-        if (bode_graphs[output[1]].bode_display_nyquist_bool){
-          push();
-          stroke(text_color);
-          strokeWeight(2);
-          translate(graph_nyquist_x_offset+graph_nyquist_x,graph_nyquist_y_offset+graph_nyquist_y);
-          line(screen_x0,screen_y0,screen_x1,screen_y1);
-          pop();
-        }
-        // And draw a vertical white line in the bode phase plot.
-        // And draw a vertical line ending up at the hovered graph:
-        push();
-        strokeWeight(2);
-        stroke("#808080");
-        line(mouseX,graph_bode_phase_y+graph_bode_phase_y_offset,mouseX,graph_bode_phase_y + graph_bode_phase_y_offset + graph_bode_phase_height);
-        stroke(text_color);
-        let current_graph = bode_graphs[hovered_graph_no];
-        let linked_y8 = current_graph.bode_gain_array[linked_x];
-        let screen_y = graph_bode_mag_y_offset + map(linked_y8,gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
-        if (screen_y < graph_bode_mag_height + graph_bode_mag_y_offset){ // Only draw this line inside the Bode mag plot
-          push();
-          noStroke();
-          fill(bode_graphs[output[1]].bode_hue,360,360);
-          ellipse(mouseX,screen_y + graph_bode_mag_y,12,12);
-          pop();
-          line(mouseX,graph_bode_mag_y+screen_y,mouseX,graph_bode_mag_y + graph_bode_mag_y_offset + graph_bode_mag_height);
-        }
-        pop();
-      } else {
-        push();
-        strokeWeight(2);
-        stroke("#808080");
-        line(mouseX,graph_bode_mag_y+graph_bode_mag_y_offset,mouseX,graph_bode_mag_y + graph_bode_mag_y_offset + graph_bode_mag_height);
-        line(mouseX,graph_bode_phase_y+graph_bode_phase_y_offset,mouseX,graph_bode_phase_y + graph_bode_phase_y_offset + graph_bode_phase_height);
-        pop();
-        noStroke();
-        push();
-        translate(mouseX,mouseY);
-        fill(box_background_color,200);
-        stroke(150);
-        rect(0,0,160,90);
-        noStroke();
-        fill(text_color);
-        textSize(15);
-        let phase = phase_upper_bound - 45*phase_case_number*perc_y;
-        text("freq=" + frequency.toFixed(3) + "rad/s",13,33);
-        text("phase=" + phase.toFixed(0) + "°",13,53);
-        pop();
-        // Paint an arc in the nyquist diagram over the unit circle:
-        let angle = phase;
-        push();
-        let screen_x0 = map(0,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-        let screen_y0 = map(0,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-        let screen_xw = map(2,min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-        let screen_yw = map(-2,max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-        stroke(angle_color);
-        strokeWeight(2);
-        noFill();
-        let screen_x2 = map(1.2*cos(angle/180*Math.PI),min_nyquist_x,max_nyquist_x,0,graph_nyquist_width);
-        let screen_y2 = map(1.2*sin(angle/180*Math.PI),max_nyquist_y,min_nyquist_y,0,graph_nyquist_height);
-        if (angle < 0){
-          arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, 0, -angle/180*Math.PI);
-        } else {
-          arc(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,screen_xw - screen_x0,screen_yw - screen_y0, -angle/180*Math.PI, 0);
-        }
-        line(graph_nyquist_x + graph_nyquist_x_offset + screen_x0, graph_nyquist_y + graph_nyquist_y_offset + screen_y0,graph_nyquist_x + graph_nyquist_x_offset + screen_x2, graph_nyquist_y + graph_nyquist_y_offset + screen_y2);
-        pop();
-        // Now paint a horizontal line on the Bode phase plot, at the right height:
-        let linked_y = phase;
-        if ((angle >= phase_lower_bound) && (angle <= phase_upper_bound)){
-          let screen_y = map(linked_y,phase_lower_bound,phase_upper_bound,graph_bode_phase_height,0);
-          push();
-          stroke(angle_color);
-          strokeWeight(2);
-          line(graph_bode_phase_x + graph_bode_phase_x_offset,graph_bode_phase_y + screen_y + graph_bode_phase_y_offset,graph_bode_phase_x + graph_bode_phase_x_offset + graph_bode_phase_width,graph_bode_phase_y + screen_y + graph_bode_phase_y_offset);
-          pop();
-        }
-      }
-    }
+  hover_pole_zero_maps();
+  for (const region of HOVER_REGIONS){
+    if (region.hit()) region.hover();
   }
 }
-
 
 
 function draw_loglines(x_case){

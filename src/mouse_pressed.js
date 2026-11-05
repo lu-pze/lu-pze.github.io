@@ -11,6 +11,9 @@ let clicked_on_bode_mag_graph_no=-1;
 let clicked_on_bode_phase_graph_no=-1;
 let clicked_on_time_variable="";
 let clicked_on_pole_zero_graph_no = -1;
+// The graph whose pole-zero map the press started on, also for a map that takes no presses:
+// only that map follows the mouse.
+let pole_zero_drag_graph_no = -1;
 
 let initial_mouseX = 0;
 let initial_mouseY = 0;
@@ -582,10 +585,12 @@ function mousePressed (event){
   clicked_on_bode_phase_graph_no = -1;
   clicked_on_time_variable = "";
   clicked_on_pole_zero_graph_no = -1;
+  pole_zero_drag_graph_no = -1;
   direction_of_T_drag=0; // Let first run of mouseDragged decide which direction to move T
 
   if (mouse_is_in_a_box(mouseX,mouseY) == true) return true; // Let system handle mouse after this, can be used for iPad scrolling:
 
+  pole_zero_drag_graph_no = pole_zero_map_under_mouse();
   if (press_in_pole_zero_maps(event)) return false; // Cancel default actions
 
   for (let region of CLICK_REGIONS){
@@ -616,4 +621,5 @@ function mouseReleased(){
   clicked_on_bode_phase_graph_no = -1;
   clicked_on_time_variable="";
   clicked_on_pole_zero_graph_no = -1;
+  pole_zero_drag_graph_no = -1;
 }
