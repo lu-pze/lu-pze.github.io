@@ -1,49 +1,66 @@
 'use strict';
 
+// Sets a slider variable, and shows it in the slider and its text field.
+function set_slider(name, value){
+  range_slider_variables[variable_position[name]] = value;
+  // Update range slider value:
+  document.getElementById("variable_"+variable_position[name]).value = value.toFixed(2);
+  // Update range slider:
+  document.getElementById("RANGE_"+variable_position[name]).value = value.toFixed(2);
+}
+
+function check_k_achievement(k_name){
+  if (slider_value(k_name) >= 100){
+    // We dragged a slider to a k-value above or equal 100:
+    achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
+  }
+}
+
+function check_T2_T3_achievement(){
+  let T2_T3_factor = Math.abs(slider_value("T_2") / slider_value("T_3"));
+  if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
+    achievement_done("T2_T3_far_apart");
+  }
+}
+
+function check_low_z_achievement(z){
+  if (z <= 0.1){
+    achievement_done("low_z");
+  }
+}
+
 let direction_of_T_drag=0;
-function drag_T_in_step_response (T_to_change,mouseDiffX){
-  let T_x = range_slider_variables[variable_position[T_to_change]];
+// T stays at `minimum` or above.
+function drag_T_in_step_response (T_to_change,mouseDiffX,minimum=-Infinity){
+  let T_x = slider_value(T_to_change);
   if (direction_of_T_drag==0){
     // Figure our if T is positive or negative, and adjust the dragging direction:
     if (T_x >= 0) direction_of_T_drag=1;
     else direction_of_T_drag=-1;
   }
   T_x = T_x + direction_of_T_drag * mouseDiffX * 10.0;
-  range_slider_variables[variable_position[T_to_change]] = T_x;
-  // Update range slider value:
-  document.getElementById("variable_"+variable_position[T_to_change]).value = T_x.toFixed(2);
-  // Update range slider:
-  document.getElementById("RANGE_"+variable_position[T_to_change]).value = T_x.toFixed(2);
+  if (T_x < minimum) T_x = minimum;
+  set_slider(T_to_change, T_x);
 }
 
 function drag_T_in_Bode (T_to_change,mouseDiffX){
-  let T_x = range_slider_variables[variable_position[T_to_change]];
-  T_x = T_x * (1.0 - mouseDiffX*10.0);
-  range_slider_variables[variable_position[T_to_change]] = T_x;
-  // Update range slider value:
-  document.getElementById("variable_"+variable_position[T_to_change]).value = T_x.toFixed(2);
-  // Update range slider:
-  document.getElementById("RANGE_"+variable_position[T_to_change]).value = T_x.toFixed(2);
+  set_slider(T_to_change, slider_value(T_to_change) * (1.0 - mouseDiffX*10.0));
 }
 
 function drag_k_in_step_response (k_to_change,mouseDiffY,y_range){
-  let k = range_slider_variables[variable_position[k_to_change]];
-  k = k - mouseDiffY * y_range;
-  range_slider_variables[variable_position[k_to_change]] = k;
-  // Update range slider value:
-  document.getElementById("variable_"+variable_position[k_to_change]).value = k.toFixed(2);
-  // Update range slider:
-  document.getElementById("RANGE_"+variable_position[k_to_change]).value = k.toFixed(2);
+  set_slider(k_to_change, slider_value(k_to_change) - mouseDiffY * y_range);
 }
 
 function drag_k_in_Bode (k_to_change,mouseDiffY){
-  let k = range_slider_variables[variable_position[k_to_change]];
-  k = k * (1.0 - mouseDiffY*12.0);
-  range_slider_variables[variable_position[k_to_change]] = k;
-  // Update range slider value:
-  document.getElementById("variable_"+variable_position[k_to_change]).value = k.toFixed(2);
-  // Update range slider:
-  document.getElementById("RANGE_"+variable_position[k_to_change]).value = k.toFixed(2);
+  set_slider(k_to_change, slider_value(k_to_change) * (1.0 - mouseDiffY*12.0));
+}
+
+function drag_z(mouseDiffY){
+  let z = slider_value("z") + mouseDiffY * 1.7;
+  if (z<0) z=0;
+  if (z>1.2) z=1.2;
+  set_slider("z", z);
+  check_low_z_achievement(z);
 }
 
 function set_T_in_pz_map(T_to_change,real){
@@ -76,6 +93,187 @@ function redraw_canvas_gain_for_variables(vars){
   }
 }
 
+// ---------------- What a drag does, per plot and preset. A preset that is not in a table does not react.
+
+// Each gets (graph, mouseDiffX, mouseDiffY, y_range).
+const STEP_RESPONSE_DRAGS = new Map([
+  [GRAPH_ONE_REAL_POLE, (graph, mouseDiffX, mouseDiffY, y_range) => {
+    drag_T_in_step_response("T_1",mouseDiffX);
+    drag_k_in_step_response("k_1",mouseDiffY,y_range);
+    check_k_achievement("k_1");
+    redraw_canvas_gain_for_variables(["k_1","T_1"]); // Other graphs may use these too
+  }],
+  [GRAPH_TWO_REAL_POLES, (graph, mouseDiffX, mouseDiffY, y_range) => {
+    drag_T_in_step_response(clicked_on_time_variable,mouseDiffX);
+    check_T2_T3_achievement();
+    drag_k_in_step_response("k_2",mouseDiffY,y_range);
+    check_k_achievement("k_2");
+    redraw_canvas_gain(graph.bode_id);
+  }],
+  [GRAPH_TWO_COMPLEX_POLES, (graph, mouseDiffX, mouseDiffY) => {
+    achievement_done("drag_time_response");
+    let T = 1/slider_value("w") + mouseDiffX * 10.0;
+    if (T < 0.001) T=0.001;
+    set_slider("w", 1/T);
+    drag_z(mouseDiffY);
+    redraw_canvas_gain(graph.bode_id);
+  }],
+  [GRAPH_TIME_DELAY, (graph, mouseDiffX) => {
+    achievement_done("change_L");
+    let L = slider_value("L") + mouseDiffX * 10.0;
+    if (L < 0) L=0;
+    set_slider("L", L);
+    redraw_canvas_gain(graph.bode_id);
+  }],
+  [GRAPH_ONE_ZERO_TWO_POLES, (graph, mouseDiffX, mouseDiffY, y_range) => {
+    // The time constants of the poles stay positive, the zero's can be negative:
+    const is_pole = (clicked_on_time_variable == "T_6") || (clicked_on_time_variable == "T_7");
+    drag_T_in_step_response(clicked_on_time_variable,mouseDiffX, is_pole ? 0 : -Infinity);
+    drag_k_in_step_response("k_4",mouseDiffY,y_range);
+    check_k_achievement("k_4");
+    redraw_canvas_gain(graph.bode_id);
+  }],
+  [GRAPH_FOUR_POLES, (graph, mouseDiffX, mouseDiffY, y_range) => {
+    drag_T_in_step_response("T_5",mouseDiffX);
+    drag_k_in_step_response("k_5",mouseDiffY,y_range);
+    check_k_achievement("k_5");
+    redraw_canvas_gain(graph.bode_id);
+  }],
+]);
+
+function drag_w_in_Bode(mouseDiffX){
+  let T = (1/slider_value("w")) * (1.0 - mouseDiffX*10.0);
+  if (T < 0.0001) T=0.0001;
+  set_slider("w", 1/T);
+}
+
+// sideways(mouseDiffX) is for both Bode plots, up_down(mouseDiffY) only for the magnitude plot.
+// redraw(graph, mouseDiffY), where mouseDiffY is undefined in the phase plot, is for presets whose
+// variables other graphs may use too; the others only recalculate their own graph.
+const BODE_DRAGS = new Map([
+  [GRAPH_ONE_REAL_POLE, {
+    sideways: (mouseDiffX) => drag_T_in_Bode("T_1",mouseDiffX),
+    up_down: (mouseDiffY) => { drag_k_in_Bode("k_1",mouseDiffY); check_k_achievement("k_1"); },
+    redraw: (graph, mouseDiffY) => redraw_canvas_gain_for_variables(mouseDiffY === undefined ? ["T_1"] : ["k_1","T_1"]),
+  }],
+  [GRAPH_TWO_REAL_POLES, {
+    sideways: (mouseDiffX) => { drag_T_in_Bode(clicked_on_time_variable,mouseDiffX); check_T2_T3_achievement(); },
+    up_down: (mouseDiffY) => { drag_k_in_Bode("k_2",mouseDiffY); check_k_achievement("k_2"); },
+  }],
+  [GRAPH_TWO_COMPLEX_POLES, {sideways: drag_w_in_Bode, up_down: drag_z}],
+  [GRAPH_ONE_ZERO, {sideways: (mouseDiffX) => drag_T_in_Bode("T_4",mouseDiffX)}],
+  [GRAPH_ONE_ZERO_TWO_POLES, {
+    sideways: (mouseDiffX) => drag_T_in_Bode(clicked_on_time_variable,mouseDiffX),
+    up_down: (mouseDiffY) => { drag_k_in_Bode("k_4",mouseDiffY); check_k_achievement("k_4"); },
+  }],
+  [GRAPH_FOUR_POLES, {
+    sideways: (mouseDiffX) => drag_T_in_Bode("T_5",mouseDiffX),
+    up_down: (mouseDiffY) => drag_k_in_Bode("k_5",mouseDiffY),
+  }],
+  [GRAPH_PID, {
+    sideways: (mouseDiffX) => drag_T_in_Bode(clicked_on_time_variable,mouseDiffX),
+    up_down: (mouseDiffY) => drag_k_in_Bode("K",mouseDiffY),
+    redraw: () => redraw_canvas_gain_for_variables(["K","T_i","T_d"]),
+  }],
+]);
+
+function drag_in_bode_plot(achievement, graph, mouseDiffX, mouseDiffY){
+  const drag = BODE_DRAGS.get(preset_of_formula(graph.bode_formula));
+  if (drag === undefined) return;
+  achievement_done(achievement);
+  drag.sideways(mouseDiffX);
+  if ((mouseDiffY !== undefined) && (drag.up_down !== undefined)) drag.up_down(mouseDiffY);
+  if (drag.redraw !== undefined) drag.redraw(graph, mouseDiffY);
+  else redraw_canvas_gain(graph.bode_id);
+}
+
+// Moves a pole to `real`, held at `rightmost` or left of it.
+function drag_pole_in_map(T_to_change, real, rightmost=Infinity){
+  achievement_done("drag_pole");
+  if (real > rightmost) real=rightmost;
+  set_T_in_pz_map(T_to_change,real);
+  if (real>0){
+    achievement_done("drag_pole_to_right_half_plane");
+  }
+}
+
+function drag_zero_in_map(T_to_change, real){
+  achievement_done("drag_zero");
+  set_T_in_pz_map(T_to_change,real);
+  if (real>0){
+    achievement_done("drag_zero_to_right_half_plane");
+  }
+}
+
+function drag_complex_poles_in_map(graph, real, imaginary){
+  achievement_done("drag_pole");
+  achievement_done("drag_complex_pole");
+  // Change complex poles:
+  if (real > 0) real=0;
+  if (imaginary < 0) imaginary=-imaginary;
+  bode_3_real = real;
+  bode_3_imaginary = imaginary;
+  // Update variable w  = "cutoff frequency"
+  // w = length of vector (re,im)
+  set_slider("w", Math.sqrt(real*real + imaginary*imaginary));
+  // Update variable z "zeta" = "damping factor 0.0-1.0"
+  // z = the angle from origo to the upper complex pole.
+  // z = 0 when complex pole is on the imaginary axis
+  // z = 1.0 when complex pole is on the real axis
+  // z = 0.880 when (-1,0.5)
+  // z = 0.707 when (-1,1)
+  // z = 0.446 when (-0.5,1)
+  // ζ= - Re(pole) / Math.sqrt(Re(pole)^2 + Im(pole)^2)
+  let z = -real / Math.sqrt(real*real + imaginary*imaginary);
+  set_slider("z", z);
+  check_low_z_achievement(z);
+  redraw_canvas_gain(graph.bode_id);
+}
+
+// Each gets (graph, real, imaginary), the point in the map.
+const POLE_ZERO_MAP_DRAGS = new Map([
+  [GRAPH_ONE_REAL_POLE, (graph, real) => {
+    drag_pole_in_map("T_1",real);
+    redraw_canvas_gain_for_variables(["T_1"]); // Other graphs may use it too
+  }],
+  [GRAPH_TWO_REAL_POLES, (graph, real) => {
+    drag_pole_in_map(clicked_on_time_variable,real);
+    redraw_canvas_gain(graph.bode_id);
+  }],
+  [GRAPH_TWO_COMPLEX_POLES, drag_complex_poles_in_map],
+  [GRAPH_ONE_ZERO, (graph, real) => {
+    drag_zero_in_map("T_4",real);
+    redraw_canvas_gain(graph.bode_id);
+  }],
+  [GRAPH_ONE_ZERO_TWO_POLES, (graph, real) => {
+    if (clicked_on_time_variable=="T_8") drag_zero_in_map("T_8",real);
+    else drag_pole_in_map(clicked_on_time_variable,real,0.06777777);
+    redraw_canvas_gain(graph.bode_id);
+  }],
+  [GRAPH_FOUR_POLES, (graph, real) => {
+    drag_pole_in_map("T_5",real,0.0677777);
+    redraw_canvas_gain(graph.bode_id);
+  }],
+  [GRAPH_PID, (graph, real) => {
+    drag_pole_in_map(clicked_on_time_variable,real);
+    redraw_canvas_gain(graph.bode_id);
+  }],
+]);
+
+function drag_in_pole_zero_maps(){
+  for(let i=0; i<bode_graphs.length; i++){
+    if(((mouseX-pole_zero_graph_x[i]) > 0) && ((mouseX-pole_zero_graph_x[i]) < pole_zero_width)){
+      if(((mouseY-pole_zero_graph_y[i]) > 0) && ((mouseY-pole_zero_graph_y[i]) < pole_zero_height)){
+        if(bode_graphs[i].bode_displaybool){
+          let real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 3;
+          let imaginary=2 - (mouseY-pole_zero_graph_y[i])/pole_zero_height * 4;
+          POLE_ZERO_MAP_DRAGS.get(preset_of_formula(bode_graphs[i].bode_formula))?.(bode_graphs[i],real,imaginary);
+        }
+      }
+    }
+  }
+}
+
 function mouseDragged (){
   if (mouseButton==RIGHT){
     if (questions_enabled){
@@ -86,268 +284,16 @@ function mouseDragged (){
 
   if (mouse_is_in_a_box(mouseX,mouseY) == true) return true; // Let system handle mouse after this, can be used for iPad scrolling:
 
-  // Dragging one of the graphs in the step response:
+  let mouseDiffX = (mouseX - initial_mouseX) / graph_step_response_width;
+  let mouseDiffY = (mouseY - initial_mouseY) / graph_step_response_height;
+
   if (clicked_on_time_response_graph_no != -1){
-    let i=clicked_on_time_response_graph_no;
-    let mouseDiffX = (mouseX - initial_mouseX) / graph_step_response_width;
-    let mouseDiffY = (mouseY - initial_mouseY) / graph_step_response_height;
-    let y_range = max_y_timerep - min_y_timerep;
-    if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_ONE_REAL_POLE.formula){
-      drag_T_in_step_response("T_1",mouseDiffX);
-      drag_k_in_step_response("k_1",mouseDiffY,y_range);
-      let k_1 = range_slider_variables[variable_position["k_1"]];
-      if (k_1>=100){
-        // We dragged a slider to a k-value above or equal 100:
-        achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
-      }
-      //redraw_canvas_gain(bode_graphs[i].bode_id); //faster, but we might affect other graphs here:
-      redraw_canvas_gain_for_variables(["k_1","T_1"]);
-
-    } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
-      drag_T_in_step_response(clicked_on_time_variable,mouseDiffX);
-      let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
-      if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
-        achievement_done("T2_T3_far_apart");
-      }
-      drag_k_in_step_response("k_2",mouseDiffY,y_range);
-      let k_2 = range_slider_variables[variable_position["k_2"]];
-      if (k_2>=100){
-        // We dragged a slider to a k-value above or equal 100:
-        achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
-      }
-      redraw_canvas_gain(bode_graphs[i].bode_id);
-
-    } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
-      achievement_done("drag_time_response");
-      let w = range_slider_variables[variable_position["w"]];
-      let T=1/w;
-      T = T + mouseDiffX * 10.0;
-      if (T < 0.001) T=0.001;
-      w = 1/T;
-      range_slider_variables[variable_position["w"]] = w;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position["w"]).value = w.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position["w"]).value = w.toFixed(2);
-      let z = range_slider_variables[variable_position["z"]];
-      z = z + mouseDiffY * 1.7;
-      if (z<0) z=0;
-      if (z>1.2) z=1.2;
-      range_slider_variables[variable_position["z"]] = z;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position["z"]).value = z.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position["z"]).value = z.toFixed(2);
-      if (z <= 0.1){
-        achievement_done("low_z");
-      }
-      redraw_canvas_gain(bode_graphs[i].bode_id);
-
-    } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_TIME_DELAY.formula){
-      achievement_done("change_L");
-      let L = range_slider_variables[variable_position["L"]];
-      L = L + mouseDiffX * 10.0;
-      if (L < 0) L=0;
-      range_slider_variables[variable_position["L"]] = L;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position["L"]).value = L.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position["L"]).value = L.toFixed(2);
-      redraw_canvas_gain(bode_graphs[i].bode_id);
-
-    } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
-      let variable_to_change = clicked_on_time_variable;
-      let T_x = range_slider_variables[variable_position[variable_to_change]];
-      if (direction_of_T_drag==0){
-        // Figure our if T is positive or negative, and adjust the dragging direction:
-        if (T_x >= 0) direction_of_T_drag=1;
-        else direction_of_T_drag=-1;
-      }
-      T_x = T_x + direction_of_T_drag * mouseDiffX * 10.0;
-      if ((variable_to_change == "T_6")||(variable_to_change == "T_7")){
-        if (T_x<0) T_x = 0;
-      }
-      range_slider_variables[variable_position[variable_to_change]] = T_x;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position[variable_to_change]).value = T_x.toFixed(2);
-
-      drag_k_in_step_response("k_4",mouseDiffY,y_range);
-      let k_4 = range_slider_variables[variable_position["k_4"]];
-      if (k_4>=100){
-        // We dragged a slider to a k-value above or equal 100:
-        achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
-      }
-      redraw_canvas_gain(bode_graphs[i].bode_id);
-    } else if (bode_graphs[clicked_on_time_response_graph_no].bode_formula == GRAPH_FOUR_POLES.formula){
-      drag_T_in_step_response("T_5",mouseDiffX);
-      drag_k_in_step_response("k_5",mouseDiffY,y_range);
-      let k_5 = range_slider_variables[variable_position["k_5"]];
-      if (k_5>=100){
-        // We dragged a slider to a k-value above or equal 100:
-        achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
-      }
-      redraw_canvas_gain(bode_graphs[i].bode_id);
-    }
-    initial_mouseX = mouseX;
-    initial_mouseY = mouseY;
-
-
-  // Dragging one of the graphs in the bode magnitude plot:
+    const graph = bode_graphs[clicked_on_time_response_graph_no];
+    STEP_RESPONSE_DRAGS.get(preset_of_formula(graph.bode_formula))?.(graph,mouseDiffX,mouseDiffY,max_y_timerep - min_y_timerep);
   } else if (clicked_on_bode_mag_graph_no != -1){
-    let i=clicked_on_bode_mag_graph_no;
-    let mouseDiffX = (mouseX - initial_mouseX) / graph_step_response_width;
-    let mouseDiffY = (mouseY - initial_mouseY) / graph_step_response_height;
-
-    if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_ONE_REAL_POLE.formula){
-      achievement_done("drag_bode_mag");
-      drag_T_in_Bode("T_1",mouseDiffX);
-      drag_k_in_Bode("k_1",mouseDiffY);
-      let k_1 = range_slider_variables[variable_position["k_1"]];
-      if (k_1>=100){
-        // We dragged a slider to a k-value above or equal 100:
-        achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
-      }
-      //redraw_canvas_gain(bode_graphs[i].bode_id); //faster, but we might affect other graphs here:
-      redraw_canvas_gain_for_variables(["k_1","T_1"]);
-
-    } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
-      achievement_done("drag_bode_mag");
-      drag_T_in_Bode(clicked_on_time_variable,mouseDiffX);
-      let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
-      if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
-        achievement_done("T2_T3_far_apart");
-      }
-      drag_k_in_Bode("k_2",mouseDiffY);
-      let k_2 = range_slider_variables[variable_position["k_2"]];
-      if (k_2>=100){
-        // We dragged a slider to a k-value above or equal 100:
-        achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
-      }
-      redraw_canvas_gain(bode_graphs[i].bode_id);
-
-    } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
-      achievement_done("drag_bode_mag");
-      let w = range_slider_variables[variable_position["w"]];
-      let T=1/w;
-      T = T * (1.0 - mouseDiffX*10.0);
-      if (T < 0.0001) T=0.0001;
-      w = 1/T;
-      range_slider_variables[variable_position["w"]] = w;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position["w"]).value = w.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position["w"]).value = w.toFixed(2);
-
-      let z = range_slider_variables[variable_position["z"]];
-      z = z + mouseDiffY * 1.7;
-      if (z<0) z=0;
-      if (z>1.2) z=1.2;
-      range_slider_variables[variable_position["z"]] = z;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position["z"]).value = z.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position["z"]).value = z.toFixed(2);
-      if (z <= 0.1){
-        achievement_done("low_z");
-      }
-      redraw_canvas_gain(bode_graphs[i].bode_id);
-
-    } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_ONE_ZERO.formula){
-      achievement_done("drag_bode_mag");
-      drag_T_in_Bode("T_4",mouseDiffX);
-      redraw_canvas_gain(bode_graphs[i].bode_id);
-
-    } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
-      achievement_done("drag_bode_mag");
-      drag_T_in_Bode(clicked_on_time_variable,mouseDiffX);
-      drag_k_in_Bode("k_4",mouseDiffY);
-      let k_4 = range_slider_variables[variable_position["k_4"]];
-      if (k_4>=100){
-        // We dragged a slider to a k-value above or equal 100:
-        achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
-      }
-      redraw_canvas_gain(bode_graphs[i].bode_id);
-
-    } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_FOUR_POLES.formula){
-      achievement_done("drag_bode_mag");
-      drag_T_in_Bode("T_5",mouseDiffX);
-      drag_k_in_Bode("k_5",mouseDiffY);
-      redraw_canvas_gain(bode_graphs[i].bode_id);
-
-    } else if (bode_graphs[clicked_on_bode_mag_graph_no].bode_formula == GRAPH_PID.formula){
-      achievement_done("drag_bode_mag");
-      drag_T_in_Bode(clicked_on_time_variable,mouseDiffX);
-      drag_k_in_Bode("K",mouseDiffY);
-      //redraw_canvas_gain(bode_graphs[i].bode_id);
-      redraw_canvas_gain_for_variables(["K","T_i","T_d"]);
-
-    }
-    initial_mouseX = mouseX;
-    initial_mouseY = mouseY;
-
-
-  // Dragging one of the graphs in the bode phase plot:
+    drag_in_bode_plot("drag_bode_mag",bode_graphs[clicked_on_bode_mag_graph_no],mouseDiffX,mouseDiffY);
   } else if (clicked_on_bode_phase_graph_no != -1){
-    let i=clicked_on_bode_phase_graph_no;
-    let mouseDiffX = (mouseX - initial_mouseX) / graph_step_response_width;
-
-    if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_ONE_REAL_POLE.formula){
-      achievement_done("drag_bode_phase");
-      drag_T_in_Bode("T_1",mouseDiffX);
-      //redraw_canvas_gain(bode_graphs[i].bode_id); //faster, but we might affect other graphs here:
-      redraw_canvas_gain_for_variables(["T_1"]);
-
-    } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_TWO_REAL_POLES.formula){
-      achievement_done("drag_bode_phase");
-      drag_T_in_Bode(clicked_on_time_variable,mouseDiffX);
-      let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
-      if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
-        achievement_done("T2_T3_far_apart");
-      }
-      redraw_canvas_gain(bode_graphs[i].bode_id);
-
-    } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
-      achievement_done("drag_bode_phase");
-      let w = range_slider_variables[variable_position["w"]];
-      let T=1/w;
-      T = T * (1.0 - mouseDiffX*10.0);
-      if (T < 0.0001) T=0.0001;
-      w = 1/T;
-      range_slider_variables[variable_position["w"]] = w;
-      // Update range slider value:
-      document.getElementById("variable_"+variable_position["w"]).value = w.toFixed(2);
-      // Update range slider:
-      document.getElementById("RANGE_"+variable_position["w"]).value = w.toFixed(2);
-      redraw_canvas_gain(bode_graphs[i].bode_id);
-
-    } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_ONE_ZERO.formula){
-      achievement_done("drag_bode_phase");
-      drag_T_in_Bode("T_4",mouseDiffX);
-      redraw_canvas_gain(bode_graphs[i].bode_id);
-
-    } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
-      achievement_done("drag_bode_phase");
-      drag_T_in_Bode(clicked_on_time_variable,mouseDiffX);
-      redraw_canvas_gain(bode_graphs[i].bode_id);
-
-    } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_FOUR_POLES.formula){
-      achievement_done("drag_bode_phase");
-      drag_T_in_Bode("T_5",mouseDiffX);
-      redraw_canvas_gain(bode_graphs[i].bode_id);
-
-    } else if (bode_graphs[clicked_on_bode_phase_graph_no].bode_formula == GRAPH_PID.formula){
-      achievement_done("drag_bode_phase");
-      drag_T_in_Bode(clicked_on_time_variable,mouseDiffX);
-      //redraw_canvas_gain(bode_graphs[i].bode_id);
-      redraw_canvas_gain_for_variables(["K","T_i","T_d"]);
-
-    }
-    initial_mouseX = mouseX;
-    initial_mouseY = mouseY;
-
-
+    drag_in_bode_plot("drag_bode_phase",bode_graphs[clicked_on_bode_phase_graph_no],mouseDiffX);
   } else {
     // Check if we're dragging the Nyquist diagram:
     if((mouseX-graph_nyquist_x) > graph_nyquist_x_offset && (mouseX-graph_nyquist_x) < graph_nyquist_width + graph_nyquist_x_offset){
@@ -356,119 +302,9 @@ function mouseDragged (){
         draw_hover_nyquist();
       }
     }
-
-
-    // Check if we've dragged in any of the pole-zero graphs:
-    for(let i=0; i<bode_graphs.length; i++){
-      if(((mouseX-pole_zero_graph_x[i]) > 0) && ((mouseX-pole_zero_graph_x[i]) < pole_zero_width)){
-        if(((mouseY-pole_zero_graph_y[i]) > 0) && ((mouseY-pole_zero_graph_y[i]) < pole_zero_height)){
-          if(bode_graphs[i].bode_displaybool){
-            let real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 3;
-            let imaginary=2 - (mouseY-pole_zero_graph_y[i])/pole_zero_height * 4;
-
-            if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
-              achievement_done("drag_pole");
-              set_T_in_pz_map("T_1",real);
-              if (real>0){
-                achievement_done("drag_pole_to_right_half_plane");
-              }
-              //redraw_canvas_gain(bode_graphs[i].bode_id); //faster, but we might affect other graphs here:
-              redraw_canvas_gain_for_variables(["T_1"]);
-
-            } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
-              achievement_done("drag_pole");
-              // Change T_2 or T_3
-              set_T_in_pz_map(clicked_on_time_variable,real);
-              if (real>0){
-                achievement_done("drag_pole_to_right_half_plane");
-              }
-              redraw_canvas_gain(bode_graphs[i].bode_id);
-
-            } else if (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
-              achievement_done("drag_pole");
-              achievement_done("drag_complex_pole");
-              // Change complex poles:
-              if (real > 0) real=0;
-              if (imaginary < 0) imaginary=-imaginary;
-              bode_3_real = real;
-              bode_3_imaginary = imaginary;
-              // Update variable w  = "cutoff frequency"
-              // w = length of vector (re,im)
-              let w = Math.sqrt(real*real + imaginary*imaginary);
-              range_slider_variables[variable_position["w"]] = w;
-              // Update range slider value:
-              document.getElementById("variable_"+variable_position["w"]).value = w.toFixed(2);
-              // Update range slider:
-              document.getElementById("RANGE_"+variable_position["w"]).value = w.toFixed(2);
-              // Update variable z "zeta" = "damping factor 0.0-1.0"
-              // z = the angle from origo to the upper complex pole.
-              // z = 0 when complex pole is on the imaginary axis
-              // z = 1.0 when complex pole is on the real axis
-              // z = 1.0 when complex pole is on the real axis
-              // z = 0.880 when (-1,0.5)
-              // z = 0.707 when (-1,1)
-              // z = 0.446 when (-0.5,1)
-              // ζ= - Re(pole) / Math.sqrt(Re(pole)^2 + Im(pole)^2)
-              let z = -real / Math.sqrt(real*real + imaginary*imaginary);
-              range_slider_variables[variable_position["z"]] = z;
-              // Update range slider value:
-              document.getElementById("variable_"+variable_position["z"]).value = z.toFixed(2);
-              // Update range slider:
-              document.getElementById("RANGE_"+variable_position["z"]).value = z.toFixed(2);
-              if (z <= 0.1){
-                achievement_done("low_z");
-              }
-              redraw_canvas_gain(bode_graphs[i].bode_id);
-
-            } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula){
-              achievement_done("drag_zero");
-              set_T_in_pz_map("T_4",real);
-              if (real>0){
-                achievement_done("drag_zero_to_right_half_plane");
-              }
-              redraw_canvas_gain(bode_graphs[i].bode_id);
-
-            } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
-              // Change T_8, T_6 or T_7:
-              let variable_to_change = clicked_on_time_variable;
-              if (variable_to_change=="T_8"){
-                achievement_done("drag_zero");
-                if (real>0){
-                  achievement_done("drag_zero_to_right_half_plane");
-                }
-              } else {
-                achievement_done("drag_pole");
-                const EPS = 0.06777777;
-                if (real > EPS) real=EPS;
-                if (real>0){
-                  achievement_done("drag_pole_to_right_half_plane");
-                }
-              }
-              set_T_in_pz_map(clicked_on_time_variable,real);
-              redraw_canvas_gain(bode_graphs[i].bode_id);
-
-            } else if (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula){
-              achievement_done("drag_pole");
-              const EPS = 0.0677777;
-              if (real > EPS) real=EPS;
-              set_T_in_pz_map("T_5",real);
-              if (real>0){
-                achievement_done("drag_pole_to_right_half_plane");
-              }
-              redraw_canvas_gain(bode_graphs[i].bode_id);
-
-            } else if (bode_graphs[i].bode_formula == GRAPH_PID.formula){
-              achievement_done("drag_pole");
-              // Change T_i or T_d
-              set_T_in_pz_map(clicked_on_time_variable,real);
-              if (real>0){
-                achievement_done("drag_pole_to_right_half_plane");
-              }
-              redraw_canvas_gain(bode_graphs[i].bode_id);
-            }
-          }
-        }
-      }
-    }
+    drag_in_pole_zero_maps();
+    return;
   }
+  initial_mouseX = mouseX;
+  initial_mouseY = mouseY;
 }

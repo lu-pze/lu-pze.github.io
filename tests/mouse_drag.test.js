@@ -976,6 +976,26 @@ describe('mutation gaps: dragging in the Bode plots with the mouse already away 
   });
 });
 
+describe('dragging one real pole in the Bode plots recalculates the other graphs that use what moved', () => {
+  beforeEach(() => {
+    const graphs = global_value('bode_graphs');
+    graphs.push({ bode_formula: 'k_1*s', bode_id: 'only_k_1', bode_displaybool: true });
+    graphs.push({ bode_formula: 'T_1*s', bode_id: 'only_T_1', bode_displaybool: true });
+  });
+
+  test('the magnitude plot moves k_1 and T_1', () => {
+    drag({ mag: 'GRAPH_ONE_REAL_POLE', to: [1, 1] });
+    expect(redrawn()).toContain('only_k_1');
+    expect(redrawn()).toContain('only_T_1');
+  });
+
+  test('the phase plot moves only T_1', () => {
+    drag({ phase: 'GRAPH_ONE_REAL_POLE', to: [1, 1] });
+    expect(redrawn()).not.toContain('only_k_1');
+    expect(redrawn()).toContain('only_T_1');
+  });
+});
+
 describe('mutation gaps: the pole-zero maps loop', () => {
   test('a pole-zero map position without a graph is ignored', () => {
     // One more map position than graphs, as left behind when a graph is removed.

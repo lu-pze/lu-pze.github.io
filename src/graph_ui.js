@@ -82,10 +82,7 @@ function check_slider_achievements(variable_name, value){
   } else if ((variable_name=="z") && (value <= 0.1)){
     achievement_done("low_z");
   } else if (variable_name[0]=="T"){
-    let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
-    if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
-      achievement_done("T2_T3_far_apart");
-    }
+    check_T2_T3_achievement();
   }
 }
 
