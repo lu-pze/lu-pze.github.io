@@ -260,13 +260,7 @@ function draw_bode_phase_T (T,i,pole_zero="pole"){
   if (!isFinite(screen_x)) return; // T = 0 or T = Infinity (w = 0): no corner frequency to mark
   let linked_y = bode_graphs[i].bode_phase_array[Math.round(screen_x)];
   let screen_y = map(linked_y,rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
-  stroke(bode_graphs[i].bode_hue,240,360);
-  strokeWeight(line_stroke_weight);
-  if (pole_zero=="pole") draw_X(screen_x,screen_y);
-  else {
-    noFill();
-    draw_O(screen_x,screen_y);
-  }
+  draw_pole_or_zero_mark(screen_x,screen_y,i,pole_zero);
 }
 
 function draw_bode_mag_T(T,i,pole_zero="pole"){
@@ -276,6 +270,10 @@ function draw_bode_mag_T(T,i,pole_zero="pole"){
   if (!isFinite(screen_x)) return; // T = 0 or T = Infinity (w = 0): no corner frequency to mark
   // Now we know the x position. Let's find out the y position:
   let screen_y = map(bode_graphs[i].bode_gain_array[Math.round(screen_x)],gain_upper_bound - 20*y_case_gain,gain_upper_bound,graph_bode_mag_height,0);
+  draw_pole_or_zero_mark(screen_x,screen_y,i,pole_zero);
+}
+
+function draw_pole_or_zero_mark(screen_x,screen_y,i,pole_zero){
   stroke(bode_graphs[i].bode_hue,240,360);
   strokeWeight(line_stroke_weight);
   if (pole_zero=="pole") draw_X(screen_x,screen_y);
@@ -283,6 +281,15 @@ function draw_bode_mag_T(T,i,pole_zero="pole"){
     noFill();
     draw_O(screen_x,screen_y);
   }
+}
+
+// Marks the corner frequencies of graph i with draw_mark(T, i, kind), if it is a preset that has any.
+function draw_bode_marks(draw_mark,i){
+  const marks = preset_of_formula(bode_graphs[i].bode_formula)?.bode_marks;
+  if (marks === undefined) return;
+  try{ // The graph may be deleted, so this might fail:
+    for (const mark of marks()) draw_mark(mark.T,i,mark.kind);
+  } catch {}
 }
 
 //Drawing functions
@@ -352,71 +359,12 @@ function draw_bode_responses(type){
         bode_graphs[i].draw_phase();
       }
     }
-    // Draw X for T_1, T_2, T_3 and w:
+    // Mark the corner frequencies:
     rad_phase_lower_bound = phase_lower_bound*Math.PI/180;
     rad_phase_upper_bound = phase_upper_bound*Math.PI/180;
     for(let i=0; i<bode_graphs.length; i++){
       if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
-        if(bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
-          // Draw T_1:
-          try{ // The graph may be deleted, so this might fail:
-            draw_bode_phase_T(range_slider_variables[variable_position["T_1"]],i);
-          } catch {}
-        } else if(bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
-          // Draw T_2 and T_3:
-          try{ // The graph may be deleted, so this might fail:
-            draw_bode_phase_T(range_slider_variables[variable_position["T_2"]],i);
-            draw_bode_phase_T(range_slider_variables[variable_position["T_3"]],i);
-          } catch {}
-        } else if(bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
-          // Draw w:
-          try{ // The graph may be deleted, so this might fail:
-            let w = range_slider_variables[variable_position["w"]];
-            let z = range_slider_variables[variable_position["z"]];
-            if (z <= 1){
-              // One single frequency, so only one X in the graph:
-              if (w >= 0){
-                draw_bode_phase_T(1/w,i);
-              }
-            } else {
-              //If Math.sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
-              // We should draw 2 X in this graph:
-              let bode_3_real_1 = z*w + w * Math.sqrt(z*z-1);
-              let bode_3_real_2 = z*w - w * Math.sqrt(z*z-1);
-              w = bode_3_real_1;
-              if (w >= 0){
-                draw_bode_phase_T(1/w,i);
-              }
-              w = bode_3_real_2;
-              if (w >= 0){
-                draw_bode_phase_T(1/w,i);
-              }
-            }
-          } catch {}
-        } else if(bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula){
-          // Draw T_4:
-          try{ // The graph may be deleted, so this might fail:
-            draw_bode_phase_T(range_slider_variables[variable_position["T_4"]],i);
-          } catch {}
-        } else if(bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
-          // Draw T_8, T_6 and T_7:
-          try{ // The graph may be deleted, so this might fail:
-            draw_bode_phase_T(range_slider_variables[variable_position["T_6"]],i);
-            draw_bode_phase_T(range_slider_variables[variable_position["T_7"]],i);
-            draw_bode_phase_T(range_slider_variables[variable_position["T_8"]],i,"zero");
-          } catch {}
-        } else if(bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula){
-          // Draw T_5:
-          try{ // The graph may be deleted, so this might fail:
-            draw_bode_phase_T(range_slider_variables[variable_position["T_5"]],i);
-          } catch {}
-        } else if(bode_graphs[i].bode_formula == GRAPH_PID.formula){
-          // Draw the PID zeros at 1/T_i and 1/T_d:
-          try{ // The graph may be deleted, so this might fail:
-            draw_bode_phase_T(range_slider_variables[variable_position["T_i"]],i,"zero");
-            draw_bode_phase_T(range_slider_variables[variable_position["T_d"]],i,"zero");
-          } catch {}
-        }
+        draw_bode_marks(draw_bode_phase_T,i);
       }
     }
 
@@ -461,69 +409,10 @@ function draw_bode_responses(type){
     }
 
 
-    // Draw X for T_1, T_2, T_3 and w:
+    // Mark the corner frequencies:
     for(let i=0; i<bode_graphs.length; i++){
       if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodemag_bool)){
-        if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
-          // Draw T_1:
-          try{ // The graph may be deleted, so this might fail:
-            draw_bode_mag_T(range_slider_variables[variable_position["T_1"]],i);
-          } catch {}
-        } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
-          // Draw T_2 and T_3:
-          try{ // The graph may be deleted, so this might fail:
-            draw_bode_mag_T(range_slider_variables[variable_position["T_2"]],i);
-            draw_bode_mag_T(range_slider_variables[variable_position["T_3"]],i);
-          } catch {}
-        } else if (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
-          // Draw w:
-          try{ // The graph may be deleted, so this might fail:
-            let w = range_slider_variables[variable_position["w"]];
-            let z = range_slider_variables[variable_position["z"]];
-            if (z <= 1){
-              // One single frequency, so only one X in the graph:
-              if (w >= 0){
-                draw_bode_mag_T(1/w,i);
-              }
-            } else {
-              //If Math.sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
-              // We should draw 2 X in this graph:
-              let bode_3_real_1 = z*w + w * Math.sqrt(z*z-1);
-              let bode_3_real_2 = z*w - w * Math.sqrt(z*z-1);
-              w = bode_3_real_1;
-              if (w >= 0){
-                draw_bode_mag_T(1/w,i);
-              }
-              w = bode_3_real_2;
-              if (w >= 0){
-                draw_bode_mag_T(1/w,i);
-              }
-            }
-          } catch {}
-        } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula){
-          // Draw T_4:
-          try{ // The graph may be deleted, so this might fail:
-            draw_bode_mag_T(range_slider_variables[variable_position["T_4"]],i);
-          } catch {}
-        } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
-          // Draw T_8, T_6 and T_7:
-          try{ // The graph may be deleted, so this might fail:
-            draw_bode_mag_T(range_slider_variables[variable_position["T_6"]],i);
-            draw_bode_mag_T(range_slider_variables[variable_position["T_7"]],i);
-            draw_bode_mag_T(range_slider_variables[variable_position["T_8"]],i,"zero");
-          } catch {}
-        } else if (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula){
-          // Draw T_5:
-          try{ // The graph may be deleted, so this might fail:
-            draw_bode_mag_T(range_slider_variables[variable_position["T_5"]],i);
-          } catch {}
-        } else if (bode_graphs[i].bode_formula == GRAPH_PID.formula){
-          // Draw the PID zeros at 1/T_i and 1/T_d:
-          try{ // The graph may be deleted, so this might fail:
-            draw_bode_mag_T(range_slider_variables[variable_position["T_i"]],i,"zero");
-            draw_bode_mag_T(range_slider_variables[variable_position["T_d"]],i,"zero");
-          } catch {}
-        }
+        draw_bode_marks(draw_bode_mag_T,i);
       }
     }
   }

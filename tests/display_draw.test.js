@@ -704,6 +704,16 @@ describe('draw_bode_responses: magnitude', () => {
   });
 });
 
+describe('draw_pole_or_zero_mark', () => {
+  test('uses the graph colour and the line weight of the settings', () => {
+    use_fake_graphs(fake_graph({ bode_hue: 123 }));
+    set_globals({ line_stroke_weight: 3 });
+    window.draw_pole_or_zero_mark(10, 20, 0, 'pole');
+    expect(calls('stroke')).toEqual([[123, 240, 360]]);
+    expect(calls('strokeWeight')).toEqual([[3]]);
+  });
+});
+
 describe('draw_bode_mag_T and draw_bode_phase_T without a corner frequency', () => {
   test.each([
     ['draw_bode_mag_T', 0], ['draw_bode_mag_T', Infinity],

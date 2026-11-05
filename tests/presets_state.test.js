@@ -30,6 +30,65 @@ describe('pole-zero map of each preset', () => {
   });
 });
 
+describe('Bode marks of each preset', () => {
+  const VALUES = { T_1: 1, T_2: 2, T_3: 3, T_4: 4, T_5: 5, T_6: 6, T_7: 7, T_8: 8, T_i: 9, T_d: 10 };
+  const pole = (T) => ({ T, kind: 'pole' });
+  const zero = (T) => ({ T, kind: 'zero' });
+
+  function set_sliders(values) {
+    const position = global_value('variable_position');
+    const variables = global_value('range_slider_variables');
+    global_value('range_slider_alphabet').forEach((name, i) => { position[name] = i; });
+    for (const [name, value] of Object.entries(values)) variables[position[name]] = value;
+  }
+
+  test.each([
+    ['GRAPH_ONE_REAL_POLE', [pole(1)]],
+    ['GRAPH_TWO_REAL_POLES', [pole(2), pole(3)]],
+    ['GRAPH_ONE_ZERO_TWO_POLES', [pole(6), pole(7), zero(8)]],
+    ['GRAPH_FOUR_POLES', [pole(5)]],
+    ['GRAPH_ONE_ZERO', [pole(4)]], // an X, although the pole-zero map shows it as a zero
+    ['GRAPH_PID', [zero(9), zero(10)]],
+  ])('%s', (name, marks) => {
+    set_sliders(VALUES);
+    expect(global_value(name).bode_marks()).toEqual(marks);
+  });
+
+  test.each(['GRAPH_TIME_DELAY', 'GRAPH_ONE_POLE_WITH_PID_YR', 'GRAPH_ONE_POLE_WITH_PID_S', 'GRAPH_ONE_POLE_WITH_PID_YL', 'GRAPH_ONE_POLE_WITH_PID_OPEN'])(
+    '%s has none', (name) => {
+      expect(global_value(name).bode_marks).toBeUndefined();
+    });
+
+  describe('two complex poles', () => {
+    const marks_for = (w, z) => {
+      set_sliders({ w, z });
+      return global_value('GRAPH_TWO_COMPLEX_POLES').bode_marks();
+    };
+
+    test.each([[0.5], [1]])('z = %s: one X at 1/w', (z) => {
+      expect(marks_for(4, z)).toEqual([pole(0.25)]);
+    });
+
+    test('w = 0 still counts, with an infinite T that the drawing skips', () => {
+      expect(marks_for(0, 0.5)).toEqual([pole(Infinity)]);
+    });
+
+    test('a negative w gets no mark', () => {
+      expect(marks_for(-1, 0.5)).toEqual([]);
+    });
+
+    test('above z = 1 the two real poles each get an X', () => {
+      const [first, second] = marks_for(2, 1.25); // poles at w*(z +- sqrt(z^2-1)) = 4 and 1
+      expect(first.T).toBeCloseTo(1 / 4, 12);
+      expect(second.T).toBeCloseTo(1, 12);
+    });
+
+    test('a negative w gets no mark above z = 1 either', () => {
+      expect(marks_for(-2, 1.25)).toEqual([]);
+    });
+  });
+});
+
 describe('preset_of_formula', () => {
   test.each(['GRAPH_ONE_REAL_POLE', 'GRAPH_TIME_DELAY', 'GRAPH_ONE_POLE_WITH_PID_OPEN'])('finds %s by its formula', (name) => {
     const preset = global_value(name);
