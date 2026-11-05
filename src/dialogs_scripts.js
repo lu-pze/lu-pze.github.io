@@ -64,33 +64,21 @@ function update_programming_language(id){
   element.innerHTML = code;
 }
 
+// The lines of an exported script that define the transfer function of graph `id`, each ended by
+// line_end, or "" if the graph has no script export.
+function transfer_function_lines(id, line_end){
+  const preset = preset_of_formula(getGraphById(id).bode_formula);
+  if (preset?.script_transfer_function === undefined) return "";
+  const {num, den} = preset.script_transfer_function;
+  const lines = [...preset.own_sliders.map((name) => name + " = " + slider_value(name)), "num = " + num, "den = " + den];
+  return lines.join(line_end + "\n") + line_end;
+}
+
 function get_python_script(id){
   add_event("get_python_script");
   achievement_done("python_script");
-  let current_graph;
-  for(let i=0; i<bode_graphs.length; i++){
-    if(bode_graphs[i].bode_id == id){
-      current_graph = bode_graphs[i];
-    }
-  }
-  let python_string = "";
-  if (current_graph.bode_formula == GRAPH_ONE_REAL_POLE.formula){
-    let k_1 = range_slider_variables[variable_position["k_1"]];
-    let T_1 = range_slider_variables[variable_position["T_1"]];
-    python_string = "k_1 = " + k_1 + "\nT_1 = " + T_1 + "\n" + "num = [k_1]\nden = [T_1, 1]";
-  } else if (current_graph.bode_formula == GRAPH_TWO_REAL_POLES.formula){
-    let k_2 = range_slider_variables[variable_position["k_2"]];
-    let T_2 = range_slider_variables[variable_position["T_2"]];
-    let T_3 = range_slider_variables[variable_position["T_3"]];
-    python_string = "k_2 = " + k_2 + "\nT_2 = " + T_2 + "\n" + "T_3 = " + T_3 + "\n" + "num = [k_2]\nden = [T_2*T_3, T_2+T_3, 1]";
-  } else if (current_graph.bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
-    let k_3 = range_slider_variables[variable_position["k_3"]];
-    let w = range_slider_variables[variable_position["w"]];
-    let z = range_slider_variables[variable_position["z"]];
-    python_string = "k_3 = " + k_3 + "\nw = " + w + "\n" + "z = " + z + "\n" + "num = [k_3*w*w]\nden = [1, 2*z*w, w*w]";
-  } else {
-    return "";
-  }
+  const python_string = transfer_function_lines(id,"");
+  if (python_string === "") return "";
 
   let html=`# Make sure you have the control module installed. You can install it using:
 # pip install control
@@ -139,30 +127,8 @@ plt.show(block=False)
 
 function get_julia_script(id){
   add_event("get_julia_script");
-  let current_graph;
-  for(let i=0; i<bode_graphs.length; i++){
-    if(bode_graphs[i].bode_id == id){
-      current_graph = bode_graphs[i];
-    }
-  }
-  let julia_string = "";
-  if (current_graph.bode_formula == GRAPH_ONE_REAL_POLE.formula){
-    let k_1 = range_slider_variables[variable_position["k_1"]];
-    let T_1 = range_slider_variables[variable_position["T_1"]];
-    julia_string = "k_1 = " + k_1 + "\nT_1 = " + T_1 + "\n" + "num = [k_1]\nden = [T_1, 1]";
-  } else if (current_graph.bode_formula == GRAPH_TWO_REAL_POLES.formula){
-    let k_2 = range_slider_variables[variable_position["k_2"]];
-    let T_2 = range_slider_variables[variable_position["T_2"]];
-    let T_3 = range_slider_variables[variable_position["T_3"]];
-    julia_string = "k_2 = " + k_2 + "\nT_2 = " + T_2 + "\n" + "T_3 = " + T_3 + "\n" + "num = [k_2]\nden = [T_2*T_3, T_2+T_3, 1]";
-  } else if (current_graph.bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
-    let k_3 = range_slider_variables[variable_position["k_3"]];
-    let w = range_slider_variables[variable_position["w"]];
-    let z = range_slider_variables[variable_position["z"]];
-    julia_string = "k_3 = " + k_3 + "\nw = " + w + "\n" + "z = " + z + "\n" + "num = [k_3*w*w]\nden = [1, 2*z*w, w*w]";
-  } else {
-    return "";
-  }
+  const julia_string = transfer_function_lines(id,"");
+  if (julia_string === "") return "";
 
   let html=`# Installing required packages
 import Pkg
@@ -209,30 +175,8 @@ display(plot!())
 function get_matlab_script(id){
   add_event("get_matlab_script");
   achievement_done("matlab_script");
-  let current_graph;
-  for(let i=0; i<bode_graphs.length; i++){
-    if(bode_graphs[i].bode_id == id){
-      current_graph = bode_graphs[i];
-    }
-  }
-  let matlab_string = "";
-  if (current_graph.bode_formula == GRAPH_ONE_REAL_POLE.formula){
-    let k_1 = range_slider_variables[variable_position["k_1"]];
-    let T_1 = range_slider_variables[variable_position["T_1"]];
-    matlab_string = "k_1 = " + k_1 + ";\nT_1 = " + T_1 + ";\nnum = [k_1];\nden = [T_1, 1];";
-  } else if (current_graph.bode_formula == GRAPH_TWO_REAL_POLES.formula){
-    let k_2 = range_slider_variables[variable_position["k_2"]];
-    let T_2 = range_slider_variables[variable_position["T_2"]];
-    let T_3 = range_slider_variables[variable_position["T_3"]];
-    matlab_string = "k_2 = " + k_2 + ";\nT_2 = " + T_2 + ";\nT_3 = " + T_3 + ";\nnum = [k_2];\nden = [T_2*T_3, T_2+T_3, 1];";
-  } else if (current_graph.bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
-    let k_3 = range_slider_variables[variable_position["k_3"]];
-    let w = range_slider_variables[variable_position["w"]];
-    let z = range_slider_variables[variable_position["z"]];
-    matlab_string = "k_3 = " + k_3 + ";\nw = " + w + ";\nz = " + z + ";\nnum = [k_3*w*w];\nden = [1, 2*z*w, w*w];";
-  } else {
-    return "";
-  }
+  const matlab_string = transfer_function_lines(id,";");
+  if (matlab_string === "") return "";
 
   let html=`% Clear previous variables and plots:
 clear all; format compact; close all

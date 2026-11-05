@@ -37,7 +37,8 @@
 // final_value: gives the value the step response settles at, or null if it does not settle.
 // All three are functions because they read the sliders.
 // own_sliders: the sliders that go away with the graph. shares_sliders: uses the sliders of other
-// presets, and gets none of its own. has_script_export: gets a download button for code.
+// presets, and gets none of its own. script_transfer_function: num and den for the exported code,
+// in terms of own_sliders. A preset with it gets a download button.
 const pole_mark = (name) => ({T: slider_value(name), kind: "pole"});
 const zero_mark = (name) => ({T: slider_value(name), kind: "zero"});
 const one_pole_marks = () => [pole_mark("T_1")];
@@ -60,9 +61,9 @@ function complex_pole_marks(){
   return frequencies.filter((frequency) => frequency >= 0).map((frequency) => ({T: 1/frequency, kind: "pole"}));
 }
 
-const GRAPH_ONE_REAL_POLE = {name:"One real pole", mf:"\\frac{k_1}{1+T_1s}", formula:"k_1/(1+T_1*s)", pole_zero_map:"draggable", bode_marks:one_pole_marks, time_marks:one_pole_marks, final_value:gain_if_stable("k_1","T_1"), own_sliders:["k_1","T_1"], has_script_export:true};
-const GRAPH_TWO_REAL_POLES = {name:"Two real poles", mf:"\\frac{k_2}{(1+T_2s)(1+T_3s)}", formula:"k_2/((1+T_2s)(1+T_3s))", pole_zero_map:"draggable", bode_marks:two_pole_marks, time_marks:two_pole_marks, final_value:gain_if_stable("k_2","T_2","T_3"), own_sliders:["k_2","T_2","T_3"], has_script_export:true};
-const GRAPH_TWO_COMPLEX_POLES = {name:"Two complex poles", mf:"\\frac{k_3w^2}{s^2+2zws+w^2}", formula:"k_3*w^2/(s^2+2*z*w*s+w^2)", pole_zero_map:"draggable", bode_marks:complex_pole_marks, final_value:gain_if_stable("k_3"), own_sliders:["k_3","w","z"], has_script_export:true};
+const GRAPH_ONE_REAL_POLE = {name:"One real pole", mf:"\\frac{k_1}{1+T_1s}", formula:"k_1/(1+T_1*s)", pole_zero_map:"draggable", bode_marks:one_pole_marks, time_marks:one_pole_marks, final_value:gain_if_stable("k_1","T_1"), own_sliders:["k_1","T_1"], script_transfer_function:{num:"[k_1]", den:"[T_1, 1]"}};
+const GRAPH_TWO_REAL_POLES = {name:"Two real poles", mf:"\\frac{k_2}{(1+T_2s)(1+T_3s)}", formula:"k_2/((1+T_2s)(1+T_3s))", pole_zero_map:"draggable", bode_marks:two_pole_marks, time_marks:two_pole_marks, final_value:gain_if_stable("k_2","T_2","T_3"), own_sliders:["k_2","T_2","T_3"], script_transfer_function:{num:"[k_2]", den:"[T_2*T_3, T_2+T_3, 1]"}};
+const GRAPH_TWO_COMPLEX_POLES = {name:"Two complex poles", mf:"\\frac{k_3w^2}{s^2+2zws+w^2}", formula:"k_3*w^2/(s^2+2*z*w*s+w^2)", pole_zero_map:"draggable", bode_marks:complex_pole_marks, final_value:gain_if_stable("k_3"), own_sliders:["k_3","w","z"], script_transfer_function:{num:"[k_3*w*w]", den:"[1, 2*z*w, w*w]"}};
 const GRAPH_TIME_DELAY = {name:"Time delay", mf:"\\frac{3}{1+s}e^{-Ls}", formula:"3/(1+s)*e^(-L*s)", time_marks:time_delay_marks, final_value:() => 3, own_sliders:["L"]};
 const GRAPH_ONE_ZERO_TWO_POLES = {name:"One zero two poles", mf:"\\frac{k_4(1+T_8s)}{(1+T_6s)(1+T_7s)}", formula:"k_4(1+T_8s)/(1+T_6s)*1/(1+T_7s)", pole_zero_map:"draggable", bode_marks:zero_and_two_poles_marks, time_marks:zero_and_two_poles_marks, final_value:gain_if_stable("k_4","T_6","T_7"), own_sliders:["k_4","T_6","T_7","T_8"]};
 const GRAPH_FOUR_POLES = {name:"Four poles", mf:"\\frac{k_5}{(1+T_5s)^4}", formula:"k_5/((1+T_5s)^4)", pole_zero_map:"shown", bode_marks:four_poles_marks, time_marks:four_poles_marks, final_value:gain_if_stable("k_5","T_5"), own_sliders:["T_5","k_5"]};

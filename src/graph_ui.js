@@ -284,23 +284,9 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
 
   s +=`<input type="checkbox" id="${graph_name}-checkbox" class="show-graph" style="background: hsl(${linked_color},100%,50%)" title="${graph_name}">`;
   s += "<math-field ";
-  // These are the GRAPHS that should be not changeable. "read only":
-  //if ((equation_string == GRAPH_ONE_REAL_POLE.formula) ||
-  //    (equation_string == GRAPH_TWO_REAL_POLES.formula) ||
-  //    (equation_string == GRAPH_TWO_COMPLEX_POLES.formula) ||
-  //    (equation_string == GRAPH_TIME_DELAY.formula)){
-  //  s += "read-only ";
-  //}
   s += `class="formula" id="${id_bank}" style="`
-  // These are the GRAPHS that should be not changeable. "read only":
-  //if ((equation_string == GRAPH_ONE_REAL_POLE.formula) ||
-  //    (equation_string == GRAPH_TWO_REAL_POLES.formula) ||
-  //    (equation_string == GRAPH_TWO_COMPLEX_POLES.formula) ||
-  //    (equation_string == GRAPH_TIME_DELAY.formula)){ // Make sure that hover doesn't make read-only graphs yellow:
-  //  s += "background:none;";
-  //}
   s += `font-size:115%;" title="${graph_name}">${mathfield_string}</math-field>`;
-  if (preset_of_formula(equation_string)?.has_script_export){
+  if (preset_of_formula(equation_string)?.script_transfer_function !== undefined){
     s += `<button type="button" class="download-script" id="download_script(${id_bank})" onclick="download_script(${id_bank})"><svg width="28" height="28" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_ios_share"/></svg></button>`;
   }
   s += `<button type="button" class="delete-graph" id="delete-graph_${id_bank}" onclick="removeGraph(${id_bank});updateAfterRemoveGraph();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>

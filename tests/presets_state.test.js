@@ -190,9 +190,8 @@ describe('sliders and script export of each preset', () => {
   });
 
   test('the first three presets have a script export, the others do not', () => {
-    const with_export = global_value('GRAPH_ORDER').filter((preset) => preset.has_script_export === true);
+    const with_export = global_value('GRAPH_ORDER').filter((preset) => preset.script_transfer_function !== undefined);
     expect(with_export).toEqual(global_value('GRAPH_ORDER').slice(0, 3));
-    expect(global_value('GRAPH_ORDER').slice(3).every((preset) => preset.has_script_export === undefined)).toBe(true);
   });
 });
 

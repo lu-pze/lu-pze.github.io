@@ -298,10 +298,9 @@ describe('graphs without an export', () => {
     for (const graph of order) expect(covered).toContain(graph);
   });
 
-  // Characterization: an id that matches no graph is not handled; the script functions throw.
-  test('an unknown graph id throws a TypeError', () => {
-    expect(() => window.get_python_script(999)).toThrow(TypeError);
-    expect(() => window.get_julia_script(999)).toThrow(TypeError);
-    expect(() => window.get_matlab_script(999)).toThrow(TypeError);
+  test('an unknown graph id gives no script', () => {
+    expect(window.get_python_script(999)).toBe('');
+    expect(window.get_julia_script(999)).toBe('');
+    expect(window.get_matlab_script(999)).toBe('');
   });
 });
