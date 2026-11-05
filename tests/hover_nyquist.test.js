@@ -211,6 +211,19 @@ describe('handle_questions', () => {
     expect(window.add_event).toHaveBeenCalledWith('ask_a_question=near');
   });
 
+  test('of two questions at the same distance the first one is shown', () => {
+    use_questions({ first: question(100, 100), second: question(100, 100) });
+    hover(100, 0);
+    expect(global_value('last_hover_answer_id')).toBe('first');
+  });
+
+  test('each line is drawn between its own push and pop', () => {
+    use_questions({ seconds: question(100, 200) });
+    hover(100, 100);
+    const one_line = ['push', 'strokeWeight', 'stroke', 'line', 'pop'];
+    expect(drawn.map((call) => call.name)).toEqual([...one_line, ...one_line]);
+  });
+
   test('moving to another question logs and shows the new one', () => {
     use_questions({ a: question(0, 0), b: question(1000, 0) });
     hover(10, 0);
@@ -335,6 +348,49 @@ describe('handle_questions', () => {
       show_with_height(100, 390, 411);
       expect(hover_answer.style.top).toBe('');
       expect(hover_answer.style.bottom).toBe('0px');
+    });
+
+    test('exactly in the middle of the window height counts as the lower half', () => {
+      show_with_height(100, 400, 50);
+      expect(hover_answer.style.top).toBe('');
+      expect(hover_answer.style.bottom).toBe('400px');
+    });
+
+    describe('on a page scrolled 200 pixels, which uses window positions (mouseY - 200)', () => {
+      beforeEach(() => {
+        window.pageYOffset = 200;
+      });
+      afterEach(() => {
+        window.pageYOffset = 0;
+      });
+
+      test('upper half: the box top follows the pointer', () => {
+        show_with_height(100, 300, 50);
+        expect(hover_answer.style.top).toBe('100px');
+        expect(hover_answer.style.bottom).toBe('');
+      });
+
+      test('upper half: a box that would end below the window sticks to the bottom', () => {
+        show_with_height(100, 500, 500); // 300 + 500 = 800: exactly fits
+        expect(hover_answer.style.top).toBe('300px');
+        show_with_height(100, 500, 501);
+        expect(hover_answer.style.top).toBe('');
+        expect(hover_answer.style.bottom).toBe('0px');
+      });
+
+      test('lower half: the box bottom follows the pointer', () => {
+        show_with_height(100, 700, 50);
+        expect(hover_answer.style.top).toBe('');
+        expect(hover_answer.style.bottom).toBe('300px'); // 800 - 700 + 200
+      });
+
+      test('lower half: a box that would end above the window sticks to the top', () => {
+        show_with_height(100, 700, 500); // 500 pixels from the window top: exactly fits
+        expect(hover_answer.style.bottom).toBe('300px');
+        show_with_height(100, 700, 501);
+        expect(hover_answer.style.top).toBe('0px');
+        expect(hover_answer.style.bottom).toBe('');
+      });
     });
 
     test('lower half: the box bottom follows the pointer', () => {

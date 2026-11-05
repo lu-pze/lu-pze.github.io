@@ -9,28 +9,40 @@ const HELP_QUESTION_TASKS = {
   "GRAPH_ONE_POLE_WITH_PID_OPEN":"pid_help_OPEN",
 };
 
-function handle_questions(){
-  redraw();
-  let queue = [];
-  let yes_close_enough = false;
+function question_line_weight(distance){
+  return 10 - distance/50;
+}
 
+// A question or task answer close to the mouse joins the list and gets a yellow line.
+function add_near_question(near_questions, q_id, q_position){
+  let distance = Math.sqrt((mouseY - q_position.y)*(mouseY - q_position.y) + (mouseX - q_position.x)*(mouseX - q_position.x));
+  if(distance < 500){
+    near_questions.push([distance,q_id,q_position]);
+    let stroke_weight = question_line_weight(distance);
+    if (stroke_weight>0.01){
+      // Draw a yellow line to the closest questions:
+      push();
+      strokeWeight(stroke_weight);
+      stroke("#ffff0080");
+      line(mouseX,mouseY,q_position.x,q_position.y);
+      pop();
+    }
+  }
+}
+
+function center_on_page(element){
+  let rect = element.getBoundingClientRect();
+  let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
+  let scroll_y = window.pageYOffset || document.documentElement.scrollTop;
+  return {x:scroll_x + rect.left + rect.width/2, y:scroll_y + rect.top + rect.height/2};
+}
+
+function find_near_questions(){
+  let near_questions = [];
   for (let q_id in all_questions){
     let q_position = all_questions[q_id].pos();
     if (q_position.visible){
-      let distance = Math.sqrt((mouseY - q_position.y)*(mouseY - q_position.y) + (mouseX - q_position.x)*(mouseX - q_position.x));
-      if(distance < 500){
-        yes_close_enough = true;
-        queue.push([distance,q_id,q_position]);
-        let stroke_weight = 10 - distance/50;
-        if (stroke_weight>0.01){
-          // Draw a yellow line to the closest questions:
-          push();
-          strokeWeight(stroke_weight);
-          stroke("#ffff0080");
-          line(mouseX,mouseY,q_position.x,q_position.y);
-          pop();
-        }
-      }
+      add_near_question(near_questions, q_id, q_position);
     }
   }
   // Also, check distances to the questions related to tasks:
@@ -38,131 +50,131 @@ function handle_questions(){
     if (all_tasks[task_id].a!=null){ // Yes, there is an answer connected to this task:
       let span = document.getElementById('task_'+task_id);
       if (span!=null){
-        let rect = span.getBoundingClientRect();
-        let scroll_x = window.pageXOffset || document.documentElement.scrollLeft;
-        let scroll_y = window.pageYOffset || document.documentElement.scrollTop;
-        let x=scroll_x + rect.left + rect.width/2;
-        let y=scroll_y + rect.top + rect.height/2;
-        let distance = Math.sqrt((mouseY - y)*(mouseY - y) + (mouseX - x)*(mouseX - x));
-        if(distance < 500){
-          yes_close_enough = true;
-          queue.push([distance,"task_"+task_id,{x:x,y:y}]);
-          let stroke_weight = 10 - distance/50;
-          if (stroke_weight>0.01){
-            // Draw a yellow line to the closest questions:
-            push();
-            strokeWeight(stroke_weight);
-            stroke("#ffff0080");
-            line(mouseX,mouseY,x,y);
-            pop();
-          }
-        }
+        add_near_question(near_questions, "task_"+task_id, center_on_page(span));
       }
     }
   }
+  return near_questions;
+}
+
+function closest_question(near_questions){
   let output;
   let distance = 10000;
-  for(let h=0; h<queue.length; h++){
-    if(queue[h][0] < distance){
-      distance = queue[h][0];
-      output = queue[h];
+  for(let h=0; h<near_questions.length; h++){
+    if(near_questions[h][0] < distance){
+      distance = near_questions[h][0];
+      output = near_questions[h];
     }
   }
-  if(yes_close_enough){
-    //// Draw a grey box with the question text:
-    //push();
-    //noStroke();
-    //translate(mouseX,mouseY);
-    //fill(box_background_color,200);
-    //stroke(150);
-    //rect(0,0,375,40);
-    //noStroke();
-    //fill(text_color);
-    //textSize(15);
-    //text(all_questions[output[1]].q,13,25);
-    //pop();
-    let hover_answer = document.getElementById("hover_answer");
-    let q_id=output[1];
-    if (q_id!=last_hover_answer_id){
-      add_event("ask_a_question="+q_id);
-      hover_answer.style.transform=null;
-      let s="";
-      if (q_id.startsWith("task_")){ // This is an answer connected to a task:
-        console.log(q_id.substr(5));
-        s+=all_tasks[q_id.substr(5)].a;
-      } else { // This is from all_questions dict:
-        s+="<h2>" + all_questions[q_id].q + "</h2>";
-        s+=all_questions[q_id].a;
-      }
-      hover_answer.innerHTML=s;
-      last_hover_answer_id=q_id;
-      let rect=hover_answer.getBoundingClientRect();
-      if (rect.height > windowHeight){
-        // Scale around center:
-        hover_answer.style.transform="translate(-50%,-50%) scale(" + (windowHeight/(rect.height)) +") translate(50%,50%)";
-      }
-      if (q_id in HELP_QUESTION_TASKS) task_done(HELP_QUESTION_TASKS[q_id]);
-    }
-    //Move this div:
-    if (mouseX<windowWidth/2){
-      // Place to the right of mouse pointer:
-      hover_answer.style.left=mouseX+"px";
-      hover_answer.style.right=null;
-    } else {
-      // Place to the left of mouse pointer:
-      hover_answer.style.left=null;
-      hover_answer.style.right=(windowWidth-mouseX)+"px";
-    }
+  return output;
+}
 
-    let rect=hover_answer.getBoundingClientRect();
-    let scroll_y = window.pageYOffset || document.documentElement.scrollTop
-    if (rect.height > (windowHeight-10)){
-      // Full height answer that was scaled at creation. Fixed position in y-dir:
+function fill_hover_answer(hover_answer, q_id){
+  add_event("ask_a_question="+q_id);
+  hover_answer.style.transform=null;
+  let s="";
+  if (q_id.startsWith("task_")){ // This is an answer connected to a task:
+    console.log(q_id.substr(5));
+    s+=all_tasks[q_id.substr(5)].a;
+  } else { // This is from all_questions dict:
+    s+="<h2>" + all_questions[q_id].q + "</h2>";
+    s+=all_questions[q_id].a;
+  }
+  hover_answer.innerHTML=s;
+  last_hover_answer_id=q_id;
+  let rect=hover_answer.getBoundingClientRect();
+  if (rect.height > windowHeight){
+    // Scale around center:
+    hover_answer.style.transform="translate(-50%,-50%) scale(" + (windowHeight/(rect.height)) +") translate(50%,50%)";
+  }
+  if (q_id in HELP_QUESTION_TASKS) task_done(HELP_QUESTION_TASKS[q_id]);
+}
+
+function place_hover_answer(hover_answer){
+  //Move this div:
+  if (mouseX<windowWidth/2){
+    // Place to the right of mouse pointer:
+    hover_answer.style.left=mouseX+"px";
+    hover_answer.style.right=null;
+  } else {
+    // Place to the left of mouse pointer:
+    hover_answer.style.left=null;
+    hover_answer.style.right=(windowWidth-mouseX)+"px";
+  }
+
+  let rect=hover_answer.getBoundingClientRect();
+  let scroll_y = window.pageYOffset || document.documentElement.scrollTop
+  if (rect.height > (windowHeight-10)){
+    // Full height answer that was scaled at creation. Fixed position in y-dir:
+    hover_answer.style.top="0px";
+    hover_answer.style.bottom=null;
+  } else if ((mouseY-scroll_y)<windowHeight/2){
+    // Place above mouse pointer:
+    // Check to make sure that a "high" infobox doesn't get too far down:
+    if (rect.height + (mouseY-scroll_y) > windowHeight){
+      // Stick to bottom of screen to prevent it going too far down:
+      hover_answer.style.top=null;
+      hover_answer.style.bottom="0px";
+    } else {
+      // Move with mouseY pos:
+      hover_answer.style.top=(mouseY-scroll_y)+"px";
+      hover_answer.style.bottom=null;
+    }
+  } else {
+    // Place below mouse pointer:
+//    if (rect.height + (windowHeight-mouseY) > windowHeight){
+    if (rect.height + (windowHeight-(mouseY-scroll_y)) > windowHeight){
+      // Stick to top of screen to prevent it going too far up:
       hover_answer.style.top="0px";
       hover_answer.style.bottom=null;
-    } else if ((mouseY-scroll_y)<windowHeight/2){
-      // Place above mouse pointer:
-      // Check to make sure that a "high" infobox doesn't get too far down:
-      if (rect.height + (mouseY-scroll_y) > windowHeight){
-        // Stick to bottom of screen to prevent it going too far down:
-        hover_answer.style.top=null;
-        hover_answer.style.bottom="0px";
-      } else {
-        // Move with mouseY pos:
-        hover_answer.style.top=(mouseY-scroll_y)+"px";
-        hover_answer.style.bottom=null;
-      }
     } else {
-      // Place below mouse pointer:
-//      if (rect.height + (windowHeight-mouseY) > windowHeight){
-      if (rect.height + (windowHeight-(mouseY-scroll_y)) > windowHeight){
-        // Stick to top of screen to prevent it going too far up:
-        hover_answer.style.top="0px";
-        hover_answer.style.bottom=null;
-      } else {
-        // Move with mouseY pos:
-        hover_answer.style.top=null;
-//        hover_answer.style.bottom=(windowHeight-mouseY)+"px";
-        hover_answer.style.bottom=(windowHeight-mouseY+scroll_y)+"px";
-      }
+      // Move with mouseY pos:
+      hover_answer.style.top=null;
+//      hover_answer.style.bottom=(windowHeight-mouseY)+"px";
+      hover_answer.style.bottom=(windowHeight-mouseY+scroll_y)+"px";
     }
-    hover_answer.style.visibility=null;
+  }
+  hover_answer.style.visibility=null;
+}
 
-    rect=hover_answer.getBoundingClientRect();
-    // Draw a white line to the closest questions:
-    let q_position=output[2];
-    push();
-    let stroke_weight = 10 - distance/50;
-    strokeWeight(stroke_weight);
-    //stroke("#ffff00c0");
-    //line(q_position.x,q_position.y,rect.left,rect.top);
-    //line(q_position.x,q_position.y,rect.right,rect.top);
-    //line(q_position.x,q_position.y,rect.left,rect.bottom);
-    //line(q_position.x,q_position.y,rect.right,rect.bottom);
-    stroke("#ffffffff");
-    line(mouseX,mouseY,q_position.x,q_position.y);
-    pop();
+function show_hover_answer([distance, q_id, q_position]){
+  //// Draw a grey box with the question text:
+  //push();
+  //noStroke();
+  //translate(mouseX,mouseY);
+  //fill(box_background_color,200);
+  //stroke(150);
+  //rect(0,0,375,40);
+  //noStroke();
+  //fill(text_color);
+  //textSize(15);
+  //text(all_questions[output[1]].q,13,25);
+  //pop();
+  let hover_answer = document.getElementById("hover_answer");
+  if (q_id!=last_hover_answer_id){
+    fill_hover_answer(hover_answer, q_id);
+  }
+  place_hover_answer(hover_answer);
 
+  hover_answer.getBoundingClientRect(); // Only the commented-out lines below read this.
+  // Draw a white line to the closest questions:
+  push();
+  strokeWeight(question_line_weight(distance));
+  //stroke("#ffff00c0");
+  //line(q_position.x,q_position.y,rect.left,rect.top);
+  //line(q_position.x,q_position.y,rect.right,rect.top);
+  //line(q_position.x,q_position.y,rect.left,rect.bottom);
+  //line(q_position.x,q_position.y,rect.right,rect.bottom);
+  stroke("#ffffffff");
+  line(mouseX,mouseY,q_position.x,q_position.y);
+  pop();
+}
+
+function handle_questions(){
+  redraw();
+  let closest = closest_question(find_near_questions());
+  if (closest){
+    show_hover_answer(closest);
   } else {
     if (last_hover_answer_id!=""){
       let hover_answer = document.getElementById("hover_answer");
@@ -171,7 +183,6 @@ function handle_questions(){
       last_hover_answer_id="";
     }
   }
-  return;
 }
 
 
