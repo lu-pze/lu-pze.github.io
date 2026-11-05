@@ -335,6 +335,8 @@ function update_phase_axis(){
   }
   // Limiting the phase axis into something sane:
   min_phase = Math.max(-360/180*Math.PI,min_phase);
+  // An infinite upper limit would never finish the grid lines in draw_phase_axis:
+  if (!isFinite(max_phase)) max_phase = 90/180*Math.PI;
   min_phase = min_phase*180/Math.PI;
   max_phase = max_phase*180/Math.PI;
   phase_lower_bound = get_bestMultiple(min_phase,45,"lower");
@@ -396,7 +398,7 @@ function draw_gain_axis(){
   text("Bode magnitude plot",graph_bode_mag_x + graph_bode_mag_width/2,graph_bode_mag_y-5);
   text("magnitude |G(s)|",0,-15);
   draw_loglines(x_case_gain,y_case_gain);
-  text("angular freq [rad/s]",graph_bode_phase_width,graph_bode_phase_height+35);
+  text("angular freq [rad/s]",graph_bode_mag_width,graph_bode_mag_height+35);
 //    draw_loglines(x_case_gain,y_case_gain);
 
   textAlign(RIGHT);

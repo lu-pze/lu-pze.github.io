@@ -742,6 +742,18 @@ describe('draw_bode_responses: golden master of the axes', () => {
   });
 });
 
+describe('draw_bode_responses: frequency axis label', () => {
+  test('each plot places it from its own size', () => {
+    set_globals({ graph_bode_mag_width: 500, graph_bode_mag_height: 300, graph_bode_phase_width: 400, graph_bode_phase_height: 200 });
+    const label = () => calls('text').filter((args) => args[0] === 'angular freq [rad/s]');
+    window.draw_bode_responses('gain');
+    expect(label()).toEqual([['angular freq [rad/s]', 500, 335]]);
+    drawn.length = 0;
+    window.draw_bode_responses('phase');
+    expect(label()).toEqual([['angular freq [rad/s]', 400, 235]]);
+  });
+});
+
 describe('draw_bode_responses: phase', () => {
   const axis_labels = () => calls('text').filter((a) => a[1] === -7).map((a) => a[0]);
 
@@ -753,6 +765,18 @@ describe('draw_bode_responses: phase', () => {
     expect(axis_labels()).toEqual([90, 45, 0, -45, -90, -135, -180, -225, -270]);
     expect(global_value('phase_case_number')).toBe(8);
     expect(global_value('phase_lower_bound')).toBe(-270);
+    expect(global_value('phase_upper_bound')).toBe(90);
+  });
+
+  test('an infinite phase keeps the default top of the axis, so the grid lines end', () => {
+    let nof_labels = 0;
+    window.text = () => { // Fails here instead of running out of memory.
+      nof_labels += 1;
+      if (nof_labels > 1000) throw new Error('the grid lines do not end');
+    };
+    use_fake_graphs(fake_graph({ bode_min_phase: -Math.PI, bode_max_phase: Infinity }));
+    window.draw_bode_responses('phase');
+    expect(global_value('phase_lower_bound')).toBe(-180);
     expect(global_value('phase_upper_bound')).toBe(90);
   });
 
