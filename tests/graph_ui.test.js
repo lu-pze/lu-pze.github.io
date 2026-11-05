@@ -56,6 +56,12 @@ const preset = (name) => global_value(name);
 const calls_of = (spy) => window[spy].mock.calls.map((args) => args[0]);
 const fire = (element, type) => element.dispatchEvent(new window.Event(type));
 const tab_checked = (id) => document.getElementById('graph_' + id + '_info').checked;
+// The first seven presets as graphs 1 to 7, as a page shows them when they are added in order.
+const use_seven_presets = () => set_globals({
+  bode_graphs: ['GRAPH_ONE_REAL_POLE', 'GRAPH_TWO_REAL_POLES', 'GRAPH_TWO_COMPLEX_POLES', 'GRAPH_TIME_DELAY',
+    'GRAPH_ONE_ZERO_TWO_POLES', 'GRAPH_FOUR_POLES', 'GRAPH_ONE_ZERO'].map((name, index) => (
+    { bode_id: index + 1, bode_formula: preset(name).formula })),
+});
 
 // Creates a real slider for a variable through the same entry point as the "+" buttons. The
 // range input gets step="any" so jsdom does not snap values and tests can sit exactly on a threshold.
@@ -229,22 +235,58 @@ describe('createRangeSlider', () => {
       expect(calls_of('achievement_done')).toEqual([]);
     });
 
-    // The information tab of the graph that the variable belongs to becomes active.
-    test.each([
-      ['k_1', 1], ['T_1', 1], ['k_2', 2], ['T_2', 2], ['T_3', 2], ['w', 3], ['z', 3], ['k_3', 3],
-      ['L', 4], ['k_4', 5], ['T_6', 5], ['T_7', 5], ['T_8', 5], ['k_5', 6], ['T_5', 6], ['T_4', 7],
-    ])('moving %s activates information tab %i', (name, tab) => {
-      const slider = make_slider(name);
-      drag(slider, +slider.range.value + 0.5);
-      expect(tab_checked(tab)).toBe(true);
-      for (let other = 1; other <= 7; other++) if (other !== tab) expect(tab_checked(other)).toBe(false);
-    });
+    describe('the information tab', () => {
+      const graph_of = (id, preset_name) => ({ bode_id: id, bode_formula: preset(preset_name).formula });
+      const use_graphs = (...graphs) => set_globals({ bode_graphs: graphs });
 
-    test('a variable without an information tab leaves the active tab alone', () => {
-      drag(make_slider('K'), 2);
-      expect(tab_checked(1)).toBe(true);
-      drag(make_slider('q'), 0.5);
-      expect(tab_checked(1)).toBe(true);
+      // The information tab of the graph that uses the variable becomes active.
+      test.each([
+        ['k_1', 1], ['T_1', 1], ['k_2', 2], ['T_2', 2], ['T_3', 2], ['w', 3], ['z', 3], ['k_3', 3],
+        ['L', 4], ['k_4', 5], ['T_6', 5], ['T_7', 5], ['T_8', 5], ['k_5', 6], ['T_5', 6], ['T_4', 7],
+      ])('with the presets in their usual order, moving %s activates tab %i', (name, tab) => {
+        use_seven_presets();
+        const slider = make_slider(name);
+        drag(slider, +slider.range.value + 0.5);
+        expect(tab_checked(tab)).toBe(true);
+        for (let other = 1; other <= 7; other++) if (other !== tab) expect(tab_checked(other)).toBe(false);
+      });
+
+      test('the tab follows the graph, wherever it sits on the page', () => {
+        use_graphs(graph_of(2, 'GRAPH_ONE_ZERO_TWO_POLES'));
+        drag(make_slider('k_4'), 2);
+        expect(tab_checked(2)).toBe(true);
+        expect(tab_checked(5)).toBe(false);
+      });
+
+      test('a variable of a graph without a fixed place gets its tab too', () => {
+        use_graphs(graph_of(2, 'GRAPH_PID'));
+        drag(make_slider('K'), 2);
+        expect(tab_checked(2)).toBe(true);
+      });
+
+      test('with several graphs using the variable, the first one gets the tab', () => {
+        use_graphs(graph_of(3, 'GRAPH_ONE_REAL_POLE'), graph_of(2, 'GRAPH_ONE_POLE_WITH_PID_YR'));
+        drag(make_slider('k_1'), 2);
+        expect(tab_checked(3)).toBe(true);
+        expect(tab_checked(2)).toBe(false);
+      });
+
+      test('a graph without a tab is skipped, and the slider still redraws', () => {
+        use_graphs(graph_of(99, 'GRAPH_ONE_REAL_POLE'), graph_of(2, 'GRAPH_ONE_POLE_WITH_PID_YR'));
+        drag(make_slider('k_1'), 2);
+        expect(tab_checked(2)).toBe(true);
+        window.redraw_canvas_gain.mockClear();
+        use_graphs(graph_of(99, 'GRAPH_ONE_REAL_POLE'));
+        drag(make_slider('T_1'), 3);
+        expect(window.redraw_canvas_gain).toHaveBeenCalledWith('all');
+      });
+
+      test('a variable that no graph uses leaves the active tab alone and still redraws', () => {
+        use_graphs(graph_of(2, 'GRAPH_ONE_REAL_POLE'), { bode_id: 3, bode_formula: 'not a (formula' });
+        drag(make_slider('q'), 0.5);
+        expect(tab_checked(1)).toBe(true);
+        expect(window.redraw_canvas_gain).toHaveBeenCalledWith('all');
+      });
     });
   });
 
@@ -1174,6 +1216,7 @@ describe('mutation gaps: sliders only trigger the achievements and tasks of thei
     ['k_1', 1], ['T_1', 1], ['k_2', 2], ['T_2', 2], ['T_3', 2], ['w', 3], ['z', 3], ['k_3', 3],
     ['L', 4], ['k_4', 5], ['T_6', 5], ['T_7', 5], ['T_8', 5], ['k_5', 6], ['T_5', 6], ['T_4', 7],
   ])('moving %s switches from another tab to information tab %i', (name, tab) => {
+    use_seven_presets();
     const other = tab === 7 ? 6 : 7;
     document.getElementById('graph_' + other + '_info').checked = true;
     const slider = make_slider(name);

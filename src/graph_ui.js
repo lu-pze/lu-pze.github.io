@@ -86,22 +86,15 @@ function check_slider_achievements(variable_name, value){
   }
 }
 
-// The information tab that the slider of a variable opens. Tab N belongs to the N:th graph on the page.
-const SLIDER_INFO_TABS = {
-  "k_1":1,"T_1":1,
-  "k_2":2,"T_2":2,"T_3":2,
-  "w":3,"z":3,"k_3":3,
-  "L":4,
-  "k_4":5,"T_6":5,"T_7":5,"T_8":5,
-  "k_5":6,"T_5":6,
-  "T_4":7,
-};
-
-// Make the relevant information bar active when a slider is changed:
+// Make the relevant information bar active when a slider is changed: the one of the first graph
+// that uses the variable. Ghost graphs may have no tab.
 function show_info_tab_of_variable(variable_name){
-  if (variable_name in SLIDER_INFO_TABS){
-    let info_tab = document.getElementById("graph_"+SLIDER_INFO_TABS[variable_name]+"_info");
-    info_tab.checked = "true";
+  for (const graph of bode_graphs){
+    const info_tab = document.getElementById("graph_"+graph.bode_id+"_info");
+    if (info_tab && formula_variables(graph.bode_formula)?.includes(variable_name)){
+      info_tab.checked = "true";
+      return;
+    }
   }
 }
 
