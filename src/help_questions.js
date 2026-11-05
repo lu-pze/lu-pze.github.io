@@ -30,6 +30,18 @@ const HELP_SECOND_ORDER_EXAMPLES = `<ul>
         <li><b>Aerospace:</b> The attitude of a spacecraft, or the tilt of a drone - The angle responds to the applied torque as a double integrator, 1/(Js<sup>2</sup>), with both poles at the origin.</li>
     </ul>`;
 
+// A question's position: the centre of the pole-zero map of the first shown graph of this preset.
+function on_pole_zero_map_of(preset){
+  return function(){
+    for(let i=0; i<bode_graphs.length; i++){
+      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_formula == preset.formula)){
+        return {visible:true,x:pole_zero_graph_x[i]+graph_pole_zero_width/2,y:pole_zero_graph_y[i]+graph_pole_zero_width/2};
+      }
+    }
+    return {visible:false}
+  };
+}
+
 const all_questions={
   "seconds":{q:"Why are we using seconds as time unit?",pos:function(){return {visible:true,x:graph_step_response_x+graph_step_response_width+graph_step_response_x_offset,y:graph_step_response_y+graph_step_response_height+graph_step_response_y_offset+20}},
     a:`In automatic control systems, particularly in the context of time-domain analysis, the unit of seconds is commonly used on the time axis for several reasons:<br><br>
@@ -52,14 +64,7 @@ In summary, the choice between using degrees and radians depends on the context 
 
 
 //curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For an automatic control theory student, make a list of tweny examples of first-order systems from various engineering fields such as electronics, chemistry, physics, mechanics, mathematics, household appliances, and gadgets. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
-  "ONE_REAL_POLE_pz":{q:"Why do we study systems with one pole?",pos:function(){
-    for(let i=0; i<bode_graphs.length; i++){
-      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula)){
-        return {visible:true,x:pole_zero_graph_x[i]+graph_pole_zero_width/2,y:pole_zero_graph_y[i]+graph_pole_zero_width/2};
-      }
-    }
-    return {visible:false}
-  },a:`A system with one pole (a first-order system) is the simplest dynamic system. It is described by only two numbers: the static gain k and the time constant T. Its step response rises exponentially towards k and reaches 63% of the final value after the time T. Many real processes behave approximately like this, so it is a good first model. Some examples:
+  "ONE_REAL_POLE_pz":{q:"Why do we study systems with one pole?",pos:on_pole_zero_map_of(GRAPH_ONE_REAL_POLE),a:`A system with one pole (a first-order system) is the simplest dynamic system. It is described by only two numbers: the static gain k and the time constant T. Its step response rises exponentially towards k and reaches 63% of the final value after the time T. Many real processes behave approximately like this, so it is a good first model. Some examples:
   <ul>
       <li><strong>Electronics</strong>: RC (Resistor-Capacitor) low-pass filter, with the time constant T = RC. The step response is V<sub>out</sub> = V<sub>in</sub> (1 - e<sup>-t/RC</sup>).</li>
       <li><strong>Thermal Engineering</strong>: A room heated by a heater. The rate of change of the room temperature depends on the heating power and on the difference between the room temperature and the outdoor temperature.</li>
@@ -78,41 +83,20 @@ In summary, the choice between using degrees and radians depends on the context 
 
 
 //curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For an automatic control theory student, make a list of tweny examples of second-order systems from various engineering fields such as electronics, chemistry, physics, mechanics, mathematics, household appliances, and gadgets. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
-  "TWO_REAL_POLES_pz":{q:"Why do we study systems with two real poles?",pos:function(){
-    for(let i=0; i<bode_graphs.length; i++){
-      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)){
-        return {visible:true,x:pole_zero_graph_x[i]+graph_pole_zero_width/2,y:pole_zero_graph_y[i]+graph_pole_zero_width/2};
-      }
-    }
-    return {visible:false}
-  },a:`Two real poles appear when two first-order systems are connected in series, or when a system has two energy stores and a lot of damping. The step response has no overshoot. In contrast to a single pole, it starts with zero slope, which makes it look slower and S-shaped. The pole closest to the origin (the largest time constant) dominates the response. Some examples of second-order systems:
+  "TWO_REAL_POLES_pz":{q:"Why do we study systems with two real poles?",pos:on_pole_zero_map_of(GRAPH_TWO_REAL_POLES),a:`Two real poles appear when two first-order systems are connected in series, or when a system has two energy stores and a lot of damping. The step response has no overshoot. In contrast to a single pole, it starts with zero slope, which makes it look slower and S-shaped. The pole closest to the origin (the largest time constant) dominates the response. Some examples of second-order systems:
   ` + HELP_SECOND_ORDER_EXAMPLES},
 
 
 
 //curl https://api.openai.com/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"model":"gpt-4-turbo-preview","messages":[{"role":"user","content":"For an automatic control theory student, make a list of tweny examples of second-order systems from various engineering fields such as electronics, chemistry, physics, mechanics, mathematics, household appliances, and gadgets. Write your answer using HTML and LaTeX, with correct automatic control vocabulary while keeping the rest of the english simple."}]}'
-  "TWO_COMPLEX_POLES_pz":{q:"Why do we study systems with two complex poles?",pos:function(){
-    for(let i=0; i<bode_graphs.length; i++){
-      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)){
-        return {visible:true,x:pole_zero_graph_x[i]+graph_pole_zero_width/2,y:pole_zero_graph_y[i]+graph_pole_zero_width/2};
-      }
-    }
-    return {visible:false}
-  },a:`Two complex poles give a damped oscillation in the step response and, for low damping, a resonance peak in the Bode magnitude plot. Systems that store energy in two ways and exchange it back and forth behave like this, for example a mass and a spring, or an inductor and a capacitor. The form k<sub>3</sub>w<sup>2</sup>/(s<sup>2</sup>+2zws+w<sup>2</sup>) describes such a system with three numbers: the static gain k<sub>3</sub>, the natural frequency w (&omega;<sub>n</sub>), and the relative damping z (&zeta;). Some examples of second-order systems:
+  "TWO_COMPLEX_POLES_pz":{q:"Why do we study systems with two complex poles?",pos:on_pole_zero_map_of(GRAPH_TWO_COMPLEX_POLES),a:`Two complex poles give a damped oscillation in the step response and, for low damping, a resonance peak in the Bode magnitude plot. Systems that store energy in two ways and exchange it back and forth behave like this, for example a mass and a spring, or an inductor and a capacitor. The form k<sub>3</sub>w<sup>2</sup>/(s<sup>2</sup>+2zws+w<sup>2</sup>) describes such a system with three numbers: the static gain k<sub>3</sub>, the natural frequency w (&omega;<sub>n</sub>), and the relative damping z (&zeta;). Some examples of second-order systems:
   ` + HELP_SECOND_ORDER_EXAMPLES},
 
 
 
 
 //In automatic control, why do we study second-order systems with two complex poles? Give an answer with vivid examples of resonating systems, with correct automatic control vocabulary while keeping the rest of the english simple.
-  "ONE_ZERO_TWO_POLES_pz":{q:"Why do we study systems with one zero and two poles?",pos:function(){
-    for(let i=0; i<bode_graphs.length; i++){
-      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula)){
-        return {visible:true,x:pole_zero_graph_x[i]+graph_pole_zero_width/2,y:pole_zero_graph_y[i]+graph_pole_zero_width/2};
-      }
-    }
-    return {visible:false}
-  },a:`A zero does not add dynamics of its own, but it changes the shape of the response. A common way to get a zero is two parallel paths whose outputs are added, for example a fast and a slow process: a/(1+T<sub>6</sub>s) + b/(1+T<sub>7</sub>s) has one zero and two poles. With k<sub>4</sub>(1+T<sub>8</sub>s)/((1+T<sub>6</sub>s)(1+T<sub>7</sub>s)), the zero is at s = -1/T<sub>8</sub>:<br><br>
+  "ONE_ZERO_TWO_POLES_pz":{q:"Why do we study systems with one zero and two poles?",pos:on_pole_zero_map_of(GRAPH_ONE_ZERO_TWO_POLES),a:`A zero does not add dynamics of its own, but it changes the shape of the response. A common way to get a zero is two parallel paths whose outputs are added, for example a fast and a slow process: a/(1+T<sub>6</sub>s) + b/(1+T<sub>7</sub>s) has one zero and two poles. With k<sub>4</sub>(1+T<sub>8</sub>s)/((1+T<sub>6</sub>s)(1+T<sub>7</sub>s)), the zero is at s = -1/T<sub>8</sub>:<br><br>
 <b>T<sub>8</sub> &gt; 0, zero in the left half-plane</b>: The zero makes the response faster. If the zero is closer to the origin than the poles (T<sub>8</sub> larger than T<sub>6</sub> and T<sub>7</sub>), the step response overshoots even though both poles are real. Examples:
 <ul>
 <li><b>Mass-spring-damper, from force to velocity</b>: s/(ms<sup>2</sup>+cs+k), with the zero at the origin. From force to position there is no zero.</li>

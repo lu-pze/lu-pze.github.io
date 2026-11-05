@@ -271,13 +271,22 @@ describe('help_questions.js: the all_questions table', () => {
     }
   });
 
-  test('every *_pz question looks for the graph with the matching preset formula', () => {
+  test('every *_pz question is placed on the map of the shown graph with the matching preset formula', () => {
     const pz_ids = question_ids().filter((id) => id.endsWith('_pz'));
     expect(pz_ids).toHaveLength(4);
     for (const id of pz_ids) {
       const preset = 'GRAPH_' + id.replace(/_pz$/, '');
-      expect(global_value(preset).formula).toEqual(expect.any(String));
-      expect(entry_source(id)).toContain(`bode_formula == ${preset}.formula`);
+      const graphs = global_value('bode_graphs');
+      const position = global_value('all_questions')[id].pos;
+      set_globals({ pole_zero_graph_x: [10], pole_zero_graph_y: [20], graph_pole_zero_width: 100 });
+      graphs.length = 0;
+      graphs.push({ bode_displaybool: true, bode_formula: global_value(preset).formula });
+      expect(position()).toEqual({ visible: true, x: 60, y: 70 });
+      graphs[0].bode_displaybool = false;
+      expect(position()).toEqual({ visible: false });
+      graphs[0] = { bode_displaybool: true, bode_formula: 'another formula' };
+      expect(position()).toEqual({ visible: false });
+      graphs.length = 0;
     }
   });
 });

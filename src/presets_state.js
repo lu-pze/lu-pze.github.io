@@ -39,12 +39,17 @@
 // own_sliders: the sliders that go away with the graph. shares_sliders: uses the sliders of other
 // presets, and gets none of its own. script_transfer_function: num and den for the exported code,
 // in terms of own_sliders. A preset with it gets a download button.
+// drag_time_constants: the time constants a drag can move, in tie-breaking order (the first wins).
+// plot_on_pole_zero_map and plot_on_nyquist: draw the preset's marks on its graph.
 const pole_mark = (name) => ({T: slider_value(name), kind: "pole"});
 const zero_mark = (name) => ({T: slider_value(name), kind: "zero"});
 const one_pole_marks = () => [pole_mark("T_1")];
 const two_pole_marks = () => [pole_mark("T_2"), pole_mark("T_3")];
 const zero_and_two_poles_marks = () => [pole_mark("T_6"), pole_mark("T_7"), zero_mark("T_8")];
 const four_poles_marks = () => [pole_mark("T_5")];
+const one_zero_marks = () => [zero_mark("T_4")];
+const pid_marks = () => [zero_mark("T_i"), zero_mark("T_d")];
+const plot_marks_of = (marks) => (graph) => graph.plot_marks(marks());
 
 // The time delay is marked at L+1, one time constant of its fixed pole after the delay.
 const time_delay_marks = () => (slider_value("L") >= 0) ? [{T: slider_value("L") + 1, kind: "pole"}] : [];
@@ -53,27 +58,133 @@ const time_delay_marks = () => (slider_value("L") >= 0) ? [{T: slider_value("L")
 const gain_if_stable = (k, ...time_constants) => () =>
   time_constants.every((name) => slider_value(name) >= 0) ? slider_value(k) : null;
 
-// One X at w for complex poles. Above z = 1 the poles are real, and each gets its own X.
-function complex_pole_marks(){
+// The frequency of complex poles. Above z = 1 the poles are real, with a frequency each.
+function complex_pole_frequencies(){
   const w = slider_value("w");
   const z = slider_value("z");
-  const frequencies = (z <= 1) ? [w] : [z*w + w*Math.sqrt(z*z-1), z*w - w*Math.sqrt(z*z-1)];
-  return frequencies.filter((frequency) => frequency >= 0).map((frequency) => ({T: 1/frequency, kind: "pole"}));
+  return (z <= 1) ? [w] : [z*w + w*Math.sqrt(z*z-1), z*w - w*Math.sqrt(z*z-1)];
 }
 
-const GRAPH_ONE_REAL_POLE = {name:"One real pole", mf:"\\frac{k_1}{1+T_1s}", formula:"k_1/(1+T_1*s)", pole_zero_map:"draggable", bode_marks:one_pole_marks, time_marks:one_pole_marks, final_value:gain_if_stable("k_1","T_1"), own_sliders:["k_1","T_1"], script_transfer_function:{num:"[k_1]", den:"[T_1, 1]"}};
-const GRAPH_TWO_REAL_POLES = {name:"Two real poles", mf:"\\frac{k_2}{(1+T_2s)(1+T_3s)}", formula:"k_2/((1+T_2s)(1+T_3s))", pole_zero_map:"draggable", bode_marks:two_pole_marks, time_marks:two_pole_marks, final_value:gain_if_stable("k_2","T_2","T_3"), own_sliders:["k_2","T_2","T_3"], script_transfer_function:{num:"[k_2]", den:"[T_2*T_3, T_2+T_3, 1]"}};
-const GRAPH_TWO_COMPLEX_POLES = {name:"Two complex poles", mf:"\\frac{k_3w^2}{s^2+2zws+w^2}", formula:"k_3*w^2/(s^2+2*z*w*s+w^2)", pole_zero_map:"draggable", bode_marks:complex_pole_marks, final_value:gain_if_stable("k_3"), own_sliders:["k_3","w","z"], script_transfer_function:{num:"[k_3*w*w]", den:"[1, 2*z*w, w*w]"}};
-const GRAPH_TIME_DELAY = {name:"Time delay", mf:"\\frac{3}{1+s}e^{-Ls}", formula:"3/(1+s)*e^(-L*s)", time_marks:time_delay_marks, final_value:() => 3, own_sliders:["L"]};
-const GRAPH_ONE_ZERO_TWO_POLES = {name:"One zero two poles", mf:"\\frac{k_4(1+T_8s)}{(1+T_6s)(1+T_7s)}", formula:"k_4(1+T_8s)/(1+T_6s)*1/(1+T_7s)", pole_zero_map:"draggable", bode_marks:zero_and_two_poles_marks, time_marks:zero_and_two_poles_marks, final_value:gain_if_stable("k_4","T_6","T_7"), own_sliders:["k_4","T_6","T_7","T_8"]};
-const GRAPH_FOUR_POLES = {name:"Four poles", mf:"\\frac{k_5}{(1+T_5s)^4}", formula:"k_5/((1+T_5s)^4)", pole_zero_map:"shown", bode_marks:four_poles_marks, time_marks:four_poles_marks, final_value:gain_if_stable("k_5","T_5"), own_sliders:["T_5","k_5"]};
-const GRAPH_ONE_ZERO = {name:"One zero", mf:"T_4s+0.5", formula:"T_4*s+0.5", pole_zero_map:"shown", bode_marks:() => [zero_mark("T_4")], own_sliders:["T_4"]};
+function complex_pole_marks(){
+  return complex_pole_frequencies().filter((frequency) => frequency >= 0).map((frequency) => ({T: 1/frequency, kind: "pole"}));
+}
+
+const GRAPH_ONE_REAL_POLE = {
+  name:"One real pole",
+  mf:"\\frac{k_1}{1+T_1s}",
+  formula:"k_1/(1+T_1*s)",
+  pole_zero_map:"draggable",
+  bode_marks:one_pole_marks,
+  time_marks:one_pole_marks,
+  final_value:gain_if_stable("k_1","T_1"),
+  own_sliders:["k_1","T_1"],
+  script_transfer_function:{num:"[k_1]", den:"[T_1, 1]"},
+  plot_on_pole_zero_map:plot_marks_of(one_pole_marks),
+  plot_on_nyquist:(graph) => graph.draw_T_in_Nyquist("T_1"),
+};
+const GRAPH_TWO_REAL_POLES = {
+  name:"Two real poles",
+  mf:"\\frac{k_2}{(1+T_2s)(1+T_3s)}",
+  formula:"k_2/((1+T_2s)(1+T_3s))",
+  pole_zero_map:"draggable",
+  bode_marks:two_pole_marks,
+  time_marks:two_pole_marks,
+  final_value:gain_if_stable("k_2","T_2","T_3"),
+  own_sliders:["k_2","T_2","T_3"],
+  script_transfer_function:{num:"[k_2]", den:"[T_2*T_3, T_2+T_3, 1]"},
+  drag_time_constants:["T_2","T_3"],
+  plot_on_pole_zero_map:plot_marks_of(two_pole_marks),
+  plot_on_nyquist:(graph) => { graph.draw_T_in_Nyquist("T_2"); graph.draw_T_in_Nyquist("T_3"); },
+};
+const GRAPH_TWO_COMPLEX_POLES = {
+  name:"Two complex poles",
+  mf:"\\frac{k_3w^2}{s^2+2zws+w^2}",
+  formula:"k_3*w^2/(s^2+2*z*w*s+w^2)",
+  pole_zero_map:"draggable",
+  bode_marks:complex_pole_marks,
+  final_value:gain_if_stable("k_3"),
+  own_sliders:["k_3","w","z"],
+  script_transfer_function:{num:"[k_3*w*w]", den:"[1, 2*z*w, w*w]"},
+  plot_on_pole_zero_map:(graph) => graph.plot_complex_poles(),
+  plot_on_nyquist:(graph) => graph.draw_complex_poles_in_nyquist(),
+};
+const GRAPH_TIME_DELAY = {
+  name:"Time delay",
+  mf:"\\frac{3}{1+s}e^{-Ls}",
+  formula:"3/(1+s)*e^(-L*s)",
+  time_marks:time_delay_marks,
+  final_value:() => 3,
+  own_sliders:["L"],
+};
+const GRAPH_ONE_ZERO_TWO_POLES = {
+  name:"One zero two poles",
+  mf:"\\frac{k_4(1+T_8s)}{(1+T_6s)(1+T_7s)}",
+  formula:"k_4(1+T_8s)/(1+T_6s)*1/(1+T_7s)",
+  pole_zero_map:"draggable",
+  bode_marks:zero_and_two_poles_marks,
+  time_marks:zero_and_two_poles_marks,
+  final_value:gain_if_stable("k_4","T_6","T_7"),
+  own_sliders:["k_4","T_6","T_7","T_8"],
+  drag_time_constants:["T_8","T_6","T_7"],
+  plot_on_pole_zero_map:plot_marks_of(zero_and_two_poles_marks),
+  plot_on_nyquist:(graph) => { graph.draw_T_in_Nyquist("T_8","zero"); graph.draw_T_in_Nyquist("T_6"); graph.draw_T_in_Nyquist("T_7"); },
+};
+const GRAPH_FOUR_POLES = {
+  name:"Four poles",
+  mf:"\\frac{k_5}{(1+T_5s)^4}",
+  formula:"k_5/((1+T_5s)^4)",
+  pole_zero_map:"shown",
+  bode_marks:four_poles_marks,
+  time_marks:four_poles_marks,
+  final_value:gain_if_stable("k_5","T_5"),
+  own_sliders:["T_5","k_5"],
+  plot_on_pole_zero_map:plot_marks_of(four_poles_marks),
+};
+const GRAPH_ONE_ZERO = {
+  name:"One zero",
+  mf:"T_4s+0.5",
+  formula:"T_4*s+0.5",
+  pole_zero_map:"shown",
+  bode_marks:one_zero_marks,
+  own_sliders:["T_4"],
+  plot_on_pole_zero_map:plot_marks_of(one_zero_marks),
+};
 //const GRAPH_ONE_POLE_WITH_PID_YR = {name:"One pole with PID R->Y", mf:"\\frac{K k_1 (1 + T_i s + T_iT_ds^2)}{K k_1 + T_i (1 + K k_1)s + T_i (T_1 + K k_1 T_d)s^2}", formula:"(K*k_1*(1 + T_i*s + T_i*T_d*s*s)) / (K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)*s*s)"};
-const GRAPH_ONE_POLE_WITH_PID_YR = {name:"One pole with PID R->Y", mf:"G_{YR} = \\frac{G_{PID} \\cdot G}{1 + G_{PID} \\cdot G}", formula:"(K*k_1*(1 + T_i*s + T_i*T_d*s*s)) / (K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)*s*s)", final_value:() => 1.0, shares_sliders:true};
-const GRAPH_PID = {name:"PID controller", mf:"G_{PID}=K \\left(1 + \\frac{1}{s T_i} + s T_d \\right)}", formula:"K + K / (s * T_i) + K * T_d * s", pole_zero_map:"draggable", bode_marks:() => [zero_mark("T_i"), zero_mark("T_d")], own_sliders:["K","T_i","T_d"]};
-const GRAPH_ONE_POLE_WITH_PID_S = {name:"One pole with PID Sensitivity", mf:"S = \\frac{1}{1 + G_{PID} \\cdot G}", formula:"(s*T_i*(1+T_1*s))/(K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)*s*s)", shares_sliders:true};
-const GRAPH_ONE_POLE_WITH_PID_YL = {name:"One pole with PID Load", mf:"G_{YL} = \\frac{G}{1 + G_{PID} \\cdot G}", formula:"(k_1*T_i*s)/(K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)s*s)", shares_sliders:true};
-const GRAPH_ONE_POLE_WITH_PID_OPEN = {name:"One pole with PID open-loop", mf:"G_{OL} = G_{PID} \\cdot G", formula:"(K*k_1*(1 + T_i*s + T_i*T_d*s*s))/(T_i*(s+T_1*s*s))", shares_sliders:true};
+const GRAPH_ONE_POLE_WITH_PID_YR = {
+  name:"One pole with PID R->Y",
+  mf:"G_{YR} = \\frac{G_{PID} \\cdot G}{1 + G_{PID} \\cdot G}",
+  formula:"(K*k_1*(1 + T_i*s + T_i*T_d*s*s)) / (K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)*s*s)",
+  final_value:() => 1.0,
+  shares_sliders:true,
+};
+const GRAPH_PID = {
+  name:"PID controller",
+  mf:"G_{PID}=K \\left(1 + \\frac{1}{s T_i} + s T_d \\right)}",
+  formula:"K + K / (s * T_i) + K * T_d * s",
+  pole_zero_map:"draggable",
+  bode_marks:pid_marks,
+  own_sliders:["K","T_i","T_d"],
+  drag_time_constants:["T_i","T_d"],
+  plot_on_pole_zero_map:(graph) => { graph.plot_pole(0,0); graph.plot_marks(pid_marks()); },
+};
+const GRAPH_ONE_POLE_WITH_PID_S = {
+  name:"One pole with PID Sensitivity",
+  mf:"S = \\frac{1}{1 + G_{PID} \\cdot G}",
+  formula:"(s*T_i*(1+T_1*s))/(K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)*s*s)",
+  shares_sliders:true,
+};
+const GRAPH_ONE_POLE_WITH_PID_YL = {
+  name:"One pole with PID Load",
+  mf:"G_{YL} = \\frac{G}{1 + G_{PID} \\cdot G}",
+  formula:"(k_1*T_i*s)/(K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)s*s)",
+  shares_sliders:true,
+};
+const GRAPH_ONE_POLE_WITH_PID_OPEN = {
+  name:"One pole with PID open-loop",
+  mf:"G_{OL} = G_{PID} \\cdot G",
+  formula:"(K*k_1*(1 + T_i*s + T_i*T_d*s*s))/(T_i*(s+T_1*s*s))",
+  shares_sliders:true,
+};
 
 
 const GRAPH_ORDER = [

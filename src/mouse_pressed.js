@@ -81,14 +81,9 @@ function remove_splash_screen (){
 // (the first one wins), or null if the graph has no such choice.
 // The step response never offered the PID controller's time constants, hence include_pid.
 function draggable_time_variables(formula, include_pid){
-  if (formula == GRAPH_TWO_REAL_POLES.formula) return ["T_2", "T_3"];
-  if (formula == GRAPH_ONE_ZERO_TWO_POLES.formula) return ["T_8", "T_6", "T_7"]; // T_8 is the preferred one if overlapping
-  if (include_pid && formula == GRAPH_PID.formula) return ["T_i", "T_d"];
-  return null;
-}
-
-function time_variable_value(name){
-  return range_slider_variables[variable_position[name]];
+  const preset = preset_of_formula(formula);
+  if ((preset === GRAPH_PID) && !include_pid) return null;
+  return preset?.drag_time_constants ?? null;
 }
 
 // position_of(name) and click_position are in the same unit (pixels, or real part in the pole-zero map).
@@ -104,7 +99,7 @@ function closest_time_variable(names, position_of, click_position){
 
 // Where the pole of a time constant is in the pole-zero map (real part).
 function pole_zero_time_position(name){
-  let T = time_variable_value(name);
+  let T = slider_value(name);
   // If T is outside of the box, clamp it to the side of the box:
   if ((1/T) > 3.2) T=1/3.2;
   return -1/T;
@@ -112,12 +107,12 @@ function pole_zero_time_position(name){
 
 // Where the time constant is on the time axis of the step response (pixels).
 function step_response_time_position(name){
-  return graph_step_response_width / 10 * Math.abs(time_variable_value(name));
+  return graph_step_response_width / 10 * Math.abs(slider_value(name));
 }
 
 // Where the corner frequency of the time constant is on the frequency axis of the Bode plots (pixels).
 function bode_time_position(name){
-  let frequency = 1 / Math.abs(time_variable_value(name));
+  let frequency = 1 / Math.abs(slider_value(name));
   return (Math.log(frequency)/Math.log(10) + 2) * graph_bode_mag_width/5;
 }
 

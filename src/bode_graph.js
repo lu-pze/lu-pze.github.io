@@ -433,44 +433,14 @@ class bode_graph{
     endShape();
     // Draw a red X for T_1 in the Nyquist diagram:
     if(this.bode_displaybool){
-      if(this.bode_formula == GRAPH_ONE_REAL_POLE.formula){
-        this.draw_T_in_Nyquist("T_1");
+      preset_of_formula(this.bode_formula)?.plot_on_nyquist?.(this);
+    }
+  }
 
-      } else if(this.bode_formula == GRAPH_TWO_REAL_POLES.formula){
-        this.draw_T_in_Nyquist("T_2");
-        this.draw_T_in_Nyquist("T_3");
-
-      } else if(this.bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
-        // Draw a X for w in the Nyquist diagram:
-        let w = range_slider_variables[variable_position["w"]];
-        let z = range_slider_variables[variable_position["z"]];
-        if (z <= 1){
-          // One single frequency, so only one X in the graph:
-          if (w != 0){
-            let frequency = w;
-            this.draw_nyquist_X(frequency);
-          }
-        } else {
-          //If Math.sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
-          // We should draw 2 X in this graph:
-          let bode_3_real_1 = z*w + w * Math.sqrt(z*z-1);
-          let bode_3_real_2 = z*w - w * Math.sqrt(z*z-1);
-          w = bode_3_real_1;
-          if (w != 0){
-            let frequency = w;
-            this.draw_nyquist_X(frequency);
-          }
-          w = bode_3_real_2;
-          if (w != 0){
-            let frequency = w;
-            this.draw_nyquist_X(frequency);
-          }
-        }
-      } else if(this.bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
-        this.draw_T_in_Nyquist("T_8","zero");
-        this.draw_T_in_Nyquist("T_6");
-        this.draw_T_in_Nyquist("T_7");
-      }
+  // An X for each of the two complex poles' frequencies, or for two real poles above z = 1.
+  draw_complex_poles_in_nyquist(){
+    for (const frequency of complex_pole_frequencies()){
+      if (frequency != 0) this.draw_nyquist_X(frequency);
     }
   }
 
@@ -608,96 +578,9 @@ class bode_graph{
       text("Real axis [1/s]",pole_zero_width/2,pole_zero_height+35);
       pop();
     }
-    if (this.bode_formula == GRAPH_ONE_REAL_POLE.formula){
-      //pole_x = range_slider_variables[0];
-      let T_1inv = 1/range_slider_variables[variable_position["T_1"]];
-      if (T_1inv > 3.2) T_1inv=3.2;
-      this.plot_pole(-T_1inv,0); // Should be T_1
-
-    } else if (this.bode_formula == GRAPH_TWO_REAL_POLES.formula){
-      //pole_x = range_slider_variables[0];
-      let T_2inv = 1/range_slider_variables[variable_position["T_2"]];
-      if (T_2inv > 3.2) T_2inv=3.2;
-      this.plot_pole(-T_2inv,0); // Should be T_2
-      let T_3inv = 1/range_slider_variables[variable_position["T_3"]];
-      if (T_3inv > 3.2) T_3inv=3.2;
-      this.plot_pole(-T_3inv,0); // Should be T_3
-
-    } else if (this.bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
-      // Calculate bode_3_real and imaginary from z and w:
-      // s = −ζω_n ± jω_n * Math.sqrt(1−ζ^2)
-      let z = range_slider_variables[variable_position["z"]];
-      let w = range_slider_variables[variable_position["w"]];
-
-      if (z <= 1){
-        bode_3_real = -z*w;
-        bode_3_imaginary = w * Math.sqrt(1-z*z);
-        let [tmp_x, tmp_y] = pole_zero_map_position(bode_3_real, bode_3_imaginary);
-        // Since these are complex, let's draw a line from origo as well:
-        stroke(line_color);
-        strokeWeight(1);
-        line(pole_zero_width/2 + (tmp_x+1) * pole_zero_width/4,
-             pole_zero_height/2 + tmp_y * pole_zero_height/4,
-             pole_zero_width/2 + (0+1) * pole_zero_width/4,
-             pole_zero_height/2 + 0 * pole_zero_height/4);
-        line(pole_zero_width/2 + (tmp_x+1) * pole_zero_width/4,
-             pole_zero_height/2 - tmp_y * pole_zero_height/4,
-             pole_zero_width/2 + (0+1) * pole_zero_width/4,
-             pole_zero_height/2 + 0 * pole_zero_height/4);
-        noFill();
-        strokeWeight(line_stroke_weight);
-        stroke(this.bode_hue,360,360);
-        this.plot_pole(tmp_x,tmp_y); // complex
-        this.plot_pole(tmp_x,-tmp_y); // complex
-      } else {
-        //If Math.sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
-        let bode_3_real_1 = -z*w + w * Math.sqrt(z*z-1);
-        let bode_3_real_2 = -z*w - w * Math.sqrt(z*z-1);
-        bode_3_imaginary = 0;
-        let tmp_x = bode_3_real_1;
-        if (tmp_x < -3.2) tmp_x=-3.2;
-        if (tmp_x > 1.2) tmp_x=1.2;
-        this.plot_pole(tmp_x,0); // complex
-        tmp_x = bode_3_real_2;
-        if (tmp_x < -3.2) tmp_x=-3.2;
-        if (tmp_x > 1.2) tmp_x=1.2;
-        this.plot_pole(tmp_x,0); // complex
-      }
-
-    } else if (this.bode_formula == GRAPH_ONE_ZERO.formula){
-      //pole_x = range_slider_variables[0];
-      let T_4inv = 1/range_slider_variables[variable_position["T_4"]];
-      if (T_4inv > 3.2) T_4inv=3.2;
-      this.plot_zero(-T_4inv,0); // Should be T_4
-
-    } else if (this.bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
-      //pole_x = range_slider_variables[0];
-      let T_6inv = 1/range_slider_variables[variable_position["T_6"]];
-      if (T_6inv > 3.2) T_6inv=3.2;
-      this.plot_pole(-T_6inv,0); // Should be T_6
-      let T_7inv = 1/range_slider_variables[variable_position["T_7"]];
-      if (T_7inv > 3.2) T_7inv=3.2;
-      this.plot_pole(-T_7inv,0); // Should be T_7
-      let T_8inv = 1/range_slider_variables[variable_position["T_8"]];
-      if (T_8inv > 3.2) T_8inv=3.2;
-      this.plot_zero(-T_8inv,0); // Should be T_4
-
-    } else if (this.bode_formula == GRAPH_FOUR_POLES.formula){
-      //pole_x = range_slider_variables[0];
-      let T_5inv = 1/range_slider_variables[variable_position["T_5"]];
-      if (T_5inv > 3.2) T_5inv=3.2;
-      this.plot_pole(-T_5inv,0); // Should be T_1
-
-    } else if (this.bode_formula == GRAPH_PID.formula){
-      //pole_x = range_slider_variables[0];
-      this.plot_pole(0,0); // The integrator 1/(sT_i)
-      let T_iinv = 1/range_slider_variables[variable_position["T_i"]];
-      if (T_iinv > 3.2) T_iinv=3.2;
-      this.plot_zero(-T_iinv,0); // Approximate PID zero -1/T_i (exact when T_d << T_i)
-      let T_dinv = 1/range_slider_variables[variable_position["T_d"]];
-      if (T_dinv > 3.2) T_dinv=3.2;
-      this.plot_zero(-T_dinv,0); // Approximate PID zero -1/T_d
-
+    const preset = preset_of_formula(this.bode_formula);
+    if (preset?.plot_on_pole_zero_map !== undefined){
+      preset.plot_on_pole_zero_map(this);
     } else if (this.bode_poles_zeros !== null){
       // Display-only map: computed poles (X) and zeros (O).
       for (const pole of this.bode_poles_zeros.poles){
@@ -714,6 +597,58 @@ class bode_graph{
     let grey_color = color('hsb(0, 0%, 50%)');
     fill(grey_color,360,360);
     text(this.graph_name,pole_zero_width/2,pole_zero_height-7);
+  }
+
+  // Marks at s = -1/T on the real axis of the pole-zero map. A fast one is held at the left edge.
+  plot_marks(marks){
+    for (const mark of marks){
+      let T_inverse = 1/mark.T;
+      if (T_inverse > 3.2) T_inverse=3.2;
+      if (mark.kind == "pole") this.plot_pole(-T_inverse,0);
+      else this.plot_zero(-T_inverse,0);
+    }
+  }
+
+  plot_complex_poles(){
+    // Calculate bode_3_real and imaginary from z and w:
+    // s = −ζω_n ± jω_n * Math.sqrt(1−ζ^2)
+    let z = range_slider_variables[variable_position["z"]];
+    let w = range_slider_variables[variable_position["w"]];
+
+    if (z <= 1){
+      bode_3_real = -z*w;
+      bode_3_imaginary = w * Math.sqrt(1-z*z);
+      let [tmp_x, tmp_y] = pole_zero_map_position(bode_3_real, bode_3_imaginary);
+      // Since these are complex, let's draw a line from origo as well:
+      stroke(line_color);
+      strokeWeight(1);
+      line(pole_zero_width/2 + (tmp_x+1) * pole_zero_width/4,
+           pole_zero_height/2 + tmp_y * pole_zero_height/4,
+           pole_zero_width/2 + (0+1) * pole_zero_width/4,
+           pole_zero_height/2 + 0 * pole_zero_height/4);
+      line(pole_zero_width/2 + (tmp_x+1) * pole_zero_width/4,
+           pole_zero_height/2 - tmp_y * pole_zero_height/4,
+           pole_zero_width/2 + (0+1) * pole_zero_width/4,
+           pole_zero_height/2 + 0 * pole_zero_height/4);
+      noFill();
+      strokeWeight(line_stroke_weight);
+      stroke(this.bode_hue,360,360);
+      this.plot_pole(tmp_x,tmp_y); // complex
+      this.plot_pole(tmp_x,-tmp_y); // complex
+    } else {
+      //If Math.sqrt(1-ζ^2) is negative, then the square root becomes imaginary, resulting in real valued poles:
+      let bode_3_real_1 = -z*w + w * Math.sqrt(z*z-1);
+      let bode_3_real_2 = -z*w - w * Math.sqrt(z*z-1);
+      bode_3_imaginary = 0;
+      let tmp_x = bode_3_real_1;
+      if (tmp_x < -3.2) tmp_x=-3.2;
+      if (tmp_x > 1.2) tmp_x=1.2;
+      this.plot_pole(tmp_x,0); // complex
+      tmp_x = bode_3_real_2;
+      if (tmp_x < -3.2) tmp_x=-3.2;
+      if (tmp_x > 1.2) tmp_x=1.2;
+      this.plot_pole(tmp_x,0); // complex
+    }
   }
 
   plot_pole(pole_x,pole_y){
