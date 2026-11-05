@@ -147,10 +147,52 @@ describe('step response of each preset', () => {
     ['GRAPH_TWO_REAL_POLES', { T_2: 0, T_3: 0 }, 12],
     ['GRAPH_FOUR_POLES', { T_5: -1 }, null],
     ['GRAPH_FOUR_POLES', { T_5: 0 }, 15],
-    ['GRAPH_ONE_ZERO_TWO_POLES', { T_6: -1 }, 14], // not checked for this preset
+    ['GRAPH_ONE_ZERO_TWO_POLES', { T_6: -1 }, null],
+    ['GRAPH_ONE_ZERO_TWO_POLES', { T_7: -1 }, null],
+    ['GRAPH_ONE_ZERO_TWO_POLES', { T_6: 0, T_7: 0 }, 14],
+    ['GRAPH_ONE_ZERO_TWO_POLES', { T_8: -1 }, 14], // a zero does not make the system unstable
   ])('%s with %j settles at %s', (name, values, expected) => {
     set_sliders({ ...VALUES, ...values });
     expect(global_value(name).final_value()).toBe(expected);
+  });
+});
+
+describe('sliders and script export of each preset', () => {
+  const OWN_SLIDERS = {
+    GRAPH_ONE_REAL_POLE: ['k_1', 'T_1'],
+    GRAPH_TWO_REAL_POLES: ['k_2', 'T_2', 'T_3'],
+    GRAPH_TWO_COMPLEX_POLES: ['k_3', 'w', 'z'],
+    GRAPH_TIME_DELAY: ['L'],
+    GRAPH_ONE_ZERO_TWO_POLES: ['k_4', 'T_6', 'T_7', 'T_8'],
+    GRAPH_FOUR_POLES: ['T_5', 'k_5'],
+    GRAPH_ONE_ZERO: ['T_4'],
+    GRAPH_PID: ['K', 'T_i', 'T_d'],
+  };
+  const SHARING = ['GRAPH_ONE_POLE_WITH_PID_YR', 'GRAPH_ONE_POLE_WITH_PID_S', 'GRAPH_ONE_POLE_WITH_PID_YL', 'GRAPH_ONE_POLE_WITH_PID_OPEN'];
+
+  test.each(Object.entries(OWN_SLIDERS))('%s owns %j, and shares none', (name, sliders) => {
+    expect(global_value(name).own_sliders).toEqual(sliders);
+    expect(global_value(name).shares_sliders).toBeUndefined();
+  });
+
+  test.each(Object.entries(OWN_SLIDERS))('%s owns exactly the variables of its formula', (name, sliders) => {
+    const variables = window.formula_variables(global_value(name).formula).filter((variable) => variable !== 'e');
+    expect([...variables].sort()).toEqual([...sliders].sort());
+  });
+
+  test.each(SHARING)('%s shares its sliders and owns none', (name) => {
+    expect(global_value(name).shares_sliders).toBe(true);
+    expect(global_value(name).own_sliders).toBeUndefined();
+  });
+
+  test('every preset either owns its sliders or shares them', () => {
+    expect(Object.keys(OWN_SLIDERS).length + SHARING.length).toBe(global_value('GRAPH_ORDER').length);
+  });
+
+  test('the first three presets have a script export, the others do not', () => {
+    const with_export = global_value('GRAPH_ORDER').filter((preset) => preset.has_script_export === true);
+    expect(with_export).toEqual(global_value('GRAPH_ORDER').slice(0, 3));
+    expect(global_value('GRAPH_ORDER').slice(3).every((preset) => preset.has_script_export === undefined)).toBe(true);
   });
 });
 

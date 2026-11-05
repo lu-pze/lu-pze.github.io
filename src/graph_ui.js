@@ -300,10 +300,7 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   //  s += "background:none;";
   //}
   s += `font-size:115%;" title="${graph_name}">${mathfield_string}</math-field>`;
-  // These are the GRAPHS that should have download code buttons:
-  if ((equation_string == GRAPH_ONE_REAL_POLE.formula) ||
-      (equation_string == GRAPH_TWO_REAL_POLES.formula) ||
-      (equation_string == GRAPH_TWO_COMPLEX_POLES.formula)){
+  if (preset_of_formula(equation_string)?.has_script_export){
     s += `<button type="button" class="download-script" id="download_script(${id_bank})" onclick="download_script(${id_bank})"><svg width="28" height="28" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_ios_share"/></svg></button>`;
   }
   s += `<button type="button" class="delete-graph" id="delete-graph_${id_bank}" onclick="removeGraph(${id_bank});updateAfterRemoveGraph();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
@@ -346,13 +343,7 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
     new_bode_graph.bode_display_pole_zero_bool = false;
   }
 
-  let yes_add_range_sliders = true;
-  if (equation_string == GRAPH_ONE_POLE_WITH_PID_S.formula) yes_add_range_sliders=false;
-  if (equation_string == GRAPH_ONE_POLE_WITH_PID_YL.formula) yes_add_range_sliders=false;
-  if (equation_string == GRAPH_ONE_POLE_WITH_PID_YR.formula) yes_add_range_sliders=false;
-  if (equation_string == GRAPH_ONE_POLE_WITH_PID_OPEN.formula) yes_add_range_sliders=false;
-
-  if (yes_add_range_sliders){
+  if (!preset_of_formula(equation_string)?.shares_sliders){
     let input_element_id = id_bank;
     for(let i=0; i<bode_graphs.length; i++){
       let current_bode_graph = bode_graphs[i];
@@ -452,24 +443,7 @@ function removeGraph (linked_id){
     }
   }
   //Now remove any variables that belongs to this equation:
-  let variables_to_delete = [];
-  if (equation_to_remove == GRAPH_ONE_REAL_POLE.formula){
-    variables_to_delete = ["k_1","T_1"];
-  } else if (equation_to_remove == GRAPH_TWO_REAL_POLES.formula){
-    variables_to_delete = ["k_2","T_2","T_3"];
-  } else if (equation_to_remove == GRAPH_TWO_COMPLEX_POLES.formula){
-    variables_to_delete = ["k_3","w","z"];
-  } else if (equation_to_remove == GRAPH_TIME_DELAY.formula){
-    variables_to_delete = ["L"];
-  } else if (equation_to_remove == GRAPH_ONE_ZERO_TWO_POLES.formula){
-    variables_to_delete = ["k_4","T_6","T_7","T_8"];
-  } else if (equation_to_remove == GRAPH_FOUR_POLES.formula){
-    variables_to_delete = ["T_5","k_5"];
-  } else if (equation_to_remove == GRAPH_ONE_ZERO.formula){
-    variables_to_delete = ["T_4"];
-  } else if (equation_to_remove == GRAPH_PID.formula){
-    variables_to_delete = ["K","T_i","T_d"];
-  }
+  const variables_to_delete = preset_of_formula(equation_to_remove)?.own_sliders || [];
   for(let i=0; i<variables_to_delete.length; i++){
     let variable_to_delete = variables_to_delete[i];
     let button = document.getElementById("RANGE_" + variable_position[variable_to_delete]);

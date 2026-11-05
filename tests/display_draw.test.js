@@ -964,6 +964,8 @@ describe('draw_time_responses', () => {
       ['GRAPH_TWO_COMPLEX_POLES', {}, [2]],
       ['GRAPH_TIME_DELAY', {}, [3]],
       ['GRAPH_ONE_ZERO_TWO_POLES', {}, [2]],
+      ['GRAPH_ONE_ZERO_TWO_POLES', { T_6: -1 }, []],
+      ['GRAPH_ONE_ZERO_TWO_POLES', { T_7: -1 }, []],
       ['GRAPH_FOUR_POLES', {}, [1.5]],
       ['GRAPH_FOUR_POLES', { T_5: -1 }, []],
       ['GRAPH_ONE_POLE_WITH_PID_YR', {}, [1]],
