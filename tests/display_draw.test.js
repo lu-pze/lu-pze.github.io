@@ -768,16 +768,24 @@ describe('draw_bode_responses: phase', () => {
     expect(global_value('phase_upper_bound')).toBe(90);
   });
 
-  test('an infinite phase keeps the default top of the axis, so the grid lines end', () => {
+  test('the axis stops at +360 degrees, also for an infinite phase, whose grid lines would never end', () => {
     let nof_labels = 0;
     window.text = () => { // Fails here instead of running out of memory.
       nof_labels += 1;
       if (nof_labels > 1000) throw new Error('the grid lines do not end');
     };
-    use_fake_graphs(fake_graph({ bode_min_phase: -Math.PI, bode_max_phase: Infinity }));
+    for (const degrees of [360, 360.000001, 450, Infinity]) {
+      use_fake_graphs(fake_graph({ bode_min_phase: -Math.PI, bode_max_phase: degrees * Math.PI / 180 }));
+      window.draw_bode_responses('phase');
+      expect(global_value('phase_lower_bound')).toBe(-180);
+      expect(global_value('phase_upper_bound')).toBe(360);
+    }
+  });
+
+  test('a phase just below +360 degrees still rounds up to 360', () => {
+    use_fake_graphs(fake_graph({ bode_min_phase: -Math.PI, bode_max_phase: 320 * Math.PI / 180 }));
     window.draw_bode_responses('phase');
-    expect(global_value('phase_lower_bound')).toBe(-180);
-    expect(global_value('phase_upper_bound')).toBe(90);
+    expect(global_value('phase_upper_bound')).toBe(360);
   });
 
   test('hidden graphs alone give the default range', () => {

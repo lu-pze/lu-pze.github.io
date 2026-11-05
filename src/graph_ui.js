@@ -86,11 +86,26 @@ function check_slider_achievements(variable_name, value){
   }
 }
 
-function createRangeSlider(event){
-  let slider = document.createElement('div');
-  let button = event.target;
-  let button_id = button.id.split("_")[2];
-  let variable_name = range_slider_alphabet[button_id];
+// The information tab that the slider of a variable opens. Tab N belongs to the N:th graph on the page.
+const SLIDER_INFO_TABS = {
+  "k_1":1,"T_1":1,
+  "k_2":2,"T_2":2,"T_3":2,
+  "w":3,"z":3,"k_3":3,
+  "L":4,
+  "k_4":5,"T_6":5,"T_7":5,"T_8":5,
+  "k_5":6,"T_5":6,
+  "T_4":7,
+};
+
+// Make the relevant information bar active when a slider is changed:
+function show_info_tab_of_variable(variable_name){
+  if (variable_name in SLIDER_INFO_TABS){
+    let info_tab = document.getElementById("graph_"+SLIDER_INFO_TABS[variable_name]+"_info");
+    info_tab.checked = "true";
+  }
+}
+
+function slider_start_values(variable_name){
   let range_min=0.1;
   let range_max=20;
   let range_value=1.0;
@@ -107,11 +122,13 @@ function createRangeSlider(event){
   if ((variable_name=="T_1")&&is_pid_assignment()){
     range_value=6.0;
   }
+  return {range_min, range_max, range_value};
+}
 
-  slider.classList.add("slider-wrapper");
+function slider_html(variable_name, button_id, {range_min, range_max, range_value}){
   // Yes, this is ugly. But flex layout is broken (or at least differs) in mobile ios and Firefox vs. Chrome.
   // So table-based layout is a safer bet:
-  slider.innerHTML =
+  return (
   `<table><tr><td>
         <span style="margin:0 0 0 10px;font-size:120%" id="variable_${variable_name}">a =</span>
 </td><td class="value-wrapper">
@@ -123,20 +140,10 @@ function createRangeSlider(event){
 </td><td>
         <input type="text" id="text2_${button_id}" value="${range_max}" class="slider-bound">
 </td></tr></table>`
-//      <button type="button" class="delete-graph"><svg width="30" height="30" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
-//  let delete_button = slider.getElementsByClassName("delete-graph")[0];
-//  delete_button.addEventListener('click',removeSlider);
+  );
+}
 
-  // Printing variable names using mathlive:
-  slider.getElementsByTagName("span")[0].innerHTML = "<math-field read-only style='vertical-align:bottom;display:inline-block' class='slider_mf'>" + range_slider_alphabet[button_id] + " =</math-field>";
-
-  //let linked_letter = range_slider_alphabet[button_id];
-  let range_slider = slider.getElementsByClassName("range-slider")[0];
-  let linked_span = slider.getElementsByClassName("value-wrapper")[0].getElementsByTagName("input")[0];
-  linked_span.value = (+range_slider.value).toFixed(2);
-  const mf = slider.getElementsByClassName('slider_mf')[0];
-  mf.menuItems = []; // Stop MathLive from grabbing right mouse clicks.
-
+function connect_range_slider({range_slider, linked_span, variable_name, button_id}){
   range_slider.onchange = function(){
     // Only reacts on the final value of the slider, and not continuous movements:
     check_tasks(TASK_RULES.after_slider_change, variable_name);
@@ -147,43 +154,21 @@ function createRangeSlider(event){
     range_slider_variables[button_id] = +range_slider.value;
     check_slider_achievements(variable_name, +range_slider.value);
     use_fast_precision_in_pid_assignments();
-    // Make the relevant information bar active when a slider is changed:
-    if ((variable_name == "k_1")||(variable_name == "T_1")){
-      let info_tab = document.getElementById("graph_1_info");
-      info_tab.checked = "true";
-    } else if ((variable_name == "k_2")||(variable_name == "T_2")||(variable_name=="T_3")){
-      let info_tab = document.getElementById("graph_2_info");
-      info_tab.checked = "true";
-    } else if ((variable_name == "w")||(variable_name == "z")||(variable_name=="k_3")){
-      let info_tab = document.getElementById("graph_3_info");
-      info_tab.checked = "true";
-    } else if (variable_name == "L"){
-      let info_tab = document.getElementById("graph_4_info");
-      info_tab.checked = "true";
-    } else if ((variable_name == "k_4")||(variable_name == "T_6")||(variable_name == "T_7")||(variable_name == "T_8")){
-      let info_tab = document.getElementById("graph_5_info");
-      info_tab.checked = "true";
-    } else if ((variable_name == "k_5")||(variable_name == "T_5")){
-      let info_tab = document.getElementById("graph_6_info");
-      info_tab.checked = "true";
-    } else if (variable_name == "T_4"){
-      let info_tab = document.getElementById("graph_7_info");
-      info_tab.checked = "true";
-    }
+    show_info_tab_of_variable(variable_name);
     redraw_canvas_gain("all");
   }
-  range_slider_variables[button_id] = range_value; // Initial value of variable
+}
 
-  let slider_bounds = slider.getElementsByClassName("slider-bound");
-  let slider_min = slider_bounds[0];
+function connect_slider_bounds({range_slider, slider_min, slider_max}){
   slider_min.oninput = function(){
     range_slider.min = +slider_min.value;
   }
-  let slider_max = slider_bounds[1];
   slider_max.oninput = function(){
     range_slider.max = +slider_max.value;
   }
+}
 
+function connect_value_field({range_slider, linked_span, slider_min, slider_max, variable_name, button_id}){
   linked_span.onchange = function(){
     // Only reacts on the final value, and not while editing:
     check_tasks(TASK_RULES.after_slider_change, variable_name);
@@ -205,6 +190,37 @@ function createRangeSlider(event){
     range_slider.value = +linked_span.value;
     redraw_canvas_gain("all");
   }
+}
+
+function createRangeSlider(event){
+  let slider = document.createElement('div');
+  let button = event.target;
+  let button_id = button.id.split("_")[2];
+  let variable_name = range_slider_alphabet[button_id];
+  let start_values = slider_start_values(variable_name);
+
+  slider.classList.add("slider-wrapper");
+  slider.innerHTML = slider_html(variable_name, button_id, start_values);
+//      <button type="button" class="delete-graph"><svg width="30" height="30" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>
+//  let delete_button = slider.getElementsByClassName("delete-graph")[0];
+//  delete_button.addEventListener('click',removeSlider);
+
+  // Printing variable names using mathlive:
+  slider.getElementsByTagName("span")[0].innerHTML = "<math-field read-only style='vertical-align:bottom;display:inline-block' class='slider_mf'>" + range_slider_alphabet[button_id] + " =</math-field>";
+
+  //let linked_letter = range_slider_alphabet[button_id];
+  let range_slider = slider.getElementsByClassName("range-slider")[0];
+  let linked_span = slider.getElementsByClassName("value-wrapper")[0].getElementsByTagName("input")[0];
+  linked_span.value = (+range_slider.value).toFixed(2);
+  const mf = slider.getElementsByClassName('slider_mf')[0];
+  mf.menuItems = []; // Stop MathLive from grabbing right mouse clicks.
+  range_slider_variables[button_id] = start_values.range_value; // Initial value of variable
+
+  let slider_bounds = slider.getElementsByClassName("slider-bound");
+  let parts = {range_slider, linked_span, slider_min:slider_bounds[0], slider_max:slider_bounds[1], variable_name, button_id};
+  connect_range_slider(parts);
+  connect_slider_bounds(parts);
+  connect_value_field(parts);
 
   let equations_div = document.getElementsByClassName("equations")[0];
   equations_div.append(slider);

@@ -335,8 +335,7 @@ function update_phase_axis(){
   }
   // Limiting the phase axis into something sane:
   min_phase = Math.max(-360/180*Math.PI,min_phase);
-  // An infinite upper limit would never finish the grid lines in draw_phase_axis:
-  if (!isFinite(max_phase)) max_phase = 90/180*Math.PI;
+  max_phase = Math.min(360/180*Math.PI,max_phase);
   min_phase = min_phase*180/Math.PI;
   max_phase = max_phase*180/Math.PI;
   phase_lower_bound = get_bestMultiple(min_phase,45,"lower");
