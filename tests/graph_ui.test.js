@@ -271,6 +271,21 @@ describe('createRangeSlider', () => {
         expect(tab_checked(2)).toBe(false);
       });
 
+      test('an open tab whose graph also uses the variable stays open', () => {
+        use_graphs(graph_of(3, 'GRAPH_ONE_REAL_POLE'), graph_of(2, 'GRAPH_ONE_POLE_WITH_PID_YR'));
+        document.getElementById('graph_2_info').checked = true;
+        drag(make_slider('k_1'), 2);
+        expect(tab_checked(2)).toBe(true);
+        expect(tab_checked(3)).toBe(false);
+      });
+
+      test('an open tab whose graph does not use the variable gives way', () => {
+        use_graphs(graph_of(3, 'GRAPH_ONE_REAL_POLE'), graph_of(2, 'GRAPH_TWO_REAL_POLES'));
+        document.getElementById('graph_2_info').checked = true;
+        drag(make_slider('k_1'), 2);
+        expect(tab_checked(3)).toBe(true);
+      });
+
       test('a graph without a tab is skipped, and the slider still redraws', () => {
         use_graphs(graph_of(99, 'GRAPH_ONE_REAL_POLE'), graph_of(2, 'GRAPH_ONE_POLE_WITH_PID_YR'));
         drag(make_slider('k_1'), 2);

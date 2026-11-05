@@ -87,15 +87,17 @@ function check_slider_achievements(variable_name, value){
 }
 
 // Make the relevant information bar active when a slider is changed: the one of the first graph
-// that uses the variable. Ghost graphs may have no tab.
+// that uses the variable, unless the open one already does. Ghost graphs may have no tab.
 function show_info_tab_of_variable(variable_name){
+  let first_tab = null;
   for (const graph of bode_graphs){
     const info_tab = document.getElementById("graph_"+graph.bode_id+"_info");
     if (info_tab && formula_variables(graph.bode_formula)?.includes(variable_name)){
-      info_tab.checked = "true";
-      return;
+      if (info_tab.checked) return;
+      first_tab = first_tab || info_tab;
     }
   }
+  if (first_tab) first_tab.checked = "true";
 }
 
 function slider_start_values(variable_name){
