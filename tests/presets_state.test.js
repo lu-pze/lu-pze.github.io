@@ -5,6 +5,47 @@ const { loadApp, global_value } = require('./helpers/load_app');
 
 beforeAll(() => loadApp());
 
+describe('pole-zero map of each preset', () => {
+  const KINDS = {
+    GRAPH_ONE_REAL_POLE: 'draggable',
+    GRAPH_TWO_REAL_POLES: 'draggable',
+    GRAPH_TWO_COMPLEX_POLES: 'draggable',
+    GRAPH_TIME_DELAY: undefined,
+    GRAPH_ONE_ZERO_TWO_POLES: 'draggable',
+    GRAPH_FOUR_POLES: 'shown',
+    GRAPH_ONE_ZERO: 'shown',
+    GRAPH_PID: 'draggable',
+    GRAPH_ONE_POLE_WITH_PID_YR: undefined,
+    GRAPH_ONE_POLE_WITH_PID_S: undefined,
+    GRAPH_ONE_POLE_WITH_PID_YL: undefined,
+    GRAPH_ONE_POLE_WITH_PID_OPEN: undefined,
+  };
+
+  test.each(Object.entries(KINDS))('%s: %s', (name, kind) => {
+    expect(global_value(name).pole_zero_map).toBe(kind);
+  });
+
+  test('the table above covers every preset', () => {
+    expect(Object.keys(KINDS)).toHaveLength(global_value('GRAPH_ORDER').length);
+  });
+});
+
+describe('preset_of_formula', () => {
+  test.each(['GRAPH_ONE_REAL_POLE', 'GRAPH_TIME_DELAY', 'GRAPH_ONE_POLE_WITH_PID_OPEN'])('finds %s by its formula', (name) => {
+    const preset = global_value(name);
+    expect(window.preset_of_formula(preset.formula)).toBe(preset);
+  });
+
+  test('every preset has a formula of its own', () => {
+    const formulas = global_value('GRAPH_ORDER').map((preset) => preset.formula);
+    expect(new Set(formulas).size).toBe(formulas.length);
+  });
+
+  test('an edited formula is not a preset', () => {
+    expect(window.preset_of_formula('k_1/(1+T_1*s)+1')).toBeUndefined();
+  });
+});
+
 describe('preset graphs', () => {
   // The LaTeX of each preset, which the equation field shows. `formula` (the math.js text) is
   // checked through the numbers in numeric_core.test.js and transfer_math.test.js.

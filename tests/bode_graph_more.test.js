@@ -389,7 +389,7 @@ describe('bode_graph', () => {
         expect(graph.has_parameter_pole_zero_map()).toBe(true);
         expect(graph.has_pole_zero_map()).toBe(true);
       }
-      expect(global_value('PARAMETER_POLE_ZERO_MAP_FORMULAS')).toHaveLength(names.length);
+      expect(global_value('GRAPH_ORDER').filter((preset) => preset.pole_zero_map !== undefined)).toHaveLength(names.length);
     });
 
     test('other presets get a display-only map of their computed poles and zeros', () => {

@@ -30,16 +30,18 @@
 'use strict';
 
 
-const GRAPH_ONE_REAL_POLE = {name:"One real pole", mf:"\\frac{k_1}{1+T_1s}", formula:"k_1/(1+T_1*s)"};
-const GRAPH_TWO_REAL_POLES = {name:"Two real poles", mf:"\\frac{k_2}{(1+T_2s)(1+T_3s)}", formula:"k_2/((1+T_2s)(1+T_3s))"};
-const GRAPH_TWO_COMPLEX_POLES = {name:"Two complex poles", mf:"\\frac{k_3w^2}{s^2+2zws+w^2}", formula:"k_3*w^2/(s^2+2*z*w*s+w^2)"};
+// pole_zero_map: "draggable" or "shown" for a map drawn from the slider values, where "draggable"
+// also takes mouse presses. A preset without it gets a computed map, if it has poles or zeros.
+const GRAPH_ONE_REAL_POLE = {name:"One real pole", mf:"\\frac{k_1}{1+T_1s}", formula:"k_1/(1+T_1*s)", pole_zero_map:"draggable"};
+const GRAPH_TWO_REAL_POLES = {name:"Two real poles", mf:"\\frac{k_2}{(1+T_2s)(1+T_3s)}", formula:"k_2/((1+T_2s)(1+T_3s))", pole_zero_map:"draggable"};
+const GRAPH_TWO_COMPLEX_POLES = {name:"Two complex poles", mf:"\\frac{k_3w^2}{s^2+2zws+w^2}", formula:"k_3*w^2/(s^2+2*z*w*s+w^2)", pole_zero_map:"draggable"};
 const GRAPH_TIME_DELAY = {name:"Time delay", mf:"\\frac{3}{1+s}e^{-Ls}", formula:"3/(1+s)*e^(-L*s)"};
-const GRAPH_ONE_ZERO_TWO_POLES = {name:"One zero two poles", mf:"\\frac{k_4(1+T_8s)}{(1+T_6s)(1+T_7s)}", formula:"k_4(1+T_8s)/(1+T_6s)*1/(1+T_7s)"};
-const GRAPH_FOUR_POLES = {name:"Four poles", mf:"\\frac{k_5}{(1+T_5s)^4}", formula:"k_5/((1+T_5s)^4)"};
-const GRAPH_ONE_ZERO = {name:"One zero", mf:"T_4s+0.5", formula:"T_4*s+0.5"};
+const GRAPH_ONE_ZERO_TWO_POLES = {name:"One zero two poles", mf:"\\frac{k_4(1+T_8s)}{(1+T_6s)(1+T_7s)}", formula:"k_4(1+T_8s)/(1+T_6s)*1/(1+T_7s)", pole_zero_map:"draggable"};
+const GRAPH_FOUR_POLES = {name:"Four poles", mf:"\\frac{k_5}{(1+T_5s)^4}", formula:"k_5/((1+T_5s)^4)", pole_zero_map:"shown"};
+const GRAPH_ONE_ZERO = {name:"One zero", mf:"T_4s+0.5", formula:"T_4*s+0.5", pole_zero_map:"shown"};
 //const GRAPH_ONE_POLE_WITH_PID_YR = {name:"One pole with PID R->Y", mf:"\\frac{K k_1 (1 + T_i s + T_iT_ds^2)}{K k_1 + T_i (1 + K k_1)s + T_i (T_1 + K k_1 T_d)s^2}", formula:"(K*k_1*(1 + T_i*s + T_i*T_d*s*s)) / (K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)*s*s)"};
 const GRAPH_ONE_POLE_WITH_PID_YR = {name:"One pole with PID R->Y", mf:"G_{YR} = \\frac{G_{PID} \\cdot G}{1 + G_{PID} \\cdot G}", formula:"(K*k_1*(1 + T_i*s + T_i*T_d*s*s)) / (K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)*s*s)"};
-const GRAPH_PID = {name:"PID controller", mf:"G_{PID}=K \\left(1 + \\frac{1}{s T_i} + s T_d \\right)}", formula:"K + K / (s * T_i) + K * T_d * s"};
+const GRAPH_PID = {name:"PID controller", mf:"G_{PID}=K \\left(1 + \\frac{1}{s T_i} + s T_d \\right)}", formula:"K + K / (s * T_i) + K * T_d * s", pole_zero_map:"draggable"};
 const GRAPH_ONE_POLE_WITH_PID_S = {name:"One pole with PID Sensitivity", mf:"S = \\frac{1}{1 + G_{PID} \\cdot G}", formula:"(s*T_i*(1+T_1*s))/(K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)*s*s)"};
 const GRAPH_ONE_POLE_WITH_PID_YL = {name:"One pole with PID Load", mf:"G_{YL} = \\frac{G}{1 + G_{PID} \\cdot G}", formula:"(k_1*T_i*s)/(K*k_1 + T_i*(1 + K*k_1)*s + T_i*(T_1 + K*k_1*T_d)s*s)"};
 const GRAPH_ONE_POLE_WITH_PID_OPEN = {name:"One pole with PID open-loop", mf:"G_{OL} = G_{PID} \\cdot G", formula:"(K*k_1*(1 + T_i*s + T_i*T_d*s*s))/(T_i*(s+T_1*s*s))"};
@@ -59,6 +61,12 @@ const GRAPH_ORDER = [
   GRAPH_ONE_POLE_WITH_PID_YL,
   GRAPH_ONE_POLE_WITH_PID_OPEN,
 ];
+
+// The preset with this formula, or undefined. A graph whose formula was edited is no longer a preset.
+function preset_of_formula(formula){
+  return GRAPH_ORDER.find((preset) => preset.formula == formula);
+}
+
 const NOF_GRAPHS_AT_STARTUP = 4;
 let next_graph_no_to_add = 0;
 let id_bank = 1;

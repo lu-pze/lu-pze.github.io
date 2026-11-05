@@ -913,12 +913,16 @@ describe('mutation gaps: the pole-zero maps', () => {
   });
 
   test.each(['GRAPH_ONE_REAL_POLE', 'GRAPH_TWO_REAL_POLES', 'GRAPH_TWO_COMPLEX_POLES', 'GRAPH_ONE_ZERO_TWO_POLES', 'GRAPH_PID'])(
-    '%s has a pole-zero map', (preset) => {
-      expect(window.graph_has_pole_zero_map(formula(preset))).toBe(true);
+    '%s takes presses in its pole-zero map', (preset) => {
+      expect(window.pole_zero_map_takes_presses(formula(preset))).toBe(true);
     });
 
-  test.each(['GRAPH_TIME_DELAY', 'GRAPH_FOUR_POLES'])('%s has none', (preset) => {
-    expect(window.graph_has_pole_zero_map(formula(preset))).toBe(false);
+  test.each(['GRAPH_TIME_DELAY', 'GRAPH_FOUR_POLES'])('%s does not', (preset) => {
+    expect(window.pole_zero_map_takes_presses(formula(preset))).toBe(false);
+  });
+
+  test('neither does a typed formula that is no preset', () => {
+    expect(window.pole_zero_map_takes_presses('1/(s+2)')).toBe(false);
   });
 
   test('a press just inside each edge of the map is taken, one exactly on the edge is not', () => {

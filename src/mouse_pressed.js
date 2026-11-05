@@ -436,19 +436,15 @@ const CLICK_REGIONS = [
 // --------------------------------
 // The pole-zero maps
 
-function graph_has_pole_zero_map(formula){
-  return (formula == GRAPH_ONE_REAL_POLE.formula)||
-    (formula == GRAPH_TWO_REAL_POLES.formula)||
-    (formula == GRAPH_TWO_COMPLEX_POLES.formula)||
-    (formula == GRAPH_ONE_ZERO_TWO_POLES.formula)||
-    (formula == GRAPH_PID.formula);
+function pole_zero_map_takes_presses(formula){
+  return preset_of_formula(formula)?.pole_zero_map == "draggable";
 }
 
 // Handles a press in one of the pole-zero maps. Returns true if the press was in a map.
 function press_in_pole_zero_maps(event){
   for(let i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_displaybool){
-      if (graph_has_pole_zero_map(bode_graphs[i].bode_formula)){
+      if (pole_zero_map_takes_presses(bode_graphs[i].bode_formula)){
         if(((mouseX-pole_zero_graph_x[i]) > 0) && ((mouseX-pole_zero_graph_x[i]) < pole_zero_width)){
           if(((mouseY-pole_zero_graph_y[i]) > 0) && ((mouseY-pole_zero_graph_y[i]) < pole_zero_height)){
             event.preventDefault(); // Make sure that iPads don't drag/scroll the contents

@@ -57,8 +57,10 @@ function set_live(name, value) {
 }
 
 function fake_graph(overrides = {}) {
-  return {
+  // The real class, for its rules about which graph has a pole-zero map.
+  return Object.assign(Object.create(global_value('bode_graph').prototype), {
     bode_formula: 'not a preset', graph_name: 'Graph', bode_hue: 100,
+    bode_poles_zeros: null, bode_display_pole_zero_bool: true,
     bode_displaybool: true, bode_display_bodemag_bool: true, bode_display_bodephase_bool: true,
     bode_display_timeresponse_bool: true, bode_display_nyquist_bool: true,
     bode_gain_array: Array(400).fill(0), // 0 dB: drawn at y = 130 in the Bode magnitude plot
@@ -66,7 +68,7 @@ function fake_graph(overrides = {}) {
     bode_timerep_array: Array(100).fill(50), // 50: drawn at y = 140 in the step response plot
     draw_nyquist_value: jest.fn(), get_nyquist_value: jest.fn(() => [10, 20]),
     ...overrides,
-  };
+  });
 }
 
 const preset_formula = (name) => global_value(name).formula;
@@ -424,7 +426,8 @@ describe('mouseMoved: redraws', () => {
 
 describe('mouseMoved: pole-zero maps', () => {
   const POLE_ZERO_PRESETS = ['GRAPH_ONE_REAL_POLE', 'GRAPH_TWO_REAL_POLES', 'GRAPH_TWO_COMPLEX_POLES',
-    'GRAPH_FOUR_POLES', 'GRAPH_ONE_ZERO', 'GRAPH_ONE_ZERO_TWO_POLES'];
+    'GRAPH_FOUR_POLES', 'GRAPH_ONE_ZERO', 'GRAPH_ONE_ZERO_TWO_POLES', 'GRAPH_PID'];
+  const COMPUTED_MAP = { poles: [{ re: -1, im: 0 }], zeros: [] };
 
   function setup_second_graph(formula, overrides = {}) {
     set_live('bode_graphs', [fake_graph(), fake_graph({ bode_formula: formula, ...overrides })]);
@@ -444,11 +447,23 @@ describe('mouseMoved: pole-zero maps', () => {
     expect(texts()).toEqual(['Re=-1.00', 'Im=0.00']);
   });
 
-  test('other presets, and hidden graphs, show nothing', () => {
-    setup_second_graph(preset_formula('GRAPH_PID'));
+  test('a computed map shows the position too, on a preset or a typed formula', () => {
+    setup_second_graph(preset_formula('GRAPH_TIME_DELAY'), { bode_poles_zeros: COMPUTED_MAP });
+    move(848, 168);
+    expect(texts()).toEqual(['Re=-1.00', 'Im=0.00']);
+    setup_second_graph('1/(s+1)', { bode_poles_zeros: COMPUTED_MAP });
+    move(848, 168);
+    expect(texts()).toEqual(['Re=-1.00', 'Im=0.00']);
+  });
+
+  test('a graph without a map, a hidden graph and a quiz ghost show nothing', () => {
+    setup_second_graph(preset_formula('GRAPH_TIME_DELAY'));
     move(848, 168);
     expect(texts()).toEqual([]);
     setup_second_graph(preset_formula('GRAPH_ONE_REAL_POLE'), { bode_displaybool: false });
+    move(848, 168);
+    expect(texts()).toEqual([]);
+    setup_second_graph('1/(s+1)', { bode_poles_zeros: COMPUTED_MAP, bode_display_pole_zero_bool: false });
     move(848, 168);
     expect(texts()).toEqual([]);
   });

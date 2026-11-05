@@ -709,6 +709,7 @@ describe('hover_nyquist.js', () => {
       bode_phase_array: Array(400).fill(-Math.PI / 2),
       bode_timerep_array: Array(100).fill(50),
       draw_nyquist_value: jest.fn(), get_nyquist_value: jest.fn(() => [10, 20]),
+      has_pole_zero_map: () => false,
       ...overrides,
     };
   }

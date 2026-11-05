@@ -1,12 +1,5 @@
 'use strict';
 
-// Presets whose pole-zero map is drawn from their slider values (and partly dragged with the
-// mouse, see graph_has_pole_zero_map). Every other graph gets a display-only map with computed
-// poles and zeros, if it has any (see has_pole_zero_map).
-const PARAMETER_POLE_ZERO_MAP_FORMULAS = [GRAPH_ONE_REAL_POLE.formula, GRAPH_TWO_REAL_POLES.formula,
-  GRAPH_TWO_COMPLEX_POLES.formula, GRAPH_ONE_ZERO.formula, GRAPH_ONE_ZERO_TWO_POLES.formula,
-  GRAPH_FOUR_POLES.formula, GRAPH_PID.formula];
-
 class bode_graph{
   constructor(a,b){
     this.bode_id = a;
@@ -104,8 +97,9 @@ class bode_graph{
     this.bode_poles_zeros = this.has_parameter_pole_zero_map() ? null : poles_and_zeros(binding);
   }
 
+  // Whether the pole-zero map is drawn from the slider values (see pole_zero_map in presets_state.js).
   has_parameter_pole_zero_map(){
-    return PARAMETER_POLE_ZERO_MAP_FORMULAS.includes(this.bode_formula);
+    return preset_of_formula(this.bode_formula)?.pole_zero_map !== undefined;
   }
 
   // Whether this graph gets a pole-zero map at all: presets with a parameter map always do,

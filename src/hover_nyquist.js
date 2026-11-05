@@ -266,12 +266,7 @@ function mouseMoved(){
   // Check if we're hovering any of the pole-zero graphs:
   for(let i=0; i<bode_graphs.length; i++){
     if(bode_graphs[i].bode_displaybool){
-      if ((bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula)||
-          (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula)||
-          (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula)||
-          (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula)||
-          (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO.formula)||
-          (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula)){
+      if (bode_graphs[i].has_pole_zero_map()){
         if(((mouseX-pole_zero_graph_x[i]) > 0) && ((mouseX-pole_zero_graph_x[i]) < pole_zero_width)){
           if(((mouseY-pole_zero_graph_y[i]) > 0) && ((mouseY-pole_zero_graph_y[i]) < pole_zero_height)){
             let real=(mouseX-pole_zero_graph_x[i])/pole_zero_width * 4 - 3;
