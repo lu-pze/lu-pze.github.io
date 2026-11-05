@@ -6,6 +6,11 @@ const fs = require('fs');
 const path = require('path');
 const { ESLint } = require('eslint');
 
+// Warnings are old code that was not rewritten at once (a blind `==` to `===` can change
+// behaviour). These counts may only fall: lint fails above a ceiling, whatever --quiet says.
+// Lower a ceiling when the count falls; never raise one.
+const WARNING_CEILINGS = { eqeqeq: 394, 'max-lines-per-function': 5 };
+
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const files = [...html.matchAll(/<script[^>]*\ssrc="(src\/[^"]+)"/g)].map((match) => match[1]);
@@ -35,5 +40,15 @@ function locate(line) {
     console.log(`${locate(m.line)}:${m.column}  ${m.severity === 2 ? 'error' : 'warning'}  ${m.message}  ${m.ruleId || ''}`);
   }
   console.log(`${files.length} files, ${messages.length} problem(s)`);
-  process.exit(messages.some((m) => m.severity === 2) ? 1 : 0);
+  let above_ceiling = false;
+  for (const [rule, ceiling] of Object.entries(WARNING_CEILINGS)) {
+    const count = result.messages.filter((m) => m.ruleId === rule && m.severity === 1).length;
+    if (count > ceiling) {
+      above_ceiling = true;
+      console.log(`${rule}: ${count} warnings, the ceiling is ${ceiling}. Run node tools/lint.js to list them.`);
+    } else if (count < ceiling) {
+      console.log(`${rule}: ${count} warnings, so lower its ceiling in tools/lint.js from ${ceiling}.`);
+    }
+  }
+  process.exit(above_ceiling || messages.some((m) => m.severity === 2) ? 1 : 0);
 })();

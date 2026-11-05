@@ -17,6 +17,15 @@ module.exports = {
             "parserOptions": {
                 "sourceType": "script"
             }
+        },
+        {
+            // Old code breaks both rules, so they are warnings, and tools/lint.js
+            // fails when their counts rise. New code in src/ must not add to them.
+            "files": ["src/**/*.js"],
+            "rules": {
+                "eqeqeq": ["warn", "always"],
+                "max-lines-per-function": ["warn", { "max": 100, "skipBlankLines": true, "skipComments": true }]
+            }
         }
     ],
     "parserOptions": {

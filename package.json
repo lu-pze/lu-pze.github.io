@@ -11,7 +11,7 @@
     "test:mutation": "stryker run"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@playwright/test": "^1.64.1",
     "@stryker-mutator/core": "^10.1.1",
