@@ -323,6 +323,22 @@ describe('setup()', () => {
     });
   });
 
+  describe('a stored choice to turn tracking off', () => {
+    test('makes no id, sets no cookie and logs nothing about one', () => {
+      document.cookie = 'tracking_off=1;path=/';
+      window.setup();
+      expect(global_value('client_cookid')).toBe(-1);
+      expect(window.get_cookie('cookid')).toBe('');
+      expect(events().some((e) => e.includes('cookid'))).toBe(false);
+    });
+
+    test('any other value of the cookie is not a choice', () => {
+      document.cookie = 'tracking_off=0;path=/';
+      window.setup();
+      expect(global_value('client_cookid')).not.toBe(-1);
+    });
+  });
+
   describe('telemetry events', () => {
     test('logs the setup time first and then the environment', () => {
       window.setup();
@@ -467,6 +483,28 @@ describe('setup()', () => {
   });
 });
 
+describe('restore_tracking_choice', () => {
+  const checkbox = () => document.getElementById('tracking_checkbox');
+  // The box lives in the splash text, which the other tests replace, as the app does after the splash.
+  beforeEach(() => {
+    document.getElementById('welcome_text').innerHTML = '<input type="checkbox" id="tracking_checkbox" checked>';
+    set_globals({ improvement_enabled: true });
+  });
+
+  test('a stored choice turns tracking off and unticks the box', () => {
+    document.cookie = 'tracking_off=1;path=/';
+    window.restore_tracking_choice();
+    expect(global_value('improvement_enabled')).toBe(false);
+    expect(checkbox().checked).toBe(false);
+  });
+
+  test('without one tracking stays on and the box stays ticked', () => {
+    window.restore_tracking_choice();
+    expect(global_value('improvement_enabled')).toBe(true);
+    expect(checkbox().checked).toBe(true);
+  });
+});
+
 describe('ready() and the start-up hook', () => {
   // ready() can only run once on the page (it replaces the class of .input-equation, which it
   // later looks the element up by), so it runs here once, with spies installed, and the tests
@@ -474,12 +512,18 @@ describe('ready() and the start-up hook', () => {
   const document_handlers = {};
   const boot = {}; // the spies that were installed while ready() ran
   let interval;
+  let tracking_at_first_spy_call; // ready() logs through these, for example set_difficulty_level
 
   beforeAll(() => {
     for (const name of SPYABLE) {
-      window[name] = jest.fn();
+      window[name] = jest.fn(() => {
+        if (tracking_at_first_spy_call === undefined) tracking_at_first_spy_call = global_value('improvement_enabled');
+      });
       boot[name] = window[name];
     }
+    set_globals({ improvement_enabled: true });
+    document.cookie = 'tracking_off=1;path=/';
+    document.getElementById('welcome_text').innerHTML = '<input type="checkbox" id="tracking_checkbox" checked>';
     document.getElementById('hover_answer').style.visibility = 'visible';
     // Capture the document listeners instead of registering them for real.
     const add_listener = document.addEventListener;
@@ -498,6 +542,10 @@ describe('ready() and the start-up hook', () => {
 
   test('ready() ran once the DOMContentLoaded event fired', () => {
     expect(boot.prepare_banner).toHaveBeenCalledTimes(1);
+  });
+
+  test('a stored choice to turn tracking off applies before ready() does anything that can log', () => {
+    expect(tracking_at_first_spy_call).toBe(false);
   });
 
   test('listens to keydown, contextmenu and visibilitychange on the document', () => {

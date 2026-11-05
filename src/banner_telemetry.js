@@ -44,9 +44,8 @@ function remove_banner_if_needed (){
 // --------------------- start of improvement code
 
 let improvement_enabled = true;
-function opt_out_tracking() {
-  improvement_enabled = false;
-}
+const TRACKING_OFF_COOKIE = "tracking_off"; // Only remembers the choice, and is never sent anywhere.
+const TRACKING_OFF_COOKIE_DAYS = 365;
 
 var pending = [];
 var event_no = 0;
@@ -55,6 +54,22 @@ let client_id = Math.random()*2**31>>>0; // A pretty random 31-bit uint id
 let client_nick = "";
 let client_place = "";
 let client_cookid = -1;
+
+// The checkbox on the splash screen. Turning tracking off also drops what is queued and the id.
+function set_tracking_enabled(enabled) {
+  improvement_enabled = enabled;
+  if (enabled) {
+    set_cookie(TRACKING_OFF_COOKIE, "", -1);
+    identify_client();
+    return;
+  }
+  set_cookie(TRACKING_OFF_COOKIE, "1", TRACKING_OFF_COOKIE_DAYS);
+  set_cookie("cookid", "", -1);
+  client_cookid = -1;
+  pending = [];
+  clearTimeout(periodic_timer_id);
+  periodic_timer_id = 0;
+}
 
 function add_event (string) {
   if (debug_mode) console.log("Event:"+string);

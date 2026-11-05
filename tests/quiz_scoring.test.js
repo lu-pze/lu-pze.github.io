@@ -640,6 +640,46 @@ describe('read_highscores', () => {
     });
   });
 
+  // The log is plain text that anyone can POST to, so names in it are never trusted as HTML.
+  describe('names from the log are shown as text', () => {
+    const highscores = () => document.getElementById('quiz_highscores');
+    const forged = (place_nick) => result({ place_nick, total: '50.0', correct: 5, streak: 3, time: '2026/10/30 09:00:00' });
+
+    test('a nickname cannot add elements to the page', () => {
+      load(forged('x_<img src onerror=a()>'));
+      expect(highscores().querySelector('img')).toBeNull();
+      expect(highscores().textContent).toContain('<img src onerror=a()>');
+    });
+
+    test('a place name cannot add elements to the page', () => {
+      load(forged('<i>abc_Nick'));
+      expect(highscores().querySelector('i')).toBeNull();
+      expect(highscores().textContent).toContain('<i>abc');
+    });
+
+    test('escape_html replaces every character that means something in HTML', () => {
+      expect(window.escape_html(`a&b<c>d"e'f`)).toBe('a&amp;b&lt;c&gt;d&quot;e&#39;f');
+    });
+
+    test('a nickname is shortened before it is escaped, so no entity is cut in half', () => {
+      expect(window.split_placename(`X_${'&'.repeat(30)}`, 19).nickname).toBe(`${'&amp;'.repeat(16)}...`);
+    });
+
+    test('a nickname that fits is escaped too', () => {
+      expect(window.split_placename('X_<b>', 19).nickname).toBe('&lt;b&gt;');
+    });
+
+    test('a place is cut to 6 characters before it is escaped, and padded with spaces', () => {
+      expect(window.highscore_place_cell('&&&&&&&&')).toBe(`${'&amp;'.repeat(6)}&nbsp;`);
+      expect(window.highscore_place_cell('<')).toBe(`&lt;${'&nbsp;'.repeat(5)}&nbsp;`);
+    });
+
+    test('ordinary names are unchanged', () => {
+      expect(window.split_placename('FRTF05_Åsa_B', 19)).toEqual({ place: 'FRTF05', nickname: 'Åsa_B' });
+      expect(window.highscore_place_cell('FRTF05')).toBe('FRTF05&nbsp;');
+    });
+  });
+
   test('a response with no result lines still renders the headings', () => {
     load('');
     expect(Object.values(sections()).every((text) => text === '')).toBe(true);

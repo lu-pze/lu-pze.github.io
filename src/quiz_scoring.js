@@ -101,7 +101,13 @@ function sorted_by_value_descending(values_by_name) {
   return entries;
 }
 
+// The highscore log is plain text that anyone can POST to, so a name in it is never trusted as HTML.
+function escape_html(text) {
+  return text.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
+}
+
 // "FRTF05_Nick" -> {place:"FRTF05", nickname:"Nick"}, nickname shortened with "..." if longer than max_length.
+// The nickname comes back escaped for HTML; the place is raw, highscore_place_cell escapes it after cutting it.
 function split_placename(placename, max_length) {
   let i = placename.indexOf('_');
   let parts = [placename.slice(0,i), placename.slice(i+1)];
@@ -109,7 +115,7 @@ function split_placename(placename, max_length) {
   if (nickname.length>max_length) {
     nickname = nickname.substr(0,max_length-3)+"...";
   }
-  return {place: parts[0], nickname: nickname};
+  return {place: parts[0], nickname: escape_html(nickname)};
 }
 
 // "NN. " for the first row with a new value, otherwise blanks of the same width (ties).
@@ -122,7 +128,7 @@ function highscore_rank_prefix(row_no, is_new_value) {
 
 // Place name padded or cut to 6 characters, followed by a space.
 function highscore_place_cell(place) {
-  return (place + "      ").substr(0,6).replaceAll(" ","&nbsp;") + "&nbsp;";
+  return escape_html((place + "      ").substr(0,6)).replaceAll(" ","&nbsp;") + "&nbsp;";
 }
 
 function render_highscore_section(high_total_sorted, scores, latest_cutoff_date) {

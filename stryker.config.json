@@ -19,8 +19,9 @@
   "ignorePatterns": [
     "docs",
     "e2e",
+    "livet.se",
     "splash_screen",
-    "php",
+    "php/_highscores.txt",
     "images/src",
     "audio/src",
     "coverage",

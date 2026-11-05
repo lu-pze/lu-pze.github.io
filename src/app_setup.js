@@ -77,6 +77,30 @@ function get_cookie(cname) {
   return "";
 }
 
+function tracking_was_turned_off() {
+  return get_cookie(TRACKING_OFF_COOKIE) == "1";
+}
+
+// Has to come before anything logs an event, which is why ready() starts with it.
+function restore_tracking_choice() {
+  if (tracking_was_turned_off()) {
+    improvement_enabled = false;
+    document.getElementById("tracking_checkbox").checked = false;
+  }
+}
+
+// Reuses the visitor's id from the cookie, or makes a new one.
+function identify_client() {
+  client_cookid = get_cookie("cookid");
+  if (client_cookid=="") {
+    client_cookid = str(Math.random()*2**31>>>0); // A pretty random 31-bit uint id
+    add_event("set_cookid=" + client_cookid);
+    set_cookie("cookid", client_cookid, 50);
+  } else {
+    add_event("got_cookid=" + client_cookid);
+  }
+}
+
 // Called by p5:
 function setup (){
   const queryString = window.location.search;
@@ -89,14 +113,7 @@ function setup (){
     debug_mode = true;
   }
   add_event("setup="+start_date.toLocaleString().replace(" ",""));
-  client_cookid = get_cookie("cookid");
-  if (client_cookid=="") {
-    client_cookid = str(Math.random()*2**31>>>0); // A pretty random 31-bit uint id
-    add_event("set_cookid=" + client_cookid);
-    set_cookie("cookid", client_cookid, 50);
-  } else {
-    add_event("got_cookid=" + client_cookid);
-  }
+  if (!tracking_was_turned_off()) identify_client();
   setGraphDimensions();
   try {
     const gl = document.createElement('canvas').getContext('webgl');
@@ -162,6 +179,7 @@ function setup (){
 }
 
 function ready (){
+  restore_tracking_choice();
   let add_button = document.getElementsByClassName("add-graph")[0];
   add_button.addEventListener('click',addNewGraphClicked);
   let setting_button = document.getElementsByClassName("option-button")[0];

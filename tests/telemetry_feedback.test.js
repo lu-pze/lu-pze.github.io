@@ -1,6 +1,6 @@
 // Tests for src/banner_telemetry.js (right-click banner, add_event / periodic_send event
-// logging, opt_out_tracking) and src/feedback.js (survey popups, set_fb_*). They record current
-// behaviour; the one `test.failing` case marks a suspected bug (see the comment on it).
+// logging, set_tracking_enabled) and src/feedback.js (survey popups, set_fb_*). They record current
+// behaviour.
 // No real network traffic: window.XMLHttpRequest is replaced by a fake and timers are faked.
 const { loadApp, global_value, set_globals } = require('./helpers/load_app');
 
@@ -322,17 +322,32 @@ describe('periodic_send responses', () => {
 });
 
 // ---------------------------------------------------------------------------
-// opt_out_tracking
+// set_tracking_enabled
 // ---------------------------------------------------------------------------
-describe('opt_out_tracking', () => {
-  test('turns improvement_enabled off', () => {
-    expect(global_value('improvement_enabled')).toBe(true);
-    window.opt_out_tracking();
-    expect(global_value('improvement_enabled')).toBe(false);
+describe('set_tracking_enabled', () => {
+  const checkbox = () => document.getElementById('tracking_checkbox');
+
+  beforeEach(() => {
+    document.cookie = 'tracking_off=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+    document.cookie = 'cookid=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+    window.str = String;
   });
 
-  test('events after opting out are neither queued nor sent', () => {
-    window.opt_out_tracking();
+  test('tracking is on by default and the box starts ticked', () => {
+    expect(global_value('improvement_enabled')).toBe(true);
+    expect(checkbox().checked).toBe(true);
+  });
+
+  test('the box changes the setting once, on change, and survives a browser form restore', () => {
+    expect(checkbox().getAttribute('onchange')).toBe('set_tracking_enabled(this.checked)');
+    expect(checkbox().getAttribute('onclick')).toBeNull();
+    expect(checkbox().closest('span').getAttribute('onclick')).toBeNull();
+    expect(checkbox().getAttribute('autocomplete')).toBe('off');
+  });
+
+  test('turning it off stops new events from being queued or sent', () => {
+    window.set_tracking_enabled(false);
+    expect(global_value('improvement_enabled')).toBe(false);
     window.add_event('a');
     window.add_event('');
     jest.advanceTimersByTime(60000);
@@ -340,19 +355,50 @@ describe('opt_out_tracking', () => {
     expect(FakeXHR.instances).toHaveLength(0);
   });
 
-  test('opting out twice (the page wires it to both the label and the checkbox) is harmless', () => {
-    window.opt_out_tracking();
-    window.opt_out_tracking();
-    expect(global_value('improvement_enabled')).toBe(false);
-  });
-
-  // SUSPECTED BUG (not fixed): opt_out_tracking only stops *new* events. Events queued before the
-  // opt-out stay in `pending`, and the already scheduled timer still POSTs them to livet.se.
-  test.failing('events queued before opting out are not sent afterwards', () => {
+  test('events queued before turning it off are not sent afterwards', () => {
     window.add_event('before');
-    window.opt_out_tracking();
+    window.set_tracking_enabled(false);
+    expect(global_value('pending')).toEqual([]);
+    expect(global_value('periodic_timer_id')).toBe(0);
     jest.advanceTimersByTime(60000);
     expect(FakeXHR.instances).toHaveLength(0);
+  });
+
+  test('turning it off forgets the id and stores only the choice', () => {
+    set_globals({ client_cookid: '555' });
+    document.cookie = 'cookid=555;path=/';
+    window.set_tracking_enabled(false);
+    expect(global_value('client_cookid')).toBe(-1);
+    expect(window.get_cookie('cookid')).toBe('');
+    expect(window.get_cookie('tracking_off')).toBe('1');
+  });
+
+  test('the choice is kept for a year', () => {
+    const set_cookie = jest.spyOn(window, 'set_cookie');
+    window.set_tracking_enabled(false);
+    expect(set_cookie).toHaveBeenCalledWith('tracking_off', '1', 365);
+    set_cookie.mockRestore();
+  });
+
+  test('turning it on again starts sending, under a new id', () => {
+    window.set_tracking_enabled(false);
+    jest.spyOn(Math, 'random').mockReturnValue(0.5);
+    window.set_tracking_enabled(true);
+    Math.random.mockRestore();
+    expect(global_value('improvement_enabled')).toBe(true);
+    expect(window.get_cookie('tracking_off')).toBe('');
+    expect(global_value('client_cookid')).toBe('1073741824');
+    expect(window.get_cookie('cookid')).toBe('1073741824');
+    expect(global_value('pending')).toHaveLength(1);
+    jest.advanceTimersByTime(1500);
+    expect(FakeXHR.instances).toHaveLength(1);
+  });
+
+  test('turning it off twice is harmless', () => {
+    window.set_tracking_enabled(false);
+    window.set_tracking_enabled(false);
+    expect(global_value('improvement_enabled')).toBe(false);
+    expect(window.get_cookie('tracking_off')).toBe('1');
   });
 });
 

@@ -33,7 +33,29 @@ function clean_input($str) {
   return $str;
 }
 
-$filename = "/home/pex/web/se.livet/data/lu-pze/_highscores.txt";
+// What the leaderboard needs from one stored line, and nothing else: the file also holds IP
+// addresses, cookid and answer timelines, and this endpoint is public. Null for a line that is
+// not a result. Must keep giving what parse_highscore_lines in src/quiz_scoring.js reads.
+function public_highscore_line($line) {
+  if (preg_match('/^T.*?;L([A-ZÅÄÖa-zåäö0-9_]*);/u', $line, $name) !== 1) {
+    return null;
+  }
+  $public = "T;L".$name[1].";";
+  foreach (['total', 'nof_correct', 'longest_streak'] as $field) {
+    if (preg_match('/,'.$field.'=([0-9.]+),/', $line, $value) === 1) {
+      $public .= ",".$field."=".$value[1];
+    }
+  }
+  $public .= ",";
+  // The last one is the server's own: anything before it was written by the client.
+  if (preg_match('/.*,#server_time=([0-9\/ :]+)/', $line, $value) === 1) {
+    $public .= "#server_time=".$value[1];
+  }
+  return $public;
+}
+
+// The environment variable is only for tests/php_compete.test.js.
+$filename = getenv('LU_PZE_HIGHSCORES') ?: "/home/pex/web/se.livet/data/lu-pze/_highscores.txt";
 if(isset($POST_VARS['e'])) {
   $e = clean_input($POST_VARS['e']);
   // We can get some static info here.
@@ -68,12 +90,10 @@ if (file_exists($filename)) {
   if ($fileHandle) {
     $lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     for ($i = 0; $i < count($lines); $i++) {
-      $line = $lines[$i];
-      // Filter out stuff that client doesn't need to build a highscore table:
-      $line = preg_replace('/#ip_xff=\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3},/','',$line);
-      $line = preg_replace('/#ip=\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3},/','',$line);
-      $line = preg_replace('/#port=\d+,/','',$line);
-      echo $line."\n";
+      $line = public_highscore_line($lines[$i]);
+      if ($line !== null) {
+        echo $line."\n";
+      }
     }
     fclose($fileHandle);
   } else {

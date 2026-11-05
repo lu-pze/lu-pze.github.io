@@ -5,3 +5,12 @@ playwright-report/
 others/
 .stryker-tmp/
 reports/
+
+# Real participant data: never commit, this repo is public.
+livet.se/
+php/_highscores.txt
+
+# Large source assets, kept locally only.
+audio/src/
+images/src/
+splash_screen/

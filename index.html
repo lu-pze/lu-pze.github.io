@@ -466,6 +466,10 @@ Reloading the page in your browser will clear achievements, assignments and task
 Full source code is available at <a href="https://github.com/lu-pze/lu-pze.github.io" target="_blank">GitHub</a>.<br>
 What's new? Read the <a href="https://github.com/lu-pze/lu-pze.github.io/commits/main" target="_blank">version history</a>.<br>
 <hr>
+<b>Privacy:</b> To improve LU-PZE, we use cookies. A cookie keeps an id for you for 50 days. 
+To turn this off, reload the page and untick "help make LU-PZE better" on the start screen. 
+If you compete in the quiz, your nickname and score are shown publicly, and your result is stored with your IP address.
+<hr>
 <center><table><tr>
 <td><img src="images/balloon_girl_small.webp" height="128px" style="margin:0 20px 0 0"></td>
 <td><center>Suggestions?<br><br>
@@ -537,8 +541,8 @@ frida.heskebeck@control.lth.se</center><br></td>
 <svg width="20" height="20" viewBox="0 0 24 24" fill="#b0b0b0" style="vertical-align:top"><use href="#icon_add"/></svg> or here to add next graph</span></center></div></div>
 
 <div class="welcome_text" id="welcome_text">
-<center><span onclick="opt_out_tracking();" style="color:#b0b0b0;vertical-align:middle;font-size:93%;font-weight:400">
-<label><input type="checkbox" id="opt_out_tracking" value="" style="width:15px;height:15px;accent-color: #d0d0d0;" onclick="opt_out_tracking()" checked> help make LU-PZE better</label></span></center>
+<center><span style="color:#b0b0b0;vertical-align:middle;font-size:93%;font-weight:400">
+<label><input type="checkbox" id="tracking_checkbox" value="" autocomplete="off" style="width:15px;height:15px;accent-color: #d0d0d0;" onchange="set_tracking_enabled(this.checked)" checked> help make LU-PZE better</label></span></center>
 <br>
 <br><br><br>Dear Adventurer,<br><br>This is your<br>Automatic Control<br>playground.<br><br><br>Left click/drag for actions<br>Right click for questions<br><br><br><i>Can you reach<br>the next level?</i>
 <br><br><br><br><span style="color:#b0b0b0;font-size:93%;font-family:Arial,sans-serif;font-weight:400;">Click to continue</span>
