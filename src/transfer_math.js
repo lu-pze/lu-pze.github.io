@@ -80,6 +80,16 @@ function compile_formula(formula){
   return compiled;
 }
 
+// The variables of range_slider_alphabet that a formula uses, or null if it cannot be parsed.
+// Comes from the parsed formula, because a search in its text also finds the x and p of "exp(".
+function formula_variables(formula){
+  try{
+    return compile_formula(formula).symbols.filter((name) => range_slider_alphabet.includes(name));
+  } catch(error){
+    return null;
+  }
+}
+
 // Compiles a formula and binds the current slider values of the variables it uses:
 // {node, code, scope}. Returns null when one of those sliders has no value yet (18012001).
 // A formula that cannot be parsed gets a binding whose evaluation throws (and no node), so
@@ -349,6 +359,20 @@ function poles_and_zeros(binding){
   } catch(error){
     return null;
   }
+}
+
+// The total delay L [s] of the e^(-L*s) factors of a bound formula, 0 if it cannot be parsed.
+function formula_delay(binding){
+  return binding.node === null ? 0 : split_time_delay(binding.node, binding.scope).delay;
+}
+
+// Unwraps a phase [rad]: `phase` plus the whole turns that bring it within half a turn of
+// `previous`, which is NaN for the first sample. A step of exactly half a turn counts as falling,
+// as at an undamped resonance. Two samples that really differ by more than half a turn, such as
+// two undamped resonances within one pixel, cannot be told apart from a smaller step.
+function continue_phase(phase, previous){
+  if (Number.isNaN(previous)) return phase;
+  return phase - 2*Math.PI*Math.floor((phase - previous + Math.PI)/(2*Math.PI));
 }
 
 // The frequency [rad/s] of Bode sample x (0 <= x < graph_bode_mag_width) on the log axis.

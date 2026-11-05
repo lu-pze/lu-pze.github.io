@@ -23,11 +23,12 @@ function updateInputFormula(event){
 }
 
 function checkSlider(input_id){
-  let linked_formula = getGraphById(input_id).bode_formula;
+  const variables = formula_variables(getGraphById(input_id).bode_formula);
+  if (variables === null) return; // Half-typed: the buttons stay until the formula parses again.
   for(let i=0; i<range_slider_alphabet.length; i++){
     let current_letter = range_slider_alphabet[i];
     let linked_button = document.getElementById("BTNS_" + input_id.toString() + "_" + i.toString());
-    if(linked_formula.includes(current_letter)){
+    if(variables.includes(current_letter)){
       if(range_slider_variables[i] == 18012001 && linked_button == null){
         createSliderButton(input_id,i);
       }
@@ -406,10 +407,10 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
         let event={};
         event.target={};
         let equation_id=input_element_id; // The DOM number of the equation
-        // Search for all variables in the equation_string:
+        const variables = formula_variables(equation_string) || [];
         for(let i=NOF_CONSTANT_VARIABLES; i<range_slider_alphabet.length; i++){
           let current_letter = range_slider_alphabet[i];
-          if(equation_string.includes(current_letter)){
+          if(variables.includes(current_letter)){
             //let linked_button = document.getElementById("BTNS_" + equation_id.toString() + "_" + i.toString());
             range_slider_variables[i] = 1.0;  // Initial value
             event.target.id="BTNS_" + equation_id.toString() + "_" + i.toString();

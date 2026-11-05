@@ -837,6 +837,66 @@ describe('checkSlider and createSliderButton', () => {
     window.checkSlider(1);
     expect(button_for('e')).toBeNull();
   });
+
+  test.each([
+    ['exp(-s)*k_1*T_1', ['x', 'p']],
+    ['sqrt(s)*k_1*T_1', ['q', 'r', 't']],
+    ['sin(s)*k_1*T_1', ['n']],
+    ['abs(s)*tan(s)*k_1*T_1', ['a', 'b', 't', 'n']],
+  ])('the letters of a function name are not variables: %s', (formula, letters) => {
+    graphs()[0].bode_formula = formula;
+    window.checkSlider(1);
+    for (const letter of letters) expect(button_for(letter)).toBeNull();
+  });
+
+  test('a variable next to a function still gets its button', () => {
+    graphs()[0].bode_formula = 'exp(-x)*k_1*T_1';
+    window.checkSlider(1);
+    expect(button_for('x')).not.toBeNull();
+    expect(button_for('p')).toBeNull();
+  });
+
+  test('a half-typed formula leaves the buttons as they are until it parses again', () => {
+    graphs()[0].bode_formula = 'k_1*T_1*K';
+    window.checkSlider(1);
+    graphs()[0].bode_formula = 'k_1*T_1*K/(';
+    window.checkSlider(1);
+    expect(button_for('K')).not.toBeNull();
+    graphs()[0].bode_formula = 'k_1*T_1';
+    window.checkSlider(1);
+    expect(button_for('K')).toBeNull();
+  });
+});
+
+describe('sliders of a new graph', () => {
+  const custom = (formula) => ({ name: 'Custom', mf: 'x', formula });
+  const slider_for = (name) => document.getElementById('RANGE_' + position(name));
+
+  test('a variable next to a function name gets a slider, the letters of the name do not', () => {
+    window.addNewGraph(null, custom('K*exp(-s)'));
+    expect(slider_for('K')).not.toBeNull();
+    expect(slider_for('x')).toBeNull();
+    expect(slider_for('p')).toBeNull();
+  });
+
+  test('a formula that cannot be parsed gets no sliders', () => {
+    window.addNewGraph(null, custom('K/('));
+    expect(slider_for('K')).toBeNull();
+  });
+});
+
+describe('formula_variables', () => {
+  test('lists the variables of the alphabet, in the order they appear', () => {
+    expect(window.formula_variables('T_2s*k_1')).toEqual(['T_2', 'k_1']);
+  });
+
+  test('leaves out s, i and function names, and keeps the constant e', () => {
+    expect(window.formula_variables('e^(-s)+sqrt(i)')).toEqual(['e']);
+  });
+
+  test('is null for a formula that cannot be parsed', () => {
+    expect(window.formula_variables('1/(')).toBeNull();
+  });
 });
 
 describe('changeGraphDisplayStatus', () => {

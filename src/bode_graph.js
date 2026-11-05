@@ -55,7 +55,10 @@ class bode_graph{
       this.bode_gain_array = [];
       this.bode_complex_array = [];
 
-      let phase_bias = 0;
+      // The delay's phase -L*w is known exactly, while at high frequencies it can turn more than once between
+      // two samples, which no unwrapping can follow. So only the rest of G is unwrapped.
+      const delay = formula_delay(binding);
+      let previous_phase = NaN;
       for(let x=0; x<graph_bode_mag_width; x++){
         let math_x = bode_sample_frequency(x);
         let bode_value = getComplexValues(binding, math_x);
@@ -75,15 +78,11 @@ class bode_graph{
         bode_value = bode_value.toPolar();
 
         let bode_gain = 20*Math.log(bode_value.r)/Math.log(10);
-        let bode_phase = bode_value.phi;
-        bode_phase += phase_bias;
-
-        // Compensate the phase when it has crossed the 2*PI wrap-around:
-        if(x>=1 && (Math.abs(bode_phase - this.bode_phase_array[x-1]) > 0.1*2*Math.PI)) {
-          let sign = Math.sign(this.bode_phase_array[x-1]);
-          phase_bias = sign * Math.PI * 2;
-          bode_phase += phase_bias;
-        }
+        // On a pole G is infinite and has no phase; bode_value.phi is then only the angle of Infinity+Infinity*i.
+        const sampled_phase = Number.isFinite(bode_value.r) ? bode_value.phi + delay*math_x : NaN;
+        const phase_without_delay = continue_phase(sampled_phase, previous_phase);
+        if (!Number.isNaN(phase_without_delay)) previous_phase = phase_without_delay;
+        let bode_phase = phase_without_delay - delay*math_x;
 
         this.bode_gain_array.push(bode_gain);
         this.bode_phase_array.push(bode_phase);

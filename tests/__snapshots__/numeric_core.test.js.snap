@@ -502,14 +502,14 @@ exports[`numeric core every preset graph keeps its numeric behaviour 1`] = `
       -1.2854,
       -2.84566,
       -6.47113,
-      -11.0674,
-      -13.8617,
-      -15.1683,
+      -17.3506,
+      -51.5608,
+      -159.682,
     ],
     "phase_crossover_freq": 3.67319,
     "phase_margin": 28.4428,
     "phase_range": [
-      -15.6837,
+      -487.384,
       -0.0149997,
     ],
     "timerep": [
