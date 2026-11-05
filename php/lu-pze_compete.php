@@ -34,13 +34,34 @@ function clean_input($str) {
 }
 
 $filename = "/home/pex/web/se.livet/data/lu-pze/_highscores.txt";
-$f(isset($POST_VARS['e'])) {
+if(isset($POST_VARS['e'])) {
   $e = clean_input($POST_VARS['e']);
+  // We can get some static info here.
+  $info = "";
+  $info .= "#ip=".$_SERVER['REMOTE_ADDR'].",";
+  if (isset($_SERVER['HTTP_CLIENT_IP'])) {
+    $info .= "#ip_cip=".$_SERVER['HTTP_CLIENT_IP'].",";
+  }
+  if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+    $info .= "#ip_xff=".$_SERVER['HTTP_X_FORWARDED_FOR'].",";
+  }
+  if (isset($_SERVER['HTTP_X_FORWARDED'])) {
+    $info .= "#ip_xf=".$_SERVER['HTTP_X_FORWARDED'].",";
+  }
+  if (isset($_SERVER['HTTP_FORWARDED_FOR'])) {
+    $info .= "#ip_ff=".$_SERVER['HTTP_FORWARDED_FOR'].",";
+  }
+  if (isset($_SERVER['HTTP_FORWARDED'])) {
+    $info .= "#ip_f=".$_SERVER['HTTP_FORWARDED'].",";
+  }
+  $info .= "#port=".$_SERVER['REMOTE_PORT'].",";
+  $info .= "#ref=".$_SERVER['HTTP_REFERER'].",";
+  $info .= "#server_time=".date('Y/m/d H:i:s').".";
+
   $file = fopen($filename, "a");
-  fwrite($file, $e."\n");
+  fwrite($file, $e.$info."\n");
   fclose($file);
 }
-
 
 if (file_exists($filename)) {
   $fileHandle = fopen($filename, 'r');
@@ -48,6 +69,10 @@ if (file_exists($filename)) {
     $lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     for ($i = 0; $i < count($lines); $i++) {
       $line = $lines[$i];
+      // Filter out stuff that client doesn't need to build a highscore table:
+      $line = preg_replace('/#ip_xff=\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3},/','',$line);
+      $line = preg_replace('/#ip=\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3},/','',$line);
+      $line = preg_replace('/#port=\d+,/','',$line);
       echo $line."\n";
     }
     fclose($fileHandle);
