@@ -47,7 +47,7 @@ describe('Bode marks of each preset', () => {
     ['GRAPH_TWO_REAL_POLES', [pole(2), pole(3)]],
     ['GRAPH_ONE_ZERO_TWO_POLES', [pole(6), pole(7), zero(8)]],
     ['GRAPH_FOUR_POLES', [pole(5)]],
-    ['GRAPH_ONE_ZERO', [pole(4)]], // an X, although the pole-zero map shows it as a zero
+    ['GRAPH_ONE_ZERO', [zero(4)]],
     ['GRAPH_PID', [zero(9), zero(10)]],
   ])('%s', (name, marks) => {
     set_sliders(VALUES);
@@ -86,6 +86,71 @@ describe('Bode marks of each preset', () => {
     test('a negative w gets no mark above z = 1 either', () => {
       expect(marks_for(-2, 1.25)).toEqual([]);
     });
+  });
+});
+
+describe('step response of each preset', () => {
+  const pole = (T) => ({ T, kind: 'pole' });
+  const zero = (T) => ({ T, kind: 'zero' });
+
+  function set_sliders(values) {
+    const position = global_value('variable_position');
+    const variables = global_value('range_slider_variables');
+    global_value('range_slider_alphabet').forEach((name, i) => { position[name] = i; });
+    for (const [name, value] of Object.entries(values)) variables[position[name]] = value;
+  }
+
+  const VALUES = { T_1: 1, T_2: 2, T_3: 3, T_5: 5, T_6: 6, T_7: 7, T_8: 8, L: 4, k_1: 11, k_2: 12, k_3: 13, k_4: 14, k_5: 15 };
+
+  test.each([
+    ['GRAPH_ONE_REAL_POLE', [pole(1)]],
+    ['GRAPH_TWO_REAL_POLES', [pole(2), pole(3)]],
+    ['GRAPH_TIME_DELAY', [pole(5)]],
+    ['GRAPH_ONE_ZERO_TWO_POLES', [pole(6), pole(7), zero(8)]],
+    ['GRAPH_FOUR_POLES', [pole(5)]],
+  ])('%s marks its time constants', (name, marks) => {
+    set_sliders(VALUES);
+    expect(global_value(name).time_marks()).toEqual(marks);
+  });
+
+  test.each(['GRAPH_TWO_COMPLEX_POLES', 'GRAPH_ONE_ZERO', 'GRAPH_PID', 'GRAPH_ONE_POLE_WITH_PID_YR',
+    'GRAPH_ONE_POLE_WITH_PID_S', 'GRAPH_ONE_POLE_WITH_PID_YL', 'GRAPH_ONE_POLE_WITH_PID_OPEN'])(
+    '%s marks no time constants', (name) => {
+      expect(global_value(name).time_marks).toBeUndefined();
+    });
+
+  test('a negative delay gets no mark, a delay of 0 gets one', () => {
+    set_sliders({ L: -0.1 });
+    expect(global_value('GRAPH_TIME_DELAY').time_marks()).toEqual([]);
+    set_sliders({ L: 0 });
+    expect(global_value('GRAPH_TIME_DELAY').time_marks()).toEqual([pole(1)]);
+  });
+
+  test.each([
+    ['GRAPH_ONE_REAL_POLE', 11], ['GRAPH_TWO_REAL_POLES', 12], ['GRAPH_TWO_COMPLEX_POLES', 13],
+    ['GRAPH_TIME_DELAY', 3], ['GRAPH_ONE_ZERO_TWO_POLES', 14], ['GRAPH_FOUR_POLES', 15], ['GRAPH_ONE_POLE_WITH_PID_YR', 1],
+  ])('%s settles at %s', (name, value) => {
+    set_sliders(VALUES);
+    expect(global_value(name).final_value()).toBe(value);
+  });
+
+  test.each(['GRAPH_ONE_ZERO', 'GRAPH_PID', 'GRAPH_ONE_POLE_WITH_PID_S', 'GRAPH_ONE_POLE_WITH_PID_YL', 'GRAPH_ONE_POLE_WITH_PID_OPEN'])(
+    '%s has no final value', (name) => {
+      expect(global_value(name).final_value).toBeUndefined();
+    });
+
+  test.each([
+    ['GRAPH_ONE_REAL_POLE', { T_1: -0.01 }, null],
+    ['GRAPH_ONE_REAL_POLE', { T_1: 0 }, 11],
+    ['GRAPH_TWO_REAL_POLES', { T_2: -1 }, null],
+    ['GRAPH_TWO_REAL_POLES', { T_3: -1 }, null],
+    ['GRAPH_TWO_REAL_POLES', { T_2: 0, T_3: 0 }, 12],
+    ['GRAPH_FOUR_POLES', { T_5: -1 }, null],
+    ['GRAPH_FOUR_POLES', { T_5: 0 }, 15],
+    ['GRAPH_ONE_ZERO_TWO_POLES', { T_6: -1 }, 14], // not checked for this preset
+  ])('%s with %j settles at %s', (name, values, expected) => {
+    set_sliders({ ...VALUES, ...values });
+    expect(global_value(name).final_value()).toBe(expected);
   });
 });
 

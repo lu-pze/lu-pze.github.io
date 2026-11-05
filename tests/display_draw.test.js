@@ -615,7 +615,7 @@ describe('draw_bode_responses: magnitude', () => {
   });
 
   test.each([
-    ['GRAPH_ONE_REAL_POLE', 1, 0], ['GRAPH_TWO_REAL_POLES', 2, 0], ['GRAPH_ONE_ZERO', 1, 0],
+    ['GRAPH_ONE_REAL_POLE', 1, 0], ['GRAPH_TWO_REAL_POLES', 2, 0], ['GRAPH_ONE_ZERO', 0, 1],
     ['GRAPH_FOUR_POLES', 1, 0], ['GRAPH_ONE_ZERO_TWO_POLES', 2, 1], ['GRAPH_PID', 0, 2],
     ['GRAPH_TIME_DELAY', 0, 0],
   ])('%s marks %p poles with X and %p zeros with O', (preset, poles, zeros) => {
@@ -800,7 +800,7 @@ describe('draw_bode_responses: phase', () => {
   });
 
   test.each([
-    ['GRAPH_ONE_REAL_POLE', 1, 0], ['GRAPH_TWO_REAL_POLES', 2, 0], ['GRAPH_ONE_ZERO', 1, 0],
+    ['GRAPH_ONE_REAL_POLE', 1, 0], ['GRAPH_TWO_REAL_POLES', 2, 0], ['GRAPH_ONE_ZERO', 0, 1],
     ['GRAPH_FOUR_POLES', 1, 0], ['GRAPH_ONE_ZERO_TWO_POLES', 2, 1], ['GRAPH_PID', 0, 2],
     ['GRAPH_TWO_COMPLEX_POLES', 1, 0], ['GRAPH_TIME_DELAY', 0, 0],
   ])('%s marks %p poles with X and %p zeros with O', (preset, poles, zeros) => {
@@ -988,6 +988,17 @@ describe('draw_time_responses', () => {
     drawn.length = 0;
     window.draw_static_gain(-100, 0);
     expect(lines()[0][1]).toBe(height);
+  });
+
+  test.each([
+    ['a hidden graph', { bode_displaybool: false }],
+    ['a graph with its step response hidden', { bode_display_timeresponse_bool: false }],
+  ])('%s gets no marks on the response', (_, hidden) => {
+    use_presets('GRAPH_ONE_REAL_POLE');
+    Object.assign(global_value('bode_graphs')[0], hidden);
+    window.draw_X = jest.fn();
+    window.draw_time_responses();
+    expect(window.draw_X).not.toHaveBeenCalled();
   });
 
   test.each([

@@ -283,9 +283,9 @@ function draw_pole_or_zero_mark(screen_x,screen_y,i,pole_zero){
   }
 }
 
-// Marks the corner frequencies of graph i with draw_mark(T, i, kind), if it is a preset that has any.
-function draw_bode_marks(draw_mark,i){
-  const marks = preset_of_formula(bode_graphs[i].bode_formula)?.bode_marks;
+// Draws the marks of graph i with draw_mark(T, i, kind). `marks` is a preset's bode_marks or
+// time_marks, and undefined for a graph that has none.
+function draw_marks(marks,draw_mark,i){
   if (marks === undefined) return;
   try{ // The graph may be deleted, so this might fail:
     for (const mark of marks()) draw_mark(mark.T,i,mark.kind);
@@ -364,7 +364,7 @@ function draw_bode_responses(type){
     rad_phase_upper_bound = phase_upper_bound*Math.PI/180;
     for(let i=0; i<bode_graphs.length; i++){
       if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
-        draw_bode_marks(draw_bode_phase_T,i);
+        draw_marks(preset_of_formula(bode_graphs[i].bode_formula)?.bode_marks,draw_bode_phase_T,i);
       }
     }
 
@@ -412,7 +412,7 @@ function draw_bode_responses(type){
     // Mark the corner frequencies:
     for(let i=0; i<bode_graphs.length; i++){
       if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodemag_bool)){
-        draw_bode_marks(draw_bode_mag_T,i);
+        draw_marks(preset_of_formula(bode_graphs[i].bode_formula)?.bode_marks,draw_bode_mag_T,i);
       }
     }
   }
@@ -444,14 +444,7 @@ function draw_time_response_T(T,i,pole_zero="pole"){
   let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
   let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
   let screen_x = graph_step_response_width / 10 * Math.abs(T);
-  stroke(bode_graphs[i].bode_hue,240,360);
-  strokeWeight(line_stroke_weight);
-  if (pole_zero=="pole"){
-    draw_X(screen_x,screen_y);
-  } else {
-    noFill();
-    draw_O(screen_x,screen_y);
-  }
+  draw_pole_or_zero_mark(screen_x,screen_y,i,pole_zero);
 }
 
 function draw_time_responses(){
@@ -498,33 +491,9 @@ function draw_time_responses(){
   text("time [s]",graph_step_response_width,graph_step_response_height + graph_step_response_y_offset);
   draw_timelines();
 
-  // Draw "final value":
   for(let i=0; i<bode_graphs.length; i++){
     if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_timeresponse_bool)){
-      if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
-        let T_1 = range_slider_variables[variable_position["T_1"]];
-        if (T_1 >= 0) draw_static_gain(range_slider_variables[variable_position["k_1"]],i);
-      } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
-        let T_2 = range_slider_variables[variable_position["T_2"]];
-        let T_3 = range_slider_variables[variable_position["T_3"]];
-        if ((T_2>=0)&&(T_3>=0)){
-          // Two stable poles. There is a stationary final value we will reach.
-          draw_static_gain(range_slider_variables[variable_position["k_2"]],i);
-        }
-      } else if (bode_graphs[i].bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){
-        draw_static_gain(range_slider_variables[variable_position["k_3"]],i);
-      } else if (bode_graphs[i].bode_formula == GRAPH_TIME_DELAY.formula){
-        draw_static_gain(3,i);
-      } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
-        draw_static_gain(range_slider_variables[variable_position["k_4"]],i);
-      } else if (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula){
-        let T_5 = range_slider_variables[variable_position["T_5"]];
-        if (T_5 >= 0){
-          draw_static_gain(range_slider_variables[variable_position["k_5"]],i);
-        }
-      } else if (bode_graphs[i].bode_formula == GRAPH_ONE_POLE_WITH_PID_YR.formula){
-        draw_static_gain(1.0,i);
-      }
+      draw_final_value(i);
     }
   }
 
@@ -538,50 +507,17 @@ function draw_time_responses(){
   // Draw the time constants
   for(let i=0; i<bode_graphs.length; i++){
     if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_timeresponse_bool)){
-      if (bode_graphs[i].bode_formula == GRAPH_ONE_REAL_POLE.formula){
-        // Draw T_1:
-        try{ // The graph may be deleted, so this might fail:
-          draw_time_response_T(range_slider_variables[variable_position["T_1"]],i);
-        } catch {}
-      } else if (bode_graphs[i].bode_formula == GRAPH_TWO_REAL_POLES.formula){
-        // Draw T_2:
-        try{ // The graph may be deleted, so this might fail:
-          draw_time_response_T(range_slider_variables[variable_position["T_2"]],i);
-        } catch {}
-        try{ // The graph may be deleted, so this might fail:
-          draw_time_response_T(range_slider_variables[variable_position["T_3"]],i);
-        } catch {}
-
-      } else if (bode_graphs[i].bode_formula == GRAPH_TIME_DELAY.formula){
-        // Draw time delay L:
-        try{ // The graph may be deleted, so this might fail:
-          let L = range_slider_variables[variable_position["L"]];
-          if (L >= 0){
-            // Now we know the x position. Let's find out the y position:
-            draw_time_response_T(range_slider_variables[variable_position["L"]]+1,i);
-          }
-        } catch {}
-
-      } else if (bode_graphs[i].bode_formula == GRAPH_ONE_ZERO_TWO_POLES.formula){
-        // Draw T_6:
-        try{ // The graph may be deleted, so this might fail:
-          draw_time_response_T(range_slider_variables[variable_position["T_6"]],i);
-          draw_time_response_T(range_slider_variables[variable_position["T_7"]],i);
-        } catch {}
-
-        // Draw T_8:
-        try{ // The graph may be deleted, so this might fail:
-          draw_time_response_T(range_slider_variables[variable_position["T_8"]],i,"zero");
-        } catch {}
-      } else if (bode_graphs[i].bode_formula == GRAPH_FOUR_POLES.formula){
-        // Draw T_5:
-        try{ // The graph may be deleted, so this might fail:
-          draw_time_response_T(range_slider_variables[variable_position["T_5"]],i);
-        } catch {}
-      }
-
+      draw_marks(preset_of_formula(bode_graphs[i].bode_formula)?.time_marks,draw_time_response_T,i);
     }
   }
+}
+
+// The line at the value that the step response of graph i settles at, if it is a preset that does.
+function draw_final_value(i){
+  const final_value = preset_of_formula(bode_graphs[i].bode_formula)?.final_value;
+  if (final_value === undefined) return;
+  const value = final_value();
+  if (value !== null) draw_static_gain(value,i);
 }
 
 function draw_nyquist_responses(){
