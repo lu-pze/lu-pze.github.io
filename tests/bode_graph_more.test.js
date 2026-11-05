@@ -516,17 +516,15 @@ describe('bode_graph', () => {
       expect(calls('vertex')).toHaveLength(GEOMETRY.graph_bode_mag_width);
     });
 
-    test('draw_phase draws vertices; stop_on_overflow stops at the first column outside the plot', () => {
+    test('draw_phase skips the columns outside the plot and goes on after them', () => {
       // A lead network: phase rises to ~55 deg and returns to 0, so it leaves a plot capped at 20 deg.
       set_globals({ phase_lower_bound: -180, phase_upper_bound: 20 });
       const graph = analysed('(1+10*s)/(1+s)');
       graph.draw_phase();
-      const all = calls('vertex').length;
-      drawn.length = 0;
-      graph.draw_phase(true);
-      const until_overflow = calls('vertex').length;
-      expect(until_overflow).toBeGreaterThan(0);
-      expect(until_overflow).toBeLessThan(all);
+      const columns = calls('vertex').map(([x]) => x);
+      expect(columns.length).toBeGreaterThan(0);
+      expect(columns.length).toBeLessThan(GEOMETRY.graph_bode_mag_width);
+      expect(columns.some((x, i) => i > 0 && x - columns[i - 1] > 1)).toBe(true); // the gap of the peak
       for (const [, y] of calls('vertex')) {
         expect(y).toBeGreaterThan(0);
         expect(y).toBeLessThan(200);
@@ -939,7 +937,6 @@ describe('bode_graph', () => {
 
           graph.draw_gain();
           graph.draw_phase();
-          graph.draw_phase(true);
           graph.draw_timeresponse();
           graph.draw_nyquist_response();
           graph.draw_nyquist_value(0.3);

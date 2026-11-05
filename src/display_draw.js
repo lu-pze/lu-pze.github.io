@@ -349,12 +349,7 @@ function draw_bode_responses(type){
     }
     for(let i=0; i<bode_graphs.length; i++){
       if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
-        let stop_on_overflow=false;
-//        if (bode_graphs[i].bode_formula == GRAPH_TIME_DELAY.formula){
-//          // A workaround to not plot the high frequency way-off phase in the bode phase plot of GRAPH_TIME_DELAY with L > 1:
-//          stop_on_overflow=true;
-//        }
-        bode_graphs[i].draw_phase(stop_on_overflow);
+        bode_graphs[i].draw_phase();
       }
     }
     // Draw X for T_1, T_2, T_3 and w:

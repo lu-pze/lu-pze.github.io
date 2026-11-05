@@ -372,7 +372,7 @@ class bode_graph{
   }
 
 
-  draw_phase(stop_on_overflow=false){
+  draw_phase(){
     noFill();
     strokeWeight(line_stroke_weight);
     stroke(this.bode_hue,360,360);
@@ -383,11 +383,6 @@ class bode_graph{
       let screen_y = map(this.bode_phase_array[x],rad_phase_lower_bound,rad_phase_upper_bound,graph_bode_phase_height,0);
       if(screen_y < graph_bode_phase_height && screen_y > 0){
         vertex(x,screen_y);
-      } else {
-        if (stop_on_overflow == true){
-          // Stop drawing phase if it goes off graph. Removes garbage at end of GRAPH_TIME_DELAY:
-          break;
-        }
       }
     }
     endShape();

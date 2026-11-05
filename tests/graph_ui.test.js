@@ -249,20 +249,34 @@ describe('createRangeSlider', () => {
   });
 
   describe('releasing a slider (change event)', () => {
+    // A browser always sends input before change, and input is what sets the variable.
+    const release_at = (slider, value) => {
+      drag(slider, value, 'input');
+      fire(slider.range, 'change');
+    };
+
+    beforeEach(add_info_tabs);
+
     test.each([
       [1.9, true], [2.12, true], [2.0, true], [1.89, false], [2.13, false],
     ])('T_1 at %s: T1=2 done=%s', (value, expected) => {
-      drag(make_slider('T_1'), value, 'change');
+      release_at(make_slider('T_1'), value);
       expect(calls_of('task_done').includes('T1=2')).toBe(expected);
     });
 
     test.each([[-0.01, true], [0, false], [-5, true]])('T_1 at %s: T1_unstable=%s', (value, expected) => {
-      drag(make_slider('T_1'), value, 'change');
+      release_at(make_slider('T_1'), value);
       expect(calls_of('task_done').includes('T1_unstable')).toBe(expected);
     });
 
     test('the T_1 tasks only belong to the T_1 slider', () => {
-      drag(make_slider('T_2'), 2, 'change');
+      release_at(make_slider('T_2'), 2);
+      expect(calls_of('task_done')).toEqual([]);
+    });
+
+    test('moving another slider does not finish a T_1 task that was already in range', () => {
+      set_variable({ T_1: 2 });
+      release_at(make_slider('k_1'), 1);
       expect(calls_of('task_done')).toEqual([]);
     });
 
@@ -273,7 +287,7 @@ describe('createRangeSlider', () => {
       [{ T_2: 0.05, T_3: 3.99 }, false], [{ T_2: 0.05, T_3: 5.81 }, false],
     ])('table %o: T2,T3=0.05_and_5 done=%s', (values, expected) => {
       set_variable(values);
-      drag(make_slider('k_1'), 1, 'change');
+      release_at(make_slider('k_1'), 1);
       expect(calls_of('task_done').includes('T2,T3=0.05_and_5')).toBe(expected);
     });
   });
@@ -348,20 +362,26 @@ describe('createRangeSlider', () => {
   });
 
   describe('finishing a typed value (change event on the text box)', () => {
+    // A browser always sends input before change, and input is what sets the variable.
+    const finish_typing = (slider, value) => {
+      type_into(slider, value);
+      fire(slider.text, 'change');
+    };
+
     test.each([
-      [1.95, true], [2.05, true], [2.0, true], [1.94, false], [2.06, false],
-    ])('T_1 = %s: T1=2 done=%s', (value, expected) => {
-      type_into(make_slider('T_1'), value, 'change');
+      [1.9, true], [2.12, true], [2.0, true], [1.89, false], [2.13, false],
+    ])('T_1 = %s: T1=2 done=%s, the same window as the slider', (value, expected) => {
+      finish_typing(make_slider('T_1'), value);
       expect(calls_of('task_done').includes('T1=2')).toBe(expected);
     });
 
     test.each([[-0.01, true], [0, false]])('T_1 = %s: T1_unstable=%s', (value, expected) => {
-      type_into(make_slider('T_1'), value, 'change');
+      finish_typing(make_slider('T_1'), value);
       expect(calls_of('task_done').includes('T1_unstable')).toBe(expected);
     });
 
     test('the T_1 tasks only belong to the T_1 box', () => {
-      type_into(make_slider('T_2'), 2, 'change');
+      finish_typing(make_slider('T_2'), 2);
       expect(calls_of('task_done')).toEqual([]);
     });
 

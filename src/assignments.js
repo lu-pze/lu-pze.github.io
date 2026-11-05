@@ -80,6 +80,114 @@ function task_done (which_one){
   }
 }
 
+// ---------------- When each task counts as done
+// A rule is {task, done}. Which list it is in decides when it is checked: most tasks ask for one
+// kind of action ("drag in the Bode plot"), so reaching the values some other way does not count.
+
+function slider_value(name){
+  return range_slider_variables[variable_position[name]];
+}
+
+const within = (value, low, high) => (value >= low) && (value <= high);
+const smallest_of = (...names) => Math.min(...names.map(slider_value));
+const largest_of = (...names) => Math.max(...names.map(slider_value));
+const gain_margin_factor = (graph) => Math.pow(10.0, graph.bode_gain_margin / 20.0);
+
+function some_graph_of(preset, condition){
+  return bode_graphs.some((graph) => (graph.bode_formula == preset.formula) && condition(graph));
+}
+
+const PID_ASSIGNMENTS = ["pid_controller","pid_controller_S","pid_controller_YL","pid_controller_OL"];
+function is_pid_assignment(){
+  return PID_ASSIGNMENTS.includes(current_assignment);
+}
+
+function matches_slow_and_fast_poles(){ // T=5 and T=0.05, in any order
+  return within(smallest_of("T_2","T_3"),0.035,0.07) && within(largest_of("T_2","T_3"),4.0,5.8);
+}
+
+function matches_resonance_peak(){
+  return within(slider_value("k_3"),0.90,1.1) && within(slider_value("w"),7.3,8.7) && within(slider_value("z"),0.02,0.07);
+}
+
+// A ghost value is close enough to the user's when within -8 % to +7 %.
+const close_to = (ghost, user) => (ghost >= user*0.92) && (ghost <= user*1.07);
+
+// The largest value, at least -100. Unlike Math.max it passes over the NaN of a sample on a pole.
+function largest_value(values){
+  let largest = -100;
+  for (const value of values) {
+    if (value > largest) largest = value;
+  }
+  return largest;
+}
+
+// Whether the Nyquist diagram of bode_graphs[0] follows the ghost in bode_graphs[1]. This is hard
+// to check using ranges for T_6, T_7 and T_8: depending on T_8 (the zero), T_6 and T_7 can vary a
+// lot. So compare the largest magnitude and how far the curves reach along both axes.
+function nyquist_matches_ghost(){
+  const user = bode_graphs[0];
+  const ghost = bode_graphs[1];
+  const reach = (graph, of_sample) => largest_value(graph.bode_complex_array.map(of_sample));
+  return close_to(Math.max(...ghost.bode_gain_array), Math.max(...user.bode_gain_array)) &&
+    close_to(reach(ghost, (sample) => sample.re), reach(user, (sample) => sample.re)) &&
+    close_to(reach(ghost, (sample) => sample.im), reach(user, (sample) => sample.im)) &&
+    close_to(reach(ghost, (sample) => -sample.im), reach(user, (sample) => -sample.im));
+}
+
+const TASK_RULES = {
+  after_any_release: [
+    {task:"phasemargin=55", done:() => some_graph_of(GRAPH_TWO_REAL_POLES, (graph) => within(graph.bode_phase_margin,53.0,57.0))},
+    {task:"gaincrossover=3", done:() => some_graph_of(GRAPH_TWO_REAL_POLES, (graph) => within(graph.bode_gain_crossover_freq,2.8,3.2))},
+    {task:"L_gain_margin=2", done:() => some_graph_of(GRAPH_TIME_DELAY, (graph) => within(gain_margin_factor(graph),1.91,2.1))},
+    {task:"gainm=5_phasex=2", done:() => some_graph_of(GRAPH_FOUR_POLES, (graph) => within(gain_margin_factor(graph),4.8,5.2) && within(graph.bode_phase_crossover_freq,1.9,2.1))},
+    {task:"phasemargin=45", done:() => some_graph_of(GRAPH_FOUR_POLES, (graph) => within(graph.bode_phase_margin,42,48))},
+    {task:"PID_(K>1)", done:() => slider_value("K") > 1.0},
+    {task:"PID_(T_i)>(T_1)", done:() => slider_value("T_i") > slider_value("T_1")},
+    {task:"PID_(Td=0,T_1=1)", done:() => (slider_value("T_d") == 0) && (slider_value("T_1") > 0.89) && (slider_value("T_1") < 1.1)},
+    {task:"PID_(k_1)", done:() => (slider_value("k_1") > 0.5) && (slider_value("k_1") < 0.7)},
+    {task:"PID_(T_d!=0)", done:() => slider_value("T_d") != 0},
+    {task:"PID_Load", done:() => ["K","T_i","T_d"].some((name) => slider_value(name) != default_variable_values[name].value)},
+    {task:"w=8,z=0.05,k_3=1", done:matches_resonance_peak},
+    {task:"w=2,z=0.7,k3=0.7", done:() => within(slider_value("k_3"),0.6,0.8) && within(slider_value("w"),1.88,2.15) && within(slider_value("z"),0.66,0.75)},
+    {task:"k4=0.75,T6=9.25,T7=0.5,T8=2", done:() => within(slider_value("k_4"),0.65,0.85) && within(smallest_of("T_6","T_7"),0.33,0.7) && within(largest_of("T_6","T_7"),8,10) && within(slider_value("T_8"),1.5,2.5)},
+  ],
+  after_step_response_drag: [
+    {task:"k1=2.9", done:() => (slider_value("k_1") > 2.8) && (slider_value("k_1") <= 2.99)},
+    {task:"T2,T3=0.05_and_5", done:matches_slow_and_fast_poles},
+    {task:"L=3", done:() => (slider_value("L") >= 2.93) && (slider_value("L") < 3.1)},
+  ],
+  after_bode_drag: [
+    {task:"T1_k1_bode", done:() => within(slider_value("k_1"),0.55,0.75) && within(slider_value("T_1"),1.82,2.25)},
+    {task:"T2,T3=0.05_and_5", done:matches_slow_and_fast_poles},
+    {task:"T2=10,T3=0.5", done:() => within(smallest_of("T_2","T_3"),0.45,0.55) && within(largest_of("T_2","T_3"),9.0,11.0)},
+    // The ghost graph to compare with (bode_graphs[1]) may be missing:
+    {task:"k4=1,T6=2.5,T7=1,T8=6", done:() => within(slider_value("k_4"),0.95,1.05) && (bode_graphs.length > 1) && nyquist_matches_ghost()},
+  ],
+  after_pole_zero_drag: [
+    {task:"T1_pole=-2", done:() => within(slider_value("T_1"),0.45,0.55)},
+    {task:"T1_unstable", done:() => slider_value("T_1") < 0},
+    {task:"T2,T3=0.05_and_5", done:matches_slow_and_fast_poles},
+    {task:"T2,T3=1,k2=0.5", done:() => within(slider_value("k_2"),0.49,0.51) && (smallest_of("T_2","T_3") >= 0.55) && (largest_of("T_2","T_3") <= 1.65) && within(smallest_of("T_2","T_3")+largest_of("T_2","T_3"),1.75,2.3)},
+    {task:"w=0.9,z=0.0", done:() => within(slider_value("w"),0.85,0.95) && (slider_value("z") <= 0.05)},
+    {task:"w=1.6,z=0.2", done:() => within(slider_value("w"),1.55,1.65) && within(slider_value("z"),0.15,0.25)},
+    {task:"k4,T6,T7=1,T8=1.5_poles", done:() => (slider_value("k_4") > 0.95) && (slider_value("k_4") <= 1.05) && within(slider_value("T_8"),-1.7,-1.35) && within(smallest_of("T_6","T_7")+largest_of("T_6","T_7"),1.7,2.3)},
+  ],
+  // Gets the name of the variable that changed.
+  after_slider_change: [
+    {task:"T1=2", done:(changed) => (changed == "T_1") && within(slider_value("T_1"),1.9,2.12)},
+    {task:"T1_unstable", done:(changed) => (changed == "T_1") && (slider_value("T_1") < 0)},
+    {task:"T2,T3=0.05_and_5", done:matches_slow_and_fast_poles},
+    {task:"w=8,z=0.05,k_3=1", done:matches_resonance_peak},
+  ],
+};
+
+function check_tasks(rules, changed_variable){
+  for (const rule of rules) {
+    if (rule.done(changed_variable)) task_done(rule.task);
+  }
+}
+
 function reset_task(task_to_reset){
   let index = done_tasks.indexOf(task_to_reset);
   if (index !== -1) {

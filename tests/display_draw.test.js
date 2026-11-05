@@ -785,7 +785,7 @@ describe('draw_bode_responses: phase', () => {
   test('draws the phase curve of shown graphs only', () => {
     const [shown, hidden] = use_fake_graphs(fake_graph(), fake_graph({ bode_displaybool: false }));
     window.draw_bode_responses('phase');
-    expect(shown.draw_phase).toHaveBeenCalledWith(false);
+    expect(shown.draw_phase).toHaveBeenCalledTimes(1);
     expect(hidden.draw_phase).not.toHaveBeenCalled();
   });
 

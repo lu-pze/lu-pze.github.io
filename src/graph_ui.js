@@ -73,6 +73,22 @@ const default_variable_values={
   "q"  :{min:  0.01,max:1.0,value:0.1},
   "v"  :{min:  0.1,max:20.0,value:4.5}};
 
+// Achievements for a slider variable that just got a new value, by slider or typed in.
+function check_slider_achievements(variable_name, value){
+  if (variable_name=="L"){
+    achievement_done("change_L");
+  } else if ((variable_name[0]=="k") && (value >= 100)){
+    achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
+  } else if ((variable_name=="z") && (value <= 0.1)){
+    achievement_done("low_z");
+  } else if (variable_name[0]=="T"){
+    let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
+    if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
+      achievement_done("T2_T3_far_apart");
+    }
+  }
+}
+
 function createRangeSlider(event){
   let slider = document.createElement('div');
   let button = event.target;
@@ -88,10 +104,10 @@ function createRangeSlider(event){
   }
   // When a PID controller is attached, inverting the ONE_POLE output will always make the system unstable.
   // So don't encourage that:
-  if ((variable_name=="k_1")&&((current_assignment=="pid_controller")||(current_assignment=="pid_controller_S")||(current_assignment=="pid_controller_YL")||(current_assignment=="pid_controller_OL"))){
+  if ((variable_name=="k_1")&&is_pid_assignment()){
     range_min=0.01;
   }
-  if ((variable_name=="T_1")&&((current_assignment=="pid_controller")||(current_assignment=="pid_controller_S")||(current_assignment=="pid_controller_YL")||(current_assignment=="pid_controller_OL"))){
+  if ((variable_name=="T_1")&&is_pid_assignment()){
     range_value=6.0;
   }
 
@@ -126,45 +142,15 @@ function createRangeSlider(event){
 
   range_slider.onchange = function(){
     // Only reacts on the final value of the slider, and not continuous movements:
-    if ((range_slider_alphabet[button_id]=="T_1") && (+range_slider.value >= 1.9) && (+range_slider.value <= 2.12)){
-      task_done("T1=2");
-    }
-    if ((range_slider_alphabet[button_id]=="T_1") && (+range_slider.value < 0)){
-      task_done("T1_unstable");
-    }
-    let T_2 = range_slider_variables[variable_position["T_2"]];
-    let T_3 = range_slider_variables[variable_position["T_3"]];
-    let max_T = Math.max(T_2,T_3);
-    let min_T = Math.min(T_2,T_3);
-    if ((min_T >= 0.035) && (min_T <= 0.07)&&
-        (max_T >= 4.0) && (max_T <= 5.8)){
-      task_done("T2,T3=0.05_and_5");
-    }
+    check_tasks(TASK_RULES.after_slider_change, variable_name);
   }
 
   range_slider.oninput = function(){
     linked_span.value = +(+range_slider.value).toFixed(2);
     range_slider_variables[button_id] = +range_slider.value;
-    if (range_slider_alphabet[button_id]=="L"){
-      achievement_done("change_L");
-    } else if ((range_slider_alphabet[button_id][0]=="k") && (+range_slider.value >= 100)){
-      // We dragged a slider to a k-value above or equal 100:
-      achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
-    } else if ((range_slider_alphabet[button_id]=="z") && (+range_slider.value <= 0.1)){
-      achievement_done("low_z");
-    } else if (range_slider_alphabet[button_id][0]=="T"){
-      let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
-      if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
-        achievement_done("T2_T3_far_apart");
-      }
-    }
-    if ((current_assignment=="pid_controller")||(current_assignment=="pid_controller_S")||(current_assignment=="pid_controller_YL")||(current_assignment=="pid_controller_OL")){
-      // Let's use fast precision:
-      we_need_faster_calculations_right_now=true;
-      precision=SPEED_PRECISION;
-    }
+    check_slider_achievements(variable_name, +range_slider.value);
+    use_fast_precision_in_pid_assignments();
     // Make the relevant information bar active when a slider is changed:
-    let variable_name = range_slider_alphabet[button_id];
     if ((variable_name == "k_1")||(variable_name == "T_1")){
       let info_tab = document.getElementById("graph_1_info");
       info_tab.checked = "true";
@@ -203,27 +189,7 @@ function createRangeSlider(event){
 
   linked_span.onchange = function(){
     // Only reacts on the final value, and not while editing:
-    if ((range_slider_alphabet[button_id]=="T_1") && (+linked_span.value >= 1.95) && (+linked_span.value <= 2.05)){
-      task_done("T1=2");
-    }
-    if ((range_slider_alphabet[button_id]=="T_1") && (+linked_span.value < 0)){
-      task_done("T1_unstable");
-    }
-    let T_2 = range_slider_variables[variable_position["T_2"]];
-    let T_3 = range_slider_variables[variable_position["T_3"]];
-    let max_T = Math.max(T_2,T_3);
-    let min_T = Math.min(T_2,T_3);
-    if ((min_T >= 0.035) && (min_T <= 0.07)&&
-        (max_T >= 4.0) && (max_T <= 5.8)){
-      task_done("T2,T3=0.05_and_5");
-    }
-
-    let w = range_slider_variables[variable_position["w"]];
-    let z = range_slider_variables[variable_position["z"]];
-    let k_3 = range_slider_variables[variable_position["k_3"]];
-    if ((k_3>=0.90)&&(k_3<=1.1)&&(w>=7.3)&&(w<=8.7)&&(z>=0.02)&&(z<=0.07)){
-      task_done("w=8,z=0.05,k_3=1");
-    }
+    check_tasks(TASK_RULES.after_slider_change, variable_name);
     // When pressing enter, we shall lose focus:
     this.blur();
   }
@@ -238,19 +204,7 @@ function createRangeSlider(event){
       slider_min.value = linked_span.value;
     }
     range_slider_variables[button_id] = +linked_span.value;
-    if (range_slider_alphabet[button_id]=="L"){
-      achievement_done("change_L");
-    } else if ((range_slider_alphabet[button_id][0]=="k") && (+linked_span.value >= 100)){
-      // We have entered a k-value above or equal 100 in the text box:
-      achievement_done("k_above_or_equal_100"); //"Make a transfer function with magnitude larger than 100"
-    } else if ((range_slider_alphabet[button_id]=="z") && (+linked_span.value <= 0.1)){
-      achievement_done("low_z");
-    } else if (range_slider_alphabet[button_id][0]=="T"){
-      let T2_T3_factor = Math.abs(range_slider_variables[variable_position["T_2"]] / range_slider_variables[variable_position["T_3"]]);
-      if ((T2_T3_factor <= 0.01) || (T2_T3_factor >= 100)){
-        achievement_done("T2_T3_far_apart");
-      }
-    }
+    check_slider_achievements(variable_name, +linked_span.value);
     range_slider.value = +linked_span.value;
     redraw_canvas_gain("all");
   }
