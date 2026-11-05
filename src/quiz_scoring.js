@@ -231,9 +231,65 @@ function read_highscores () {
   XHR.send("");
 }
 
-function quiz_time_is_up (){
-  let quiz_intro_div = document.getElementById("quiz_intro");
+const QUIZ_EXPLANATIONS = {
+  "click_freq":"reading log scale diagrams",
+  "click_time":"clicking on linear x axes",
+  "click_nyquist_angle":"identifying angles in the Nyquist diagram",
+  "click_system":"understanding a system's order",
+  "click_wrong":"finding the odd-one-out graph"};
 
+// [[question type, difficulty reached], ...] with the highest difficulty first.
+function ranked_quiz_difficulties(){
+  return sorted_by_value_descending(quiz_difficulties);
+}
+
+// The result of a quiz as one text. parse_highscore_lines and public_highscore_line in
+// php/lu-pze_compete.php read it: "total=" and the others need a comma on each side.
+function quiz_result_text(ranked_difficulties){
+  let res = "quiz_time_is_up.";
+  for (const [question_id, difficulty_level] of ranked_difficulties){
+    res += question_id + "=" + difficulty_level.toFixed(1) + ",";
+  }
+  res += 'total='+quiz_difficulty.toFixed(1)+",";
+  res += 'nof_correct=' + quiz_nof_correct+",";
+  res += "longest_streak=" + quiz_longest_streak + ",";
+  res += "nof_questions=" + quiz_nof_done + ",";
+  if (quiz_nof_tries > 0) res += "accuracy=" + (100*quiz_nof_done/quiz_nof_tries).toFixed(2) + "%,";
+  res += "nof_clicks=" + (quiz_nof_tries) + ",";
+  res += "nof_quiz_started=" + nof_quiz_started + ",";
+  res += "quiz_practice=" + quiz_practice + ",";
+  res += "quiz_compete=" + quiz_compete + ",";
+  res += "cookid=" + client_cookid + ",";
+  // Now pretty-print the quiz_timeline list of answers:
+  res += "qt=[";
+  for (const answer of quiz_timeline) {
+    res += "{t" + str(answer["t"]) + ",r" + str(answer["r"]) + ",q" + answer["q"] + ",a" + answer["a"] + "},";
+  }
+  return res + "].";
+}
+
+// Sends a result to the highscore list, and shows the list once the server has it.
+function post_compete_result(result_text){
+  var XHR = new XMLHttpRequest();
+  var to_send = session_header() + result_text;
+  var urlEncodedData = `e=${encodeURIComponent(to_send).replace(/%20/g, "+")}`;
+  XHR.addEventListener("load", (event) => {
+    console.log("OK");
+    console.log(event);
+    console.log(event.target.response);
+    read_highscores();
+  });
+  XHR.addEventListener("error", (event) => {
+    console.log("Error");
+    console.log(event);
+  });
+  // Compete:
+  XHR.open("POST", "https://livet.se/lu-pze_compete.php", true);
+  XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  XHR.send(urlEncodedData);
+}
+
+function quiz_summary_html(){
   let s = "";
   s += '<center><h2>';
   if (client_nick != "") {
@@ -243,14 +299,11 @@ function quiz_time_is_up (){
   s += '<button type="button" class="close-window" onclick="stop_quiz();"><svg width="34" height="34" viewBox="0 0 24 24" fill="#b0b0b0"><use href="#icon_clear"/></svg></button>';
   s += '<img src="images/bell_small.webp" width="300px" style="margin:0;padding:0">';
   s += '<br>';
-
-
   s += "You got " + quiz_nof_correct + " correct answers,<br>";
   s += "with a longest streak of " + quiz_longest_streak + " correct answers.<br>";
   s += "You answered " + quiz_nof_done + " questions in " + (quiz_nof_tries) + " clicks";
   if(quiz_nof_tries > 0) s += ",<br>which is a " + (100*quiz_nof_done/quiz_nof_tries).toFixed(2) + "% accuracy.<br>";
   else s += ".<br>";
-
   s += '<div class="quiz-container">';
   s += '<input type="range" min="0" max="100" step="1" class="quiz-slider" id="experience_level" value="' + quiz_difficulty + '" style="width:100%" onchange="set_quiz_experience(this)" disabled>';
   s += '<div class="quiz-labels">';
@@ -267,93 +320,27 @@ function quiz_time_is_up (){
   s += '</div>';
   s += "Your total result";
   s += '<br><br>';
+  return s;
+}
 
-//  s += '<span style="color:#808080"><br>';
-
-  if (quiz_nof_correct > 0) {
-    // Sort according to quiz_difficulties[quiz_questions[question]]
-    // Create items array
-    var items = Object.keys(quiz_difficulties).map(function(key) {
-      return [key, quiz_difficulties[key]];
-    });
-    // Sort the array based on the second element
-    items.sort(function(first, second) {
-      return second[1] - first[1];
-    });
-
-    const quiz_explanation = {
-"click_freq":"reading log scale diagrams",
-"click_time":"clicking on linear x axes",
-"click_nyquist_angle":"identifying angles in the Nyquist diagram",
-"click_system":"understanding a system's order",
-"click_wrong":"finding the odd-one-out graph"};
-    // The results:
-    let res = "quiz_time_is_up.";
-    for (let position in items){
-      let question_id = items[position][0];
-      let difficulty_level = items[position][1];
-      res += question_id + "=" + difficulty_level.toFixed(1) + ",";
-    }
-    res += 'total='+quiz_difficulty.toFixed(1)+",";
-    res += 'nof_correct=' + quiz_nof_correct+",";
-    res += "longest_streak=" + quiz_longest_streak + ",";
-    res += "nof_questions=" + quiz_nof_done + ",";
-    if (quiz_nof_tries > 0) res += "accuracy=" + (100*quiz_nof_done/quiz_nof_tries).toFixed(2) + "%,";
-    res += "nof_clicks=" + (quiz_nof_tries) + ",";
-    res += "nof_quiz_started=" + nof_quiz_started + ",";
-    res += "quiz_practice=" + quiz_practice + ",";
-    res += "quiz_compete=" + quiz_compete + ",";
-    res += "cookid=" + client_cookid + ",";
-    // Now pretty-print the quiz_timeline list of answers:
-    let st="qt=[";
-    for (let i=0; i < quiz_timeline.length; i++) {
-      let answer = quiz_timeline[i];
-      st+="{t" + str(answer["t"]) + ",r" + str(answer["r"]) + ",q" + answer["q"] + ",a" + answer["a"] + "},";
-    }
-    st+="].";
-    res += st;
-    add_event(res);
-    if (quiz_compete == true) {
-      have_done_a_compete_quiz = true;
-      let date_now = new Date();
-      let now = date_now.getTime();
-      let time_diff = now-session_started_at;
-      let mseconds_elapsed = Math.floor(time_diff);
-      var XHR = new XMLHttpRequest();
-      var to_send = `T${mseconds_elapsed/1000};U${client_id};L${client_place}_${client_nick};`;
-      to_send += res;
-      var urlEncodedData = `e=${encodeURIComponent(to_send).replace(/%20/g, "+")}`;
-      XHR.addEventListener("load", (event) => {
-        console.log("OK");
-        console.log(event);
-        console.log(event.target.response);
-        read_highscores();
-      });
-      XHR.addEventListener("error", (event) => {
-        console.log("Error");
-        console.log(event);
-      });
-      // Compete:
-      XHR.open("POST", "https://livet.se/lu-pze_compete.php", true);
-      XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      XHR.send(urlEncodedData);
-    }
-    let top_question_id = items[0][0];
-    let top_difficulty_level = items[0][1];
-    s += "You're ";
-    if (top_difficulty_level > 80) {
-      s += "really ";
-    }
-    s += "good at " + quiz_explanation[top_question_id];
-    let bottom_question_id = items[items.length - 1][0];
-    s += ", but you could focus on learning more about " + quiz_explanation[bottom_question_id] + ".<br><br>";
-    //  s += '<span style="color:#808080">Total: ' + quiz_difficulty.toFixed(1) + "</span><br>";
+// What the player is best and worst at.
+function quiz_strengths_html(ranked_difficulties){
+  const [top_question_id, top_difficulty_level] = ranked_difficulties[0];
+  const [bottom_question_id] = ranked_difficulties[ranked_difficulties.length - 1];
+  let s = "You're ";
+  if (top_difficulty_level > 80) {
+    s += "really ";
   }
+  s += "good at " + QUIZ_EXPLANATIONS[top_question_id];
+  s += ", but you could focus on learning more about " + QUIZ_EXPLANATIONS[bottom_question_id] + ".<br><br>";
+  return s;
+}
 
+function quiz_next_step_html(){
+  let s = "";
   s += '<div id="nickname_area">';
   s += 'Your nickname: <input type="text" id="nickname" name="nickname" size="12" style="font-size:162%;text-align:center;background:#fff" autofocus value="" oninput="set_nickname(this)"><br>';
   s += '</div>';
-
   s += '<table width="90%"><tr><td width="20%" class="yellow_hover" onclick="stop_quiz()" align="center">';
   s += '<br><span id="quiz_cancel_button" style="color:#b0b0b0;vertical-align:middle;margin:10px">I\'m done</span><br><br>';
   s += '</td><td width="30%" class="yellow_hover" onclick="quiz_lets_go_practice()" align="center">';
@@ -361,23 +348,30 @@ function quiz_time_is_up (){
   s += '</td><td width="40%" class="yellow_hover" onclick="quiz_lets_go_compete()" align="center">';
   s += '<br><span id="quiz_compete_button" style="color:#000000;vertical-align:middle;margin:10px" width="100%">Let\'s go Compete!</span><br><br>';
   s += '</td></tr></table>';
-
   s += '</center>';
+  return s;
+}
 
+function quiz_time_is_up (){
+  let html = quiz_summary_html();
+  if (quiz_nof_correct > 0) {
+    const ranked_difficulties = ranked_quiz_difficulties();
+    const result_text = quiz_result_text(ranked_difficulties);
+    add_event(result_text);
+    if (quiz_compete == true) {
+      have_done_a_compete_quiz = true;
+      post_compete_result(result_text);
+    }
+    html += quiz_strengths_html(ranked_difficulties);
+  }
+  document.getElementById("quiz_intro").innerHTML = html + quiz_next_step_html();
 
-
-  quiz_intro_div.innerHTML = s;
-
-  let toggleElement = document.querySelector('.quiz_intro');
-  toggleElement.classList.add('active');
-  let toggleElement2 = document.querySelector('.quiz_highscores');
-  toggleElement2.classList.add('active');
-  let quiz_text = document.getElementById("quiz_text");
-  quiz_text.innerHTML="";
+  document.querySelector('.quiz_intro').classList.add('active');
+  document.querySelector('.quiz_highscores').classList.add('active');
+  document.getElementById("quiz_text").innerHTML="";
   current_quiz="none";
   removeAllGraphs();
-  let quiz_icon_svg = document.getElementById("quiz_icon_svg");
-  quiz_icon_svg.style.fill=null;
+  document.getElementById("quiz_icon_svg").style.fill=null;
   quiz_is_running = 0;
 }
 

@@ -98,15 +98,17 @@ function add_event (string) {
 
 var server_error = "";
 
+// What every message to the server starts with: "T<seconds into the session>;U<client>;L<place>_<nick>;".
+function session_header () {
+  let mseconds_elapsed = Math.floor(new Date().getTime() - session_started_at);
+  return `T${mseconds_elapsed/1000};U${client_id};L${client_place}_${client_nick};`;
+}
+
 function periodic_send () {
   periodic_timer_id = 0;
   if (pending.length > 0) {
-    let date_now = new Date();
-    let now = date_now.getTime();
-    let time_diff = now-session_started_at;
-    let mseconds_elapsed = Math.floor(time_diff);
     var XHR = new XMLHttpRequest();
-    var to_send = `T${mseconds_elapsed/1000};U${client_id};L${client_place}_${client_nick};`;
+    var to_send = session_header();
     for (var pending_no = 0; pending_no < pending.length; pending_no++) {
       to_send += pending[pending_no];
     }

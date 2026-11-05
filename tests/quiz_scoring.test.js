@@ -698,6 +698,10 @@ describe('read_highscores', () => {
 // quiz_time_is_up: end-of-quiz summary and the result message sent to the server
 // ---------------------------------------------------------------------------
 describe('quiz_time_is_up', () => {
+  test('the part with the next step starts at the nickname, with nothing before it', () => {
+    expect(window.quiz_next_step_html().startsWith('<div id="nickname_area">')).toBe(true);
+  });
+
   const difficulties = { click_freq: 40, click_time: 90, click_nyquist_angle: 60, click_system: 10, click_wrong: 50 };
 
   beforeEach(() => {
