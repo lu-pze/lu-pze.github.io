@@ -293,128 +293,150 @@ function draw_marks(marks,draw_mark,i){
 }
 
 //Drawing functions
-function draw_bode_responses(type){
-  if(type == "phase"){
-    let nof_shown=0;
-    for(let i=0; i<bode_graphs.length; i++){
-      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)) nof_shown+=1;
+function shown_in_phase_plot(graph){
+  return (graph.bode_displaybool)&&(graph.bode_display_bodephase_bool);
+}
+
+function shown_in_gain_plot(graph){
+  return (graph.bode_displaybool)&&(graph.bode_display_bodemag_bool);
+}
+
+// Mark the corner frequencies:
+function mark_corner_frequencies(is_shown,draw_mark){
+  for(let i=0; i<bode_graphs.length; i++){
+    if(is_shown(bode_graphs[i])){
+      draw_marks(preset_of_formula(bode_graphs[i].bode_formula)?.bode_marks,draw_mark,i);
     }
-    let min_phase = 10000;
-    let max_phase = -10000;
-    if (nof_shown==0){
-      min_phase = -270/180*Math.PI;
-      max_phase = 90/180*Math.PI;
-    } else {
-      for(let i=0; i<bode_graphs.length; i++){
-        if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
-          let current_graph = bode_graphs[i];
-          if(current_graph.bode_min_phase < min_phase){
-            min_phase = current_graph.bode_min_phase;
-          }
-          if(current_graph.bode_max_phase > max_phase){
-            max_phase = current_graph.bode_max_phase;
-          }
+  }
+}
+
+function update_phase_axis(){
+  let nof_shown=0;
+  for(let i=0; i<bode_graphs.length; i++){
+    if(shown_in_phase_plot(bode_graphs[i])) nof_shown+=1;
+  }
+  let min_phase = 10000;
+  let max_phase = -10000;
+  if (nof_shown==0){
+    min_phase = -270/180*Math.PI;
+    max_phase = 90/180*Math.PI;
+  } else {
+    for(let i=0; i<bode_graphs.length; i++){
+      if(shown_in_phase_plot(bode_graphs[i])){
+        let current_graph = bode_graphs[i];
+        if(current_graph.bode_min_phase < min_phase){
+          min_phase = current_graph.bode_min_phase;
+        }
+        if(current_graph.bode_max_phase > max_phase){
+          max_phase = current_graph.bode_max_phase;
         }
       }
     }
-    // Limiting the phase axis into something sane:
-    min_phase = Math.max(-360/180*Math.PI,min_phase);
-    min_phase = min_phase*180/Math.PI;
-    max_phase = max_phase*180/Math.PI;
-    phase_lower_bound = get_bestMultiple(min_phase,45,"lower");
-    phase_upper_bound = get_bestMultiple(max_phase,45,"upper");
-    phase_case_number = (phase_upper_bound - phase_lower_bound)/45;
-    if(phase_case_number == 0){
-      phase_upper_bound += 45;
-      phase_lower_bound -= 45;
-      phase_case_number = 2;
+  }
+  // Limiting the phase axis into something sane:
+  min_phase = Math.max(-360/180*Math.PI,min_phase);
+  min_phase = min_phase*180/Math.PI;
+  max_phase = max_phase*180/Math.PI;
+  phase_lower_bound = get_bestMultiple(min_phase,45,"lower");
+  phase_upper_bound = get_bestMultiple(max_phase,45,"upper");
+  phase_case_number = (phase_upper_bound - phase_lower_bound)/45;
+  if(phase_case_number == 0){
+    phase_upper_bound += 45;
+    phase_lower_bound -= 45;
+    phase_case_number = 2;
+  }
+}
+
+function draw_phase_axis(){
+  textAlign(CENTER);
+  noStroke();
+  fill(text_color);
+  textSize(15);
+  text("Bode phase plot",graph_bode_phase_width/2,-5);
+  text("phase arg{G(s)}",0,-30);
+  text("[degrees]",0,-15);
+  draw_loglines(x_case_gain,y_case_gain);
+  text("angular freq [rad/s]",graph_bode_phase_width,graph_bode_phase_height+35);
+  textAlign(RIGHT);
+  textSize(15);
+  for(let y=0; y<=phase_case_number; y++){
+    stroke(line_color);
+    let pas = graph_bode_phase_height*y/phase_case_number;
+    let value = phase_upper_bound - 45*y;
+    if (value!=0){
+      strokeWeight(1);
+    } else {
+      strokeWeight(3);
     }
-    textAlign(CENTER);
+    line(0,pas,graph_bode_phase_width,pas);
     noStroke();
     fill(text_color);
-    textSize(15);
-    text("Bode phase plot",graph_bode_phase_width/2,-5);
-    text("phase arg{G(s)}",0,-30);
-    text("[degrees]",0,-15);
-    draw_loglines(x_case_gain,y_case_gain);
-    text("angular freq [rad/s]",graph_bode_phase_width,graph_bode_phase_height+35);
-    textAlign(RIGHT);
-    textSize(15);
-    for(let y=0; y<=phase_case_number; y++){
-      stroke(line_color);
-      let pas = graph_bode_phase_height*y/phase_case_number;
-      let value = phase_upper_bound - 45*y;
-      if (value!=0){
-        strokeWeight(1);
-      } else {
-        strokeWeight(3);
-      }
-      line(0,pas,graph_bode_phase_width,pas);
-      noStroke();
-      fill(text_color);
-      text(value,-7,pas+5);
-    }
-    for(let i=0; i<bode_graphs.length; i++){
-      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
-        bode_graphs[i].draw_phase();
-      }
-    }
-    // Mark the corner frequencies:
-    rad_phase_lower_bound = phase_lower_bound*Math.PI/180;
-    rad_phase_upper_bound = phase_upper_bound*Math.PI/180;
-    for(let i=0; i<bode_graphs.length; i++){
-      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodephase_bool)){
-        draw_marks(preset_of_formula(bode_graphs[i].bode_formula)?.bode_marks,draw_bode_phase_T,i);
-      }
-    }
+    text(value,-7,pas+5);
+  }
+}
 
+function draw_bode_phase_plot(){
+  update_phase_axis();
+  draw_phase_axis();
+  for(let i=0; i<bode_graphs.length; i++){
+    if(shown_in_phase_plot(bode_graphs[i])){
+      bode_graphs[i].draw_phase();
+    }
+  }
+  rad_phase_lower_bound = phase_lower_bound*Math.PI/180;
+  rad_phase_upper_bound = phase_upper_bound*Math.PI/180;
+  mark_corner_frequencies(shown_in_phase_plot,draw_bode_phase_T);
+}
 
-  } else if(type == "gain"){
-    textAlign(CENTER);
-    noStroke();
-    fill(text_color);
-    textSize(15);
-    text("Bode magnitude plot",graph_bode_mag_x + graph_bode_mag_width/2,graph_bode_mag_y-5);
-    text("magnitude |G(s)|",0,-15);
-    draw_loglines(x_case_gain,y_case_gain);
-    text("angular freq [rad/s]",graph_bode_phase_width,graph_bode_phase_height+35);
+function draw_gain_axis(){
+  textAlign(CENTER);
+  noStroke();
+  fill(text_color);
+  textSize(15);
+  text("Bode magnitude plot",graph_bode_mag_x + graph_bode_mag_width/2,graph_bode_mag_y-5);
+  text("magnitude |G(s)|",0,-15);
+  draw_loglines(x_case_gain,y_case_gain);
+  text("angular freq [rad/s]",graph_bode_phase_width,graph_bode_phase_height+35);
 //    draw_loglines(x_case_gain,y_case_gain);
 
-    textAlign(RIGHT);
-    textSize(15);
-    for(let y=0; y<=y_case_gain; y++){
-      stroke(line_color);
-      let pas = graph_bode_mag_height*y/y_case_gain;
-      strokeWeight(1);
-      line(0,pas,graph_bode_mag_width,pas);
-      if (y>0){
-        strokeWeight(0.5);
-        for(let i=1; i<=9; i++){
-          let pas2 = pas - graph_bode_mag_height/y_case_gain * Math.log(i+1)/Math.log(10);
-          line(0,pas2,graph_bode_mag_width,pas2);
-        }
-      }
-
-      noStroke();
-      fill(text_color);
-      let value_dB = gain_upper_bound - 20*y;
-      let value = 1.0 * Math.pow(10.0, value_dB / 20.0);
-      text(value,-7,pas+5);
-    }
-
-    for(let i=0; i<bode_graphs.length; i++){
-      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodemag_bool)){
-        bode_graphs[i].draw_gain();
+  textAlign(RIGHT);
+  textSize(15);
+  for(let y=0; y<=y_case_gain; y++){
+    stroke(line_color);
+    let pas = graph_bode_mag_height*y/y_case_gain;
+    strokeWeight(1);
+    line(0,pas,graph_bode_mag_width,pas);
+    if (y>0){
+      strokeWeight(0.5);
+      for(let i=1; i<=9; i++){
+        let pas2 = pas - graph_bode_mag_height/y_case_gain * Math.log(i+1)/Math.log(10);
+        line(0,pas2,graph_bode_mag_width,pas2);
       }
     }
 
+    noStroke();
+    fill(text_color);
+    let value_dB = gain_upper_bound - 20*y;
+    let value = 1.0 * Math.pow(10.0, value_dB / 20.0);
+    text(value,-7,pas+5);
+  }
+}
 
-    // Mark the corner frequencies:
-    for(let i=0; i<bode_graphs.length; i++){
-      if((bode_graphs[i].bode_displaybool)&&(bode_graphs[i].bode_display_bodemag_bool)){
-        draw_marks(preset_of_formula(bode_graphs[i].bode_formula)?.bode_marks,draw_bode_mag_T,i);
-      }
+function draw_bode_gain_plot(){
+  draw_gain_axis();
+  for(let i=0; i<bode_graphs.length; i++){
+    if(shown_in_gain_plot(bode_graphs[i])){
+      bode_graphs[i].draw_gain();
     }
+  }
+  mark_corner_frequencies(shown_in_gain_plot,draw_bode_mag_T);
+}
+
+function draw_bode_responses(type){
+  if(type == "phase"){
+    draw_bode_phase_plot();
+  } else if(type == "gain"){
+    draw_bode_gain_plot();
   }
 }
 

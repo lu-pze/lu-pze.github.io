@@ -74,7 +74,6 @@ function fill_hover_answer(hover_answer, q_id){
   hover_answer.style.transform=null;
   let s="";
   if (q_id.startsWith("task_")){ // This is an answer connected to a task:
-    console.log(q_id.substr(5));
     s+=all_tasks[q_id.substr(5)].a;
   } else { // This is from all_questions dict:
     s+="<h2>" + all_questions[q_id].q + "</h2>";
@@ -156,7 +155,6 @@ function show_hover_answer([distance, q_id, q_position]){
   }
   place_hover_answer(hover_answer);
 
-  hover_answer.getBoundingClientRect(); // Only the commented-out lines below read this.
   // Draw a white line to the closest questions:
   push();
   strokeWeight(question_line_weight(distance));

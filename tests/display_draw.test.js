@@ -730,6 +730,18 @@ describe('draw_bode_mag_T and draw_bode_phase_T without a corner frequency', () 
   });
 });
 
+describe('draw_bode_responses: golden master of the axes', () => {
+  // Every p5 call in order, so a dropped stroke or a moved label shows.
+  // After a change on purpose, read the diff and update with npx jest -u tests/display_draw.test.js
+  const round = (value) => (typeof value === 'number' ? Number(value.toFixed(3)) : value);
+
+  test.each(['gain', 'phase'])('%s', (type) => {
+    set_globals({ text_color: 'TEXT', line_color: 'LINE' });
+    window.draw_bode_responses(type);
+    expect(drawn.map((call) => `${call.name}(${call.args.map(round).join(', ')})`)).toMatchSnapshot();
+  });
+});
+
 describe('draw_bode_responses: phase', () => {
   const axis_labels = () => calls('text').filter((a) => a[1] === -7).map((a) => a[0]);
 
@@ -742,6 +754,42 @@ describe('draw_bode_responses: phase', () => {
     expect(global_value('phase_case_number')).toBe(8);
     expect(global_value('phase_lower_bound')).toBe(-270);
     expect(global_value('phase_upper_bound')).toBe(90);
+  });
+
+  test('hidden graphs alone give the default range', () => {
+    use_fake_graphs(fake_graph({ bode_display_bodephase_bool: false }));
+    window.draw_bode_responses('phase');
+    expect(global_value('phase_lower_bound')).toBe(-270);
+    expect(global_value('phase_upper_bound')).toBe(90);
+  });
+
+  test('the range covers every shown graph, not only the last one', () => {
+    use_fake_graphs(
+      fake_graph({ bode_min_phase: -Math.PI, bode_max_phase: 0 }),
+      fake_graph({ bode_min_phase: -Math.PI / 2, bode_max_phase: -Math.PI / 4 }),
+    );
+    window.draw_bode_responses('phase');
+    expect(global_value('phase_lower_bound')).toBe(-180);
+    expect(global_value('phase_upper_bound')).toBe(0);
+  });
+
+  test('the bounds are also stored in radians', () => {
+    window.draw_bode_responses('phase');
+    expect(global_value('rad_phase_lower_bound')).toBeCloseTo(-270 * Math.PI / 180, 10);
+    expect(global_value('rad_phase_upper_bound')).toBeCloseTo(90 * Math.PI / 180, 10);
+  });
+
+  test.each([
+    ['phase', 'bode_display_bodephase_bool'], ['gain', 'bode_display_bodemag_bool'],
+  ])('a graph hidden in the %s plot gets no marks there', (type, field) => {
+    const [graph] = use_presets('GRAPH_ONE_REAL_POLE');
+    window.draw_X = jest.fn();
+    window.draw_bode_responses(type);
+    expect(window.draw_X).toHaveBeenCalledTimes(1);
+    window.draw_X.mockClear();
+    graph[field] = false;
+    window.draw_bode_responses(type);
+    expect(window.draw_X).not.toHaveBeenCalled();
   });
 
   test('the 0 degree line is thicker than the others', () => {
