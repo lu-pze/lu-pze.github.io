@@ -20,6 +20,7 @@ class bode_graph{
     this.bode_display_nyquist_bool = true;
     this.bode_display_information_bool = true;
     this.bode_display_equation_bool = true;
+    this.is_ghost = false; // true for the reference graphs of quizzes and assignments
     this.bode_display_pole_zero_bool = true; // false for quiz ghosts: their poles could give answers away
     this.bode_poles_zeros = null; // {poles, zeros} for a computed pole-zero map, see get_complex_p5
     this.bode_min_nyquist_x = 10000;

@@ -716,6 +716,15 @@ describe('addNewGraph', () => {
       ];
       for (const name of flags) expect(graphs()[0][name]).toBe(name !== flag);
       expect(graphs()[0].bode_display_pole_zero_bool).toBe(true);
+      expect(graphs()[0].is_ghost).toBe(false);
+    });
+
+    test('only a "." switches a place off, and a string too short for a place leaves it on', () => {
+      const ALL_ON = { magnitude: true, phase: true, time: true, nyquist: true, information: true, equation: true };
+      expect(window.parse_graph_views('_____MPTNIE')).toEqual(ALL_ON);
+      expect(window.parse_graph_views('_____xxxxxx')).toEqual(ALL_ON);
+      expect(window.parse_graph_views('')).toEqual(ALL_ON);
+      expect(window.parse_graph_views('_____..')).toEqual({ ...ALL_ON, magnitude: false, phase: false });
     });
 
     test('the default switches nothing off', () => {
@@ -742,6 +751,7 @@ describe('addNewGraph', () => {
       const ghost = graphs()[0];
       expect(ghost.graph_name).toBe('Answer A');
       expect(ghost.full_name).toBe('GhostM.TN.E_Answer A');
+      expect(ghost.is_ghost).toBe(true);
       expect(ghost.bode_display_bodemag_bool).toBe(true);
       expect(ghost.bode_display_bodephase_bool).toBe(false);
       expect(ghost.bode_display_timeresponse_bool).toBe(true);
@@ -755,6 +765,16 @@ describe('addNewGraph', () => {
     test('a ghost with the equation place off is hidden', () => {
       window.addNewGraph(null, { name: 'GhostMPTNI._Hidden', mf: 'x', formula: '1/(s+1)' });
       expect(document.getElementById('GhostMPTNI._Hidden').getAttribute('style')).toBe('display:none;');
+    });
+
+    test('a graph made without addNewGraph is no ghost', () => {
+      expect(window.eval('new bode_graph(1, "1/s")').is_ghost).toBe(false);
+    });
+
+    test('a ghost ignores the third argument', () => {
+      window.addNewGraph(null, { name: 'GhostMPTNIE_Answer', mf: 'x', formula: '1/(s+1)' }, '_____......');
+      expect(graphs()[0].bode_display_bodemag_bool).toBe(true);
+      expect(graphs()[0].bode_display_equation_bool).toBe(true);
     });
   });
 });

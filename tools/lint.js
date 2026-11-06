@@ -9,7 +9,7 @@ const { ESLint } = require('eslint');
 // Warnings are old code that was not rewritten at once (a blind `==` to `===` can change
 // behaviour). These counts may only fall: lint fails above a ceiling, whatever --quiet says.
 // Lower a ceiling when the count falls; never raise one.
-const WARNING_CEILINGS = { eqeqeq: 378, 'max-lines-per-function': 2, 'no-useless-assignment': 6 };
+const WARNING_CEILINGS = { eqeqeq: 370, 'max-lines-per-function': 2, 'no-useless-assignment': 6 };
 
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');

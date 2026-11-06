@@ -257,6 +257,19 @@ function addNewGraphClicked(event, graph_to_add){
   addNewGraph(event, graph_to_add);
 }
 
+// Where a graph shows up, read from "GhostMPTNIE_Displayed name" or "_____MPTNIE".
+// A "." at a position switches that place off:
+//      M      = shows up in Bode magnitude plot
+//       P     = shows up in Bode phase plot
+//        T    = shows up in Bode time response plot
+//         N   = shows up in Nyquist diagram
+//          I  = shows up in information tab
+//           E = shows up in Equations
+function parse_graph_views(enable_string){
+  const shown = (position) => enable_string[position] !== ".";
+  return {magnitude:shown(5), phase:shown(6), time:shown(7), nyquist:shown(8), information:shown(9), equation:shown(10)};
+}
+
 function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\frac{v^2}{s^2+2qvs+v^2}", formula:"(0.9s+1)/((s+1)^2)*(v^2)/(s^2+2*q*v*s+v^2)"}, enable_string="_____MPTNIE"){
   let graph_name = graph_to_add.name;
   let mathfield_string = graph_to_add.mf;
@@ -278,16 +291,15 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   }
   next_graph_no_to_add += 1;
 
-  if (graph_name.startsWith("Ghost")){
-    enable_string=graph_name;
-  }
+  const is_ghost = graph_name.startsWith("Ghost");
+  const views = parse_graph_views(is_ghost ? graph_name : enable_string);
 
   let new_equation_wrapper = document.createElement('div');
   new_equation_wrapper.classList.add('equation-wrapper');
   id_bank += 1;
   let linked_color = color_table[id_bank%color_table.length];
   let s ='<hr><div class="equation"';
-  if (enable_string[10]==".") s='<div class="equation" style="display:none;"';
+  if (!views.equation) s='<div class="equation" style="display:none;"';
   s +=" id='" + graph_name + "'>";
 
   s +=`<input type="checkbox" id="${graph_name}-checkbox" class="show-graph" style="background: hsl(${linked_color},100%,50%)" title="${graph_name}">`;
@@ -317,22 +329,14 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   new_bode_graph.graph_name = graph_name;
   new_bode_graph.full_name = graph_name;
 
-  // Let's set the displaybools:
-  // The name tells where this formula will be shown:
-  // GhostMPTNIE_Displayed name
-  //      M      = shows up in Bode magnitude plot
-  //       P     = shows up in Bode phase plot
-  //        T    = shows up in Bode time response plot
-  //         N   = shows up in Nyquist diagram
-  //          I  = shows up in information tab
-  //           E = shows up in Equations
-  if (enable_string[5]==".")  new_bode_graph.bode_display_bodemag_bool = false;
-  if (enable_string[6]==".")  new_bode_graph.bode_display_bodephase_bool = false;
-  if (enable_string[7]==".")  new_bode_graph.bode_display_timeresponse_bool = false;
-  if (enable_string[8]==".")  new_bode_graph.bode_display_nyquist_bool = false;
-  if (enable_string[9]==".")  new_bode_graph.bode_display_information_bool = false;
-  if (enable_string[10]==".") new_bode_graph.bode_display_equation_bool = false;
-  if (graph_name.startsWith("Ghost")){
+  new_bode_graph.bode_display_bodemag_bool = views.magnitude;
+  new_bode_graph.bode_display_bodephase_bool = views.phase;
+  new_bode_graph.bode_display_timeresponse_bool = views.time;
+  new_bode_graph.bode_display_nyquist_bool = views.nyquist;
+  new_bode_graph.bode_display_information_bool = views.information;
+  new_bode_graph.bode_display_equation_bool = views.equation;
+  new_bode_graph.is_ghost = is_ghost;
+  if (is_ghost){
     new_bode_graph.graph_name = graph_name.substr(12);
     new_bode_graph.bode_display_pole_zero_bool = false;
   }
@@ -360,7 +364,7 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
     }
   }
 
-  if (!(enable_string[9]==".")){
+  if (views.information){
     addNewInformationTab(id_bank, graph_name);
   }
 
