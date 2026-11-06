@@ -327,7 +327,6 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   let new_bode_graph = new bode_graph(id_bank,equation_string);
   bode_graphs.push(new_bode_graph);
   new_bode_graph.graph_name = graph_name;
-  new_bode_graph.full_name = graph_name;
 
   new_bode_graph.bode_display_bodemag_bool = views.magnitude;
   new_bode_graph.bode_display_bodephase_bool = views.phase;

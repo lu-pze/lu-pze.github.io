@@ -647,7 +647,6 @@ describe('addNewGraph', () => {
   test('an explicit custom graph is used as given', () => {
     window.addNewGraph(null, { name: 'Mine', mf: 'x', formula: '1/(s+1)' });
     expect(graphs()[0].graph_name).toBe('Mine');
-    expect(graphs()[0].full_name).toBe('Mine');
     expect(graphs()[0].bode_formula).toBe('1/(s+1)');
     expect(document.getElementById('Mine')).not.toBeNull();
     expect(document.querySelectorAll('.slider-wrapper')).toHaveLength(0);
@@ -750,7 +749,6 @@ describe('addNewGraph', () => {
       window.addNewGraph(null, { name: 'GhostM.TN.E_Answer A', mf: 'x', formula: '1/(s+1)' });
       const ghost = graphs()[0];
       expect(ghost.graph_name).toBe('Answer A');
-      expect(ghost.full_name).toBe('GhostM.TN.E_Answer A');
       expect(ghost.is_ghost).toBe(true);
       expect(ghost.bode_display_bodemag_bool).toBe(true);
       expect(ghost.bode_display_bodephase_bool).toBe(false);

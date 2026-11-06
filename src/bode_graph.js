@@ -32,7 +32,6 @@ class bode_graph{
     this.bode_gain_crossover_freq = 0;
     this.bode_phase_crossover_freq = 0;
     this.graph_name = "Graph";
-    this.full_name = "";
   }
 
   get_complex_p5(){
