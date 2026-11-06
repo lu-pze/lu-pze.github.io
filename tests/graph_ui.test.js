@@ -698,17 +698,19 @@ describe('addNewGraph', () => {
     expect(window.redraw_canvas_gain).toHaveBeenLastCalledWith(1);
   });
 
-  describe('enable_string (which plots a graph shows)', () => {
-    // Positions 5 to 10 are M P T N I E; a "." switches that place off.
+  describe('views (where a graph shows up)', () => {
+    const ALL_VIEWS = ['magnitude', 'phase', 'time', 'nyquist', 'information', 'equation'];
+    const all_views_but = (view) => ALL_VIEWS.filter((other) => other !== view);
+
     test.each([
-      ['_____.PTNIE', 'bode_display_bodemag_bool'],
-      ['_____M.TNIE', 'bode_display_bodephase_bool'],
-      ['_____MP.NIE', 'bode_display_timeresponse_bool'],
-      ['_____MPT.IE', 'bode_display_nyquist_bool'],
-      ['_____MPTN.E', 'bode_display_information_bool'],
-      ['_____MPTNI.', 'bode_display_equation_bool'],
-    ])('%s turns off %s only', (enable_string, flag) => {
-      window.addNewGraph(null, { name: 'Plain', mf: 'x', formula: '1/(s+1)' }, enable_string);
+      ['magnitude', 'bode_display_bodemag_bool'],
+      ['phase', 'bode_display_bodephase_bool'],
+      ['time', 'bode_display_timeresponse_bool'],
+      ['nyquist', 'bode_display_nyquist_bool'],
+      ['information', 'bode_display_information_bool'],
+      ['equation', 'bode_display_equation_bool'],
+    ])('leaving out %s turns off %s only', (view, flag) => {
+      window.addNewGraph(null, { name: 'Plain', mf: 'x', formula: '1/(s+1)' }, all_views_but(view));
       const flags = [
         'bode_display_bodemag_bool', 'bode_display_bodephase_bool', 'bode_display_timeresponse_bool',
         'bode_display_nyquist_bool', 'bode_display_information_bool', 'bode_display_equation_bool',
@@ -718,12 +720,15 @@ describe('addNewGraph', () => {
       expect(graphs()[0].is_ghost).toBe(false);
     });
 
-    test('only a "." switches a place off, and a string too short for a place leaves it on', () => {
-      const ALL_ON = { magnitude: true, phase: true, time: true, nyquist: true, information: true, equation: true };
-      expect(window.parse_graph_views('_____MPTNIE')).toEqual(ALL_ON);
-      expect(window.parse_graph_views('_____xxxxxx')).toEqual(ALL_ON);
-      expect(window.parse_graph_views('')).toEqual(ALL_ON);
-      expect(window.parse_graph_views('_____..')).toEqual({ ...ALL_ON, magnitude: false, phase: false });
+    test('ALL_GRAPH_VIEWS lists the views in the order of the flags in a ghost name', () => {
+      expect(global_value('ALL_GRAPH_VIEWS')).toEqual(ALL_VIEWS);
+    });
+
+    test('in a ghost name only a "." switches a view off, and a name too short for a view leaves it on', () => {
+      expect(window.parse_graph_views('GhostMPTNIE_')).toEqual(ALL_VIEWS);
+      expect(window.parse_graph_views('Ghostxxxxxx_')).toEqual(ALL_VIEWS);
+      expect(window.parse_graph_views('')).toEqual(ALL_VIEWS);
+      expect(window.parse_graph_views('Ghost..')).toEqual(ALL_VIEWS.slice(2));
     });
 
     test('the default switches nothing off', () => {
@@ -733,14 +738,14 @@ describe('addNewGraph', () => {
     });
 
     test('without the equation place the row is hidden and has no separator', () => {
-      window.addNewGraph(null, { name: 'Plain', mf: 'x', formula: '1/(s+1)' }, '_____MPTNI.');
+      window.addNewGraph(null, { name: 'Plain', mf: 'x', formula: '1/(s+1)' }, all_views_but('equation'));
       const equation = document.getElementById('Plain');
       expect(equation.getAttribute('style')).toBe('display:none;');
       expect(equation.parentElement.querySelector('hr')).toBeNull();
     });
 
     test('without the information place there is no information tab', () => {
-      window.addNewGraph(null, { name: 'Plain', mf: 'x', formula: '1/(s+1)' }, '_____MPTN.E');
+      window.addNewGraph(null, { name: 'Plain', mf: 'x', formula: '1/(s+1)' }, all_views_but('information'));
       expect(document.getElementById('graph_1_info')).toBeNull();
       expect(document.getElementById('graph_1_infolabel')).toBeNull();
     });
@@ -769,10 +774,32 @@ describe('addNewGraph', () => {
       expect(window.eval('new bode_graph(1, "1/s")').is_ghost).toBe(false);
     });
 
-    test('a ghost ignores the third argument', () => {
-      window.addNewGraph(null, { name: 'GhostMPTNIE_Answer', mf: 'x', formula: '1/(s+1)' }, '_____......');
+    test('a ghost with flags in its name ignores the views argument', () => {
+      window.addNewGraph(null, { name: 'GhostMPTNIE_Answer', mf: 'x', formula: '1/(s+1)' }, []);
       expect(graphs()[0].bode_display_bodemag_bool).toBe(true);
       expect(graphs()[0].bode_display_equation_bool).toBe(true);
+    });
+
+    test('ghost:true makes a ghost with a clean name, shown only in its views', () => {
+      window.addNewGraph(null, { name: 'Match this', ghost: true, mf: 'x', formula: '1/(s+1)' }, ['time']);
+      const ghost = graphs()[0];
+      expect(ghost.is_ghost).toBe(true);
+      expect(ghost.graph_name).toBe('Match this');
+      expect(ghost.bode_display_pole_zero_bool).toBe(false);
+      expect(ghost.bode_display_timeresponse_bool).toBe(true);
+      expect(ghost.bode_display_bodemag_bool).toBe(false);
+      expect(ghost.bode_display_equation_bool).toBe(false);
+      const row = document.getElementById('Match this');
+      expect(row.getAttribute('style')).toBe('display:none;');
+      expect(row.querySelector('.show-graph').title).toBe('Match this');
+      expect(document.getElementById('graph_1_info')).toBeNull();
+    });
+
+    test('a ghost:true graph is not read for flags, even if its name starts like one', () => {
+      window.addNewGraph(null, { name: 'Ghost story', ghost: true, mf: 'x', formula: '1/(s+1)' }, ['time']);
+      expect(graphs()[0].graph_name).toBe('Ghost story');
+      expect(graphs()[0].bode_display_timeresponse_bool).toBe(true);
+      expect(graphs()[0].bode_display_bodemag_bool).toBe(false);
     });
   });
 });

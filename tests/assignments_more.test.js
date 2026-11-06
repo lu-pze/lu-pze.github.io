@@ -573,11 +573,11 @@ describe('select_assignment', () => {
         global_value('GRAPH_ORDER')[0].name, global_value('GRAPH_PID').name, global_value('GRAPH_ONE_POLE_WITH_PID_YR').name,
       ]);
       const [, pid, yr] = graphs();
-      // "_____MP...E": magnitude, phase and equation only.
+      // PID_CONTROLLER_VIEWS: magnitude, phase and equation only.
       expect([pid.bode_display_bodemag_bool, pid.bode_display_bodephase_bool, pid.bode_display_timeresponse_bool,
         pid.bode_display_nyquist_bool, pid.bode_display_information_bool, pid.bode_display_equation_bool])
         .toEqual([true, true, false, false, false, true]);
-      // "_____MPT..E": adds the time response.
+      // CLOSED_LOOP_VIEWS: adds the time response.
       expect([yr.bode_display_bodemag_bool, yr.bode_display_bodephase_bool, yr.bode_display_timeresponse_bool,
         yr.bode_display_nyquist_bool, yr.bode_display_information_bool, yr.bode_display_equation_bool])
         .toEqual([true, true, true, false, false, true]);
@@ -630,7 +630,7 @@ describe('select_assignment', () => {
         global_value('GRAPH_ONE_POLE_WITH_PID_YR').name, global_value('GRAPH_ONE_POLE_WITH_PID_S').name,
       ]);
       const sensitivity = graphs()[3];
-      // "_____M..N.E": magnitude, Nyquist and equation.
+      // SENSITIVITY_VIEWS: magnitude, Nyquist and equation.
       expect([sensitivity.bode_display_bodemag_bool, sensitivity.bode_display_bodephase_bool,
         sensitivity.bode_display_timeresponse_bool, sensitivity.bode_display_nyquist_bool])
         .toEqual([true, false, false, true]);
@@ -644,7 +644,7 @@ describe('select_assignment', () => {
         global_value('GRAPH_ONE_POLE_WITH_PID_YR').name, global_value('GRAPH_ONE_POLE_WITH_PID_S').name,
         global_value('GRAPH_ONE_POLE_WITH_PID_YL').name, global_value('GRAPH_ONE_POLE_WITH_PID_OPEN').name,
       ]);
-      // "_____MP.NIE": the open-loop graph shows no time response but does show information.
+      // The open-loop graph shows no time response but does show information.
       const open = graphs()[5];
       expect([open.bode_display_timeresponse_bool, open.bode_display_nyquist_bool, open.bode_display_information_bool])
         .toEqual([false, true, true]);
@@ -670,7 +670,7 @@ describe('select_assignment', () => {
 });
 
 // The display flags of the PID graphs: magnitude, phase, time response, Nyquist, information, equation.
-// They come from the strings "_____MP...E" and so on in select_assignment.
+// They come from the lists of views in select_assignment.
 const PID_FLAGS = {
   GRAPH_PID: [true, true, false, false, false, true],
   GRAPH_ONE_POLE_WITH_PID_YR: [true, true, true, false, false, true],
@@ -713,8 +713,11 @@ describe('mutation gaps: select_assignment', () => {
     ['one_zero_two_poles', 'Match this response', '\\frac{(1-1.5s)}{(1+s)(1+s)}'],
   ])('%s: the ghost "%s" shows the LaTeX %s', (assignment, name, latex) => {
     select(assignment);
-    const equation = [...document.querySelectorAll('.equation')].find((div) => div.id.endsWith('_' + name));
+    const equation = [...document.querySelectorAll('.equation')].find((div) => div.id === name);
     expect(equation.querySelector('math-field.formula').textContent).toBe(latex);
+    const ghost = graphs().find((graph) => graph.graph_name === name);
+    expect(ghost.is_ghost).toBe(true);
+    expect(ghost.bode_display_pole_zero_bool).toBe(false);
   });
 });
 

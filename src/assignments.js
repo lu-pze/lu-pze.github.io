@@ -397,6 +397,11 @@ function restart_lupze (){
   next_graph_no_to_add = NOF_GRAPHS_AT_STARTUP;
 }
 
+// Where the PID assignments show their graphs.
+const PID_CONTROLLER_VIEWS = ["magnitude","phase","equation"];
+const CLOSED_LOOP_VIEWS = ["magnitude","phase","time","equation"];
+const SENSITIVITY_VIEWS = ["magnitude","nyquist","equation"];
+
 function select_assignment (event){
   add_event("select_assignment="+event.value);
   current_assignment = event.value;
@@ -455,53 +460,45 @@ function select_assignment (event){
   let info_tab = document.getElementById("graph_"+(next_graph_no_to_add)+"_info");
   info_tab.checked = "true";
 
-  // Add ghost graphs:
-  // The name tells where this formula will be shown:
-  // GhostMPTNIE_Displayed name
-  //      M      = shows up in Bode magnitude plot
-  //       P     = shows up in Bode phase plot
-  //        T    = shows up in Bode time response plot
-  //         N   = shows up in Nyquist diagram
-  //          I  = shows up in information tab
-  //           E = shows up in Equations
+  // Add ghost graphs, shown only in the plot the assignment asks to match:
   if(event.value=="one_pole"){
     //"reference eq in step response(k=0.65, T1=2)"
-    addNewGraph(null, {name:"Ghost..T..._Match this response", mf:"\\frac{0.65}{1+2s}", formula:"(0.65)/((1+2s))"});
+    addNewGraph(null, {name:"Match this response", ghost:true, mf:"\\frac{0.65}{1+2s}", formula:"(0.65)/((1+2s))"}, ["time"]);
   } else if(event.value=="two_real_poles"){
     //reference in step (T2=T3=1, k2=0.5)
-    addNewGraph(null, {name:"Ghost..T..._Match this response", mf:"\\frac{0.5}{1+2s+s^2}", formula:"0.5/(1+2s+s^2)"});
+    addNewGraph(null, {name:"Match this response", ghost:true, mf:"\\frac{0.5}{1+2s+s^2}", formula:"0.5/(1+2s+s^2)"}, ["time"]);
     //reference in bode phase (T2=5, T3=0.05, k2=1)
-    addNewGraph(null, {name:"Ghost.P...._Match this Bode phase", mf:"\\frac{1}{(1+5s)(1+0.05s)}", formula:"1/(1+5s)*1/(1+0.05s)"});
+    addNewGraph(null, {name:"Match this Bode phase", ghost:true, mf:"\\frac{1}{(1+5s)(1+0.05s)}", formula:"1/(1+5s)*1/(1+0.05s)"}, ["phase"]);
   } else if(event.value=="two_complex_poles"){
     //Bode reference (w=8, z=0.05)
-    addNewGraph(null, {name:"GhostMP...._Match this Bode", mf:"\\frac{8^2}{s^2+2*0.05*8*s+8^2}", formula:"8^2/(s^2+2*0.05*8*s+8^2)"});
+    addNewGraph(null, {name:"Match this Bode", ghost:true, mf:"\\frac{8^2}{s^2+2*0.05*8*s+8^2}", formula:"8^2/(s^2+2*0.05*8*s+8^2)"}, ["magnitude","phase"]);
     //Step reference (w=2,z=0.7,k=0.7)
-    addNewGraph(null, {name:"Ghost..T..._Match this response", mf:"\\frac{0.7*2^2}{s^2+2*0.7*2*s+2^2}", formula:"0.7*2^2/(s^2+2*0.7*2*s+2^2)"});
+    addNewGraph(null, {name:"Match this response", ghost:true, mf:"\\frac{0.7*2^2}{s^2+2*0.7*2*s+2^2}", formula:"0.7*2^2/(s^2+2*0.7*2*s+2^2)"}, ["time"]);
   } else if(event.value=="one_zero_two_poles"){
     //Nyquist reference (k=1,T6=2.5,T7=1,T8=6)
-    addNewGraph(null, {name:"Ghost...N.._Match this Nyquist", mf:"\\frac{(1+6s)}{(1+2.5s)(1+s)}", formula:"(1+6s)/(1+2.5s)*1/(1+s)"});
+    addNewGraph(null, {name:"Match this Nyquist", ghost:true, mf:"\\frac{(1+6s)}{(1+2.5s)(1+s)}", formula:"(1+6s)/(1+2.5s)*1/(1+s)"}, ["nyquist"]);
     //Bode reference (k4=0.75,T6=9.25,T7=0.5,T8=2)
-    addNewGraph(null, {name:"GhostMP...._Match this Bode", mf:"\\frac{0.75(1+2s)}{(1+9.25s)(1+0.5s)}", formula:"0.75(1+2s)/(1+9.25s)*1/(1+0.5s)"});
+    addNewGraph(null, {name:"Match this Bode", ghost:true, mf:"\\frac{0.75(1+2s)}{(1+9.25s)(1+0.5s)}", formula:"0.75(1+2s)/(1+9.25s)*1/(1+0.5s)"}, ["magnitude","phase"]);
     //Step reference (k4=1,T6=1,T7=1,T8=-1.5)
-    addNewGraph(null, {name:"Ghost..T..._Match this response", mf:"\\frac{(1-1.5s)}{(1+s)(1+s)}", formula:"(1-1.5s)/(1+s)*1/(1+s)"});
+    addNewGraph(null, {name:"Match this response", ghost:true, mf:"\\frac{(1-1.5s)}{(1+s)(1+s)}", formula:"(1-1.5s)/(1+s)*1/(1+s)"}, ["time"]);
   } else if(event.value=="pid_controller"){
-    addNewGraph(null, GRAPH_PID, "_____MP...E");
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR, "_____MPT..E");
+    addNewGraph(null, GRAPH_PID, PID_CONTROLLER_VIEWS);
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR, CLOSED_LOOP_VIEWS);
   } else if(event.value=="pid_controller_S"){
-    addNewGraph(null, GRAPH_PID, "_____MP...E");
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR, "_____MPT..E");
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S, "_____M..N.E");
+    addNewGraph(null, GRAPH_PID, PID_CONTROLLER_VIEWS);
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR, CLOSED_LOOP_VIEWS);
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S, SENSITIVITY_VIEWS);
   } else if(event.value=="pid_controller_YL"){
-    addNewGraph(null, GRAPH_PID, "_____MP...E");
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR, "_____MPT..E");
-    //addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S, "_____M..N.E");
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YL, "_____MPT..E");
+    addNewGraph(null, GRAPH_PID, PID_CONTROLLER_VIEWS);
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR, CLOSED_LOOP_VIEWS);
+    //addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S, SENSITIVITY_VIEWS);
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YL, CLOSED_LOOP_VIEWS);
   } else if(event.value=="pid_controller_OL"){
-    addNewGraph(null, GRAPH_PID, "_____MP...E");
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR, "_____MPT..E");
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S, "_____M..N.E");
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YL, "_____MPT..E");
-    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_OPEN, "_____MP.NIE");
+    addNewGraph(null, GRAPH_PID, PID_CONTROLLER_VIEWS);
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YR, CLOSED_LOOP_VIEWS);
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_S, SENSITIVITY_VIEWS);
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_YL, CLOSED_LOOP_VIEWS);
+    addNewGraph(null, GRAPH_ONE_POLE_WITH_PID_OPEN, ["magnitude","phase","nyquist","information","equation"]);
   }
   // Recalculate figures in the information bar, Phase margin, Gain crossover frequency, gain margin, etc.:
   redraw_canvas_gain("all");
