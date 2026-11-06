@@ -26,15 +26,21 @@ function run_script(highscore_file) {
   });
 }
 
-function output_for_file_contents(contents) {
+// A new folder each time: the script appends to its file, so a fixed path could outlive the run.
+function with_highscore_path(use) {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'lu-pze-compete-'));
-  const file = path.join(directory, 'highscores.txt');
-  fs.writeFileSync(file, contents);
   try {
-    return run_script(file);
+    return use(path.join(directory, 'highscores.txt'));
   } finally {
     fs.rmSync(directory, { recursive: true });
   }
+}
+
+function output_for_file_contents(contents) {
+  return with_highscore_path((file) => {
+    fs.writeFileSync(file, contents);
+    return run_script(file);
+  });
 }
 
 const public_output = (lines) => output_for_file_contents(lines.join('\n'));
@@ -102,8 +108,7 @@ test('the client cannot choose the time that is shown: the server\'s own comes l
 });
 
 test('a missing highscore file gives the error text', () => {
-  const output = run_script(path.join(os.tmpdir(), 'lu-pze-no-such-file'));
-  expect(output).toBe('Error: Highscore file does not exist.');
+  expect(with_highscore_path(run_script)).toBe('Error: Highscore file does not exist.');
 });
 
 // The POST path needs a real request, so these tests run PHP's own web server on a temporary file.
