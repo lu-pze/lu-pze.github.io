@@ -258,11 +258,8 @@ describe('changeColorMode', () => {
 
 describe('updateInputFormulaFromList', () => {
   const CASES = [
-    ['Ramp', '1/(s^2)', '\\frac{1}{s^2}'],
     ['Unit step', '1/s', '\\frac{1}{s}'],
     ['Impulse', '1', '1'],
-    ['Oscillation', '1/(1 + s^2)', '\\frac{1}{1 + s^2}'],
-    ['Oscillation10', '100/(1 + 20s + 100s^2)', '\\frac{100}{1 + 20s + 100s^2}'],
   ];
   let select;
   let equation;
@@ -293,10 +290,10 @@ describe('updateInputFormulaFromList', () => {
     expect(window.achievement_done.mock.calls).toEqual([['set_input_to_impulse']]);
   });
 
-  test('an unknown choice leaves the input formula alone but still recomputes', () => {
+  test.each(['Nothing', 'Ramp'])('an unknown choice (%s) leaves the input formula alone but still recomputes', (choice) => {
     set_globals({ input_formula: 'unchanged' });
-    select.innerHTML = '<option value="Nothing">Nothing</option>';
-    select.value = 'Nothing';
+    select.innerHTML = `<option value="${choice}">${choice}</option>`;
+    select.value = choice;
     window.updateInputFormulaFromList();
     expect(global_value('input_formula')).toBe('unchanged');
     expect(window.redraw_canvas_gain).toHaveBeenCalledWith('all');

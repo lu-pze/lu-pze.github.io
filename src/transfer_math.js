@@ -388,9 +388,12 @@ function continue_phase(phase, previous){
   return phase - 2*Math.PI*Math.floor((phase - previous + Math.PI)/(2*Math.PI));
 }
 
-// The frequency [rad/s] of Bode sample x (0 <= x < graph_bode_mag_width) on the log axis.
-function bode_sample_frequency(x){
-  return Math.pow(10, min_10power + x*x_case_gain/graph_bode_mag_width);
+// The frequencies [rad/s] of the Bode samples: one per pixel of a plot `width` pixels wide, whose
+// log axis starts at 10^min_power and spans `decades` decades.
+function bode_frequencies(width, min_power, decades){
+  const frequencies = [];
+  for (let x = 0; x < width; x++) frequencies.push(Math.pow(10, min_power + x*decades/width));
+  return frequencies;
 }
 
 // Pairs [i, j] of sample indices on either side of each sign change of `values`. Samples within
@@ -409,10 +412,10 @@ function sign_changes(values, dead_band, branch){
   return changes;
 }
 
-// The frequency between samples i and j where f(omega) changes sign, by bisection on log10(omega).
-function refine_crossing(f, i, j){
-  let lo = Math.log10(bode_sample_frequency(i));
-  let hi = Math.log10(bode_sample_frequency(j));
+// The frequency between `low_omega` and `high_omega` where f(omega) changes sign, by bisection on log10(omega).
+function refine_crossing(f, low_omega, high_omega){
+  let lo = Math.log10(low_omega);
+  let hi = Math.log10(high_omega);
   const positive_at_lo = f(Math.pow(10, lo)) > 0;
   for (let h = 0; h < 50; h++){
     const mid = (lo + hi)/2;
@@ -444,28 +447,28 @@ function smallest_margin(crossings){
 }
 
 // Phase margin [degrees, wrapped into (-180, 180]] and gain crossover frequency [rad/s]: the
-// crossings of 0 dB in the sampled gain curve, each refined on the exact |G(j*omega)|.
+// crossings of 0 dB in the gain curve sampled at `frequencies`, each refined on the exact |G(j*omega)|.
 // Returns [phase_margin, frequency], or NaN when the gain never crosses 0 dB.
-function findOmegaZero(binding,gain_array){
+function findOmegaZero(binding,gain_array,frequencies){
   if (binding === null) return NaN;
   const crossings = sign_changes(gain_array, 1e-6).map(([i, j]) => {
-    const omega = refine_crossing((w) => gain_db_at(binding, w), i, j);
+    const omega = refine_crossing((w) => gain_db_at(binding, w), frequencies[i], frequencies[j]);
     return [wrap_degrees(phase_at(binding, omega)*180/Math.PI + 180), omega];
   });
   return smallest_margin(crossings);
 }
 
 // Gain margin [dB] and phase crossover frequency [rad/s]: the crossings of -180 + k*360 degrees
-// in the sampled (unwrapped) phase curve, each refined on the exact phase: arg G(j*omega) jumps
+// in the (unwrapped) phase curve sampled at `frequencies`, each refined on the exact phase: arg G(j*omega) jumps
 // between +pi and -pi exactly there, so bisection on its sign finds the crossing. A phase within
 // 0.005 rad of -180 (for example 1/s^2, which stays there) is not a crossing.
 // Returns [gain_margin, frequency], or NaN when the phase never crosses -180 + k*360.
-function findOmega180(binding,phase_array){
+function findOmega180(binding,phase_array,frequencies){
   if (binding === null) return NaN;
   const turns = phase_array.map((phase) => Math.round((phase + Math.PI)/(2*Math.PI)));
   const distance = phase_array.map((phase, i) => phase + Math.PI - 2*Math.PI*turns[i]);
   const crossings = sign_changes(distance, 0.005, turns).map(([i, j]) => {
-    const omega = refine_crossing((w) => phase_at(binding, w), i, j);
+    const omega = refine_crossing((w) => phase_at(binding, w), frequencies[i], frequencies[j]);
     return [-gain_db_at(binding, omega), omega];
   });
   return smallest_margin(crossings);

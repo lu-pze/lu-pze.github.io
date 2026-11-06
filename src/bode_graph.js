@@ -37,6 +37,7 @@ class bode_graph{
   get_complex_p5(){
     //Reset Values
     const binding = bind_formula(this.bode_formula);
+    const frequencies = bode_frequencies(graph_bode_mag_width, min_10power, x_case_gain);
     if(binding !== null){
       this.bode_max_phase = -10000;
       this.bode_min_phase = 10000;
@@ -52,8 +53,7 @@ class bode_graph{
       // two samples, which no unwrapping can follow. So only the rest of G is unwrapped.
       const delay = formula_delay(binding);
       let previous_phase = NaN;
-      for(let x=0; x<graph_bode_mag_width; x++){
-        let math_x = bode_sample_frequency(x);
+      for(const math_x of frequencies){
         let bode_value = getComplexValues(binding, math_x);
         if(bode_value.re > this.bode_max_nyquist_x){
           this.bode_max_nyquist_x = bode_value.re;
@@ -88,8 +88,8 @@ class bode_graph{
         }
       }
     }
-    let omegaZero = findOmegaZero(binding, this.bode_gain_array);
-    let omega180 = findOmega180(binding, this.bode_phase_array);
+    let omegaZero = findOmegaZero(binding, this.bode_gain_array, frequencies);
+    let omega180 = findOmega180(binding, this.bode_phase_array, frequencies);
     this.bode_gain_margin = omega180[0];
     this.bode_phase_margin = omegaZero[0];
     this.bode_gain_crossover_freq = omegaZero[1];

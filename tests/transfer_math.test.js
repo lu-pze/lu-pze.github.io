@@ -838,3 +838,62 @@ describe('time_samples', () => {
     expect(window.time_samples(10, 4, 5)).toEqual([0, 2, 4]);
   });
 });
+
+describe('bode_frequencies', () => {
+  test('one frequency per pixel, evenly spaced on the log axis', () => {
+    expect(window.bode_frequencies(4, -2, 4)).toEqual([0.01, 0.1, 1, 10]);
+  });
+
+  test('a fractional width: one sample for each whole pixel inside it, spaced by the real width', () => {
+    const frequencies = window.bode_frequencies(2.5, 0, 5);
+    expect(frequencies).toEqual([1, 100, 10000]);
+  });
+
+  test('the axis need not start at 1 or span whole decades', () => {
+    const frequencies = window.bode_frequencies(2, 1.5, 3);
+    expect(frequencies).toEqual([10 ** 1.5, 10 ** 3]);
+  });
+
+  test('no width gives no frequencies', () => {
+    expect(window.bode_frequencies(0, -2, 5)).toEqual([]);
+  });
+});
+
+describe('the margins take their sample frequencies as a parameter', () => {
+  // A plot that would give other frequencies, so a read of these globals shows.
+  beforeEach(() => set_globals({ graph_bode_mag_width: 3, min_10power: 7, x_case_gain: 1 }));
+
+  test('findOmegaZero finds a crossing between two given frequencies', () => {
+    set_sliders({});
+    const binding = window.bind_formula('2/(1+s)');
+    const [margin, omega] = window.findOmegaZero(binding, [5, -5], [0.5, 4]);
+    expect(omega).toBeCloseTo(Math.sqrt(3), 9);
+    expect(margin).toBeCloseTo(180 - (Math.atan(Math.sqrt(3)) * 180) / Math.PI, 7);
+  });
+
+  test('findOmega180 finds a crossing between two given frequencies', () => {
+    set_sliders({});
+    // Three equal poles reach -180 degrees where atan(w) = 60 degrees.
+    const binding = window.bind_formula('1/(1+s)^3');
+    const [margin, omega] = window.findOmega180(binding, [-3, -3.3], [1, 3]);
+    expect(omega).toBeCloseTo(Math.sqrt(3), 9);
+    expect(margin).toBeCloseTo(20 * Math.log10(8), 7);
+  });
+
+  test.each([
+    ['-900', '1/(1+s)^12', -5 * Math.PI, Math.tan((75 * Math.PI) / 180)],
+    ['+540', '(1+s)^12', 3 * Math.PI, 1],
+  ])('findOmega180 also finds a crossing of %s degrees, more than a turn from -180', (_, formula, phase, expected) => {
+    set_sliders({});
+    const binding = window.bind_formula(formula);
+    const [, omega] = window.findOmega180(binding, [phase - 0.2, phase + 0.2], [expected / 1.2, expected * 1.2]);
+    expect(omega).toBeCloseTo(expected, 9);
+  });
+
+  test('a crossing is searched between the samples on either side of it, not at their indices', () => {
+    set_sliders({});
+    const binding = window.bind_formula('2/(1+s)');
+    const [, omega] = window.findOmegaZero(binding, [9, 5, -5, -9], [0.01, 0.5, 4, 90]);
+    expect(omega).toBeCloseTo(Math.sqrt(3), 9);
+  });
+});

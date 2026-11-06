@@ -55,10 +55,6 @@ function updateInputFormulaFromList(event){
   let selected_input = document.getElementById("input-choices").value;
   let input_equation = document.getElementById("input-formula");
   switch(selected_input){
-    case 'Ramp':
-      input_formula = "1/(s^2)";
-      input_equation.value = "\\frac{1}{s^2}";
-      break;
     case 'Unit step':
       input_formula = "1/s";
       input_equation.value = "\\frac{1}{s}";
@@ -67,14 +63,6 @@ function updateInputFormulaFromList(event){
       achievement_done("set_input_to_impulse");
       input_formula = "1";
       input_equation.value = "1";
-      break;
-    case 'Oscillation':
-      input_formula = "1/(1 + s^2)"
-      input_equation.value = "\\frac{1}{1 + s^2}";
-      break;
-    case 'Oscillation10':
-      input_formula = "100/(1 + 20s + 100s^2)"
-      input_equation.value = "\\frac{100}{1 + 20s + 100s^2}";
       break;
   }
   redraw_canvas_gain("all");
