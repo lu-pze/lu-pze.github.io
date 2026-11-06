@@ -272,6 +272,11 @@ function press_step_response_time_axis(event){
   return true;
 }
 
+// The time response of `graph` at pixel `screen_x` of the plot: the next sample at or after it.
+function time_response_at(graph, screen_x){
+  return graph.bode_timerep_array[Math.ceil(screen_x/graph.bode_timerep_step)];
+}
+
 function press_step_response(event){
   event.preventDefault(); // Make sure that iPads don't drag/scroll the contents
   push();
@@ -279,11 +284,11 @@ function press_step_response(event){
   strokeWeight(2);
   line(mouseX,graph_step_response_y+graph_step_response_y_offset,mouseX,graph_step_response_y + graph_step_response_y_offset + graph_step_response_height);
   pop();
-  let linked_x = Math.ceil((mouseX - graph_step_response_x - graph_step_response_x_offset)/precision);
+  const screen_x = mouseX - graph_step_response_x - graph_step_response_x_offset;
   press_on_curves({
     is_displayed: (graph) => graph.bode_display_timeresponse_bool,
     distance_to_curve: (graph) => {
-      let linked_y = graph.bode_timerep_array[linked_x];
+      let linked_y = time_response_at(graph, screen_x);
       let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true) + graph_step_response_y_offset;
       return Math.abs(mouseY - graph_step_response_y - screen_y);
     },

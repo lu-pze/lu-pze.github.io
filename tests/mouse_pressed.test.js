@@ -37,6 +37,7 @@ function make_graph(formula, index, is_ghost = false) {
     bode_gain_array: array(400, (i) => 20 - 0.15 * i - 12 * index),
     bode_phase_array: array(400, (i) => -(Math.PI / 2) * (1 - Math.exp(-i / 100)) - 0.3 * index),
     bode_timerep_array: array(100, (i) => 100 * (1 - Math.exp(-i / (20 + 10 * index)))),
+    bode_timerep_step: 4,
   };
 }
 

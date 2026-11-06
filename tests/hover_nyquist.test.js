@@ -66,6 +66,7 @@ function fake_graph(overrides = {}) {
     bode_gain_array: Array(400).fill(0), // 0 dB: drawn at y = 130 in the Bode magnitude plot
     bode_phase_array: Array(400).fill(-Math.PI / 2), // -90 degrees: drawn at y = 410 in the Bode phase plot
     bode_timerep_array: Array(100).fill(50), // 50: drawn at y = 140 in the step response plot
+    bode_timerep_step: 4,
     draw_nyquist_value: jest.fn(), get_nyquist_value: jest.fn(() => [10, 20]),
     ...overrides,
   });
@@ -588,6 +589,13 @@ describe('mouseMoved: step response', () => {
     test('the curve sample is the one at the mouse x rounded up to the next sample (4 pixels apart)', () => {
       set_live('bode_graphs', [fake_graph({ bode_timerep_array: Array.from({ length: 100 }, (_, i) => i) })]);
       move(590, 176); // (590 - 465) / 4 = 31.25 -> sample 32, at y = 40 + 200 * (1 - 32 / 100)
+      expect(texts()[2]).toBe('output=32.000');
+    });
+
+    test('the sample is found by the step of the graph, not by the global precision', () => {
+      set_globals({ precision: 12 });
+      set_live('bode_graphs', [fake_graph({ bode_timerep_array: Array.from({ length: 100 }, (_, i) => i) })]);
+      move(590, 176); // as above: sample 32 with this graph's step of 4, and it would be 11 with the 12
       expect(texts()[2]).toBe('output=32.000');
     });
 

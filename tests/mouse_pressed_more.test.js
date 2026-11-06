@@ -737,6 +737,7 @@ describe('mutation gaps: pressing on the plots in a quiz', () => {
     bode_formula: formula(preset), bode_displaybool: true,
     bode_display_bodemag_bool: true, bode_display_bodephase_bool: true, bode_display_timeresponse_bool: true,
     bode_gain_array: Array(500).fill(20), bode_phase_array: Array(500).fill(0), bode_timerep_array: Array(200).fill(50),
+    bode_timerep_step: 4,
     ...props,
   });
 
@@ -830,6 +831,25 @@ describe('mutation gaps: pressing on the plots in a quiz', () => {
     } finally {
       window.map = real_map;
     }
+  });
+
+  test('a press finds each curve by the step of that graph, not by the global precision', () => {
+    const screen_x = 80;
+    const sample = (step) => Math.ceil(screen_x / step);
+    const plot_top = 13 + offset('graph_step_response_y_offset');
+    const at_sample = (index, value) => { const values = Array(200).fill(500); values[index] = value; return values; };
+    set_globals({
+      precision: 4,
+      min_y_timerep: 0, max_y_timerep: 100,
+      bode_graphs: [
+        curve_graph('GRAPH_ONE_REAL_POLE', { bode_timerep_step: 4, bode_timerep_array: at_sample(sample(12), 100) }),
+        curve_graph('GRAPH_ONE_REAL_POLE', { bode_timerep_step: 12, bode_timerep_array: at_sample(sample(12), 100) }),
+      ],
+    });
+    window.mouseX = global_value('graph_step_response_x') + offset('graph_step_response_x_offset') + screen_x;
+    window.mouseY = plot_top;
+    window.press_step_response(event());
+    expect(global_value('clicked_on_time_response_graph_no')).toBe(1); // graph 0 reads sample 20, off the top
   });
 
   test.each([

@@ -440,10 +440,10 @@ function hover_step_response_time_axis(){
 }
 
 function hover_step_response(){
-  let linked_x = Math.ceil((mouseX - graph_step_response_x - graph_step_response_x_offset)/precision);
+  const screen_x = mouseX - graph_step_response_x - graph_step_response_x_offset;
   const closest = closest_curve(
     (graph) => graph.bode_display_timeresponse_bool,
-    (graph) => graph.bode_timerep_array[linked_x],
+    (graph) => time_response_at(graph, screen_x),
     (value) => map(value,min_y_timerep,max_y_timerep,graph_step_response_height,0,true) + graph_step_response_y_offset,
     graph_step_response_y);
   push();
