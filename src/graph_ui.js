@@ -368,7 +368,8 @@ function addNewInformationTab(input_id, graph_name){
   new_input.setAttribute("name","tab-inf");
   new_input.id = "graph_" + input_id.toString() + "_info";
   new_input.setAttribute("onchange","updateGraphInformation()");
-  if (input_id == 1) {
+  // Some tab must be selected: updateGraphInformation fills the information bar from that one.
+  if ((input_id == 1) || (tabs_wrapper.querySelector("input:checked") === null)) {
     new_input.checked = "true";
   }
 

@@ -763,6 +763,30 @@ describe('addNewGraph', () => {
       expect(document.getElementById('Hidden').getAttribute('style')).toBe('display:none;');
     });
 
+    test('the first tab is selected when no tab is selected, even if its graph is not number 1', () => {
+      set_globals({ id_bank: 2 });
+      window.addNewGraph(null, { name: 'First', mf: 'x', formula: '1/(s+1)' });
+      window.addNewGraph(null, { name: 'Second', mf: 'x', formula: '1/(s+2)' });
+      expect(tab_checked(3)).toBe(true);
+      expect(tab_checked(4)).toBe(false);
+    });
+
+    // Only the new tab is checked here: jsdom keeps the other radio checked when one is inserted.
+    test('the tab of graph 1 is selected even if another tab already is', () => {
+      set_globals({ id_bank: 1 });
+      window.addNewGraph(null, { name: 'Second', mf: 'x', formula: '1/(s+2)' });
+      expect(tab_checked(2)).toBe(true);
+      window.addNewInformationTab(1, 'First');
+      expect(tab_checked(1)).toBe(true);
+    });
+
+    test('a new tab leaves the selected tab alone', () => {
+      window.addNewGraph(null, { name: 'First', mf: 'x', formula: '1/(s+1)' });
+      window.addNewGraph(null, { name: 'Second', mf: 'x', formula: '1/(s+2)' });
+      expect(tab_checked(1)).toBe(true);
+      expect(tab_checked(2)).toBe(false);
+    });
+
     test('a graph made without addNewGraph is no ghost', () => {
       expect(window.eval('new bode_graph(1, "1/s")').is_ghost).toBe(false);
     });
