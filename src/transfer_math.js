@@ -1,10 +1,14 @@
 'use strict';
 
 const NOF_CONSTANT_VARIABLES = 1; // We have 'e'. Shall not make a slider for that one.
-let range_slider_variables = [2.718281828459045,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001,18012001];
+const UNSET_SLIDER = 18012001; // In range_slider_variables: this variable has no slider value yet.
+let range_slider_variables = [2.718281828459045, ...Array(41).fill(UNSET_SLIDER)];
 let range_slider_alphabet = ['e','a','b','c','f','g','h','j','l','L','m','n','o','p','q','r','t','u','v','x','y','k_1','k_2','k_3','k_4','k_5','k_6','w','z','K','T_1','T_2','T_3','T_4','T_5','T_6','T_7','T_8','T_i','T_d'];
 // To go from "T_1" to the index in range_slider_variables:
 let variable_position = {};
+function slider_value(name){
+  return range_slider_variables[variable_position[name]];
+}
 let input_formula = "1/s";
 
 // Functions a formula may call. A name only counts as a function when "(" follows it, so a
@@ -91,7 +95,7 @@ function formula_variables(formula){
 }
 
 // Compiles a formula and binds the current slider values of the variables it uses:
-// {node, code, scope}. Returns null when one of those sliders has no value yet (18012001).
+// {node, code, scope}. Returns null when one of those sliders has no value yet.
 // A formula that cannot be parsed gets a binding whose evaluation throws (and no node), so
 // getComplexValues returns 0 for it, as it did before formulas were compiled.
 function bind_formula(formula){
@@ -105,7 +109,7 @@ function bind_formula(formula){
   for (const name of compiled.symbols){
     const position = range_slider_alphabet.indexOf(name);
     if (position < 0) continue; // s, i, or a symbol math.js resolves (or reports) itself
-    if (range_slider_variables[position] == 18012001) return null;
+    if (range_slider_variables[position] == UNSET_SLIDER) return null;
     scope[name] = Number(range_slider_variables[position]);
   }
   return {node: compiled.node, code: compiled.code, scope: scope};

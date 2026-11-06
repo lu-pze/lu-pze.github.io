@@ -29,7 +29,7 @@ function checkSlider(input_id){
     let current_letter = range_slider_alphabet[i];
     let linked_button = document.getElementById("BTNS_" + input_id.toString() + "_" + i.toString());
     if(variables.includes(current_letter)){
-      if(range_slider_variables[i] == 18012001 && linked_button == null){
+      if(range_slider_variables[i] == UNSET_SLIDER && linked_button == null){
         createSliderButton(input_id,i);
       }
     }
@@ -233,7 +233,7 @@ function createRangeSlider(event){
 function removeSlider(event){
   let button = event.target;
   let linked_id = button.parentElement.parentElement.getElementsByClassName("range-slider")[0].id.split("_")[1];
-  range_slider_variables[linked_id] = 18012001;
+  range_slider_variables[linked_id] = UNSET_SLIDER;
   let slider = button.parentElement.parentElement.parentElement;
   slider.remove();
   for(let b=0; b<bode_graphs.length; b++){
@@ -441,7 +441,7 @@ function removeGraph (linked_id){
   for(let i=0; i<variables_to_delete.length; i++){
     let variable_to_delete = variables_to_delete[i];
     let button = document.getElementById("RANGE_" + variable_position[variable_to_delete]);
-    range_slider_variables[variable_position[variable_to_delete]] = 18012001; // "unset": checkSlider offers a "+" button again
+    range_slider_variables[variable_position[variable_to_delete]] = UNSET_SLIDER; // checkSlider offers a "+" button again
     button.closest(".slider-wrapper").remove();
   }
   linked_equation.parentElement.remove();

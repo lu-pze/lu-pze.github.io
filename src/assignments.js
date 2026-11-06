@@ -84,10 +84,6 @@ function task_done (which_one){
 // A rule is {task, done}. Which list it is in decides when it is checked: most tasks ask for one
 // kind of action ("drag in the Bode plot"), so reaching the values some other way does not count.
 
-function slider_value(name){
-  return range_slider_variables[variable_position[name]];
-}
-
 const within = (value, low, high) => (value >= low) && (value <= high);
 const smallest_of = (...names) => Math.min(...names.map(slider_value));
 const largest_of = (...names) => Math.max(...names.map(slider_value));
