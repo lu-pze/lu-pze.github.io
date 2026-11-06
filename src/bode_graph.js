@@ -118,6 +118,8 @@ class bode_graph{
     if (formula_to_use==GRAPH_ONE_POLE_WITH_PID_S.formula) return;
     if (formula_to_use==GRAPH_ONE_POLE_WITH_PID_OPEN.formula) return;
 
+    const sample_times = time_samples(graph_step_response_width, precision, max_x_timerep);
+
     // Take care of "known good" formulas that we know an exact answer to:
     let have_a_solution = false;
     if (this.bode_formula == GRAPH_ONE_REAL_POLE.formula){ //  "k_1/(T_1*s+1)"
@@ -132,8 +134,7 @@ class bode_graph{
 //        if (T_1 >= 0){
         have_a_solution = true;
         this.bode_timerep_array = []
-        for(let x=0; x<graph_step_response_width; x+=precision){
-          let t = map(x,0,graph_step_response_width,0,max_x_timerep);
+        for(const t of sample_times){
           // With T_1 = 0 the system is the constant k_1 (and exp(-0/0) would be NaN at t = 0):
           let math_y = (T_1 == 0) ? k_1 : k_1 * (1.0 - Math.exp(-t / T_1));
           this.bode_timerep_array.push(math_y);
@@ -161,8 +162,7 @@ class bode_graph{
         have_a_solution = true;
         this.bode_timerep_array = []
         let h_0 = (T_1 == 0) ? 0 : k_1 / T_1;
-        for(let x=0; x<graph_step_response_width; x+=precision){
-          let t = map(x,0,graph_step_response_width,0,max_x_timerep);
+        for(const t of sample_times){
           let math_y = (T_1 == 0) ? 0 : h_0 * Math.exp(-t / T_1);
           this.bode_timerep_array.push(math_y);
         }
@@ -203,8 +203,7 @@ class bode_graph{
         let b = 1/T_3;
         have_a_solution = true;
         this.bode_timerep_array = []
-        for(let x=0; x<graph_step_response_width; x+=precision){
-          let t = map(x,0,graph_step_response_width,0,max_x_timerep);
+        for(const t of sample_times){
           let math_y = k_2*(1-(b*Math.exp(-a*t) - a*Math.exp(-b*t))/(b-a));
           this.bode_timerep_array.push(math_y);
         }
@@ -230,8 +229,7 @@ class bode_graph{
       } else if (two_different_poles && (input_formula=="1")){      // Dirac Impulse response:
         have_a_solution = true;
         this.bode_timerep_array = []
-        for(let x=0; x<graph_step_response_width; x+=precision){
-          let t = map(x,0,graph_step_response_width,0,max_x_timerep);
+        for(const t of sample_times){
           let math_y = k_2/T_2/T_3 * (Math.exp(-t / T_2) - Math.exp(-t / T_3)) / (1/T_3 - 1/T_2);
           this.bode_timerep_array.push(math_y);
         }
@@ -271,8 +269,7 @@ class bode_graph{
           this.bode_timerep_array = []
           this.bode_max_timerep = -100000;
           this.bode_min_timerep = 100000;
-          for(let x=0; x<graph_step_response_width; x+=precision){
-            let t = map(x,0,graph_step_response_width,0,max_x_timerep);
+          for(const t of sample_times){
             // Calculate time-step response
             //console.log("z=" + z);
             //console.log("w=" + w);
@@ -299,12 +296,11 @@ class bode_graph{
           this.bode_timerep_array = []
           this.bode_max_timerep = -100000;
           this.bode_min_timerep = 100000;
-          for(let x=0; x<graph_step_response_width; x+=precision){
-            let t = map(x,0,graph_step_response_width,0,max_x_timerep);
+          for(const t of sample_times){
             // Calculate time-step response
             let math_y;
             let exponentTerm = Math.exp(-z*w*t);
-            let sinTerm = sin(w * Math.sqrt(1.0-z*z) * t);
+            let sinTerm = Math.sin(w * Math.sqrt(1.0-z*z) * t);
             math_y = k_3*w/(Math.sqrt(1-z*z)) * exponentTerm * sinTerm;
             if(math_y > this.bode_max_timerep){
               this.bode_max_timerep = math_y;
@@ -322,10 +318,6 @@ class bode_graph{
     if (have_a_solution == false){
       // No closed form for this formula: time_response solves it exactly when it is a rational
       // function of s (times a delay), and falls back to Gaver-Stehfest otherwise.
-      let sample_times = [];
-      for(let x=0; x<graph_step_response_width; x+=precision){
-        sample_times.push(map(x,0,graph_step_response_width,0,max_x_timerep));
-      }
       const response = time_response(input_formula, formula_to_use, sample_times);
       if(response !== null){
         this.bode_max_timerep = -100000;

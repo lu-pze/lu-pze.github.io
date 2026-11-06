@@ -314,6 +314,15 @@ function rational_impulse_response(rational, delay, times){
   });
 }
 
+// The times [s] of a response's samples: one every `step` pixels across a plot `width` pixels wide,
+// which shows `max_time` seconds. The width is rarely a multiple of `step`, so the samples stop
+// short of max_time, by less than `step` pixels.
+function time_samples(width, step, max_time){
+  const times = [];
+  for (let x = 0; x < width; x += step) times.push(x/width*max_time);
+  return times;
+}
+
 // The response at `times` (evenly spaced, starting at 0) of `formula` to the input signal `input`,
 // both formula text in s ("1/s" is a unit step). Exact when (input)*(formula) is a rational function
 // of s times a delay e^(-L*s); otherwise Gaver-Stehfest on the rest of the formula, as before, with

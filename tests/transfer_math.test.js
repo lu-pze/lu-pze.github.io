@@ -810,3 +810,31 @@ describe('mutation gaps: poles, zeros and margins', () => {
     expect(window.findOmega180(null, [-3, -3.3])).toBeNaN();
   });
 });
+
+describe('time_samples', () => {
+  test('one sample every step pixels, as times on the axis', () => {
+    expect(window.time_samples(10, 4, 5)).toEqual([0, 2, 4]);
+  });
+
+  test('a sample that would land on the right edge of the plot is left out', () => {
+    expect(window.time_samples(8, 4, 10)).toEqual([0, 5]);
+  });
+
+  test('a width that is no multiple of the step: the samples stop short of max_time', () => {
+    expect(window.time_samples(9.5, 4, 19)).toEqual([0, 8, 16]);
+  });
+
+  test('no width gives no samples', () => {
+    expect(window.time_samples(0, 4, 10)).toEqual([]);
+  });
+
+  test('divides before it multiplies, as map() in p5 does, so every float stays the same', () => {
+    expect(window.time_samples(7, 4, 10)).toEqual([0, (4 / 7) * 10]);
+    expect((4 / 7) * 10).not.toBe((4 * 10) / 7);
+  });
+
+  test('reads no global: the plot size and precision of the page do not matter', () => {
+    set_globals({ graph_step_response_width: 900, precision: 12, max_x_timerep: 1 });
+    expect(window.time_samples(10, 4, 5)).toEqual([0, 2, 4]);
+  });
+});
