@@ -80,8 +80,11 @@ function move(x, y) {
   window.mouseMoved();
 }
 
+let initial_hover_answer_id;
+
 beforeAll(() => {
   loadApp();
+  initial_hover_answer_id = global_value('last_hover_answer_id');
   for (const name of REPLACED) originals[name] = window[name];
 });
 
@@ -1111,6 +1114,109 @@ describe('draw_hover_nyquist', () => {
       expect(window.achievement_done.mock.calls.length).toBe(awarded ? 1 : 0);
     });
   });
+
+  // Cases added after Stryker mutation testing (npm run test:mutation) showed that no test noticed
+  // these changes to src/hover_nyquist.js.
+  describe('mutation gaps', () => {
+    test('exactly on the real axis counts as the upper half plane', () => {
+      hover_nyquist_at(1, 0); // axis_y = 0: -(270 + 90) = -360 degrees, one whole turn
+      expect(calls('arc')[0][5]).toBeCloseTo(2 * Math.PI, 8);
+    });
+
+    describe('the line in the Bode phase plot at the angle + 360 degrees', () => {
+      // On the imaginary axis above the origin: the angle is exactly -270, so the line is at +90.
+      const hover_with_phase_bounds = (lower, upper) => {
+        set_globals({ phase_lower_bound: lower, phase_upper_bound: upper });
+        hover_nyquist_at(0, 1);
+      };
+      const phase_lines = () => lines().filter(([x1, y1]) => (x1 === 68) && (y1 >= 310));
+
+      test('is drawn across the plot in the angle colour, inside push and pop', () => {
+        hover_with_phase_bounds(-180, 360);
+        expect(phase_lines()).toEqual([[68, 410, 368, 410]]);
+        const steps = drawn.map((call) => call.name);
+        const line_at = drawn.findIndex((call) => (call.name === 'line') && (call.args[1] === 410));
+        expect(steps.slice(line_at - 3, line_at + 2)).toEqual(['push', 'stroke', 'strokeWeight', 'line', 'pop']);
+        expect(drawn[line_at - 2].args).toEqual(['#angle']);
+        expect(drawn[line_at - 1].args).toEqual([2]);
+      });
+
+      test.each([
+        ['on the lower bound', 90, 360, 1],
+        ['on the upper bound', -180, 90, 1],
+        ['below the lower bound', 91, 360, 0],
+        ['above the upper bound', -180, 89, 0],
+      ])('%s', (_, lower, upper, nof_lines) => {
+        hover_with_phase_bounds(lower, upper);
+        expect(phase_lines()).toHaveLength(nof_lines);
+      });
+    });
+
+    test.each([[0.8], [1.2]])('a magnitude of exactly %s gives no achievement', (magnitude) => {
+      // The bottom edge of the plot is at exactly -magnitude, so no rounding comes in.
+      set_globals({ min_nyquist_y: -magnitude, max_nyquist_y: 0 });
+      window.mouseX = 590;
+      window.mouseY = 545;
+      window.draw_hover_nyquist();
+      expect(window.achievement_done).not.toHaveBeenCalled();
+    });
+  });
+});
+
+describe('mutation gaps: last_hover_answer_id', () => {
+  test('starts empty', () => {
+    expect(initial_hover_answer_id).toBe('');
+  });
+});
+
+describe('mutation gaps: draw_output_dots', () => {
+  test.each([[-2], [2]])('the dot on the real axis of the Nyquist diagram is drawn on its edge at %s', (output) => {
+    window.draw_output_dots(output, 100);
+    expect(ellipses()).toHaveLength(3);
+    expect(ellipses()[2][1]).toBe(445);
+  });
+});
+
+describe('mutation gaps: draw_phase_line_in_bode_phase', () => {
+  test('a phase on the upper bound is drawn', () => {
+    window.draw_phase_line_in_bode_phase(0);
+    expect(lines()).toHaveLength(1);
+  });
+});
+
+describe('mutation gaps: step response', () => {
+  const curve_above_the_plot = () => fake_graph({ bode_timerep_array: Array(100).fill(200) });
+
+  test('a curve above the plot counts as being at its top edge', () => {
+    set_live('bode_graphs', [curve_above_the_plot()]);
+    move(590, 60); // the top edge is at y = 40
+    expect(texts()).toContain('output=200.000');
+    expect(ellipses()).toContainEqual([590, 40, 12, 12]);
+  });
+
+  test('without a curve the output is read from the whole range of the axis', () => {
+    set_globals({ min_y_timerep: -100, max_y_timerep: 100 });
+    move(590, 140); // the middle of the plot
+    expect(texts()).toContain('output=0.000');
+  });
+});
+
+describe('mutation gaps: Bode phase, the dot in the magnitude plot', () => {
+  const dot_x = 218;
+  const dots_in_magnitude_plot = () => ellipses().filter(([x, y]) => (x === dot_x) && (y < 240));
+
+  test('drawn for a gain low in the plot', () => {
+    set_live('bode_graphs', [fake_graph({ bode_gain_array: Array(400).fill(-40) })]);
+    move(dot_x, 420);
+    expect(dots_in_magnitude_plot()).toHaveLength(1);
+    expect(dots_in_magnitude_plot()[0][1]).toBeCloseTo(30 + (200 * 100) / 120, 8);
+  });
+
+  test('not drawn for a gain on the bottom edge of the plot', () => {
+    set_live('bode_graphs', [fake_graph({ bode_gain_array: Array(400).fill(-60) })]);
+    move(dot_x, 420);
+    expect(dots_in_magnitude_plot()).toHaveLength(0);
+  });
 });
 
 describe('draw_loglines', () => {
@@ -1217,6 +1323,35 @@ describe('draw_nyquist_lines', () => {
     const [x1, y1, x2, y2] = all_lines[all_lines.length - 2];
     expect([x1 === x2, y1, y2]).toEqual([true, 0, 200]);
     expect(x1).toBeCloseTo(250 * (0 - global_value('min_nyquist_x')) / (global_value('max_nyquist_x') - global_value('min_nyquist_x')));
+  });
+});
+
+// Cases added after Stryker mutation testing (npm run test:mutation) showed that no test noticed
+// these changes to src/hover_nyquist.js. The grids are many small calls, so every call is pinned.
+// After an intentional change, read the diff and update with `npx jest -u tests/hover_nyquist.test.js`.
+describe('mutation gaps: golden master of the grids', () => {
+  const round = (value) => (typeof value === 'number' ? Number(value.toFixed(3)) : value);
+  const drawing = () => drawn.map((call) => `${call.name}(${call.args.map(round).join(', ')})`);
+
+  test.each([
+    ['from zero', 0, 100, 10],
+    ['across zero, limits off the steps', -13.2, 26.6, 7],
+    ['above zero, so y = 0 is off the plot', 12, 47, 20],
+    ['below zero, so y = 0 is off the plot', -47, -12, 3],
+  ])('draw_timelines: %s', (_, min_y_timerep, max_y_timerep, max_x_timerep) => {
+    set_globals({ min_y_timerep, max_y_timerep, max_x_timerep });
+    window.draw_timelines();
+    expect(drawing()).toMatchSnapshot();
+  });
+
+  test.each([
+    ['centred', -2, 2, -2, 2],
+    ['off centre, limits off the steps', -3.3, 1.4, -0.7, 2.6],
+    ['far from the origin', 4, 9, -8, -3],
+  ])('draw_nyquist_lines: %s', (_, min_nyquist_x, max_nyquist_x, min_nyquist_y, max_nyquist_y) => {
+    set_globals({ min_nyquist_x, max_nyquist_x, min_nyquist_y, max_nyquist_y });
+    window.draw_nyquist_lines();
+    expect(drawing()).toMatchSnapshot();
   });
 });
 
