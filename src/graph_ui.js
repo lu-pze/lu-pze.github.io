@@ -396,6 +396,10 @@ function removeInformationTab(input_id){
   let linked_label = document.getElementById("graph_" + input_id.toString() + "_infolabel");
   if (linked_tab) linked_tab.remove();
   if (linked_label) linked_label.remove();
+  // Some tab must stay selected: updateGraphInformation fills the information bar from that one.
+  let tabs_wrapper = document.getElementsByClassName("graph-information-tabs")[0];
+  let first_tab = tabs_wrapper.querySelector("input");
+  if (first_tab && (tabs_wrapper.querySelector("input:checked") === null)) first_tab.checked = "true";
 }
 
 

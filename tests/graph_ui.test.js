@@ -563,6 +563,31 @@ describe('addNewInformationTab and removeInformationTab', () => {
     expect(() => window.removeInformationTab(99)).not.toThrow();
   });
 
+  test('removing the selected tab selects the first one left', () => {
+    window.addNewInformationTab(1, 'A');
+    window.addNewInformationTab(2, 'B');
+    window.addNewInformationTab(3, 'C');
+    window.removeInformationTab(1);
+    expect(tab_checked(2)).toBe(true);
+    expect(tab_checked(3)).toBe(false);
+  });
+
+  test('removing another tab leaves the selected one', () => {
+    window.addNewInformationTab(1, 'A');
+    window.addNewInformationTab(2, 'B');
+    window.addNewInformationTab(3, 'C');
+    document.getElementById('graph_3_info').checked = true;
+    window.removeInformationTab(1);
+    expect(tab_checked(3)).toBe(true);
+    expect(tab_checked(2)).toBe(false);
+  });
+
+  test('removing the last tab selects nothing and does not throw', () => {
+    window.addNewInformationTab(1, 'A');
+    expect(() => window.removeInformationTab(1)).not.toThrow();
+    expect(document.querySelectorAll('.graph-information-tabs input')).toHaveLength(0);
+  });
+
   test('removeInformationTab copes with a tab whose label is already gone', () => {
     window.addNewInformationTab(3, 'x');
     document.getElementById('graph_3_infolabel').remove();
