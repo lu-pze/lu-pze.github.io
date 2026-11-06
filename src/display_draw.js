@@ -448,10 +448,7 @@ function draw_static_gain(k,i){
 }
 
 function draw_time_response_T(T,i,pole_zero="pole"){
-  // We might have changed the precision for new calculations, but this graph still has old values.
-  // So get the precision for this graph alone:
-  let this_precision = graph_step_response_width / bode_graphs[i].bode_timerep_array.length;
-  let linked_x = Math.round(Math.abs(T) / 10.0 * graph_step_response_width/this_precision);
+  let linked_x = Math.round(Math.abs(T) / 10.0 * graph_step_response_width/bode_graphs[i].bode_timerep_step);
   let linked_y = bode_graphs[i].bode_timerep_array[linked_x];
   let screen_y = map(linked_y,min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
   let screen_x = graph_step_response_width / 10 * Math.abs(T);

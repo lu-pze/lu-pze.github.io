@@ -1139,8 +1139,20 @@ describe('draw_time_responses', () => {
     expect(() => window.draw_time_responses()).not.toThrow();
   });
 
+  test('draw_time_response_T marks the sample computed at that time, at a width that is no multiple of the step', () => {
+    set_globals({ graph_step_response_width: 301, min_y_timerep: 0, max_y_timerep: 100 });
+    use_fake_graphs(fake_graph({ bode_timerep_step: 4, bode_timerep_array: Array.from({ length: 76 }, (_, i) => i) }));
+    window.draw_X = jest.fn();
+    window.draw_time_response_T(9.9, 0);
+    const height = global_value('graph_step_response_height');
+    expect(window.draw_X.mock.calls[0][1]).toBeCloseTo(height - (height * 74) / 100, 9); // 297.99 px / 4 = sample 74
+  });
+
   test('draw_time_response_T uses the sample density of the graph itself', () => {
-    use_fake_graphs(fake_graph({ bode_timerep_array: [...Array(50).fill(0), ...Array(50).fill(1)] }));
+    use_fake_graphs(fake_graph({
+      bode_timerep_step: global_value('graph_step_response_width') / 100,
+      bode_timerep_array: [...Array(50).fill(0), ...Array(50).fill(1)],
+    }));
     set_globals({ min_y_timerep: 0, max_y_timerep: 1 });
     window.draw_X = jest.fn();
     window.draw_O = jest.fn();

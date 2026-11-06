@@ -648,6 +648,43 @@ describe('bode_graph', () => {
       expect(vertices[0][1]).toBeCloseTo(150, 12);
     });
 
+    // Sample i is computed at pixel i*precision, whatever the width: 301 is no multiple of 4.
+    test.each([[301, 4], [285.25, 4], [285.25, 12], [300, 7]])('draw_timeresponse at width %d, precision %d: each sample is drawn where it was computed', (width, step) => {
+      set_globals({ graph_step_response_width: width, precision: step });
+      const graph = window.eval(`new bode_graph(1, ${JSON.stringify(preset('GRAPH_ONE_REAL_POLE'))})`);
+      graph.get_timevalues_p5();
+      graph.draw_timeresponse();
+      const vertices = calls('vertex');
+      const times = window.time_samples(width, step, GEOMETRY.max_x_timerep);
+      expect(vertices).toHaveLength(times.length);
+      times.forEach((t, i) => expect(vertices[i][0]).toBeCloseTo((t / GEOMETRY.max_x_timerep) * width, 9));
+    });
+
+    test('a graph keeps the step of its own samples when the precision changes before it is recomputed', () => {
+      const graph = with_time_response(preset('GRAPH_ONE_REAL_POLE'));
+      expect(graph.bode_timerep_step).toBe(GEOMETRY.precision);
+      set_globals({ precision: 12 });
+      graph.draw_timeresponse();
+      expect(calls('vertex')[3][0]).toBe(3 * GEOMETRY.precision);
+      graph.get_timevalues_p5();
+      expect(graph.bode_timerep_step).toBe(12);
+    });
+
+    test('the solver stores its step as well', () => {
+      set_globals({ precision: 7 });
+      const graph = window.eval(`new bode_graph(1, ${JSON.stringify('1/(1+s)^2')})`);
+      graph.get_timevalues_p5();
+      expect(graph.bode_timerep_step).toBe(7);
+    });
+
+    test('a formula the time plot never shows keeps the starting step, and no samples', () => {
+      set_globals({ precision: 7 });
+      const graph = analysed(preset('GRAPH_PID'));
+      graph.get_timevalues_p5();
+      expect(graph.bode_timerep_step).toBe(global_value('DEFAULT_PRECISION'));
+      expect(graph.bode_timerep_array).toEqual([]);
+    });
+
     test('draw_timeresponse of a graph without response draws an empty shape', () => {
       const graph = analysed(preset('GRAPH_PID'));
       graph.draw_timeresponse();

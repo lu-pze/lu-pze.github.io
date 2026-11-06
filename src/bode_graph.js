@@ -8,6 +8,7 @@ class bode_graph{
     this.bode_gain_array = [];
     this.bode_phase_array = [];
     this.bode_timerep_array = [];
+    this.bode_timerep_step = DEFAULT_PRECISION; // the pixels between the samples of bode_timerep_array
     this.bode_max_phase = -10000;
     this.bode_min_phase = 10000;
     this.bode_max_timerep = -10000;
@@ -81,8 +82,7 @@ class bode_graph{
     // Take care of "known good" formulas that we know an exact answer to:
     const closed_form = closed_form_time_response(formula_to_use, input_formula, sample_times, slider_value);
     if (closed_form !== null){
-      this.bode_timerep_array = closed_form.values;
-      [this.bode_min_timerep, this.bode_max_timerep] = closed_form.range;
+      this.store_time_response(closed_form.values, closed_form.range);
       return;
     }
 
@@ -90,9 +90,15 @@ class bode_graph{
     // function of s (times a delay), and falls back to Gaver-Stehfest otherwise.
     const response = time_response(input_formula, formula_to_use, sample_times);
     if(response !== null){
-      this.bode_timerep_array = response;
-      [this.bode_min_timerep, this.bode_max_timerep] = value_range(response, 100000);
+      this.store_time_response(response, value_range(response, 100000));
     }
+  }
+
+  // The step belongs to these samples: `precision` can change while this graph keeps them.
+  store_time_response(values, range){
+    this.bode_timerep_array = values;
+    this.bode_timerep_step = precision;
+    [this.bode_min_timerep, this.bode_max_timerep] = range;
   }
 
 
@@ -133,12 +139,9 @@ class bode_graph{
     strokeWeight(line_stroke_weight);
     stroke(this.bode_hue,360,360);
     beginShape();
-    // We might have changed the precision for new calculations, but this graph still has old values.
-    // So get the precision for this graph alone:
-    let this_precision = graph_step_response_width / this.bode_timerep_array.length;
     for(let x=0; x<this.bode_timerep_array.length; x++){
       let screen_y = map(this.bode_timerep_array[x],min_y_timerep,max_y_timerep,graph_step_response_height,0,true);
-      vertex(x*this_precision,screen_y);
+      vertex(x*this.bode_timerep_step,screen_y);
     }
     endShape();
   }
