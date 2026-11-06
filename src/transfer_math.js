@@ -594,12 +594,17 @@ function phase_at(binding, omega){
 // Wraps an angle in degrees into (-180, 180].
 const wrap_degrees = (angle) => angle - 360*Math.ceil((angle - 180)/360);
 
-// Of all crossings, the one with the margin closest to 0 (closest to instability), as MATLAB's
-// margin() reports: [margin, frequency], or NaN when there is no crossing.
+// Margins this close are the same margin. Around a symmetric |G|, such as a PID controller's, two
+// crossings have the same |margin| with opposite signs, and only float noise would tell them apart.
+const MARGIN_TIE = 1e-9;
+
+// Of all crossings, in rising frequency, the one with the margin closest to 0 (closest to
+// instability), as MATLAB's margin() reports: [margin, frequency], or NaN when there is no crossing.
+// A tie goes to the lowest frequency, so the result does not change with the plot width.
 function smallest_margin(crossings){
   let best = null;
   for (const crossing of crossings){
-    if (best === null || Math.abs(crossing[0]) < Math.abs(best[0])) best = crossing;
+    if (best === null || Math.abs(crossing[0]) < Math.abs(best[0]) - MARGIN_TIE) best = crossing;
   }
   return best === null ? NaN : best;
 }

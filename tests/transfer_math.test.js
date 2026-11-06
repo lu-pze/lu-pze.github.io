@@ -1099,3 +1099,47 @@ describe('closed_form_time_response', () => {
     expect(window.closed_form_time_response('k_1/(T_1*s+1)', '1/s', TIMES, reader(values))).toBeNull();
   });
 });
+
+describe('smallest_margin', () => {
+  test('the margin closest to 0 wins, whatever its sign', () => {
+    expect(window.smallest_margin([[40, 0.5], [-12, 2], [30, 9]])).toEqual([-12, 2]);
+  });
+
+  test('no crossing gives NaN', () => {
+    expect(window.smallest_margin([])).toBeNaN();
+  });
+
+  test('a tie goes to the lowest frequency, which comes first', () => {
+    expect(window.smallest_margin([[12, 0.5], [-12, 2]])).toEqual([12, 0.5]);
+  });
+
+  test('float noise is a tie too, on either side', () => {
+    expect(window.smallest_margin([[126.86989764584402, 0.5], [-126.86989764584399, 2]])).toEqual([126.86989764584402, 0.5]);
+    expect(window.smallest_margin([[-126.86989764584399, 0.5], [126.86989764584402, 2]])).toEqual([-126.86989764584399, 0.5]);
+  });
+
+  test('a margin smaller by exactly the tolerance is still a tie', () => {
+    const tolerance = global_value('MARGIN_TIE');
+    expect(window.smallest_margin([[12, 0.5], [12 - tolerance, 2]])).toEqual([12, 0.5]);
+  });
+
+  test('a margin smaller by more than the tolerance wins', () => {
+    const tolerance = global_value('MARGIN_TIE');
+    expect(window.smallest_margin([[12, 0.5], [12 - 2 * tolerance, 2]])).toEqual([12 - 2 * tolerance, 2]);
+  });
+});
+
+describe('a PID controller crosses 0 dB twice with the same |phase margin|', () => {
+  // |G| is symmetric around 1/sqrt(T_i*T_d), so the crossings have margins of +126.87 and -126.87.
+  const SLIDERS = { K: 0.6, T_i: 1.2, T_d: 0.3 };
+
+  test.each([200, 300.3, 420, 504, 630.84, 840, 1200])('at plot width %d the lower crossing is reported', (width) => {
+    set_globals({ graph_bode_mag_width: width, min_10power: -2, x_case_gain: 5 });
+    set_sliders(SLIDERS);
+    const bode_graph = global_value('bode_graph');
+    const graph = new bode_graph(1, global_value('GRAPH_PID').formula);
+    graph.get_complex_p5();
+    expect(graph.bode_gain_crossover_freq).toBeCloseTo(5 / 9, 9);
+    expect(graph.bode_phase_margin).toBeCloseTo(126.86989764584402, 9);
+  });
+});
