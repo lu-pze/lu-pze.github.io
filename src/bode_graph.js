@@ -181,7 +181,9 @@ class bode_graph{
       let k_2 = slider_value("k_2");
       let T_2 = slider_value("T_2");
       let T_3 = slider_value("T_3");
-      if (input_formula=="1/s"){       // Unit Step response
+      // The closed forms divide by T_2, T_3 and 1/T_3 - 1/T_2. A double pole, or a T of 0, goes to time_response below.
+      const two_different_poles = (T_2 !== T_3) && (T_2 !== 0) && (T_3 !== 0);
+      if (two_different_poles && (input_formula=="1/s")){       // Unit Step response
 //        console.log("Doing " + this.bode_formula);
         // Step input response for
         //     w_0              1
@@ -197,10 +199,6 @@ class bode_graph{
         // ab / (s(1+s/a)(1+s/b))
         // Let a=1/T_2
         // let b=1/T_3
-        // This solution cannot be calculated when T_2==T_3, so let's just move them a little bit apart:
-        if (T_2==T_3) T_2+=0.001;
-        if (T_2==0) T_2=0.0000001;
-        if (T_3==0) T_3=0.0000001;
         let a = 1/T_2;
         let b = 1/T_3;
         have_a_solution = true;
@@ -229,17 +227,12 @@ class bode_graph{
             this.bode_min_timerep = 0;
           }
         }
-      } else if (input_formula=="1"){      // Dirac Impulse response:
+      } else if (two_different_poles && (input_formula=="1")){      // Dirac Impulse response:
         have_a_solution = true;
         this.bode_timerep_array = []
         for(let x=0; x<graph_step_response_width; x+=precision){
           let t = map(x,0,graph_step_response_width,0,max_x_timerep);
           let math_y = k_2/T_2/T_3 * (Math.exp(-t / T_2) - Math.exp(-t / T_3)) / (1/T_3 - 1/T_2);
-          if (T_2 == 0){
-            math_y = k_2 * Math.exp(-t / T_3);
-          } else if (T_3 == 0){
-            math_y = k_2 * Math.exp(-t / T_2);
-          }
           this.bode_timerep_array.push(math_y);
         }
         if (((T_2 >= 0) && (T_3 >= 0))||((T_2 <= 0) && (T_3 <= 0))){

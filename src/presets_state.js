@@ -66,7 +66,7 @@ function complex_pole_frequencies(){
 }
 
 function complex_pole_marks(){
-  return complex_pole_frequencies().filter((frequency) => frequency >= 0).map((frequency) => ({T: 1/frequency, kind: "pole"}));
+  return complex_pole_frequencies().map((frequency) => ({T: 1/frequency, kind: "pole"}));
 }
 
 const GRAPH_ONE_REAL_POLE = {

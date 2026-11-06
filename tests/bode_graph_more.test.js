@@ -190,7 +190,7 @@ describe('bode_graph', () => {
       }
     });
 
-    test('two real poles, step: equal or zero time constants are nudged apart, never NaN', () => {
+    test('two real poles, step: equal or zero time constants give the exact response, never NaN', () => {
       for (const [T_2, T_3] of [[1, 1], [0, 0.4], [1, 0], [0, 0]]) {
         set_sliders({ T_2, T_3 });
         const graph = with_time_response(preset('GRAPH_TWO_REAL_POLES'));
@@ -200,12 +200,15 @@ describe('bode_graph', () => {
       set_sliders({ k_2: 3, T_2: 1, T_3: 1 });
       const graph = with_time_response(preset('GRAPH_TWO_REAL_POLES'));
       expect(graph.bode_timerep_array[TIMEREP_LENGTH - 1]).toBeCloseTo(3, 2);
-      // ... and follows the double-pole response k*(1 - exp(-t/T)*(1 + t/T)) within the 0.001 nudge.
+      // ... and follows the double-pole response k*(1 - exp(-t/T)*(1 + t/T)).
       const t = 4 * 10 / 300 * 10;
-      expect(graph.bode_timerep_array[10]).toBeCloseTo(3 * (1 - Math.exp(-t) * (1 + t)), 2);
+      expect(graph.bode_timerep_array[10]).toBeCloseTo(3 * (1 - Math.exp(-t) * (1 + t)), 9);
+      // With both at 0 the system is the constant k_2, from t = 0.
+      set_sliders({ k_2: 3, T_2: 0, T_3: 0 });
+      expect(with_time_response(preset('GRAPH_TWO_REAL_POLES')).bode_timerep_array[0]).toBeCloseTo(3, 9);
     });
 
-    test('two real poles, impulse: exact shape, range per sign, and the T = 0 special cases', () => {
+    test('two real poles, impulse: exact shape, range per sign, and the double pole and T = 0 cases', () => {
       set_sliders({ k_2: 3, T_2: 1, T_3: 0.4 });
       let graph = with_time_response(preset('GRAPH_TWO_REAL_POLES'), '1');
       const t = 4 * 7 / 300 * 10;
@@ -220,13 +223,17 @@ describe('bode_graph', () => {
       set_sliders({ k_2: -3, T_2: -1, T_3: 0.4 });
       expect(range(with_time_response(preset('GRAPH_TWO_REAL_POLES'), '1'))).toEqual([0, 3]);
 
-      // A zero time constant removes that pole: k_2*exp(-t/T) of the other one.
+      // A zero time constant removes that pole: k_2/T*exp(-t/T) of the other one.
       set_sliders({ k_2: 3, T_2: 0, T_3: 0.4 });
       graph = with_time_response(preset('GRAPH_TWO_REAL_POLES'), '1');
-      expect(graph.bode_timerep_array[7]).toBeCloseTo(3 * Math.exp(-t / 0.4), 12);
+      expect(graph.bode_timerep_array[7]).toBeCloseTo(3 / 0.4 * Math.exp(-t / 0.4), 9);
       set_sliders({ k_2: 3, T_2: 1, T_3: 0 });
       graph = with_time_response(preset('GRAPH_TWO_REAL_POLES'), '1');
-      expect(graph.bode_timerep_array[7]).toBeCloseTo(3 * Math.exp(-t / 1), 12);
+      expect(graph.bode_timerep_array[7]).toBeCloseTo(3 / 1 * Math.exp(-t / 1), 9);
+      // A double pole: k_2*t/T^2*exp(-t/T).
+      set_sliders({ k_2: 3, T_2: 2, T_3: 2 });
+      graph = with_time_response(preset('GRAPH_TWO_REAL_POLES'), '1');
+      expect(graph.bode_timerep_array[7]).toBeCloseTo(3 * t / 4 * Math.exp(-t / 2), 9);
     });
 
     test('two complex poles: step and impulse formulas, with the range taken from the samples', () => {
@@ -335,28 +342,21 @@ describe('bode_graph', () => {
         expect(range(with_time_response(preset('GRAPH_ONE_REAL_POLE')))).toEqual([0, 2]);
       });
 
-      // A pole at T = 0 is moved to 0.0000001 for a step, so zeros only count as such for an impulse.
       test.each([
         ['1/s', 1, 2, [0, 3]],
         ['1/s', -1, -2, [0, 3]],
         ['1/s', 1, -2, [-3, 0]],
         ['1/s', -1, 2, [-3, 0]],
-        ['1/s', 0, -2, [-3, 0]],
-        ['1/s', -2, 0, [-3, 0]],
         ['1', 1, 2, [0, 3]],
         ['1', -1, -2, [0, 3]],
         ['1', 1, -2, [-3, 0]],
         ['1', -1, 2, [-3, 0]],
-        ['1', 0, 2, [0, 3]],
-        ['1', 2, 0, [0, 3]],
-        ['1', 0, -2, [0, 3]],
-        ['1', -2, 0, [0, 3]],
       ])('two real poles, input %s, T_2 = %s, T_3 = %s: the time axis is %j', (input, T_2, T_3, expected) => {
         set_sliders({ k_2: 3, T_2, T_3 });
         expect(range(with_time_response(preset('GRAPH_TWO_REAL_POLES'), input))).toEqual(expected);
       });
 
-      describe('complex poles use the closed form from z = 0 up to, not including, z = 1', () => {
+      describe('which cases use a closed form, and which the solver', () => {
         let original_time_response;
 
         beforeEach(() => {
@@ -368,24 +368,33 @@ describe('bode_graph', () => {
           window.time_response = original_time_response;
         });
 
+        // Complex poles use the closed form from z = 0 up to, not including, z = 1.
         test.each([
           ['1/s', 0, 0], ['1/s', 0.3, 0], ['1/s', -0.01, 1], ['1/s', 1, 1],
           ['1', 0, 0], ['1', 0.3, 0], ['1', -0.01, 1], ['1', 1, 1],
-        ])('input %s, z = %s: %s calls of the solver', (input, z, nof_calls) => {
+        ])('complex poles, input %s, z = %s: %s calls of the solver', (input, z, nof_calls) => {
           set_sliders({ k_3: 2, w: 3, z });
           with_time_response(preset('GRAPH_TWO_COMPLEX_POLES'), input);
           expect(window.time_response).toHaveBeenCalledTimes(nof_calls);
         });
+
+        test.each([
+          ['1/s', 2, 0.4, 0], ['1/s', 2, 2, 1], ['1/s', 0, 2, 1], ['1/s', 2, 0, 1],
+          ['1', 2, 0.4, 0], ['1', 2, 2, 1], ['1', 0, 2, 1], ['1', 2, 0, 1],
+        ])('two real poles, input %s, T_2 = %s, T_3 = %s: %s calls of the solver', (input, T_2, T_3, nof_calls) => {
+          set_sliders({ k_2: 3, T_2, T_3 });
+          with_time_response(preset('GRAPH_TWO_REAL_POLES'), input);
+          expect(window.time_response).toHaveBeenCalledTimes(nof_calls);
+        });
       });
 
-      // Known bugs, see "Quirks" in docs/mutation-testing-handoff.md. These pass while the bugs exist.
-      test.failing('BUG: an impulse into two equal real poles has a curve', () => {
+      test('an impulse into two equal real poles has a curve', () => {
         set_sliders({ k_2: 3, T_2: 2, T_3: 2 });
         const graph = with_time_response(preset('GRAPH_TWO_REAL_POLES'), '1');
         expect(graph.bode_timerep_array.every(Number.isFinite)).toBe(true);
       });
 
-      test.failing('BUG: an impulse into two real poles with T_3 = 0 matches the exact solver', () => {
+      test('an impulse into two real poles with T_3 = 0 matches the exact solver', () => {
         set_sliders({ k_2: 3, T_2: 2, T_3: 0 });
         expect_exact('GRAPH_TWO_REAL_POLES', '1');
       });

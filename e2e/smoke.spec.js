@@ -43,3 +43,44 @@ test('quiz window opens', async ({ page }) => {
   await expect(page.locator('.quiz_intro')).toHaveClass(/active/);
   expect(errors).toEqual([]);
 });
+
+test.describe('the tracking checkbox on the splash screen', () => {
+  const POST_DELAY = 6500; // add_event sends after 5 seconds
+  const events_sent = (page) => {
+    const sent = [];
+    page.on('request', (request) => {
+      if (request.url().includes('lu-pze.php')) sent.push(request.postData());
+    });
+    return sent;
+  };
+  const cookie_names = async (page) => (await page.context().cookies()).map((cookie) => cookie.name);
+
+  test('with the box ticked, events are sent', async ({ page }) => {
+    const sent = events_sent(page);
+    await open_app(page);
+    await page.waitForTimeout(POST_DELAY);
+    expect(sent.length).toBeGreaterThan(0);
+  });
+
+  test('turning it off drops the queue and the id, and is remembered', async ({ page }) => {
+    const sent = events_sent(page);
+    const errors = await open_app(page);
+    await page.locator('#tracking_checkbox').uncheck();
+    expect(await cookie_names(page)).toContain('tracking_off');
+    expect(await cookie_names(page)).not.toContain('cookid');
+    await page.waitForTimeout(POST_DELAY);
+    expect(sent).toEqual([]);
+
+    await page.reload();
+    await page.waitForSelector('#sketch_holder canvas');
+    await expect(page.locator('#tracking_checkbox')).not.toBeChecked();
+    await page.waitForTimeout(POST_DELAY);
+    expect(sent).toEqual([]);
+
+    await page.locator('#tracking_checkbox').check();
+    expect(await cookie_names(page)).not.toContain('tracking_off');
+    expect(await cookie_names(page)).toContain('cookid');
+    expect(errors).toEqual([]);
+  });
+});
+

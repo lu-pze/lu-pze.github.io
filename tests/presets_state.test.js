@@ -72,9 +72,11 @@ describe('Bode marks of each preset', () => {
     expect(second).toBeCloseTo(-4, 12);
   });
 
-  test('two real unstable poles have no marks in the Bode plots', () => {
+  test('two real unstable poles each get a mark, with a negative T', () => {
     set_sliders({ k_3: 1, w: 2, z: -1.25 });
-    expect(global_value('GRAPH_TWO_COMPLEX_POLES').bode_marks()).toEqual([]);
+    const [first, second] = global_value('GRAPH_TWO_COMPLEX_POLES').bode_marks();
+    expect(first.T).toBeCloseTo(-1, 12);
+    expect(second.T).toBeCloseTo(-0.25, 12);
   });
 
   test.each(['GRAPH_TIME_DELAY', 'GRAPH_ONE_POLE_WITH_PID_YR', 'GRAPH_ONE_POLE_WITH_PID_S', 'GRAPH_ONE_POLE_WITH_PID_YL', 'GRAPH_ONE_POLE_WITH_PID_OPEN'])(
@@ -96,8 +98,8 @@ describe('Bode marks of each preset', () => {
       expect(marks_for(0, 0.5)).toEqual([pole(Infinity)]);
     });
 
-    test('a negative w gets no mark', () => {
-      expect(marks_for(-1, 0.5)).toEqual([]);
+    test('a negative w gets a mark with a negative T', () => {
+      expect(marks_for(-1, 0.5)).toEqual([{ T: -1, kind: 'pole' }]);
     });
 
     test('above z = 1 the two real poles each get an X', () => {
@@ -106,8 +108,10 @@ describe('Bode marks of each preset', () => {
       expect(second.T).toBeCloseTo(1, 12);
     });
 
-    test('a negative w gets no mark above z = 1 either', () => {
-      expect(marks_for(-2, 1.25)).toEqual([]);
+    test('so do both poles of a negative w above z = 1', () => {
+      const [first, second] = marks_for(-2, 1.25); // the poles are at 4 and 1
+      expect(first.T).toBeCloseTo(-0.25, 12);
+      expect(second.T).toBeCloseTo(-1, 12);
     });
   });
 });

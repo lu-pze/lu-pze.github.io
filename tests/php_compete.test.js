@@ -1,8 +1,10 @@
 // Runs the real php/lu-pze_compete.php on a stored highscore file and feeds its output to the
 // real client parser, so a change on either side that breaks the other fails here.
 // Needs the `php` command. The file is public, so nothing but the leaderboard fields may leave it.
-const { execFileSync } = require('child_process');
+const { execFileSync, spawn } = require('child_process');
 const fs = require('fs');
+const http = require('http');
+const net = require('net');
 const os = require('os');
 const path = require('path');
 const { loadApp } = require('./helpers/load_app');
@@ -103,3 +105,108 @@ test('a missing highscore file gives the error text', () => {
   const output = run_script(path.join(os.tmpdir(), 'lu-pze-no-such-file'));
   expect(output).toBe('Error: Highscore file does not exist.');
 });
+
+// The POST path needs a real request, so these tests run PHP's own web server on a temporary file.
+describe('a result sent by POST', () => {
+  const RESULT = 'T12.5;U1234567;LFRTF05_Åsa;quiz_time_is_up.click_freq=50.0,total=63.5,nof_correct=12,longest_streak=5,cookid=987,';
+  const REFERER = 'https://lu-pze.github.io/?p=FRTF05';
+  let server;
+  let port;
+  let directory;
+  let file;
+
+  const free_port = () => new Promise((resolve) => {
+    const probe = net.createServer();
+    probe.listen(0, '127.0.0.1', () => {
+      const { port: found } = probe.address();
+      probe.close(() => resolve(found));
+    });
+  });
+
+  const post = (body, headers = {}) => new Promise((resolve, reject) => {
+    const request = http.request({
+      host: '127.0.0.1', port, path: '/lu-pze_compete.php', method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', Referer: REFERER, ...headers },
+    }, (response) => {
+      let text = '';
+      response.setEncoding('utf8');
+      response.on('data', (chunk) => { text += chunk; });
+      response.on('end', () => resolve(text));
+    });
+    request.on('error', reject);
+    request.end(body);
+  });
+
+  // The body the client sends: see post_compete_result in src/quiz_scoring.js.
+  const form = (text) => `e=${encodeURIComponent(text).replace(/%20/g, '+')}`;
+
+  async function wait_for_server() {
+    for (let i = 0; i < 100; i++) {
+      try {
+        await post('');
+        return;
+      } catch {
+        await new Promise((resolve) => { setTimeout(resolve, 50); });
+      }
+    }
+    throw new Error('php -S did not start');
+  }
+
+  beforeAll(async () => {
+    directory = fs.mkdtempSync(path.join(os.tmpdir(), 'lu-pze-compete-'));
+    file = path.join(directory, 'highscores.txt');
+    port = await free_port();
+    server = spawn('php', ['-d', 'display_errors=0', '-S', `127.0.0.1:${port}`, '-t', path.dirname(SCRIPT)], {
+      env: { ...process.env, LU_PZE_HIGHSCORES: file }, stdio: 'ignore',
+    });
+    await wait_for_server();
+  });
+
+  afterAll(() => {
+    server.kill();
+    fs.rmSync(directory, { recursive: true });
+  });
+
+  beforeEach(() => fs.rmSync(file, { force: true }));
+
+  test('stores what was sent, with what the server knows about the request', async () => {
+    await post(form(RESULT), { 'X-Forwarded-For': FAKE_XFF });
+    const stored_lines = fs.readFileSync(file, 'utf8').split('\n');
+    expect(stored_lines).toHaveLength(2);
+    expect(stored_lines[1]).toBe('');
+    expect(stored_lines[0].startsWith(RESULT + '#ip=127.0.0.1,')).toBe(true);
+    expect(stored_lines[0]).toContain(`,#ip_xff=${FAKE_XFF},`);
+    expect(stored_lines[0]).toMatch(/,#port=\d+,/);
+    expect(stored_lines[0]).toContain(`,#ref=${REFERER},`);
+    expect(stored_lines[0]).toMatch(/,#server_time=\d{4}\/\d\d\/\d\d \d\d:\d\d:\d\d\.$/);
+  });
+
+  test('answers with the public leaderboard only, which the client can read', async () => {
+    const answer = await post(form(RESULT), { 'X-Forwarded-For': FAKE_XFF });
+    expect(answer).toMatch(/^T;LFRTF05_Åsa;,total=63\.5,nof_correct=12,longest_streak=5,#server_time=[0-9/ :]+\n$/);
+    for (const secret of ['127.0.0.1', FAKE_XFF, '987', REFERER]) expect(answer).not.toContain(secret);
+    const parsed = window.parse_highscore_lines(answer);
+    expect(JSON.stringify(parsed)).toContain('63.5');
+    expect(parsed).toEqual(window.parse_highscore_lines(fs.readFileSync(file, 'utf8')));
+  });
+
+  test('adds to the results already there', async () => {
+    await post(form(RESULT));
+    const answer = await post(form(RESULT.replace('Åsa', 'Bob')));
+    expect(fs.readFileSync(file, 'utf8').trim().split('\n')).toHaveLength(2);
+    expect(answer.trim().split('\n')).toHaveLength(2);
+  });
+
+  test('a POST without a result stores nothing', async () => {
+    fs.writeFileSync(file, `${stored({})}\n`);
+    const before = fs.readFileSync(file, 'utf8');
+    const answer = await post('other=1');
+    expect(fs.readFileSync(file, 'utf8')).toBe(before);
+    expect(answer).toContain('LFRTF05_Åsa');
+  });
+
+  test('without a file and without a result the answer says so', async () => {
+    expect(await post('')).toBe('Error: Highscore file does not exist.');
+  });
+});
+

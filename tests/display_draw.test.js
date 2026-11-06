@@ -654,21 +654,23 @@ describe('draw_bode_responses: magnitude', () => {
     expect(window.draw_X).toHaveBeenCalledTimes(2);
   });
 
-  test('a negative natural frequency draws no X', () => {
+  test('a negative natural frequency draws one X', () => {
     use_presets('GRAPH_TWO_COMPLEX_POLES');
     set_sliders({ w: -3 });
     window.draw_X = jest.fn();
     window.draw_bode_responses('gain');
-    expect(window.draw_X).not.toHaveBeenCalled();
+    expect(window.draw_X).toHaveBeenCalledTimes(1);
   });
 
-  test('an overdamped pair with a negative natural frequency draws no X', () => {
+  test('an overdamped pair with a negative natural frequency draws an X for each pole', () => {
     use_presets('GRAPH_TWO_COMPLEX_POLES');
     set_sliders({ z: 2, w: -3 });
     window.draw_X = jest.fn();
     window.draw_bode_responses('gain');
+    expect(window.draw_X).toHaveBeenCalledTimes(2);
+    window.draw_X.mockClear();
     window.draw_bode_responses('phase');
-    expect(window.draw_X).not.toHaveBeenCalled();
+    expect(window.draw_X).toHaveBeenCalledTimes(2);
   });
 
   test('an unknown plot type draws nothing', () => {
@@ -684,12 +686,12 @@ describe('draw_bode_responses: magnitude', () => {
     expect(window.draw_X).toHaveBeenCalledTimes(1);
   });
 
-  test('below z = -1 the two real poles are unstable, and complex_pole_marks gives no X', () => {
+  test('below z = -1 the two real unstable poles draw an X each', () => {
     use_presets('GRAPH_TWO_COMPLEX_POLES');
     set_sliders({ z: -2 });
     window.draw_X = jest.fn();
     window.draw_bode_responses('gain');
-    expect(window.draw_X).not.toHaveBeenCalled();
+    expect(window.draw_X).toHaveBeenCalledTimes(2);
   });
 
   test('a deleted graph (marker drawing throws) does not stop the drawing', () => {
@@ -904,7 +906,7 @@ describe('draw_bode_responses: phase', () => {
     }
   });
 
-  test('complex poles: z > 1 gives two X, a negative frequency none', () => {
+  test('complex poles: z > 1 gives two X, a negative frequency one', () => {
     use_presets('GRAPH_TWO_COMPLEX_POLES');
     window.draw_X = jest.fn();
     set_sliders({ z: 2 });
@@ -913,7 +915,7 @@ describe('draw_bode_responses: phase', () => {
     window.draw_X.mockClear();
     set_sliders({ z: 0.5, w: -1 });
     window.draw_bode_responses('phase');
-    expect(window.draw_X).not.toHaveBeenCalled();
+    expect(window.draw_X).toHaveBeenCalledTimes(1);
   });
 
   test('a deleted graph (marker drawing throws) does not stop the drawing', () => {
