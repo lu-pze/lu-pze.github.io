@@ -379,6 +379,123 @@ function formula_delay(binding){
   return binding.node === null ? 0 : split_time_delay(binding.node, binding.scope).delay;
 }
 
+// The axis range [min, max] of a closed-form response that runs between 0 and `gain`, or between 0
+// and -gain when `towards_gain` is false.
+function gain_range(gain, towards_gain){
+  if (gain > 0) return towards_gain ? [0, gain] : [-gain, 0];
+  return towards_gain ? [gain, 0] : [0, -gain];
+}
+
+// k_1/(T_1*s+1): {values, range} at `times`, or null for an input other than a step or an impulse.
+function one_real_pole_response(input, k_1, T_1, times){
+  if (input === "1/s"){       // Unit Step response
+    // Step input response for
+    //     w_0              1
+    //   -------  =      -----------
+    //   s + w_0          s/w_0 + 1
+    // v_out(t) = V_i * (1 - e^{-\omega_{0}*t})}
+//        if (T_1 >= 0){
+    // With T_1 = 0 the system is the constant k_1 (and exp(-0/0) would be NaN at t = 0):
+    const values = times.map((t) => (T_1 === 0) ? k_1 : k_1 * (1.0 - Math.exp(-t / T_1)));
+    return {values, range: gain_range(k_1, T_1 >= 0)};
+  }
+  if (input === "1"){      // Dirac Impulse response:
+    // k_1/(1+T_1*s) = (k_1/T_1)/(s+1/T_1), so h(t) = k_1/T_1 * e^(-t/T_1).
+    // With T_1 = 0 the system is the constant k_1: only an impulse at t = 0, so 0 after it.
+    const h_0 = (T_1 === 0) ? 0 : k_1 / T_1;
+    const values = times.map((t) => (T_1 === 0) ? 0 : h_0 * Math.exp(-t / T_1));
+    // Decays from h_0 towards 0:
+    if (T_1 >= 0) return {values, range: [Math.min(h_0, 0), Math.max(h_0, 0)]};
+    // Negative T: grows without bound, so the axis is capped at 20 as before:
+    return {values, range: (h_0 > 0) ? [0, 20] : [-20, 0]};
+  }
+  return null;
+}
+
+// k_2/(T_2s+1)*1/(T_3s+1): {values, range} at `times`, or null without a closed form.
+function two_real_poles_response(input, k_2, T_2, T_3, times){
+  // The closed forms divide by T_2, T_3 and 1/T_3 - 1/T_2. A double pole, or a T of 0, goes to time_response.
+  if ((T_2 === T_3) || (T_2 === 0) || (T_3 === 0)) return null;
+  // Stable poles or two unstable poles; otherwise one unstable pole.
+  const towards_gain = ((T_2 >= 0) && (T_3 >= 0))||((T_2 <= 0) && (T_3 <= 0));
+  if (input === "1/s"){       // Unit Step response
+//        console.log("Doing " + this.bode_formula);
+    // Step input response for
+    //     w_0              1
+    //   -------  =      -----------
+    //   s + w_0          s/w_0 + 1
+    // v_out(t) = V_i * (1 - e^{-\omega_{0}*t})}
+    // Y(s)=1/(s(s-1)^2) ->
+    // y(t)=1 - e^{-t} - te^{-t}
+    // To find the inverse Laplace transform of the transfer function
+    // https://lpsa.swarthmore.edu/LaplaceZTable/LaplaceZFuncTable.html
+    // "Asymptotic double exponential"
+    // 1/(s(s+a)(s+b))
+    // ab / (s(1+s/a)(1+s/b))
+    // Let a=1/T_2
+    // let b=1/T_3
+    const a = 1/T_2;
+    const b = 1/T_3;
+    const values = times.map((t) => k_2*(1-(b*Math.exp(-a*t) - a*Math.exp(-b*t))/(b-a)));
+    return {values, range: gain_range(k_2, towards_gain)};
+  }
+  if (input === "1"){      // Dirac Impulse response:
+    const values = times.map((t) => k_2/T_2/T_3 * (Math.exp(-t / T_2) - Math.exp(-t / T_3)) / (1/T_3 - 1/T_2));
+    return {values, range: gain_range(k_2, towards_gain)};
+  }
+  return null;
+}
+
+// k_3*w^2/(s^2+2*z*w*s+w^2): {values, range} at `times`, or null without a closed form.
+function two_complex_poles_response(input, k_3, z, w, times){
+  // When z > 1, we don't have an oscillating system. We have two real poles, which isn't handled here.
+  // This handles two complex conjugated poles with a damped response:
+  if (!((z < 1.0) && (z >= 0))) return null;
+  let values;
+  if (input === "1/s"){       // Unit Step response
+    // Step input response for
+    //   H(s) = 1 / (s^2 + +2ζωs + w^2)
+    // is
+    //   h(t) = 1/(w*Math.sqrt(1-ζ^2)) * exp(-ζwt) * sin(w*Math.sqrt(1-*ζ^2)*t)
+    values = times.map((t) => {
+      // Calculate time-step response
+      //console.log("z=" + z);
+      //console.log("w=" + w);
+      //console.log("k_3=" + k_3);
+      const exponentTerm = Math.exp(-z*w*t);
+      const sinTerm = Math.sin(w * Math.sqrt(1.0-z*z) * t + Math.acos(z));  // acos = inverse cosine (in radians)
+      return k_3 * (1.0 - (1.0 / (Math.sqrt(1.0-z*z)) * exponentTerm * sinTerm));
+    });
+  } else if (input === "1"){      // Dirac Impulse response:
+    // https://lpsa.swarthmore.edu/LaplaceZTable/LaplaceZFuncTable.html
+    // "Prototype 2nd order lowpass impulse response":
+    values = times.map((t) => {
+      // Calculate time-step response
+      const exponentTerm = Math.exp(-z*w*t);
+      const sinTerm = Math.sin(w * Math.sqrt(1.0-z*z) * t);
+      return k_3*w/(Math.sqrt(1-z*z)) * exponentTerm * sinTerm;
+    });
+  } else {
+    return null;
+  }
+  return {values, range: value_range(values, 100000)};
+}
+
+// The closed-form response of `formula` to `input` at `times`, as {values, range: [min, max]}, or
+// null when there is none. `slider` gives the value of a variable by name.
+function closed_form_time_response(formula, input, times, slider){
+  if (formula === GRAPH_ONE_REAL_POLE.formula){
+    return one_real_pole_response(input, slider("k_1"), slider("T_1"), times);
+  }
+  if (formula === GRAPH_TWO_REAL_POLES.formula){
+    return two_real_poles_response(input, slider("k_2"), slider("T_2"), slider("T_3"), times);
+  }
+  if (formula === GRAPH_TWO_COMPLEX_POLES.formula){
+    return two_complex_poles_response(input, slider("k_3"), slider("z"), slider("w"), times);
+  }
+  return null;
+}
+
 // Unwraps a phase [rad]: `phase` plus the whole turns that bring it within half a turn of
 // `previous`, which is NaN for the first sample. A step of exactly half a turn counts as falling,
 // as at an undamped resonance. Two samples that really differ by more than half a turn, such as
@@ -396,11 +513,11 @@ function bode_frequencies(width, min_power, decades){
   return frequencies;
 }
 
-// [smallest, largest] of `values`, skipping NaN. Both start at +-10000, so a range never reaches
-// past them on its inner side: with no values, or only values below -10000, the largest is -10000.
-function value_range(values){
-  let smallest = 10000;
-  let largest = -10000;
+// [smallest, largest] of `values`, skipping NaN. They start at `start` and -start, so a range never
+// reaches past them on its inner side: with no values, or only values below -start, the largest is -start.
+function value_range(values, start){
+  let smallest = start;
+  let largest = -start;
   for (const value of values){
     if (value < smallest) smallest = value;
     if (value > largest) largest = value;
@@ -431,9 +548,9 @@ function frequency_response(binding, frequencies){
   }
   return {
     complex, gain, phase,
-    phase_range: value_range(phase),
-    nyquist_x_range: value_range(complex.map((value) => value.re)),
-    nyquist_y_range: value_range(complex.map((value) => value.im)),
+    phase_range: value_range(phase, 10000),
+    nyquist_x_range: value_range(complex.map((value) => value.re), 10000),
+    nyquist_y_range: value_range(complex.map((value) => value.im), 10000),
   };
 }
 

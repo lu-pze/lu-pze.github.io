@@ -900,25 +900,26 @@ describe('the margins take their sample frequencies as a parameter', () => {
 
 describe('value_range', () => {
   test('the smallest and the largest value', () => {
-    expect(window.value_range([3, -2, 7, 1])).toEqual([-2, 7]);
+    expect(window.value_range([3, -2, 7, 1], 10000)).toEqual([-2, 7]);
   });
 
   test('NaN is skipped, also first', () => {
-    expect(window.value_range([NaN, 2, NaN, 5])).toEqual([2, 5]);
+    expect(window.value_range([NaN, 2, NaN, 5], 10000)).toEqual([2, 5]);
   });
 
   test('infinite values count', () => {
-    expect(window.value_range([Infinity, 1, -Infinity])).toEqual([-Infinity, Infinity]);
+    expect(window.value_range([Infinity, 1, -Infinity], 10000)).toEqual([-Infinity, Infinity]);
   });
 
   test('with no values it stays at its start', () => {
-    expect(window.value_range([])).toEqual([10000, -10000]);
-    expect(window.value_range([NaN])).toEqual([10000, -10000]);
+    expect(window.value_range([], 10000)).toEqual([10000, -10000]);
+    expect(window.value_range([NaN], 100000)).toEqual([100000, -100000]);
   });
 
   test('values beyond the start on one side leave the other end at its start', () => {
-    expect(window.value_range([-20000, -30000])).toEqual([-30000, -10000]);
-    expect(window.value_range([20000, 30000])).toEqual([10000, 30000]);
+    expect(window.value_range([-20000, -30000], 10000)).toEqual([-30000, -10000]);
+    expect(window.value_range([20000, 30000], 10000)).toEqual([10000, 30000]);
+    expect(window.value_range([20000, 30000], 100000)).toEqual([20000, 30000]);
   });
 });
 
@@ -969,5 +970,132 @@ describe('frequency_response', () => {
       complex: [], gain: [], phase: [],
       phase_range: [10000, -10000], nyquist_x_range: [10000, -10000], nyquist_y_range: [10000, -10000],
     });
+  });
+});
+
+describe('gain_range', () => {
+  test.each([
+    [1.2, true, [0, 1.2]],
+    [1.2, false, [-1.2, 0]],
+    [-1.2, true, [-1.2, 0]],
+    [-1.2, false, [0, 1.2]],
+  ])('gain %d, towards the gain: %s', (gain, towards_gain, range) => {
+    expect(window.gain_range(gain, towards_gain)).toEqual(range);
+  });
+
+  test('no gain gives no range', () => {
+    expect(window.gain_range(0, true)).toEqual([0, 0]);
+    expect(window.gain_range(0, false)[0]).toBe(0);
+    expect(window.gain_range(0, false)[1] === 0).toBe(true);
+  });
+});
+
+describe('closed_form_time_response', () => {
+  const TIMES = [0, 0.7, 1.4]; // evenly spaced, as time_response needs
+  const formula_of = (name) => global_value(name).formula;
+  const reader = (values) => (name) => values[name];
+  const closed_form = (name, input, values, times = TIMES) =>
+    window.closed_form_time_response(formula_of(name), input, times, reader(values));
+
+  // A plot and sliders that would give other answers, so a read of these globals shows.
+  beforeEach(() => {
+    set_globals({ graph_step_response_width: 3, precision: 12, max_x_timerep: 1, input_formula: '1' });
+    set_sliders({ k_1: 9, T_1: 9, k_2: 9, T_2: 9, T_3: 8, k_3: 9, z: 0.9, w: 9 });
+  });
+
+  test('one real pole, step', () => {
+    const { values, range } = closed_form('GRAPH_ONE_REAL_POLE', '1/s', { k_1: 1.2, T_1: 0.6 });
+    TIMES.forEach((t, i) => expect(values[i]).toBeCloseTo(1.2 * (1 - Math.exp(-t / 0.6)), 12));
+    expect(range).toEqual([0, 1.2]);
+  });
+
+  test('one real pole, step, with an unstable pole', () => {
+    expect(closed_form('GRAPH_ONE_REAL_POLE', '1/s', { k_1: 1.2, T_1: -0.6 }).range).toEqual([-1.2, 0]);
+  });
+
+  test('one real pole, step, without a time constant is the constant k_1', () => {
+    expect(closed_form('GRAPH_ONE_REAL_POLE', '1/s', { k_1: 1.2, T_1: 0 }).values).toEqual([1.2, 1.2, 1.2]);
+  });
+
+  test('one real pole, impulse', () => {
+    const { values, range } = closed_form('GRAPH_ONE_REAL_POLE', '1', { k_1: 1.2, T_1: 0.6 });
+    TIMES.forEach((t, i) => expect(values[i]).toBeCloseTo(2 * Math.exp(-t / 0.6), 12));
+    expect(range).toEqual([0, 2]);
+  });
+
+  test('one real pole, impulse with a negative gain decays from below', () => {
+    expect(closed_form('GRAPH_ONE_REAL_POLE', '1', { k_1: -1.2, T_1: 0.6 }).range).toEqual([-2, 0]);
+  });
+
+  test('one real pole, impulse, unstable: the axis is capped at 20', () => {
+    expect(closed_form('GRAPH_ONE_REAL_POLE', '1', { k_1: -1.2, T_1: -0.6 }).range).toEqual([0, 20]);
+    expect(closed_form('GRAPH_ONE_REAL_POLE', '1', { k_1: 1.2, T_1: -0.6 }).range).toEqual([-20, 0]);
+  });
+
+  test('one real pole, impulse, without a time constant is 0 after the impulse', () => {
+    const { values, range } = closed_form('GRAPH_ONE_REAL_POLE', '1', { k_1: 1.2, T_1: 0 });
+    expect(values).toEqual([0, 0, 0]);
+    expect(range).toEqual([0, 0]);
+  });
+
+  test.each([['1/s'], ['1']])('two real poles against the exact solver, input %s', (input) => {
+    const values = { k_2: 1.2, T_2: 0.6, T_3: 2.5 };
+    set_sliders(values);
+    const exact = window.time_response(input, formula_of('GRAPH_TWO_REAL_POLES'), TIMES);
+    const response = closed_form('GRAPH_TWO_REAL_POLES', input, values);
+    TIMES.forEach((_, i) => expect(response.values[i]).toBeCloseTo(exact[i], 9));
+    expect(response.range).toEqual([0, 1.2]);
+  });
+
+  test.each([
+    ['1/s', 0.6, -2.5, [-1.2, 0]], ['1', 0.6, -2.5, [-1.2, 0]],
+    ['1/s', -0.6, 2.5, [-1.2, 0]], ['1', -0.6, 2.5, [-1.2, 0]],
+    ['1/s', -0.6, -2.5, [0, 1.2]], ['1', -0.6, -2.5, [0, 1.2]],
+  ])('two real poles, input %s, T_2 = %d, T_3 = %d: the range', (input, T_2, T_3, range) => {
+    expect(closed_form('GRAPH_TWO_REAL_POLES', input, { k_2: 1.2, T_2, T_3 }).range).toEqual(range);
+  });
+
+  test.each([
+    [1.2, 1.2], [0, 1.2], [1.2, 0], [0, 0],
+  ])('two real poles without a closed form: T_2 = %d, T_3 = %d', (T_2, T_3) => {
+    expect(closed_form('GRAPH_TWO_REAL_POLES', '1/s', { k_2: 1.2, T_2, T_3 })).toBeNull();
+    expect(closed_form('GRAPH_TWO_REAL_POLES', '1', { k_2: 1.2, T_2, T_3 })).toBeNull();
+  });
+
+  test.each([['1/s'], ['1']])('two complex poles against the exact solver, input %s', (input) => {
+    const values = { k_3: 1.2, z: 0.3, w: 2.5 };
+    set_sliders(values);
+    const exact = window.time_response(input, formula_of('GRAPH_TWO_COMPLEX_POLES'), TIMES);
+    const response = closed_form('GRAPH_TWO_COMPLEX_POLES', input, values);
+    TIMES.forEach((_, i) => expect(response.values[i]).toBeCloseTo(exact[i], 9));
+    expect(response.range).toEqual([Math.min(...response.values), Math.max(...response.values)]);
+  });
+
+  test('two complex poles: the range starts wide, so it takes every sample', () => {
+    const { range } = closed_form('GRAPH_TWO_COMPLEX_POLES', '1/s', { k_3: 1.2, z: 0.3, w: 2.5 }, [0]);
+    expect(range[0]).toBeCloseTo(0, 12);
+    expect(range[1]).toBeCloseTo(0, 12);
+    expect(closed_form('GRAPH_TWO_COMPLEX_POLES', '1/s', { k_3: 1.2, z: 0.3, w: 2.5 }, []).range).toEqual([100000, -100000]);
+  });
+
+  test.each([[-0.01], [1], [1.2], [NaN]])('two complex poles without a closed form: z = %d', (z) => {
+    expect(closed_form('GRAPH_TWO_COMPLEX_POLES', '1/s', { k_3: 1.2, z, w: 2.5 })).toBeNull();
+    expect(closed_form('GRAPH_TWO_COMPLEX_POLES', '1', { k_3: 1.2, z, w: 2.5 })).toBeNull();
+  });
+
+  test('z = 0 has a closed form', () => {
+    expect(closed_form('GRAPH_TWO_COMPLEX_POLES', '1', { k_3: 1.2, z: 0, w: 2.5 })).not.toBeNull();
+  });
+
+  test.each([
+    ['GRAPH_ONE_REAL_POLE'], ['GRAPH_TWO_REAL_POLES'], ['GRAPH_TWO_COMPLEX_POLES'],
+  ])('%s has no closed form for a ramp', (name) => {
+    const values = { k_1: 1.2, T_1: 0.6, k_2: 1.2, T_2: 0.6, T_3: 2.5, k_3: 1.2, z: 0.3, w: 2.5 };
+    expect(closed_form(name, '1/(s^2)', values)).toBeNull();
+  });
+
+  test('another formula has none, not even one that means the same', () => {
+    const values = { k_1: 1.2, T_1: 0.6 };
+    expect(window.closed_form_time_response('k_1/(T_1*s+1)', '1/s', TIMES, reader(values))).toBeNull();
   });
 });
