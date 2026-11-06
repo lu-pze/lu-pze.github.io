@@ -158,11 +158,11 @@ describe('helpers', () => {
   test('set_T_in_pz_map sets T = -1 / real', () => {
     window.set_T_in_pz_map('T_2', -0.5);
     expect(get('T_2')).toBeCloseTo(2);
-    expect(text_field('T_2')).toBe('2');
-    expect(range_field('T_2')).toBe('2');
+    expect(text_field('T_2')).toBe('2.00');
+    expect(range_field('T_2')).toBe('2.00');
     window.set_T_in_pz_map('T_2', 0.25);
     expect(get('T_2')).toBeCloseTo(-4);
-    expect(text_field('T_2')).toBe('-4');
+    expect(text_field('T_2')).toBe('-4.00');
   });
 
   test('set_T_in_pz_map shows T rounded to two decimals', () => {
@@ -170,6 +170,14 @@ describe('helpers', () => {
     expect(get('T_2')).toBeCloseTo(1 / 3);
     expect(text_field('T_2')).toBe('0.33');
     expect(range_field('T_2')).toBe('0.33');
+  });
+
+  test('set_T_in_pz_map shows a T that rounds to zero with its sign, as set_slider does', () => {
+    window.set_T_in_pz_map('T_2', 1000);
+    expect(get('T_2')).toBeCloseTo(-0.001);
+    expect(text_field('T_2')).toBe('-0.00');
+    window.set_T_in_pz_map('T_2', -1000);
+    expect(text_field('T_2')).toBe('0.00');
   });
 
   describe('redraw_canvas_gain_for_variables', () => {
@@ -706,8 +714,8 @@ describe('mouseDragged in the pole-zero maps', () => {
     set({ T_1: 7 });
     drag_in_map('GRAPH_ONE_REAL_POLE', dx_for_real(-0.5), 40);
     expect(get('T_1')).toBeCloseTo(2);
-    expect(text_field('T_1')).toBe('2');
-    expect(range_field('T_1')).toBe('2');
+    expect(text_field('T_1')).toBe('2.00');
+    expect(range_field('T_1')).toBe('2.00');
     expect(achievements()).toEqual(['drag_pole']);
     expect(redrawn()).toEqual([id_of('GRAPH_ONE_REAL_POLE')]);
   });
@@ -874,7 +882,7 @@ describe('mouseDragged in the pole-zero maps', () => {
     drag_in_map('GRAPH_PID', dx_for_real(-1.25), 40, 'T_d');
     expect(get('T_i')).toBe(7);
     expect(get('T_d')).toBeCloseTo(0.8);
-    expect(text_field('T_d')).toBe('0.8');
+    expect(text_field('T_d')).toBe('0.80');
     expect(achievements()).toEqual(['drag_pole']);
     expect(redrawn()).toEqual([id_of('GRAPH_PID')]);
 

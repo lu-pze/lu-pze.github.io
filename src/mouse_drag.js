@@ -66,11 +66,7 @@ function drag_z(mouseDiffY){
 function set_T_in_pz_map(T_to_change,real){
   // A pole/zero exactly on the imaginary axis would give T = -Infinity: nudge it into the left half-plane.
   if (real === 0) real = -0.0678;
-  range_slider_variables[variable_position[T_to_change]] = -1/real;
-  // Update range slider value:
-  document.getElementById("variable_"+variable_position[T_to_change]).value = -(1/real).toFixed(2);
-  // Update range slider:
-  document.getElementById("RANGE_"+variable_position[T_to_change]).value = -(1/real).toFixed(2);
+  set_slider(T_to_change, -1/real);
 }
 
 
