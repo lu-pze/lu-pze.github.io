@@ -676,12 +676,20 @@ describe('draw_bode_responses: magnitude', () => {
     expect(drawn).toEqual([]);
   });
 
-  test('a negative damping is treated like z <= 1: one X at w', () => {
+  test('a negative damping above z = -1 is treated like complex poles: one X at w', () => {
+    use_presets('GRAPH_TWO_COMPLEX_POLES');
+    set_sliders({ z: -1 });
+    window.draw_X = jest.fn();
+    window.draw_bode_responses('gain');
+    expect(window.draw_X).toHaveBeenCalledTimes(1);
+  });
+
+  test('below z = -1 the two real poles are unstable, and complex_pole_marks gives no X', () => {
     use_presets('GRAPH_TWO_COMPLEX_POLES');
     set_sliders({ z: -2 });
     window.draw_X = jest.fn();
     window.draw_bode_responses('gain');
-    expect(window.draw_X).toHaveBeenCalledTimes(1);
+    expect(window.draw_X).not.toHaveBeenCalled();
   });
 
   test('a deleted graph (marker drawing throws) does not stop the drawing', () => {

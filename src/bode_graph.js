@@ -615,7 +615,7 @@ class bode_graph{
     let z = slider_value("z");
     let w = slider_value("w");
 
-    if (z <= 1){
+    if (Math.abs(z) <= 1){
       bode_3_real = -z*w;
       bode_3_imaginary = w * Math.sqrt(1-z*z);
       let [tmp_x, tmp_y] = pole_zero_map_position(bode_3_real, bode_3_imaginary);

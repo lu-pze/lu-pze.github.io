@@ -58,11 +58,11 @@ const time_delay_marks = () => (slider_value("L") >= 0) ? [{T: slider_value("L")
 const gain_if_stable = (k, ...time_constants) => () =>
   time_constants.every((name) => slider_value(name) >= 0) ? slider_value(k) : null;
 
-// The frequency of complex poles. Above z = 1 the poles are real, with a frequency each.
+// The frequency of complex poles. With |z| above 1 the poles are real, with a frequency each.
 function complex_pole_frequencies(){
   const w = slider_value("w");
   const z = slider_value("z");
-  return (z <= 1) ? [w] : [z*w + w*Math.sqrt(z*z-1), z*w - w*Math.sqrt(z*z-1)];
+  return (Math.abs(z) <= 1) ? [w] : [z*w + w*Math.sqrt(z*z-1), z*w - w*Math.sqrt(z*z-1)];
 }
 
 function complex_pole_marks(){

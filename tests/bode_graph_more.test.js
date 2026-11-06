@@ -298,6 +298,98 @@ describe('bode_graph', () => {
       expect(graph.bode_timerep_array).toEqual([]);
       expect(range(graph)).toEqual([10000, -10000]);
     });
+
+    // Cases added after Stryker mutation testing (npm run test:mutation) showed that no test noticed
+    // these changes to src/bode_graph.js.
+    describe('mutation gaps', () => {
+      // The closed forms against the exact solver, at the sample times the app uses.
+      const sample_times = Array.from({ length: TIMEREP_LENGTH }, (_, i) => (i * GEOMETRY.precision * 10) / 300);
+      const expect_exact = (name, input) => {
+        const graph = with_time_response(preset(name), input);
+        const exact = window.time_response(input, preset(name), sample_times);
+        graph.bode_timerep_array.forEach((value, i) => {
+          expect(value / Math.max(1, Math.abs(exact[i]))).toBeCloseTo(exact[i] / Math.max(1, Math.abs(exact[i])), 6);
+        });
+      };
+
+      describe.each([['1/s'], ['1']])('input %s', (input) => {
+        test.each([[2, 0.4], [0.4, 2], [0.5, 3], [3, 0.7], [-2, 0.4], [0.4, -2], [-3, -0.7]])(
+          'two real poles with T_2 = %s and T_3 = %s match the exact solver', (T_2, T_3) => {
+            set_sliders({ k_2: 3, T_2, T_3 });
+            expect_exact('GRAPH_TWO_REAL_POLES', input);
+          });
+
+        test.each([[0.4], [2], [-0.7], [0]])('one real pole with T_1 = %s matches the exact solver', (T_1) => {
+          set_sliders({ k_1: 2, T_1 });
+          expect_exact('GRAPH_ONE_REAL_POLE', input);
+        });
+
+        test.each([[0], [0.3], [0.9]])('complex poles with z = %s match the exact solver', (z) => {
+          set_sliders({ k_3: 2, w: 3, z });
+          expect_exact('GRAPH_TWO_COMPLEX_POLES', input);
+        });
+      });
+
+      test('the time axis of one real pole at T_1 = 0 is that of a stable system', () => {
+        set_sliders({ k_1: 2, T_1: 0 });
+        expect(range(with_time_response(preset('GRAPH_ONE_REAL_POLE')))).toEqual([0, 2]);
+      });
+
+      // A pole at T = 0 is moved to 0.0000001 for a step, so zeros only count as such for an impulse.
+      test.each([
+        ['1/s', 1, 2, [0, 3]],
+        ['1/s', -1, -2, [0, 3]],
+        ['1/s', 1, -2, [-3, 0]],
+        ['1/s', -1, 2, [-3, 0]],
+        ['1/s', 0, -2, [-3, 0]],
+        ['1/s', -2, 0, [-3, 0]],
+        ['1', 1, 2, [0, 3]],
+        ['1', -1, -2, [0, 3]],
+        ['1', 1, -2, [-3, 0]],
+        ['1', -1, 2, [-3, 0]],
+        ['1', 0, 2, [0, 3]],
+        ['1', 2, 0, [0, 3]],
+        ['1', 0, -2, [0, 3]],
+        ['1', -2, 0, [0, 3]],
+      ])('two real poles, input %s, T_2 = %s, T_3 = %s: the time axis is %j', (input, T_2, T_3, expected) => {
+        set_sliders({ k_2: 3, T_2, T_3 });
+        expect(range(with_time_response(preset('GRAPH_TWO_REAL_POLES'), input))).toEqual(expected);
+      });
+
+      describe('complex poles use the closed form from z = 0 up to, not including, z = 1', () => {
+        let original_time_response;
+
+        beforeEach(() => {
+          original_time_response = window.time_response;
+          window.time_response = jest.fn(original_time_response);
+        });
+
+        afterEach(() => {
+          window.time_response = original_time_response;
+        });
+
+        test.each([
+          ['1/s', 0, 0], ['1/s', 0.3, 0], ['1/s', -0.01, 1], ['1/s', 1, 1],
+          ['1', 0, 0], ['1', 0.3, 0], ['1', -0.01, 1], ['1', 1, 1],
+        ])('input %s, z = %s: %s calls of the solver', (input, z, nof_calls) => {
+          set_sliders({ k_3: 2, w: 3, z });
+          with_time_response(preset('GRAPH_TWO_COMPLEX_POLES'), input);
+          expect(window.time_response).toHaveBeenCalledTimes(nof_calls);
+        });
+      });
+
+      // Known bugs, see "Quirks" in docs/mutation-testing-handoff.md. These pass while the bugs exist.
+      test.failing('BUG: an impulse into two equal real poles has a curve', () => {
+        set_sliders({ k_2: 3, T_2: 2, T_3: 2 });
+        const graph = with_time_response(preset('GRAPH_TWO_REAL_POLES'), '1');
+        expect(graph.bode_timerep_array.every(Number.isFinite)).toBe(true);
+      });
+
+      test.failing('BUG: an impulse into two real poles with T_3 = 0 matches the exact solver', () => {
+        set_sliders({ k_2: 3, T_2: 2, T_3: 0 });
+        expect_exact('GRAPH_TWO_REAL_POLES', '1');
+      });
+    });
   });
 
   describe('get_complex_p5: Bode data, margins and poles/zeros', () => {
@@ -978,6 +1070,8 @@ describe('bode_graph', () => {
       expect(graph.bode_hue).toBe(color_table[3]);
       expect(graph.bode_complex_array).toEqual([]);
       expect(graph.bode_poles_zeros).toBeNull();
+      expect(graph.graph_name).toBe('Graph');
+      expect([graph.bode_max_phase, graph.bode_max_nyquist_x, graph.bode_max_nyquist_y]).toEqual([-10000, -10000, -10000]);
       for (const flag of ['bode_displaybool', 'bode_display_bodemag_bool', 'bode_display_bodephase_bool',
         'bode_display_timeresponse_bool', 'bode_display_nyquist_bool', 'bode_display_information_bool',
         'bode_display_equation_bool', 'bode_display_pole_zero_bool']) {
@@ -1039,6 +1133,8 @@ describe('bode_graph', () => {
         ['GRAPH_TWO_COMPLEX_POLES', { z: 2, w: -3 }],
         ['GRAPH_TWO_COMPLEX_POLES', { z: 1.05, w: 1.2 }], // two real poles, both inside the map
         ['GRAPH_TWO_COMPLEX_POLES', { z: 2, w: 20 }], // two real poles, both left of the map
+        ['GRAPH_TWO_COMPLEX_POLES', { z: -1, w: 3 }], // one double pole
+        ['GRAPH_TWO_COMPLEX_POLES', { z: -2, w: 3 }], // two real unstable poles
         ['GRAPH_TIME_DELAY', {}],
         ['GRAPH_ONE_ZERO_TWO_POLES', {}],
         ['GRAPH_FOUR_POLES', {}],
@@ -1133,6 +1229,15 @@ describe('bode_graph', () => {
         if (method === 'draw_nyquist_O') expect(mark[0]).toBeCloseTo(x_of_sample, 8);
         else expect((mark[0] + mark[2]) / 2).toBeCloseTo(x_of_sample, 8);
       });
+    });
+
+    test('below z = -1 plot_complex_poles draws the two real unstable poles', () => {
+      set_sliders({ z: -1.25, w: 2 }); // s = 1 and s = 4, which is held at the right edge
+      const graph = window.eval('new bode_graph(1, "1/(1+s)")');
+      const plot_pole = jest.fn();
+      graph.plot_pole = plot_pole;
+      graph.plot_complex_poles();
+      expect(plot_pole.mock.calls).toEqual([[1.2, 0], [1, 0]]);
     });
 
     test('draw_T_in_Nyquist marks the frequency 1/T', () => {

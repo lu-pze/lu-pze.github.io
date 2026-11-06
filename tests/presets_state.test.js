@@ -63,6 +63,20 @@ describe('Bode marks of each preset', () => {
     expect(second).toBeCloseTo(1, 12);
   });
 
+  test('complex_pole_frequencies is w from z = -1 on, and the two real poles below it', () => {
+    set_sliders({ w: 2, z: -1 });
+    expect(window.complex_pole_frequencies()).toEqual([2]);
+    set_sliders({ w: 2, z: -1.25 });
+    const [first, second] = window.complex_pole_frequencies();
+    expect(first).toBeCloseTo(-1, 12);
+    expect(second).toBeCloseTo(-4, 12);
+  });
+
+  test('two real unstable poles have no marks in the Bode plots', () => {
+    set_sliders({ k_3: 1, w: 2, z: -1.25 });
+    expect(global_value('GRAPH_TWO_COMPLEX_POLES').bode_marks()).toEqual([]);
+  });
+
   test.each(['GRAPH_TIME_DELAY', 'GRAPH_ONE_POLE_WITH_PID_YR', 'GRAPH_ONE_POLE_WITH_PID_S', 'GRAPH_ONE_POLE_WITH_PID_YL', 'GRAPH_ONE_POLE_WITH_PID_OPEN'])(
     '%s has none', (name) => {
       expect(global_value(name).bode_marks).toBeUndefined();
