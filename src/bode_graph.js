@@ -121,8 +121,8 @@ class bode_graph{
     // Take care of "known good" formulas that we know an exact answer to:
     let have_a_solution = false;
     if (this.bode_formula == GRAPH_ONE_REAL_POLE.formula){ //  "k_1/(T_1*s+1)"
-      let k_1 = range_slider_variables[variable_position["k_1"]];
-      let T_1 = range_slider_variables[variable_position["T_1"]];
+      let k_1 = slider_value("k_1");
+      let T_1 = slider_value("T_1");
       if (input_formula=="1/s"){       // Unit Step response
         // Step input response for
         //     w_0              1
@@ -178,9 +178,9 @@ class bode_graph{
       }
 
     } else if (this.bode_formula == GRAPH_TWO_REAL_POLES.formula){ // "k_2/(T_2s+1)*1/(T_3s+1)"
-      let k_2 = range_slider_variables[variable_position["k_2"]];
-      let T_2 = range_slider_variables[variable_position["T_2"]];
-      let T_3 = range_slider_variables[variable_position["T_3"]];
+      let k_2 = slider_value("k_2");
+      let T_2 = slider_value("T_2");
+      let T_3 = slider_value("T_3");
       if (input_formula=="1/s"){       // Unit Step response
 //        console.log("Doing " + this.bode_formula);
         // Step input response for
@@ -263,9 +263,9 @@ class bode_graph{
       }
 
     } else if (this.bode_formula == GRAPH_TWO_COMPLEX_POLES.formula){ // "k_3*w^2/(s^2+2*z*w*s+w^2)"
-      let k_3 = range_slider_variables[variable_position["k_3"]];
-      let z = range_slider_variables[variable_position["z"]];
-      let w = range_slider_variables[variable_position["w"]];
+      let k_3 = slider_value("k_3");
+      let z = slider_value("z");
+      let w = slider_value("w");
       if (input_formula=="1/s"){       // Unit Step response
         // Step input response for
         //   H(s) = 1 / (s^2 + +2ζωs + w^2)
@@ -399,7 +399,7 @@ class bode_graph{
   }
 
   draw_T_in_Nyquist (T_to_draw,pole_zero="pole"){
-    let T = range_slider_variables[variable_position[T_to_draw]];
+    let T = slider_value(T_to_draw);
     if (T != 0){
       let frequency = 1 / T;
       if (pole_zero=="pole"){
@@ -612,8 +612,8 @@ class bode_graph{
   plot_complex_poles(){
     // Calculate bode_3_real and imaginary from z and w:
     // s = −ζω_n ± jω_n * Math.sqrt(1−ζ^2)
-    let z = range_slider_variables[variable_position["z"]];
-    let w = range_slider_variables[variable_position["w"]];
+    let z = slider_value("z");
+    let w = slider_value("w");
 
     if (z <= 1){
       bode_3_real = -z*w;
