@@ -35,58 +35,16 @@ class bode_graph{
   }
 
   get_complex_p5(){
-    //Reset Values
     const binding = bind_formula(this.bode_formula);
     const frequencies = bode_frequencies(graph_bode_mag_width, min_10power, x_case_gain);
     if(binding !== null){
-      this.bode_max_phase = -10000;
-      this.bode_min_phase = 10000;
-      this.bode_min_nyquist_x = 10000;
-      this.bode_max_nyquist_x = -10000;
-      this.bode_min_nyquist_y = 10000;
-      this.bode_max_nyquist_y = -10000;
-      this.bode_phase_array = [];
-      this.bode_gain_array = [];
-      this.bode_complex_array = [];
-
-      // The delay's phase -L*w is known exactly, while at high frequencies it can turn more than once between
-      // two samples, which no unwrapping can follow. So only the rest of G is unwrapped.
-      const delay = formula_delay(binding);
-      let previous_phase = NaN;
-      for(const math_x of frequencies){
-        let bode_value = getComplexValues(binding, math_x);
-        if(bode_value.re > this.bode_max_nyquist_x){
-          this.bode_max_nyquist_x = bode_value.re;
-        }
-        if(bode_value.re < this.bode_min_nyquist_x){
-          this.bode_min_nyquist_x = bode_value.re;
-        }
-        if(bode_value.im > this.bode_max_nyquist_y){
-          this.bode_max_nyquist_y = bode_value.im;
-        }
-        if(bode_value.im < this.bode_min_nyquist_y){
-          this.bode_min_nyquist_y = bode_value.im;
-        }
-        this.bode_complex_array.push(bode_value);
-        bode_value = bode_value.toPolar();
-
-        let bode_gain = 20*Math.log(bode_value.r)/Math.log(10);
-        // On a pole G is infinite and has no phase; bode_value.phi is then only the angle of Infinity+Infinity*i.
-        const sampled_phase = Number.isFinite(bode_value.r) ? bode_value.phi + delay*math_x : NaN;
-        const phase_without_delay = continue_phase(sampled_phase, previous_phase);
-        if (!Number.isNaN(phase_without_delay)) previous_phase = phase_without_delay;
-        let bode_phase = phase_without_delay - delay*math_x;
-
-        this.bode_gain_array.push(bode_gain);
-        this.bode_phase_array.push(bode_phase);
-
-        if(bode_phase > this.bode_max_phase){
-          this.bode_max_phase = bode_phase;
-        }
-        if(bode_phase < this.bode_min_phase){
-          this.bode_min_phase = bode_phase;
-        }
-      }
+      const response = frequency_response(binding, frequencies);
+      this.bode_complex_array = response.complex;
+      this.bode_gain_array = response.gain;
+      this.bode_phase_array = response.phase;
+      [this.bode_min_phase, this.bode_max_phase] = response.phase_range;
+      [this.bode_min_nyquist_x, this.bode_max_nyquist_x] = response.nyquist_x_range;
+      [this.bode_min_nyquist_y, this.bode_max_nyquist_y] = response.nyquist_y_range;
     }
     let omegaZero = findOmegaZero(binding, this.bode_gain_array, frequencies);
     let omega180 = findOmega180(binding, this.bode_phase_array, frequencies);

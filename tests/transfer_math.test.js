@@ -897,3 +897,77 @@ describe('the margins take their sample frequencies as a parameter', () => {
     expect(omega).toBeCloseTo(Math.sqrt(3), 9);
   });
 });
+
+describe('value_range', () => {
+  test('the smallest and the largest value', () => {
+    expect(window.value_range([3, -2, 7, 1])).toEqual([-2, 7]);
+  });
+
+  test('NaN is skipped, also first', () => {
+    expect(window.value_range([NaN, 2, NaN, 5])).toEqual([2, 5]);
+  });
+
+  test('infinite values count', () => {
+    expect(window.value_range([Infinity, 1, -Infinity])).toEqual([-Infinity, Infinity]);
+  });
+
+  test('with no values it stays at its start', () => {
+    expect(window.value_range([])).toEqual([10000, -10000]);
+    expect(window.value_range([NaN])).toEqual([10000, -10000]);
+  });
+
+  test('values beyond the start on one side leave the other end at its start', () => {
+    expect(window.value_range([-20000, -30000])).toEqual([-30000, -10000]);
+    expect(window.value_range([20000, 30000])).toEqual([10000, 30000]);
+  });
+});
+
+describe('frequency_response', () => {
+  // A plot that would give other samples, so a read of these globals shows.
+  beforeEach(() => {
+    set_globals({ graph_bode_mag_width: 3, min_10power: 7, x_case_gain: 1 });
+    set_sliders({});
+  });
+
+  test('one real pole at chosen frequencies: complex value, gain and phase', () => {
+    const response = window.frequency_response(window.bind_formula('1/(1+s)'), [0.5, 1, 2]);
+    [0.5, 1, 2].forEach((w, k) => {
+      expect(response.complex[k].re).toBeCloseTo(1 / (1 + w * w), 12);
+      expect(response.complex[k].im).toBeCloseTo(-w / (1 + w * w), 12);
+      expect(response.gain[k]).toBeCloseTo(-10 * Math.log10(1 + w * w), 12);
+      expect(response.phase[k]).toBeCloseTo(-Math.atan(w), 12);
+    });
+  });
+
+  test('the ranges come from the samples', () => {
+    const response = window.frequency_response(window.bind_formula('1/(1+s)'), [0.5, 1, 2]);
+    expect(response.phase_range).toEqual([response.phase[2], response.phase[0]]);
+    expect(response.nyquist_x_range).toEqual([response.complex[2].re, response.complex[0].re]);
+    expect(response.nyquist_y_range).toEqual([response.complex[1].im, response.complex[2].im]);
+  });
+
+  test('the phase goes on past -180 degrees: it is unwrapped', () => {
+    const response = window.frequency_response(window.bind_formula('1/(1+s)^4'), [0.2, 0.6, 1.2, 2.4, 6]);
+    [0.2, 0.6, 1.2, 2.4, 6].forEach((w, k) => expect(response.phase[k]).toBeCloseTo(-4 * Math.atan(w), 9));
+  });
+
+  test('a delay adds its exact phase, however far it turns between two samples', () => {
+    const frequencies = [0.01, 40, 300];
+    const response = window.frequency_response(window.bind_formula('1/(1+s)e^(-5s)'), frequencies);
+    frequencies.forEach((w, k) => expect(response.phase[k]).toBeCloseTo(-Math.atan(w) - 5 * w, 8));
+  });
+
+  test('on a pole G has no gain or phase, and the unwrapping carries on from the sample before', () => {
+    const response = window.frequency_response(window.bind_formula('1/(1+s^2)'), [0.5, 1, 2]);
+    expect(response.gain[1]).toBeNaN();
+    expect(response.phase[1]).toBeNaN();
+    expect(response.phase[2]).toBeCloseTo(-Math.PI, 12);
+  });
+
+  test('no frequencies give empty curves and the ranges at their start', () => {
+    expect(window.frequency_response(window.bind_formula('1/(1+s)'), [])).toEqual({
+      complex: [], gain: [], phase: [],
+      phase_range: [10000, -10000], nyquist_x_range: [10000, -10000], nyquist_y_range: [10000, -10000],
+    });
+  });
+});

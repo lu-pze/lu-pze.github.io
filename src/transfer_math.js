@@ -396,6 +396,47 @@ function bode_frequencies(width, min_power, decades){
   return frequencies;
 }
 
+// [smallest, largest] of `values`, skipping NaN. Both start at +-10000, so a range never reaches
+// past them on its inner side: with no values, or only values below -10000, the largest is -10000.
+function value_range(values){
+  let smallest = 10000;
+  let largest = -10000;
+  for (const value of values){
+    if (value < smallest) smallest = value;
+    if (value > largest) largest = value;
+  }
+  return [smallest, largest];
+}
+
+// G(j*omega) of the bound formula at `frequencies`: the complex values, the gain [dB], the unwrapped
+// phase [rad] and the ranges of the phase and of the Nyquist curve.
+function frequency_response(binding, frequencies){
+  const complex = [];
+  const gain = [];
+  const phase = [];
+  // The delay's phase -L*w is known exactly, while at high frequencies it can turn more than once between
+  // two samples, which no unwrapping can follow. So only the rest of G is unwrapped.
+  const delay = formula_delay(binding);
+  let previous_phase = NaN;
+  for (const omega of frequencies){
+    const value = getComplexValues(binding, omega);
+    const polar = value.toPolar();
+    // On a pole G is infinite and has no phase; polar.phi is then only the angle of Infinity+Infinity*i.
+    const sampled_phase = Number.isFinite(polar.r) ? polar.phi + delay*omega : NaN;
+    const phase_without_delay = continue_phase(sampled_phase, previous_phase);
+    if (!Number.isNaN(phase_without_delay)) previous_phase = phase_without_delay;
+    complex.push(value);
+    gain.push(20*Math.log(polar.r)/Math.log(10));
+    phase.push(phase_without_delay - delay*omega);
+  }
+  return {
+    complex, gain, phase,
+    phase_range: value_range(phase),
+    nyquist_x_range: value_range(complex.map((value) => value.re)),
+    nyquist_y_range: value_range(complex.map((value) => value.im)),
+  };
+}
+
 // Pairs [i, j] of sample indices on either side of each sign change of `values`. Samples within
 // `dead_band` of 0 have no sign, so a curve that only hovers around 0 (float noise) has none.
 // With `branch`, a sign change only counts between samples on the same branch.
