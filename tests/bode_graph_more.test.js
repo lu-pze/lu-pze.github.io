@@ -987,4 +987,170 @@ describe('bode_graph', () => {
       expect(new_graph('1/s', color_table.length + 2).bode_hue).toBe(color_table[2]);
     });
   });
+
+  // Cases added after Stryker mutation testing (npm run test:mutation) showed that no test noticed
+  // these changes to src/bode_graph.js.
+  describe('mutation gaps: drawing', () => {
+    const round = (value) => (typeof value === 'number' ? Number(value.toFixed(3)) : value);
+    const drawing = () => drawn.map((call) => `${call.name}(${call.args.map(round).join(', ')})`);
+    let saved_color;
+
+    beforeEach(() => {
+      saved_color = window.color;
+      window.color = (text) => text;
+    });
+
+    afterEach(() => {
+      window.color = saved_color;
+    });
+
+    // Golden master of every p5 call. Small plots keep the snapshots readable, a line weight of 3 tells
+    // * from / in the weights, and narrow ranges make the curves leave each plot on every side.
+    // After an intentional change, read the diff and update with `npx jest -u tests/bode_graph_more.test.js`.
+    describe('golden master of the plots', () => {
+      const SMALL_PLOTS = {
+        graph_bode_mag_width: 30, graph_bode_phase_width: 30, graph_step_response_width: 30, precision: 2,
+        line_stroke_weight: 3, phase_lower_bound: -120, phase_upper_bound: -20,
+        min_y_timerep: 0.2, max_y_timerep: 1.1, min_nyquist_x: -1, max_nyquist_x: 1.5, min_nyquist_y: -1.5, max_nyquist_y: 0.5,
+      };
+      const plots_of = (formula) => {
+        set_globals(SMALL_PLOTS);
+        set_globals({ input_formula: '1/s' });
+        const graph = window.eval(`new bode_graph(1, ${JSON.stringify(formula)})`);
+        graph.graph_name = 'Name';
+        graph.get_complex_p5();
+        graph.get_timevalues_p5();
+        drawn.length = 0;
+        graph.draw_gain();
+        graph.draw_phase();
+        graph.draw_timeresponse();
+        graph.draw_nyquist_response();
+        graph.draw_pole_zero(true);
+        graph.draw_pole_zero(false);
+        return drawing();
+      };
+
+      test.each([
+        ['GRAPH_ONE_REAL_POLE', {}],
+        ['GRAPH_TWO_REAL_POLES', {}],
+        ['GRAPH_TWO_COMPLEX_POLES', {}],
+        ['GRAPH_TWO_COMPLEX_POLES', { z: 1 }],
+        ['GRAPH_TWO_COMPLEX_POLES', { z: 2, w: 3 }],
+        ['GRAPH_TWO_COMPLEX_POLES', { z: 2, w: -3 }],
+        ['GRAPH_TWO_COMPLEX_POLES', { z: 1.05, w: 1.2 }], // two real poles, both inside the map
+        ['GRAPH_TWO_COMPLEX_POLES', { z: 2, w: 20 }], // two real poles, both left of the map
+        ['GRAPH_TIME_DELAY', {}],
+        ['GRAPH_ONE_ZERO_TWO_POLES', {}],
+        ['GRAPH_FOUR_POLES', {}],
+        ['GRAPH_ONE_ZERO', {}],
+        ['GRAPH_PID', {}],
+      ])('%s with %j', (name, sliders) => {
+        set_sliders(sliders);
+        expect(plots_of(preset(name))).toMatchSnapshot();
+      });
+
+      test('a formula that is no preset, with a computed pole-zero map', () => {
+        expect(plots_of('(s+1)/((s+2)(s+3))')).toMatchSnapshot();
+      });
+    });
+
+    // The plots cover -2..2 and 250 x 200 in GEOMETRY, so these points are on an edge or just off it.
+    const ON_EDGES_OF_NYQUIST = [
+      ['left edge', { re: -2, im: 0 }, [0, 100]],
+      ['right edge', { re: 2, im: 0 }, [250, 100]],
+      ['top edge', { re: 0, im: 2 }, [125, 0]],
+      ['bottom edge', { re: 0, im: -2 }, [125, 200]],
+    ];
+    const OFF_NYQUIST = [
+      ['left of the plot', { re: -2.1, im: 0 }],
+      ['right of the plot', { re: 2.1, im: 0 }],
+      ['above the plot', { re: 0, im: 2.1 }],
+      ['below the plot', { re: 0, im: -2.1 }],
+    ];
+    const graph_at = (point) => {
+      const graph = window.eval('new bode_graph(1, "1/(1+s)")');
+      graph.bode_complex_array = Array(300).fill(point);
+      return graph;
+    };
+
+    describe.each([
+      ['draw_nyquist_X', (graph) => graph.draw_nyquist_X(1)],
+      ['draw_nyquist_O', (graph) => graph.draw_nyquist_O(1)],
+      ['draw_nyquist_value', (graph) => graph.draw_nyquist_value(0.5)],
+    ])('%s at the edges of the plot', (_, draw) => {
+      test.each(ON_EDGES_OF_NYQUIST)('draws on the %s', (__, point) => {
+        draw(graph_at(point));
+        expect(drawn.length).toBeGreaterThan(0);
+      });
+
+      test.each(OFF_NYQUIST)('draws nothing %s', (__, point) => {
+        draw(graph_at(point));
+        expect(drawn).toHaveLength(0);
+      });
+    });
+
+    test('draw_nyquist_response counts the left and top edges as outside, the right and bottom ones as inside', () => {
+      const vertices_at = (point) => {
+        drawn.length = 0;
+        graph_at(point).draw_nyquist_response();
+        return calls('vertex').length;
+      };
+      expect(vertices_at({ re: 2, im: 0 })).toBe(300);
+      expect(vertices_at({ re: 0, im: -2 })).toBe(300);
+      expect(vertices_at({ re: -2, im: 0 })).toBe(0);
+      expect(vertices_at({ re: 0, im: 2 })).toBe(0);
+      expect(vertices_at({ re: 2.1, im: 0 })).toBe(0);
+      expect(vertices_at({ re: 0, im: -2.1 })).toBe(0);
+    });
+
+    describe.each([['draw_nyquist_X'], ['draw_nyquist_O']])('%s picks a sample by frequency', (method) => {
+      // Every sample has its own position, so a wrong sample shows.
+      const graph_with_samples = () => {
+        const graph = window.eval('new bode_graph(1, "1/(1+s)")');
+        graph.bode_complex_array = Array.from({ length: 300 }, (_, i) => ({ re: -1 + i / 300, im: 0 }));
+        return graph;
+      };
+
+      test('0.01 rad/s is the first sample', () => {
+        graph_with_samples()[method](0.01);
+        expect(drawn.length).toBeGreaterThan(0);
+      });
+
+      test('a frequency above the last sample draws nothing', () => {
+        expect(() => graph_with_samples()[method](1000)).not.toThrow();
+        expect(drawn).toHaveLength(0);
+      });
+
+      test('10 rad/s is sample 180, in the colour of the marks', () => {
+        graph_with_samples()[method](10); // (1 + 2) * 300 / 5
+        const x_of_sample = 100; // sample 180 is at re = -0.4, and the plot is 250 wide for -2..2
+        const steps = drawn.map((call) => call.name);
+        expect(steps.slice(0, 3)).toEqual(['push', 'stroke', 'strokeWeight']);
+        expect(steps.at(-1)).toBe('pop');
+        expect(drawn[1].args.slice(1)).toEqual([240, 360]);
+        expect(drawn[2].args).toEqual([2]);
+        const mark = drawn[3].args;
+        if (method === 'draw_nyquist_O') expect(mark[0]).toBeCloseTo(x_of_sample, 8);
+        else expect((mark[0] + mark[2]) / 2).toBeCloseTo(x_of_sample, 8);
+      });
+    });
+
+    test('draw_T_in_Nyquist marks the frequency 1/T', () => {
+      set_sliders({ T_1: 0.1 });
+      const graph = window.eval('new bode_graph(1, "1/(1+s)")');
+      graph.draw_nyquist_X = jest.fn();
+      graph.draw_T_in_Nyquist('T_1');
+      expect(graph.draw_nyquist_X).toHaveBeenCalledWith(10);
+    });
+
+    test('a phase on the upper or lower bound of the plot is left out', () => {
+      set_globals({ phase_lower_bound: -180, phase_upper_bound: 0 });
+      const graph = window.eval('new bode_graph(1, "1/(1+s)")');
+      graph.bode_phase_array = Array(300).fill(0);
+      graph.draw_phase();
+      graph.bode_phase_array = Array(300).fill(-180 * Math.PI / 180);
+      graph.draw_phase();
+      expect(calls('vertex')).toHaveLength(0);
+    });
+  });
 });
