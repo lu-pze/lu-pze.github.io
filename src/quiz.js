@@ -368,51 +368,48 @@ function random_ghost_time_constant(level, power_range){
   return t;
 }
 
-// Ghost graph descriptors for addNewGraph. The name tells where the formula is shown:
-// GhostMPTNIE_Displayed name
-//      M      = shows up in Bode magnitude plot
-//       P     = shows up in Bode phase plot
-//        T    = shows up in Bode time response plot
-//         N   = shows up in Nyquist diagram
-//          I  = shows up in information tab
-//           E = shows up in Equations
-function first_order_ghost(name, k, t){
-  return {name:name, mf:"\\frac{"+k+"}{1+"+t+"s}", formula:"("+k+")/((1+"+t+"s))"};
+// Quiz ghosts have no name: a name could give the answer away.
+function quiz_ghost(mf, formula){
+  return {name:"", ghost:true, mf:mf, formula:formula};
 }
 
-function second_order_ghost(name, k, z, w){
-  return {name:name, mf:"\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", formula:k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)"};
+function first_order_ghost(k, t){
+  return quiz_ghost("\\frac{"+k+"}{1+"+t+"s}", "("+k+")/((1+"+t+"s))");
 }
 
-// Ghost name prefixes for the first-, second- and fourth-order graphs of click_system.
+function second_order_ghost(k, z, w){
+  return quiz_ghost("\\frac{"+k+"*("+w+")^2}{s^2+2*("+z+")*("+w+")*s+("+w+")^2}", k+"*("+w+")^2/(s^2+2*("+z+")*("+w+")*s+("+w+")^2)");
+}
+
+// The views of the first-, second- and fourth-order graphs of click_system.
 // The higher the level, the fewer plots show each system.
-function click_system_name_prefixes(level){
+function click_system_views(level){
   if (level < 30){
-    return {first:"GhostMPTNIE_", second:"GhostMPTNIE_", fourth:"GhostMPTNIE_"};
+    return {first:ALL_GRAPH_VIEWS, second:ALL_GRAPH_VIEWS, fourth:ALL_GRAPH_VIEWS};
   }
   if (level < 60){
     let r = Math.random();
-    let prefix;
-    if (r<0.33) prefix="GhostMP...._";
-    else if (r<0.67) prefix="Ghost..TN.._";
-    else prefix="GhostM.T..._";
-    return {first:prefix, second:prefix, fourth:prefix};
+    let views;
+    if (r<0.33) views=["magnitude","phase"];
+    else if (r<0.67) views=["time","nyquist"];
+    else views=["magnitude","time"];
+    return {first:views, second:views, fourth:views};
   }
   if (level < 90){
     let r = Math.random();
-    let prefix;
-    if (r<0.33) prefix="GhostM....._";
-    else if (r<0.67) prefix="Ghost.P...._";
-    else prefix="Ghost..T..._";
-    return {first:prefix, second:prefix, fourth:prefix};
+    let views;
+    if (r<0.33) views=["magnitude"];
+    else if (r<0.67) views=["phase"];
+    else views=["time"];
+    return {first:views, second:views, fourth:views};
   }
   let r = Math.random();
   if (r<0.33){
-    return {first:"GhostM....._", second:"Ghost.P...._", fourth:"Ghost..T..._"};
+    return {first:["magnitude"], second:["phase"], fourth:["time"]};
   } else if (r<0.67){
-    return {first:"Ghost..T..._", second:"GhostM....._", fourth:"Ghost.P...._"};
+    return {first:["time"], second:["magnitude"], fourth:["phase"]};
   }
-  return {first:"Ghost.P...._", second:"Ghost..T..._", fourth:"GhostM....._"};
+  return {first:["phase"], second:["time"], fourth:["magnitude"]};
 }
 
 function next_quiz_click_system(quiz_text, level){
@@ -422,17 +419,17 @@ function next_quiz_click_system(quiz_text, level){
   id_bank=next_graph_no_to_add;
 
   // Add ghost graphs:
-  let prefixes = click_system_name_prefixes(level);
+  let views = click_system_views(level);
 
   let k = random_ghost_gain(level);
   let t = random_ghost_time_constant(level, 2);
-  addNewGraph(null, first_order_ghost(prefixes.first+"", k, t));
+  addNewGraph(null, first_order_ghost(k, t), views.first);
 
   let r = Math.random();
-  if (r<0.25)      addNewGraph(null, {name:prefixes.second+"", mf:"\\frac{0.5}{1+2s+s^2}", formula:"0.5/(1+2s+s^2)"});
-  else if (r<0.5)  addNewGraph(null, {name:prefixes.second+"", mf:"\\frac{1}{(1+5s)(1+0.05s)}", formula:"1/(1+5s)*1/(1+0.05s)"});
-  else if (r<0.75) addNewGraph(null, {name:prefixes.second+"", mf:"\\frac{8^2}{s^2+2*0.05*8*s+8^2}", formula:"8^2/(s^2+2*0.05*8*s+8^2)"});
-  else             addNewGraph(null, {name:prefixes.second+"", mf:"\\frac{0.7*2^2}{s^2+2*0.7*2*s+2^2}", formula:"0.7*2^2/(s^2+2*0.7*2*s+2^2)"});
+  if (r<0.25)      addNewGraph(null, quiz_ghost("\\frac{0.5}{1+2s+s^2}", "0.5/(1+2s+s^2)"), views.second);
+  else if (r<0.5)  addNewGraph(null, quiz_ghost("\\frac{1}{(1+5s)(1+0.05s)}", "1/(1+5s)*1/(1+0.05s)"), views.second);
+  else if (r<0.75) addNewGraph(null, quiz_ghost("\\frac{8^2}{s^2+2*0.05*8*s+8^2}", "8^2/(s^2+2*0.05*8*s+8^2)"), views.second);
+  else             addNewGraph(null, quiz_ghost("\\frac{0.7*2^2}{s^2+2*0.7*2*s+2^2}", "0.7*2^2/(s^2+2*0.7*2*s+2^2)"), views.second);
 
   let k4 = random_ghost_gain(level);
   let t4 = 1;
@@ -445,7 +442,7 @@ function next_quiz_click_system(quiz_text, level){
     let power = 0;
     t4 = 3 / (decimal * Math.pow(10,power));
   }
-  addNewGraph(null, {name:prefixes.fourth+"", mf:"\\frac{"+k4+"}{(1+"+t4+"s)^4}", formula:k4+"/((1+"+t4+"s)^4)"});
+  addNewGraph(null, quiz_ghost("\\frac{"+k4+"}{(1+"+t4+"s)^4}", k4+"/((1+"+t4+"s)^4)"), views.fourth);
 
   if (level > 95){
     if (Math.random() < 0.33){
@@ -525,17 +522,17 @@ function perturb_wrong_nyquist(p){
 
 // Indexed by quiz_click_wrong (0..3). power_range is the range of the time constant's power.
 const WRONG_GRAPH_KINDS = [
-  {correct_name:"Ghost.PTN.._", wrong_name:"GhostM....._", power_range:3, perturb:perturb_wrong_bode_magnitude},
-  {correct_name:"GhostM.TN.._", wrong_name:"Ghost.P...._", power_range:2, perturb:perturb_wrong_bode_phase},
-  {correct_name:"GhostMP.N.._", wrong_name:"Ghost..T..._", power_range:2, perturb:perturb_wrong_step_response},
-  {correct_name:"GhostMPT..._", wrong_name:"Ghost...N.._", power_range:2, perturb:perturb_wrong_nyquist},
+  {correct_views:["phase","time","nyquist"], wrong_views:["magnitude"], power_range:3, perturb:perturb_wrong_bode_magnitude},
+  {correct_views:["magnitude","time","nyquist"], wrong_views:["phase"], power_range:2, perturb:perturb_wrong_bode_phase},
+  {correct_views:["magnitude","phase","nyquist"], wrong_views:["time"], power_range:2, perturb:perturb_wrong_step_response},
+  {correct_views:["magnitude","phase","time"], wrong_views:["nyquist"], power_range:2, perturb:perturb_wrong_nyquist},
 ];
 
-function add_ghost_of_order(name, order, p){
+function add_ghost_of_order(views, order, p){
   if (order==1){
-    addNewGraph(null, first_order_ghost(name, p.k, p.t));
+    addNewGraph(null, first_order_ghost(p.k, p.t), views);
   } else {
-    addNewGraph(null, second_order_ghost(name, p.k, p.z, p.w));
+    addNewGraph(null, second_order_ghost(p.k, p.z, p.w), views);
   }
 }
 
@@ -570,11 +567,11 @@ function next_quiz_click_wrong(quiz_text, level){
   p.t = random_ghost_time_constant(level, kind.power_range);
   p.z = 2.0*Math.random();
   p.w = 0.4+4.0*Math.random();
-  add_ghost_of_order(kind.correct_name, correct_system_order, p);
+  add_ghost_of_order(kind.correct_views, correct_system_order, p);
   kind.perturb(p, level);
   next_graph_no_to_add=graph_color;
   id_bank=next_graph_no_to_add;
-  add_ghost_of_order(kind.wrong_name, wrong_system_order, p);
+  add_ghost_of_order(kind.wrong_views, wrong_system_order, p);
   quiz_text.innerHTML="Click on the wrong graph";
 }
 

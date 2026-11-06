@@ -261,18 +261,12 @@ function addNewGraphClicked(event, graph_to_add){
 // diagram, the information tabs and the list of equations.
 const ALL_GRAPH_VIEWS = ["magnitude","phase","time","nyquist","information","equation"];
 
-// The views of a name such as "GhostMP...._Displayed name": a "." switches off the view at that
-// position, in the order of ALL_GRAPH_VIEWS. Other ghosts have ghost:true and a list of views.
-function parse_graph_views(ghost_name){
-  return ALL_GRAPH_VIEWS.filter((view, position) => ghost_name[5 + position] !== ".");
-}
-
 function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\frac{v^2}{s^2+2qvs+v^2}", formula:"(0.9s+1)/((s+1)^2)*(v^2)/(s^2+2*q*v*s+v^2)"}, views=ALL_GRAPH_VIEWS){
   let graph_name = graph_to_add.name;
   let mathfield_string = graph_to_add.mf;
   let equation_string = graph_to_add.formula;
 
-  if (graph_to_add.name == ""){
+  if ((graph_to_add.name == "") && (graph_to_add.ghost !== true)){
     // User clicked "add" button.
     if (next_graph_no_to_add < GRAPH_ORDER.length){
       // Yes, there are still default graphs left to add:
@@ -288,9 +282,8 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   }
   next_graph_no_to_add += 1;
 
-  const has_flags_in_name = (graph_to_add.ghost !== true) && graph_name.startsWith("Ghost");
-  const is_ghost = has_flags_in_name || (graph_to_add.ghost === true);
-  const shows = (view) => (has_flags_in_name ? parse_graph_views(graph_name) : views).includes(view);
+  const is_ghost = graph_to_add.ghost === true;
+  const shows = (view) => views.includes(view);
 
   let new_equation_wrapper = document.createElement('div');
   new_equation_wrapper.classList.add('equation-wrapper');
@@ -333,7 +326,6 @@ function addNewGraph(event, graph_to_add={name:"", mf:"\\frac{0.9s+1}{(s+1)^2}\\
   new_bode_graph.bode_display_information_bool = shows("information");
   new_bode_graph.bode_display_equation_bool = shows("equation");
   new_bode_graph.is_ghost = is_ghost;
-  if (has_flags_in_name) new_bode_graph.graph_name = graph_name.substr(12);
   if (is_ghost) new_bode_graph.bode_display_pole_zero_bool = false;
 
   if (!preset_of_formula(equation_string)?.shares_sliders){

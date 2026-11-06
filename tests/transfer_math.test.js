@@ -636,7 +636,7 @@ describe('computed pole-zero maps', () => {
       window.add_event = () => {};
       try {
         set_sliders({});
-        window.addNewGraph(null, { name: 'GhostMPTNIE_Ghost', mf: '\\frac{1}{1+s}', formula: '1/(1+s)' });
+        window.addNewGraph(null, { name: 'Ghost', ghost: true, mf: '\\frac{1}{1+s}', formula: '1/(1+s)' });
         window.addNewGraph(null, { name: 'Mine', mf: '\\frac{1}{1+s}', formula: '1/(1+s)' });
         const [ghost, mine] = graphs.slice(-2);
         expect(ghost.graph_name).toBe('Ghost');

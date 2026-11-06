@@ -48,6 +48,8 @@ function single_type(type, level, extra = {}) {
 
 const quiz_text = () => document.getElementById('quiz_text').innerHTML;
 const graphs = () => window.addNewGraph.mock.calls.map(([, graph]) => graph);
+const views_of_graphs = () => window.addNewGraph.mock.calls.map(([, , views]) => views);
+const ALL_VIEWS = ['magnitude', 'phase', 'time', 'nyquist', 'information', 'equation'];
 
 beforeAll(() => {
   loadApp();
@@ -367,11 +369,11 @@ describe('click_system', () => {
     const [first, second, fourth] = ask(10);
     expect(window.addNewGraph).toHaveBeenCalledTimes(3);
     expect(window.addNewGraph.mock.calls.every(([event]) => event === null)).toBe(true);
-    expect(first).toEqual({ name: 'GhostMPTNIE_', mf: '\\frac{2.25}{1+1s}', formula: '(2.25)/((1+1s))' });
+    expect(first).toEqual({ name: '', ghost: true, mf: '\\frac{2.25}{1+1s}', formula: '(2.25)/((1+1s))' });
     expect(second).toEqual({
-      name: 'GhostMPTNIE_', mf: '\\frac{8^2}{s^2+2*0.05*8*s+8^2}', formula: '8^2/(s^2+2*0.05*8*s+8^2)',
+      name: '', ghost: true, mf: '\\frac{8^2}{s^2+2*0.05*8*s+8^2}', formula: '8^2/(s^2+2*0.05*8*s+8^2)',
     });
-    expect(fourth).toEqual({ name: 'GhostMPTNIE_', mf: '\\frac{2.25}{(1+1s)^4}', formula: '2.25/((1+1s)^4)' });
+    expect(fourth).toEqual({ name: '', ghost: true, mf: '\\frac{2.25}{(1+1s)^4}', formula: '2.25/((1+1s)^4)' });
     expect(global_value('next_graph_no_to_add')).toBe(2);
     expect(global_value('id_bank')).toBe(2);
   });
@@ -385,21 +387,22 @@ describe('click_system', () => {
   });
 
   test.each([
-    [10, [0.5], ['GhostMPTNIE_', 'GhostMPTNIE_', 'GhostMPTNIE_']],
+    [10, [0.5], [ALL_VIEWS, ALL_VIEWS, ALL_VIEWS]],
     // 30-59: one of three display subsets shared by all graphs (draws: colour, selector)
-    [40, [0.5, 0.1], ['GhostMP...._', 'GhostMP...._', 'GhostMP...._']],
-    [40, [0.5, 0.5], ['Ghost..TN.._', 'Ghost..TN.._', 'Ghost..TN.._']],
-    [40, [0.5, 0.9], ['GhostM.T..._', 'GhostM.T..._', 'GhostM.T..._']],
+    [40, [0.5, 0.1], [['magnitude', 'phase'], ['magnitude', 'phase'], ['magnitude', 'phase']]],
+    [40, [0.5, 0.5], [['time', 'nyquist'], ['time', 'nyquist'], ['time', 'nyquist']]],
+    [40, [0.5, 0.9], [['magnitude', 'time'], ['magnitude', 'time'], ['magnitude', 'time']]],
     // 60-89: the graphs are only shown in one place
-    [70, [0.5, 0.1], ['GhostM....._', 'GhostM....._', 'GhostM....._']],
-    [70, [0.5, 0.5], ['Ghost.P...._', 'Ghost.P...._', 'Ghost.P...._']],
-    [70, [0.5, 0.9], ['Ghost..T..._', 'Ghost..T..._', 'Ghost..T..._']],
+    [70, [0.5, 0.1], [['magnitude'], ['magnitude'], ['magnitude']]],
+    [70, [0.5, 0.5], [['phase'], ['phase'], ['phase']]],
+    [70, [0.5, 0.9], [['time'], ['time'], ['time']]],
     // 90 and up: each graph in its own plot, in a random permutation
-    [95, [0.5, 0.1], ['GhostM....._', 'Ghost.P...._', 'Ghost..T..._']],
-    [95, [0.5, 0.5], ['Ghost..T..._', 'GhostM....._', 'Ghost.P...._']],
-    [95, [0.5, 0.9], ['Ghost.P...._', 'Ghost..T..._', 'GhostM....._']],
-  ])('level %s with draws %j shows the graphs in %j', (level, random, names) => {
-    expect(ask(level, ...random).map((graph) => graph.name)).toEqual(names);
+    [95, [0.5, 0.1], [['magnitude'], ['phase'], ['time']]],
+    [95, [0.5, 0.5], [['time'], ['magnitude'], ['phase']]],
+    [95, [0.5, 0.9], [['phase'], ['time'], ['magnitude']]],
+  ])('level %s with draws %j shows the graphs in %j', (level, random, views) => {
+    ask(level, ...random);
+    expect(views_of_graphs()).toEqual(views);
   });
 
   test('time constants stay at 1 up to level 30 and vary above it; negative gains only above level 70', () => {
@@ -447,11 +450,11 @@ describe('click_system', () => {
 describe('click_wrong', () => {
   // Which two ghost graphs are added for each possible odd-one-out: the plot that is wrong shows
   // the wrong graph, and the other plots show the correct one.
-  const NAMES = [
-    ['Ghost.PTN.._', 'GhostM....._'],
-    ['GhostM.TN.._', 'Ghost.P...._'],
-    ['GhostMP.N.._', 'Ghost..T..._'],
-    ['GhostMPT..._', 'Ghost...N.._'],
+  const VIEWS = [
+    [['phase', 'time', 'nyquist'], ['magnitude']],
+    [['magnitude', 'time', 'nyquist'], ['phase']],
+    [['magnitude', 'phase', 'nyquist'], ['time']],
+    [['magnitude', 'phase', 'time'], ['nyquist']],
   ];
 
   const ask = (level, odd_one_out, ...random) => {
@@ -466,7 +469,7 @@ describe('click_wrong', () => {
   test.each([0, 1, 2, 3])('odd one out %s: a correct and a wrong graph, in the right plots', (odd) => {
     const [correct, wrong] = ask(10, odd);
     expect(global_value('quiz_click_wrong')).toBe(odd);
-    expect([correct.name, wrong.name]).toEqual(NAMES[odd]);
+    expect(views_of_graphs()).toEqual(VIEWS[odd]);
     expect(correct.formula).not.toBe(wrong.formula);
     expect(quiz_text()).toBe('Click on the wrong graph');
     expect(window.add_event).toHaveBeenCalledWith(`quiz_click_wrong=${odd}`);
@@ -614,38 +617,39 @@ describe('mutation gaps: ghost systems', () => {
   });
 
   test('second_order_ghost writes the same system for MathLive and for math.js', () => {
-    expect(window.second_order_ghost('n', 2, 0.5, 3)).toEqual({
-      name: 'n',
+    expect(window.second_order_ghost(2, 0.5, 3)).toEqual({
+      name: '',
+      ghost: true,
       mf: '\\frac{2*(3)^2}{s^2+2*(0.5)*(3)*s+(3)^2}',
       formula: '2*(3)^2/(s^2+2*(0.5)*(3)*s+(3)^2)',
     });
   });
 
-  test('click_system_name_prefixes changes at levels 30, 60 and 90, and at draws 0.33 and 0.67', () => {
-    const prefixes = (level, r) => {
+  test('click_system_views changes at levels 30, 60 and 90, and at draws 0.33 and 0.67', () => {
+    const views = (level, r) => {
       script_random(r);
-      const result = window.click_system_name_prefixes(level);
+      const result = window.click_system_views(level);
       random_spy.mockRestore();
       return [result.first, result.second, result.fourth];
     };
-    const all = (name) => [name, name, name];
-    expect(prefixes(29.99, 0.1)).toEqual(all('GhostMPTNIE_'));
-    expect(prefixes(30, 0.1)).toEqual(all('GhostMP...._'));
-    expect(prefixes(59.99, 0.1)).toEqual(all('GhostMP...._'));
-    expect(prefixes(60, 0.1)).toEqual(all('GhostM....._'));
-    expect(prefixes(89.99, 0.1)).toEqual(all('GhostM....._'));
-    expect(prefixes(90, 0.1)).toEqual(['GhostM....._', 'Ghost.P...._', 'Ghost..T..._']);
+    const all = (view_list) => [view_list, view_list, view_list];
+    expect(views(29.99, 0.1)).toEqual(all(ALL_VIEWS));
+    expect(views(30, 0.1)).toEqual(all(['magnitude', 'phase']));
+    expect(views(59.99, 0.1)).toEqual(all(['magnitude', 'phase']));
+    expect(views(60, 0.1)).toEqual(all(['magnitude']));
+    expect(views(89.99, 0.1)).toEqual(all(['magnitude']));
+    expect(views(90, 0.1)).toEqual([['magnitude'], ['phase'], ['time']]);
 
     for (const [level, draws] of [
-      [40, [[0.3299, 'GhostMP...._'], [0.33, 'Ghost..TN.._'], [0.6699, 'Ghost..TN.._'], [0.67, 'GhostM.T..._']]],
-      [70, [[0.3299, 'GhostM....._'], [0.33, 'Ghost.P...._'], [0.6699, 'Ghost.P...._'], [0.67, 'Ghost..T..._']]],
+      [40, [[0.3299, ['magnitude', 'phase']], [0.33, ['time', 'nyquist']], [0.6699, ['time', 'nyquist']], [0.67, ['magnitude', 'time']]]],
+      [70, [[0.3299, ['magnitude']], [0.33, ['phase']], [0.6699, ['phase']], [0.67, ['time']]]],
     ]) {
-      for (const [r, name] of draws) expect(prefixes(level, r)).toEqual(all(name));
+      for (const [r, view_list] of draws) expect(views(level, r)).toEqual(all(view_list));
     }
-    expect(prefixes(95, 0.3299)).toEqual(['GhostM....._', 'Ghost.P...._', 'Ghost..T..._']);
-    expect(prefixes(95, 0.33)).toEqual(['Ghost..T..._', 'GhostM....._', 'Ghost.P...._']);
-    expect(prefixes(95, 0.6699)).toEqual(['Ghost..T..._', 'GhostM....._', 'Ghost.P...._']);
-    expect(prefixes(95, 0.67)).toEqual(['Ghost.P...._', 'Ghost..T..._', 'GhostM....._']);
+    expect(views(95, 0.3299)).toEqual([['magnitude'], ['phase'], ['time']]);
+    expect(views(95, 0.33)).toEqual([['time'], ['magnitude'], ['phase']]);
+    expect(views(95, 0.6699)).toEqual([['time'], ['magnitude'], ['phase']]);
+    expect(views(95, 0.67)).toEqual([['phase'], ['time'], ['magnitude']]);
   });
 });
 
@@ -668,20 +672,20 @@ describe('mutation gaps: click_system graphs', () => {
     [0.7499, '\\frac{8^2}{s^2+2*0.05*8*s+8^2}', '8^2/(s^2+2*0.05*8*s+8^2)'],
     [0.75, '\\frac{0.7*2^2}{s^2+2*0.7*2*s+2^2}', '0.7*2^2/(s^2+2*0.7*2*s+2^2)'],
     [0.9, '\\frac{0.7*2^2}{s^2+2*0.7*2*s+2^2}', '0.7*2^2/(s^2+2*0.7*2*s+2^2)'],
-  ])('second graph for random %s has the exact name, LaTeX and formula', (r, mf, formula) => {
-    expect(ask(10, 0.5, 0.5, r)[1]).toEqual({ name: 'GhostMPTNIE_', mf, formula });
+  ])('second graph for random %s has the exact LaTeX and formula, and no name', (r, mf, formula) => {
+    expect(ask(10, 0.5, 0.5, r)[1]).toEqual({ name: '', ghost: true, mf, formula });
   });
 
   test('the fourth-order time constant: 3/decimal from level 31, 3/(decimal * 10^power) from level 81', () => {
     const fourth = (level, overrides) => ask(level, ...draws(12, overrides))[2].formula;
-    // level 85 draws: colour, prefix, k, sign, dec, pow, second, k4, sign4, decimal4 (10), power4 (11)
+    // level 85 draws: colour, views, k, sign, dec, pow, second, k4, sign4, decimal4 (10), power4 (11)
     expect(fourth(85, { 10: 0.5, 11: 0.99 })).toBe('2.25/((1+0.06s)^4)'); // 3 / (5 * 10)
     expect(fourth(85, { 10: 0.5, 11: 0.2 })).toBe('2.25/((1+0.6s)^4)'); // 3 / (5 * 1)
     expect(fourth(85, { 10: 0.0, 11: 0.99 })).toBe('2.25/((1+0.3s)^4)'); // 3 / (1 * 10)
     // level 80 is still in the middle range: the power draw is not used
     expect(fourth(80, { 10: 0.5, 11: 0.99 })).toBe('2.25/((1+0.6s)^4)');
     expect(fourth(80.5, { 10: 0.5, 11: 0.99 })).toBe('2.25/((1+0.06s)^4)');
-    // level 50 draws: colour, prefix, k, dec, pow, second, k4, decimal4 (8)
+    // level 50 draws: colour, views, k, dec, pow, second, k4, decimal4 (8)
     expect(fourth(50, { 8: 0.5 })).toBe('2.25/((1+0.6s)^4)');
     expect(fourth(50, { 8: 0.0 })).toBe('2.25/((1+3s)^4)');
     // up to level 30 the time constant stays 1

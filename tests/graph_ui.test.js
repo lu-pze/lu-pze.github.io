@@ -720,15 +720,8 @@ describe('addNewGraph', () => {
       expect(graphs()[0].is_ghost).toBe(false);
     });
 
-    test('ALL_GRAPH_VIEWS lists the views in the order of the flags in a ghost name', () => {
+    test('ALL_GRAPH_VIEWS lists every view', () => {
       expect(global_value('ALL_GRAPH_VIEWS')).toEqual(ALL_VIEWS);
-    });
-
-    test('in a ghost name only a "." switches a view off, and a name too short for a view leaves it on', () => {
-      expect(window.parse_graph_views('GhostMPTNIE_')).toEqual(ALL_VIEWS);
-      expect(window.parse_graph_views('Ghostxxxxxx_')).toEqual(ALL_VIEWS);
-      expect(window.parse_graph_views('')).toEqual(ALL_VIEWS);
-      expect(window.parse_graph_views('Ghost..')).toEqual(ALL_VIEWS.slice(2));
     });
 
     test('the default switches nothing off', () => {
@@ -750,8 +743,8 @@ describe('addNewGraph', () => {
       expect(document.getElementById('graph_1_infolabel')).toBeNull();
     });
 
-    test('a ghost graph reads its places from its name, hides the pole-zero map and drops the prefix', () => {
-      window.addNewGraph(null, { name: 'GhostM.TN.E_Answer A', mf: 'x', formula: '1/(s+1)' });
+    test('a ghost shows up only in its views, and hides the pole-zero map', () => {
+      window.addNewGraph(null, { name: 'Answer A', ghost: true, mf: 'x', formula: '1/(s+1)' }, ['magnitude', 'time', 'nyquist', 'equation']);
       const ghost = graphs()[0];
       expect(ghost.graph_name).toBe('Answer A');
       expect(ghost.is_ghost).toBe(true);
@@ -765,19 +758,13 @@ describe('addNewGraph', () => {
       expect(document.getElementById('graph_1_info')).toBeNull();
     });
 
-    test('a ghost with the equation place off is hidden', () => {
-      window.addNewGraph(null, { name: 'GhostMPTNI._Hidden', mf: 'x', formula: '1/(s+1)' });
-      expect(document.getElementById('GhostMPTNI._Hidden').getAttribute('style')).toBe('display:none;');
+    test('a ghost without the equation view is hidden', () => {
+      window.addNewGraph(null, { name: 'Hidden', ghost: true, mf: 'x', formula: '1/(s+1)' }, all_views_but('equation'));
+      expect(document.getElementById('Hidden').getAttribute('style')).toBe('display:none;');
     });
 
     test('a graph made without addNewGraph is no ghost', () => {
       expect(window.eval('new bode_graph(1, "1/s")').is_ghost).toBe(false);
-    });
-
-    test('a ghost with flags in its name ignores the views argument', () => {
-      window.addNewGraph(null, { name: 'GhostMPTNIE_Answer', mf: 'x', formula: '1/(s+1)' }, []);
-      expect(graphs()[0].bode_display_bodemag_bool).toBe(true);
-      expect(graphs()[0].bode_display_equation_bool).toBe(true);
     });
 
     test('ghost:true makes a ghost with a clean name, shown only in its views', () => {
@@ -795,11 +782,26 @@ describe('addNewGraph', () => {
       expect(document.getElementById('graph_1_info')).toBeNull();
     });
 
-    test('a ghost:true graph is not read for flags, even if its name starts like one', () => {
-      window.addNewGraph(null, { name: 'Ghost story', ghost: true, mf: 'x', formula: '1/(s+1)' }, ['time']);
-      expect(graphs()[0].graph_name).toBe('Ghost story');
-      expect(graphs()[0].bode_display_timeresponse_bool).toBe(true);
-      expect(graphs()[0].bode_display_bodemag_bool).toBe(false);
+    test('a name starting with "Ghost" means nothing by itself', () => {
+      window.addNewGraph(null, { name: 'GhostM....._story', mf: 'x', formula: '1/(s+1)' });
+      expect(graphs()[0].is_ghost).toBe(false);
+      expect(graphs()[0].graph_name).toBe('GhostM....._story');
+      expect(graphs()[0].bode_display_bodephase_bool).toBe(true);
+      expect(graphs()[0].bode_display_pole_zero_bool).toBe(true);
+    });
+
+    test('a ghost with no name is not the "add" button: it keeps its formula and takes no preset', () => {
+      window.addNewGraph(null, { name: '', ghost: true, mf: 'x', formula: '1/(s+2)' }, ['time']);
+      expect(graphs()[0].bode_formula).toBe('1/(s+2)');
+      expect(graphs()[0].graph_name).toBe('');
+      expect(graphs()[0].is_ghost).toBe(true);
+      expect(global_value('next_graph_no_to_add')).toBe(1);
+    });
+
+    test('the information tab of a ghost with no name is called by its graph number', () => {
+      set_globals({ id_bank: 2 });
+      window.addNewGraph(null, { name: '', ghost: true, mf: 'x', formula: '1/(s+2)' }, ALL_VIEWS);
+      expect(document.getElementById('graph_3_infolabel').querySelector('span').textContent).toBe('Graph 3');
     });
   });
 });
