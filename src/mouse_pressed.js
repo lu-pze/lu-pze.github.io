@@ -130,8 +130,6 @@ function use_fast_precision_in_pid_assignments(){
 // --------------------------------
 // Pressing on a curve in the step response or a Bode plot
 
-const GHOST_PREFIX = "Ghost";
-
 // Splits the graphs shown in a plot into those within 70 pixels of the press ("queue_with_ghosts")
 // and the same without ghost graphs ("queue"). Entries are [distance, graph_no].
 function graphs_near_press(is_displayed, distance_to_curve){
@@ -142,7 +140,7 @@ function graphs_near_press(is_displayed, distance_to_curve){
       let distance = distance_to_curve(bode_graphs[h]);
       if(distance < 70){
         queue_with_ghosts.push([distance,h]);
-        if (!(bode_graphs[h].full_name.startsWith(GHOST_PREFIX))){
+        if (!bode_graphs[h].is_ghost){
           queue.push([distance,h]);
         }
       }

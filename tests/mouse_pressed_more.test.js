@@ -734,7 +734,7 @@ describe('mutation gaps: pressing on the plots in a quiz', () => {
     for (const [name, value] of Object.entries(values)) slider_values[variable_position[name]] = value;
   };
   const curve_graph = (preset, props = {}) => ({
-    bode_formula: formula(preset), full_name: 'Graph', bode_displaybool: true,
+    bode_formula: formula(preset), bode_displaybool: true,
     bode_display_bodemag_bool: true, bode_display_bodephase_bool: true, bode_display_timeresponse_bool: true,
     bode_gain_array: Array(500).fill(20), bode_phase_array: Array(500).fill(0), bode_timerep_array: Array(200).fill(50),
     ...props,
@@ -871,11 +871,11 @@ describe('mutation gaps: choosing the graph and the time constant that a press m
   test('graphs_near_press only lists displayed graphs in this plot within less than 70 pixels', () => {
     set_globals({
       bode_graphs: [
-        { bode_displaybool: true, full_name: 'Graph', shown: true, d: 69.9 },
-        { bode_displaybool: true, full_name: 'Graph', shown: true, d: 70 },
-        { bode_displaybool: false, full_name: 'Graph', shown: true, d: 1 },
-        { bode_displaybool: true, full_name: 'Graph', shown: false, d: 1 },
-        { bode_displaybool: true, full_name: 'GhostMPTNIE_x', shown: true, d: 10 },
+        { bode_displaybool: true, shown: true, d: 69.9 },
+        { bode_displaybool: true, shown: true, d: 70 },
+        { bode_displaybool: false, shown: true, d: 1 },
+        { bode_displaybool: true, shown: false, d: 1 },
+        { bode_displaybool: true, is_ghost: true, shown: true, d: 10 },
       ],
     });
     const near = window.graphs_near_press((graph) => graph.shown, (graph) => graph.d);

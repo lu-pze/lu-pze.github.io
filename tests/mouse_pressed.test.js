@@ -29,10 +29,10 @@ const GEOMETRY = {
 // Time constants, chosen so that the "closest one" decisions differ along the axes. T_8 is clamped in the pole-zero maps.
 const TIME_CONSTANTS = { T_2: 0.5, T_3: 2.0, T_6: 1.0, T_7: 3.0, T_8: 0.2, T_i: 2.0, T_d: 0.5 };
 
-function make_graph(formula, index, full_name = 'Graph') {
+function make_graph(formula, index, is_ghost = false) {
   const array = (length, f) => Array.from({ length }, (_, i) => f(i));
   return {
-    bode_formula: formula, full_name,
+    bode_formula: formula, is_ghost,
     bode_displaybool: true, bode_display_bodemag_bool: true, bode_display_bodephase_bool: true, bode_display_timeresponse_bool: true,
     bode_gain_array: array(400, (i) => 20 - 0.15 * i - 12 * index),
     bode_phase_array: array(400, (i) => -(Math.PI / 2) * (1 - Math.exp(-i / 100)) - 0.3 * index),
@@ -46,7 +46,7 @@ function setup_graphs(with_ghost) {
     make_graph(f('GRAPH_ONE_REAL_POLE'), 0), make_graph(f('GRAPH_TWO_REAL_POLES'), 1),
     make_graph(f('GRAPH_ONE_ZERO_TWO_POLES'), 2), make_graph(f('GRAPH_PID'), 3),
   ];
-  if (with_ghost) graphs.push(make_graph(f('GRAPH_ONE_REAL_POLE'), 4, 'GhostMPTNIE_ghost'));
+  if (with_ghost) graphs.push(make_graph(f('GRAPH_ONE_REAL_POLE'), 4, true));
   set_globals({ bode_graphs: graphs });
 }
 
